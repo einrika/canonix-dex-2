@@ -519,67 +519,86 @@ class AssetManager {
         try {
             console.log('🔍 Checking LP positions for:', userAddress);
             
-            // Fetch user's token accounts first with smartFetch
-            const data = await window.smartFetch(`https://explorer.paxinet.io/api/prc20/my_contract_accounts?address=${userAddress}`);
-            
-            if (!data || !data.accounts) {
-                this.lpAssets = [];
+            // 1. Fetch all pools from LCD (direct on-chain truth)
+            // 2. Fetch user's token accounts from explorer
+            const [poolData, userData] = await Promise.all([
+                window.smartFetch(`${window.APP_CONFIG.LCD}/paxi/swap/all_pools`).catch(() => null),
+                window.smartFetch(`https://explorer.paxinet.io/api/prc20/my_contract_accounts?address=${userAddress}`).catch(() => null)
+            ]);
+
+            if (!poolData || !poolData.pools || !userData || !userData.accounts) {
+                console.warn('⚠️ Could not fetch pools or user accounts');
+                if (userData && userData.accounts) {
+                    // Fallback to old sequential method if all_pools fails
+                    this.lpAssets = []; // Clear for now or keep old
+                }
                 return;
             }
 
+            // Create a map of pools for quick lookup
+            const poolMap = new Map();
+            poolData.pools.forEach(p => poolMap.set(p.prc20, p));
+
+            // Filter tokens that have pools
+            const tokensWithPools = userData.accounts.filter(item => poolMap.has(item.contract.contract_address));
+
+            console.log(`📊 Checking ${tokensWithPools.length} pools for positions...`);
+
             const myLPs = [];
-            const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-            console.log(`📊 Checking ${data.accounts.length} tokens for LP positions...`);
+            // Process in small batches to avoid hitting rate limits too hard
+            const BATCH_SIZE = 5;
+            for (let i = 0; i < tokensWithPools.length; i += BATCH_SIZE) {
+                const batch = tokensWithPools.slice(i, i + BATCH_SIZE);
+                const batchPromises = batch.map(async (item) => {
+                    const contract = item.contract;
+                    const pool = poolMap.get(contract.contract_address);
 
-            // Check each token if they have LP positions
-            for (let i = 0; i < data.accounts.length; i++) {
-                const item = data.accounts[i];
-                const contract = item.contract;
-                
-                try {
-                    // Check if this token has a pool by checking reserves
-                    if (contract.reserve_paxi && contract.reserve_prc20 && 
-                        parseFloat(contract.reserve_paxi) > 0 && parseFloat(contract.reserve_prc20) > 0) {
+                    try {
+                        const posRes = await window.smartFetch(`${window.APP_CONFIG.LCD}/paxi/swap/position/${userAddress}/${contract.contract_address}`);
                         
-                        console.log(`💧 Found pool for ${contract.symbol}, checking position...`);
-                        
-                        // Fetch LP position from blockchain
-                        const posRes = await window.fetchDirect(`${window.APP_CONFIG.LCD}/paxi/swap/position/${userAddress}/${contract.contract_address}`);
-                        
-                        if (posRes && parseFloat(posRes.lp_amount) > 0) {
-                            const totalLp = contract.total_lp || (parseFloat(contract.reserve_paxi) * parseFloat(contract.reserve_prc20)) ** 0.5;
-                            const lpAmount = parseFloat(posRes.lp_amount) / 1e6;
-                            const share = totalLp > 0 ? (lpAmount / (totalLp / 1e6)) * 100 : 0;
-                            const paxiVal = (share / 100) * (parseFloat(contract.reserve_paxi) / 1e6);
-                            const prc20Val = (share / 100) * (parseFloat(contract.reserve_prc20) / Math.pow(10, contract.decimals || 6));
+                        // Handle both possible response formats
+                        const lpData = posRes?.position || posRes;
+                        if (lpData && parseFloat(lpData.lp_amount) > 0) {
+                            const tokenDecimals = contract.decimals || 6;
 
-                            console.log(`✅ LP Position found: ${contract.symbol} (${share.toFixed(2)}%)`);
+                            // Use pool data from LCD for reserves (more accurate)
+                            const reservePaxi = parseFloat(pool.reserve_paxi);
+                            const reservePrc20 = parseFloat(pool.reserve_prc20);
+                            const totalLp = parseFloat(pool.total_lp);
 
-                            myLPs.push({
+                            const lpAmount = parseFloat(lpData.lp_amount);
+                            const share = totalLp > 0 ? (lpAmount / totalLp) : 0;
+                            const paxiVal = share * (reservePaxi / 1e6);
+                            const prc20Val = share * (reservePrc20 / Math.pow(10, tokenDecimals));
+
+                            console.log(`✅ LP Position found: ${contract.symbol} (${(share * 100).toFixed(2)}%)`);
+
+                            return {
                                 prc20: contract.contract_address,
                                 symbol: contract.symbol,
                                 logo: contract.logo,
-                                lpBalance: window.formatAmount(lpAmount, 6),
-                                share: share.toFixed(2),
+                                lpBalance: window.formatAmount(lpAmount / 1e6, 6),
+                                share: (share * 100).toFixed(2),
                                 paxiReserve: window.formatAmount(paxiVal, 2),
                                 prc20Reserve: window.formatAmount(prc20Val, 2),
                                 totalUSD: window.formatAmount((paxiVal * 2) * (window.paxiPrice || 0.05), 2),
-                                // Store full data for detail modal
-                                contractData: contract,
-                                positionData: posRes
-                            });
+                                contractData: { ...contract, ...pool },
+                                positionData: lpData
+                            };
                         }
+                    } catch (e) {
+                        console.error(`❌ Failed to check LP for ${contract.symbol}:`, e);
                     }
-                    
-                    // Rate limiting: wait 2 seconds between requests
-                    if (i < data.accounts.length - 1) {
-                        console.log(`⏳ Waiting 2s before next check... (${i + 1}/${data.accounts.length})`);
-                        await delay(2000);
-                    }
-                } catch (e) {
-                    console.error(`❌ Failed to check LP for ${contract.symbol}:`, e);
-                    // Continue to next token
+                    return null;
+                });
+
+                const results = await Promise.all(batchPromises);
+                results.forEach(res => { if (res) myLPs.push(res); });
+
+                // Small delay between batches
+                if (i + BATCH_SIZE < tokensWithPools.length) {
+                    await new Promise(r => setTimeout(r, 500));
                 }
             }
             
@@ -911,9 +930,17 @@ window.executeSwap = async function(contractAddress, offerDenom, offerAmount, mi
 
     if (offerAmount <= 0) throw new Error("Invalid amount");
 
+    const tokenDetail = window.tokenDetails?.get(contractAddress);
+    const decimals = tokenDetail?.decimals || 6;
+
     const msgs = [];
-    const microOffer = String(Math.floor(offerAmount * 1000000));
-    const microMinReceive = String(Math.floor(minReceive * 1000000));
+    const microOffer = offerDenom === window.APP_CONFIG.DENOM ?
+        String(Math.floor(offerAmount * 1e6)) :
+        String(Math.floor(offerAmount * Math.pow(10, decimals)));
+
+    const microMinReceive = offerDenom === window.APP_CONFIG.DENOM ?
+        String(Math.floor(minReceive * Math.pow(10, decimals))) :
+        String(Math.floor(minReceive * 1e6));
 
     // 1. Mandatory Allowance if offering PRC20
     if (offerDenom !== window.APP_CONFIG.DENOM) {
@@ -980,10 +1007,13 @@ window.executeSwap = async function(contractAddress, offerDenom, offerAmount, mi
 window.executeAddLPTransaction = async function(contractAddress, paxiAmount, tokenAmount) {
     if (!window.wallet) return;
 
+    const tokenDetail = window.tokenDetails?.get(contractAddress);
+    const decimals = tokenDetail?.decimals || 6;
+
     const msgs = [];
     const microPaxiAmount = Math.floor(paxiAmount * 1000000);
     const microPaxi = `${microPaxiAmount}${window.APP_CONFIG.DENOM}`;
-    const microToken = String(Math.floor(tokenAmount * 1000000));
+    const microToken = String(Math.floor(tokenAmount * Math.pow(10, decimals)));
 
     // 1. Increase Allowance for Token
     const allowanceMsg = {
@@ -1039,7 +1069,10 @@ window.executeRemoveLPTransaction = async function(contractAddress, lpAmount) {
 window.executeSendTransaction = async function(tokenAddress, recipient, amount) {
     if (!window.wallet) return;
     
-    const microAmount = String(Math.floor(amount * 1000000));
+    const tokenDetail = window.tokenDetails?.get(tokenAddress);
+    const decimals = tokenAddress === 'PAXI' ? 6 : (tokenDetail?.decimals || 6);
+
+    const microAmount = String(Math.floor(amount * Math.pow(10, decimals)));
     const msgs = [];
 
     if (tokenAddress === 'PAXI') {

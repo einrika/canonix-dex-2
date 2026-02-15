@@ -43,8 +43,9 @@ window.updateLPFromSlider = function(type, percent) {
 window.updateLPFromInput = function(type) {
     if (!window.poolData) return;
     
+    const tokenDecimals = window.currentTokenInfo?.decimals || 6;
     const reservePaxi = parseFloat(window.poolData.reserve_paxi) / 1000000;
-    const reserveToken = parseFloat(window.poolData.reserve_prc20) / 1000000;
+    const reserveToken = parseFloat(window.poolData.reserve_prc20) / Math.pow(10, tokenDecimals);
     
     if (reservePaxi === 0 || reserveToken === 0) return;
     
@@ -112,8 +113,10 @@ window.calculateEstimatedLP = function() {
     if (!estimatedEl) return;
     
     if (paxiAmount > 0 && tokenAmount > 0 && window.poolData) {
+        const tokenDecimals = window.currentTokenInfo?.decimals || 6;
         // Approximate LP calculation: sqrt(x * y)
-        const lpTokens = Math.sqrt(paxiAmount * tokenAmount * 1e12) / 1e6;
+        // x = paxiAmount * 10^6, y = tokenAmount * 10^decimals
+        const lpTokens = Math.sqrt(paxiAmount * 1e6 * tokenAmount * Math.pow(10, tokenDecimals)) / 1e6;
         window.setText(estimatedEl, `Est. LP: ${lpTokens.toFixed(6)}`);
     } else {
         window.setText(estimatedEl, '');
@@ -225,27 +228,10 @@ window.updateBurnBalanceDisplay = async function() {
     const balEl = document.getElementById('burnBalance');
     if (!balEl) return;
 
+    const tokenDecimals = window.currentTokenInfo?.decimals || 6;
     const balance = await window.getPRC20Balance(window.wallet.address, window.currentPRC20);
-    const amount = balance / 1000000;
+    const amount = balance / Math.pow(10, tokenDecimals);
     window.myTokenBalances.set(window.currentPRC20, amount);
     window.setText(balEl, `Bal: ${amount.toFixed(2)}`);
 };
 
-// ===== SWITCH LP TAB =====
-window.switchLPTab = function(tab) {
-    if (tab === 'add') {
-        window.removeClass('contentAddLP', 'hidden');
-        window.addClass('contentRemoveLP', 'hidden');
-        document.getElementById('tabAddLP').className = 
-            'flex-1 py-3 text-sm font-semibold border-b-2 border-purple-500 text-white';
-        document.getElementById('tabRemoveLP').className = 
-            'flex-1 py-3 text-sm font-semibold text-gray-400 hover:text-white';
-    } else {
-        window.addClass('contentAddLP', 'hidden');
-        window.removeClass('contentRemoveLP', 'hidden');
-        document.getElementById('tabAddLP').className = 
-            'flex-1 py-3 text-sm font-semibold text-gray-400 hover:text-white';
-        document.getElementById('tabRemoveLP').className = 
-            'flex-1 py-3 text-sm font-semibold border-b-2 border-purple-500 text-white';
-    }
-};

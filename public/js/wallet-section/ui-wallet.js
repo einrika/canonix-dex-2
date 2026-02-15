@@ -186,8 +186,7 @@ window.WalletUI = {
 
         container.innerHTML = '<div class="text-center py-4"><div class="spinner mx-auto scale-50"></div></div>';
 
-        await window.AssetManager.updateLPAssets(activeWallet.address);
-        const lps = window.AssetManager.lpAssets;
+        const lps = await window.fetchUserLPPositions(activeWallet.address);
 
         if (lps.length === 0) {
             container.innerHTML = '<div class="text-center py-8 text-[10px] text-gray-600 uppercase font-black tracking-widest">No LP Positions found</div>';
@@ -1026,7 +1025,7 @@ window.WalletUI = {
         // Always fetch fresh PAXI balance (no cache to avoid stale data)
         let paxiBalance = 0;
         try {
-            const response = await window.fetchDirect(`${window.APP_CONFIG.LCD}/cosmos/bank/v1beta1/balances/${activeWallet.address}`);
+            const response = await window.smartFetch(`${window.APP_CONFIG.LCD}/cosmos/bank/v1beta1/balances/${activeWallet.address}`);
             const balances = response.balances || [];
             const paxiBal = balances.find(b => b.denom === 'upaxi');
             paxiBalance = paxiBal ? parseInt(paxiBal.amount) / 1000000 : 0;
@@ -1679,12 +1678,12 @@ window.updateBalances = async function() {
     
     try {
         // Always fetch fresh PAXI balance (no cache)
-        const response = await window.fetchDirect(
+        const response = await window.smartFetch(
             `${window.APP_CONFIG.LCD}/cosmos/bank/v1beta1/balances/${walletAddress}`
         );
         const balances = response.balances || [];
         const paxiBalance = balances.find(b => b.denom === 'upaxi');
-        const paxiAmount = paxiBalance ? parseInt(paxiBalance.amount) / 1000000 : 0;
+        const paxiAmount = paxiBalance ? parseInt(paxiBalance.amount) / 1e6 : 0;
 
         const payBalEl = document.getElementById('payBalance');
         const recvBalEl = document.getElementById('recvBalance');
@@ -1692,8 +1691,9 @@ window.updateBalances = async function() {
         let prc20Amount = 0;
         if (window.currentPRC20) {
             // Fetch fresh dari blockchain
+            const tokenDecimals = window.currentTokenInfo?.decimals || 6;
             const bal = await window.getPRC20Balance(walletAddress, window.currentPRC20);
-            prc20Amount = bal / 1000000;
+            prc20Amount = bal / Math.pow(10, tokenDecimals);
         }
 
         if (window.tradeType === 'buy') {
@@ -1735,7 +1735,7 @@ window.updateLPBalances = async function() {
     
     try {
         // Fetch fresh PAXI balance dari blockchain
-        const response = await window.fetchDirect(
+        const response = await window.smartFetch(
             `${window.APP_CONFIG.LCD}/cosmos/bank/v1beta1/balances/${window.wallet.address}`
         );
         const balances = response.balances || [];
@@ -1743,12 +1743,13 @@ window.updateLPBalances = async function() {
         window.lpBalances.paxi = paxiBalance ? parseInt(paxiBalance.amount) / 1000000 : 0;
         
         // Fetch fresh PRC20 balance dari blockchain
+        const tokenDecimals = window.currentTokenInfo?.decimals || 6;
         const tokenBalance = await window.getPRC20Balance(window.wallet.address, window.currentPRC20);
-        window.lpBalances.token = tokenBalance / 1000000;
+        window.lpBalances.token = tokenBalance / Math.pow(10, tokenDecimals);
         
         // Fetch LP position dari blockchain
         try {
-            const posData = await window.fetchDirect(
+            const posData = await window.smartFetch(
                 `${window.APP_CONFIG.LCD}/paxi/swap/position/${window.wallet.address}/${window.currentPRC20}`
             );
             window.lpBalances.lpTokens = posData.position?.lp_amount ? parseFloat(posData.position.lp_amount) / 1000000 : 0;
@@ -1833,16 +1834,17 @@ window.updateSendBalance = async function() {
         window.setText(balanceDisplay, 'Loading...');
         
         if (selectedValue === 'PAXI') {
-            const balData = await window.fetchDirect(
+            const balData = await window.smartFetch(
                 `${window.APP_CONFIG.LCD}/cosmos/bank/v1beta1/balances/${window.wallet.address}`
             );
             const paxiBalance = balData.balances.find(b => b.denom === 'upaxi');
-            const amount = paxiBalance ? parseInt(paxiBalance.amount) / 1000000 : 0;
+            const amount = paxiBalance ? parseInt(paxiBalance.amount) / 1e6 : 0;
             window.setText(balanceDisplay, `(Balance: ${amount.toFixed(6)} PAXI)`);
         } else {
-            const balance = await window.getPRC20Balance(window.wallet.address, selectedValue);
-            const amount = balance / 1000000;
             const tokenInfo = window.tokenDetails.get(selectedValue);
+            const decimals = tokenInfo?.decimals || 6;
+            const balance = await window.getPRC20Balance(window.wallet.address, selectedValue);
+            const amount = balance / Math.pow(10, decimals);
             const symbol = tokenInfo?.symbol || 'TOKEN';
             window.setText(balanceDisplay, `(Balance: ${amount.toFixed(6)} ${symbol})`);
         }

@@ -13,79 +13,6 @@ window.hideConnectModal = function() {
     window.removeClass('connectModal', 'flex');
 };
 
-// ===== WALLET ACTIONS MODAL =====
-window.showWalletActions = function() {
-    if (!window.wallet) {
-        window.showNotif(window.NOTIF_CONFIG.CONNECT_WALLET_FIRST, 'error');
-        return;
-    }
-    
-    window.removeClass('walletActionsModal', 'hidden');
-    window.setText('receiveAddress', window.wallet.address);
-    document.getElementById('receiveQR').src = 
-        `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${window.wallet.address}`;
-    
-    window.populateSendTokens();
-};
-
-window.hideWalletActions = function() {
-    window.addClass('walletActionsModal', 'hidden');
-};
-
-window.switchWalletTab = function(tab) {
-    if (tab === 'send') {
-        window.removeClass('contentSend', 'hidden');
-        window.addClass('contentReceive', 'hidden');
-        document.getElementById('tabSend').className = 
-            'flex-1 py-2 text-sm font-semibold border-b-2 border-purple-500 text-white';
-        document.getElementById('tabReceive').className = 
-            'flex-1 py-2 text-sm font-semibold text-gray-400 hover:text-white';
-    } else {
-        window.addClass('contentSend', 'hidden');
-        window.removeClass('contentReceive', 'hidden');
-        document.getElementById('tabSend').className = 
-            'flex-1 py-2 text-sm font-semibold text-gray-400 hover:text-white';
-        document.getElementById('tabReceive').className = 
-            'flex-1 py-2 text-sm font-semibold border-b-2 border-purple-500 text-white';
-    }
-};
-
-// ===== LP MODAL =====
-window.showLPModal = function() {
-    if (!window.wallet) {
-        window.showNotif(window.NOTIF_CONFIG.CONNECT_WALLET_FIRST, 'error');
-        return;
-    }
-    if (!window.currentPRC20) {
-        window.showNotif(window.NOTIF_CONFIG.SELECT_TOKEN_FIRST, 'error');
-        return;
-    }
-    
-    window.removeClass('lpModal', 'hidden');
-    
-    const symbol = window.currentTokenInfo?.symbol || 'TOKEN';
-    const tokenSymbolEl = document.getElementById('lpTokenSymbol');
-    if (tokenSymbolEl) {
-        window.setText(tokenSymbolEl, symbol + ' Amount');
-    }
-    
-    window.updateLPBalances();
-    
-    if (document.getElementById('lpPaxiAmount')) window.setValue('lpPaxiAmount', '');
-    if (document.getElementById('lpTokenAmount')) window.setValue('lpTokenAmount', '');
-    if (document.getElementById('lpRemoveAmount')) window.setValue('lpRemoveAmount', '');
-    if (document.getElementById('lpPaxiSlider')) window.setValue('lpPaxiSlider', 0);
-    if (document.getElementById('lpTokenSlider')) window.setValue('lpTokenSlider', 0);
-    if (document.getElementById('lpRemoveSlider')) window.setValue('lpRemoveSlider', 0);
-    
-    window.updateSliderGradient('lpPaxiSlider', 0);
-    window.updateSliderGradient('lpTokenSlider', 0);
-    window.updateSliderGradient('lpRemoveSlider', 0);
-};
-
-window.hideLPModal = function() {
-    window.addClass('lpModal', 'hidden');
-};
 
 // ===== DONATION MODAL =====
 window.showDonationModal = function() {
@@ -202,25 +129,6 @@ window.renderTokenList = function(filter = '') {
     }).join('');
 };
 
-// ===== TX HISTORY MODAL =====
-window.showingTxHistory = false;
-
-window.toggleTxHistory = function() {
-    window.showingTxHistory = !window.showingTxHistory;
-    const modal = document.getElementById('txHistoryModal');
-    
-    if (window.showingTxHistory) {
-        if (!window.wallet) {
-            window.showNotif(window.NOTIF_CONFIG.CONNECT_WALLET_FIRST, 'error');
-            window.showingTxHistory = false;
-            return;
-        }
-        modal.classList.remove('hidden');
-        window.renderTxHistory();
-    } else {
-        modal.classList.add('hidden');
-    }
-};
 
 window.txHistory = [];
 
@@ -430,17 +338,18 @@ window.updateTradeBalances = async function() {
     if (!window.wallet) return;
 
     // Fetch fresh PAXI balance dari blockchain
-    const balData = await window.fetchDirect(
+    const balData = await window.smartFetch(
         `${window.APP_CONFIG.LCD}/cosmos/bank/v1beta1/balances/${window.wallet.address}`
     );
     const paxiBalance = balData.balances.find(b => b.denom === 'upaxi');
-    const paxiAmount = paxiBalance ? parseInt(paxiBalance.amount) / 1000000 : 0;
+    const paxiAmount = paxiBalance ? parseInt(paxiBalance.amount) / 1e6 : 0;
 
     // Fetch fresh PRC20 balance dari blockchain
     let prc20Amount = 0;
     if (window.currentPRC20) {
+        const tokenDecimals = window.currentTokenInfo?.decimals || 6;
         const bal = await window.getPRC20Balance(window.wallet.address, window.currentPRC20);
-        prc20Amount = bal / 1000000;
+        prc20Amount = bal / Math.pow(10, tokenDecimals);
     }
 
     if (window.tradeType === 'buy') {
@@ -535,11 +444,7 @@ window.renderSidebarContent = function(tab) {
 
     switch(tab) {
         case 'wallet':
-            if (window.WalletUI) {
-                window.WalletUI.renderDashboard();
-            } else {
-                window.renderWalletDetails();
-            }
+            if (window.WalletUI) window.WalletUI.renderDashboard();
             break;
         case 'swap':
             window.renderSwapTerminal();

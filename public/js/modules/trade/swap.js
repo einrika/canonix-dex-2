@@ -152,9 +152,10 @@ window.updateTradeOutput = async function() {
         return;
     }
 
+    const tokenDecimals = window.currentTokenInfo?.decimals || 6;
     const reservePaxi = parseFloat(window.poolData.reserve_paxi);
     const reservePrc20 = parseFloat(window.poolData.reserve_prc20);
-    let outputAmount, priceImpact;
+    let outputAmount, priceImpact, targetDecimals;
 
     if (window.tradeType === 'buy') {
         // Buy: PAXI -> TOKEN
@@ -163,27 +164,29 @@ window.updateTradeOutput = async function() {
         const amountAfterFee = fromAmountBase - fee;
         outputAmount = (amountAfterFee * reservePrc20) / (reservePaxi + amountAfterFee);
         priceImpact = ((amountAfterFee / reservePaxi) * 100);
+        targetDecimals = tokenDecimals;
     } else {
         // Sell: TOKEN -> PAXI
-        const fromAmountBase = payAmount * 1e6;
+        const fromAmountBase = payAmount * Math.pow(10, tokenDecimals);
         const fee = fromAmountBase * 0.003;
         const amountAfterFee = fromAmountBase - fee;
         outputAmount = (amountAfterFee * reservePaxi) / (reservePrc20 + amountAfterFee);
         priceImpact = ((amountAfterFee / reservePrc20) * 100);
+        targetDecimals = 6;
     }
 
-    const outputDisplay = (outputAmount / 1e6).toFixed(6);
+    const outputDisplay = (outputAmount / Math.pow(10, targetDecimals)).toFixed(6);
     window.setValue('tradeRecvAmount', outputDisplay);
 
     // Min received with slippage
-    const minRecv = (outputAmount * (1 - (window.slippage / 100)) / 1e6).toFixed(6);
+    const minRecv = (outputAmount * (1 - (window.slippage / 100)) / Math.pow(10, targetDecimals)).toFixed(6);
     const recvSymbol = document.getElementById('recvTokenSymbol').textContent;
     window.setText('minRecv', `${minRecv} ${recvSymbol}`);
 
     // Rate
     const rate = window.tradeType === 'buy' ?
-        (outputAmount / (payAmount * 1e6)).toFixed(4) :
-        ((payAmount * 1e6) / outputAmount).toFixed(4);
+        (outputAmount / (payAmount * 1e6) * Math.pow(10, 6 - tokenDecimals)).toFixed(4) :
+        (payAmount / (outputAmount / 1e6)).toFixed(4);
     window.setText('tradeRate', `1 PAXI = ${rate} ${window.currentTokenInfo?.symbol || 'TOKEN'}`);
 
     // Gas Estimation (Debounced)
@@ -378,9 +381,10 @@ window.calculateSwapOutput = function() {
         return;
     }
     
+    const tokenDecimals = window.currentTokenInfo?.decimals || 6;
     const reservePaxi = parseFloat(window.poolData.reserve_paxi);
     const reservePrc20 = parseFloat(window.poolData.reserve_prc20);
-    let outputAmount, priceImpact;
+    let outputAmount, priceImpact, targetDecimals;
     
     if (window.swapDirection === 'buy') {
         // Swap PAXI -> PRC20
@@ -389,16 +393,18 @@ window.calculateSwapOutput = function() {
         const amountAfterFee = fromAmountBase - fee;
         outputAmount = (amountAfterFee * reservePrc20) / (reservePaxi + amountAfterFee);
         priceImpact = ((amountAfterFee / reservePaxi) * 100);
+        targetDecimals = tokenDecimals;
     } else {
         // Swap PRC20 -> PAXI
-        const fromAmountBase = fromAmount * 1e6;
+        const fromAmountBase = fromAmount * Math.pow(10, tokenDecimals);
         const fee = fromAmountBase * 0.003;
         const amountAfterFee = fromAmountBase - fee;
         outputAmount = (amountAfterFee * reservePaxi) / (reservePrc20 + amountAfterFee);
         priceImpact = ((amountAfterFee / reservePrc20) * 100);
+        targetDecimals = 6;
     }
     
-    const outputDisplay = (outputAmount / 1e6).toFixed(6);
+    const outputDisplay = (outputAmount / Math.pow(10, targetDecimals)).toFixed(6);
     window.setValue('swapToAmount', outputDisplay);
     
     const impactEl = document.getElementById('priceImpact');
@@ -408,7 +414,7 @@ window.calculateSwapOutput = function() {
                          'font-semibold text-up';
     
     // Min received with 1% slippage
-    const minReceived = (outputAmount * 0.99 / 1e6).toFixed(6);
+    const minReceived = (outputAmount * 0.99 / Math.pow(10, targetDecimals)).toFixed(6);
     const toSymbol = window.escapeHtml(document.getElementById('toTokenSymbol').textContent);
     window.setText('minReceived', minReceived + ' ' + toSymbol);
 };

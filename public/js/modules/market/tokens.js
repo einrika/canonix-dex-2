@@ -244,7 +244,8 @@ window.updateMyTokens = async function() {
         const tokens = await window.loadWalletTokens(window.wallet.address);
         window.myTokenBalances.clear();
         tokens.forEach(t => {
-            window.myTokenBalances.set(t.address, parseFloat(t.balance) / 1000000);
+            const decimals = t.detail?.decimals || 6;
+            window.myTokenBalances.set(t.address, parseFloat(t.balance) / Math.pow(10, decimals));
         });
     } catch (e) {
         console.error('Failed to update my tokens:', e);

@@ -21,7 +21,7 @@ window.getPRC20Balance = async function(address, contract) {
     const query = { balance: { address } };
     const queryB64 = btoa(JSON.stringify(query));
     
-    const data = await window.fetchDirect(
+    const data = await window.smartFetch(
       `${window.APP_CONFIG.LCD}/cosmwasm/wasm/v1/contract/${contract}/smart/${queryB64}`
     );
     
@@ -36,7 +36,7 @@ window.fetchPoolData = async function() {
   if (!window.currentPRC20) return;
   
   try {
-    const data = await window.fetchDirect(`${window.APP_CONFIG.LCD}/paxi/swap/pool/${window.currentPRC20}`);
+    const data = await window.smartFetch(`${window.APP_CONFIG.LCD}/paxi/swap/pool/${window.currentPRC20}`);
     const pool = data.pool || data;
 
     // Standard Paxi Network Price Calculation
@@ -132,4 +132,80 @@ window.loadWalletTokens = async function(address) {
     console.error('Failed to load wallet tokens:', e);
   }
   return [];
+};
+// ===== FETCH USER LP POSITIONS DIRECT =====
+window.fetchUserLPPositions = async function(userAddress) {
+  if (!userAddress) return [];
+
+  try {
+    // 1. Fetch all pools from LCD
+    const data = await window.smartFetch(`${window.APP_CONFIG.LCD}/paxi/swap/pools`);
+    const pools = data.pools || [];
+
+    // 2. Fetch user's token list to narrow down potential positions
+    const accountsData = await window.smartFetch(
+      `${window.APP_CONFIG.EXPLORER_API}/prc20/my_contract_accounts?address=${userAddress}&page=0`
+    );
+    const userTokens = (accountsData.accounts || []).map(a => a.contract.contract_address);
+
+    // 3. Filter pools where user might have assets (priority + held tokens)
+    const priorityTokens = window.APP_CONFIG.PRIORITY_TOKENS || [];
+    const relevantPools = pools.filter(p =>
+      priorityTokens.includes(p.prc20) || userTokens.includes(p.prc20)
+    );
+
+    // 4. Batch fetch positions from LCD
+    const positions = [];
+    const batchSize = 5;
+    for (let i = 0; i < relevantPools.length; i += batchSize) {
+      const batch = relevantPools.slice(i, i + batchSize);
+      const results = await Promise.all(batch.map(async pool => {
+        try {
+          const pos = await window.smartFetch(
+            `${window.APP_CONFIG.LCD}/paxi/swap/position/${userAddress}/${pool.prc20}`
+          );
+          if (pos.position && parseFloat(pos.position.lp_amount) > 0) {
+            return { pool, position: pos.position };
+          }
+        } catch (e) { }
+        return null;
+      }));
+      positions.push(...results.filter(r => r !== null));
+    }
+
+    // 5. Map to UI format
+    return positions.map(item => {
+      const pool = item.pool;
+      const pos = item.position;
+      const tokenDetail = window.tokenDetails?.get(pool.prc20);
+      const decimals = tokenDetail?.decimals || 6;
+
+      const lpAmount = parseFloat(pos.lp_amount) / 1000000;
+      const totalLP = parseFloat(pool.total_lp_amount || pool.total_lp || 1) / 1000000;
+      const share = lpAmount / totalLP;
+
+      const paxiReserve = parseFloat(pool.reserve_paxi) / 1000000;
+      const prc20Reserve = parseFloat(pool.reserve_prc20) / Math.pow(10, decimals);
+
+      const myPaxi = paxiReserve * share;
+      const myPrc20 = prc20Reserve * share;
+
+      const paxiPrice = window.paxiPrice || 0.05;
+      const prc20PriceUSD = (tokenDetail && tokenDetail.priceUSD) ? tokenDetail.priceUSD : (paxiPrice * (paxiReserve / prc20Reserve));
+      const totalUSD = (myPaxi * paxiPrice) + (myPrc20 * (prc20PriceUSD || 0));
+
+      return {
+        prc20: pool.prc20,
+        symbol: tokenDetail?.symbol || 'TOKEN',
+        lpBalance: lpAmount.toFixed(6),
+        share: (share * 100).toFixed(4),
+        paxiReserve: myPaxi.toFixed(2),
+        prc20Reserve: myPrc20.toFixed(2),
+        totalUSD: totalUSD.toFixed(2)
+      };
+    });
+  } catch (e) {
+    console.error('Failed to fetch LP positions:', e);
+    return [];
+  }
 };
