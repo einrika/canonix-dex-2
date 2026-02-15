@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <!-- ===== PRIMARY META TAGS ===== -->
+    <title>Canonix – Paxi Pumpfun Trade</title>
+    <meta name="title" content="Canonix – Paxi Pumpfun Trade">
+    <meta name="description" content="Trade PRC20 tokens instantly on Paxinet blockchain with AI market analysis, real-time charts, and lightning-fast swaps. Zero KYC, full decentralization.">
+    <meta name="keywords" content="Canonix, PRC20 tokens, Paxinet, decentralized exchange, crypto trading, AI analysis, DeFi, blockchain, instant swap, liquidity pool, meme coins">
+    <meta name="author" content="Canonix Team">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="language" content="English">
+
+    <!-- ===== STYLE SETTINGS ===== -->
+    <style>
+        :root {
+            --color-bg: #08060f;
+            --color-surface: #0f0a1e;
+            --color-card: #16102b;
+            --color-border: #251b45;
+            --color-accent: #00f2fe;
+            --color-accent-alt: #ff0080;
+            --gradient-primary: linear-gradient(135deg, #00f2fe 0%, #764ba2 50%, #ff0080 100%);
+            --gradient-action: linear-gradient(135deg, #00f2fe 0%, #764ba2 100%);
+        }
+
+        .loading-screen {
+            position: fixed;
+            inset: 0;
+            background: var(--color-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(102, 126, 234, 0.3);
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+
+    <!-- ===== EXTERNAL CSS ===== -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bg: '#08060f',
+                        surface: '#0f0a1e',
+                        card: '#16102b',
+                        border: '#251b45',
+                        up: '#00f2fe',
+                        down: '#ff0080',
+                    },
+                    boxShadow: {
+                        'glow-up': '0 0 15px rgba(0, 242, 254, 0.3)',
+                        'glow-down': '0 0 15px rgba(255, 0, 128, 0.3)',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://mainnet-api.paxinet.io/resources/js/paxi-cosmjs.umd.js"></script>
+    <script type="module">
+        import { DirectSecp256k1HdWallet, DirectSecp256k1Wallet } from 'https://esm.sh/@cosmjs/proto-signing@0.32.3';
+        window.DirectSecp256k1HdWallet = DirectSecp256k1HdWallet;
+        window.DirectSecp256k1Wallet = DirectSecp256k1Wallet;
+        // Also inject into PaxiCosmJS if it exists
+        if (window.PaxiCosmJS) {
+            window.PaxiCosmJS.DirectSecp256k1HdWallet = DirectSecp256k1HdWallet;
+            window.PaxiCosmJS.DirectSecp256k1Wallet = DirectSecp256k1Wallet;
+        }
+    </script>
+    <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
+
+    <style>
+        body { background: var(--color-bg); color: #e8eaed; overflow: hidden; }
+        * { font-family: 'Inter', sans-serif; }
+
+        /* Ticker Animation */
+        @keyframes ticker {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        .ticker-wrap { width: 100%; overflow: hidden; background: rgba(0, 242, 254, 0.05); border-bottom: 1px solid rgba(0, 242, 254, 0.1); height: 28px; display: flex; align-items: center; }
+        .ticker-content { display: inline-block; white-space: nowrap; padding-right: 100%; animation: ticker 40s linear infinite; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--color-accent); }
+        .ticker-item { display: inline-block; padding: 0 30px; }
+        .ticker-item span { color: #fff; margin-left: 8px; }
+
+        .btn-trade {
+            background: var(--gradient-primary);
+            transition: 0.3s;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+        .btn-trade:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 4px 15px rgba(118, 75, 162, 0.4); }
+
+        .token-sidebar-item { transition: 0.2s; border-bottom: 1px solid var(--color-border); cursor: pointer; }
+        .token-sidebar-item:hover { background: rgba(0, 242, 254, 0.05); }
+        .token-sidebar-item.active { background: rgba(0, 242, 254, 0.1); border-left: 4px solid var(--color-accent); }
+
+        .glass-panel { background: rgba(22, 16, 43, 0.6); backdrop-filter: blur(10px); border: 1px solid var(--color-border); }
+
+        .chart-container { position: relative; height: 440px; width: 100%; }
+
+        /* Hide scrollbars but allow scrolling */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .loading-dots span { animation: blink 1.4s infinite both; }
+        .loading-dots span:nth-child(2) { animation-delay: .2s; }
+        .loading-dots span:nth-child(3) { animation-delay: .4s; }
+        @keyframes blink { 0% { opacity: .2; } 20% { opacity: 1; } 100% { opacity: .2; } }
+
+        @media (max-width: 1024px) {
+            .desktop-only { display: none !important; }
+            body { overflow-y: auto; }
+
+            /* Mobile UI Scaling Fixes */
+            .chart-container { height: 300px; }
+            header { height: 50px; padding: 0 8px; }
+            header h1 { font-size: 14px; }
+            .btn-trade { padding: 6px 12px; font-size: 11px; }
+
+            #tokenSidebar { width: 280px; top: 50px; bottom: 80px; height: auto; }
+            #unifiedSidebar { width: 100%; top: 50px; bottom: 80px; height: auto; }
+
+            main { padding-bottom: 80px; } /* Space for mobile nav */
+            .sticky.top-0 { top: 0; }
+
+            .stat-card { padding: 12px; }
+            .stat-card h4 { font-size: 10px; }
+
+            /* Smaller text on mobile to avoid overlap */
+            .text-xl { font-size: 1.1rem; }
+            .text-lg { font-size: 1rem; }
+
+            #aiBtn { padding: 4px 8px; font-size: 10px; }
+            #notificationContainer { top: 60px; right: 8px; left: 8px; }
+        }
+
+        .tab-btn { border-bottom: 2px solid transparent; transition: 0.2s; }
+        .tab-btn.active { border-color: var(--color-accent); color: var(--color-accent); }
+
+        .stat-card { background: rgba(15, 10, 30, 0.5); border: 1px solid var(--color-border); padding: 16px; border-radius: 16px; transition: 0.3s; }
+        .stat-card:hover { border-color: rgba(0, 242, 254, 0.3); background: rgba(15, 10, 30, 0.7); }
+
+        .sort-btn { padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; color: #6b7280; border: 1px solid transparent; transition: 0.2s; white-space: nowrap; }
+        .sort-btn.active { background: rgba(0, 242, 254, 0.1); color: var(--color-accent); border-color: var(--color-accent); }
+        .sort-btn:hover:not(.active) { color: #fff; }
+
+        /* Floating swap for mobile */
+        #mobileSwapBtn { display: none; }
+        @media (max-width: 1024px) { #mobileSwapBtn { display: flex; } }
+    </style>
+</head>
+
+<body class="h-screen flex flex-col">
+    <!-- Ticker News -->
+    <div class="ticker-wrap z-[60]">
+        <div id="tickerContent" class="ticker-content">
+            <div class="ticker-item">LOADING MARKET DATA...</div>
+        </div>
+    </div>
+
+    <!-- ===== HEADER ===== -->
+    <header class="h-14 border-b border-border hidden lg:flex items-center justify-between px-4 bg-surface z-50 shadow-lg shadow-black/20">
+        <div class="flex items-center gap-3">
+            <button onclick="toggleMobileSidebar()" class="lg:hidden text-gray-400 p-2"><i class="fas fa-bars"></i></button>
+            <a href="index.html" class="flex items-center group">
+                <h1 class="text-lg font-black bg-gradient-to-r from-up via-purple-400 to-down bg-clip-text text-transparent flex items-center group-hover:opacity-80 transition-opacity">
+                    <i class="fas fa-exchange-alt mr-2"></i>Canonix
+                    <span class="ml-2 text-[10px] px-1.5 py-0.5 rounded bg-green-500/20 text-green-400 border border-green-500/30 font-bold uppercase tracking-tighter hidden sm:inline">Mainnet</span>
+                </h1>
+            </a>
+        </div>
+
+        <div class="flex items-center gap-2 sm:gap-4">
+            <!-- Functional Icons -->
+            <div class="hidden md:flex items-center gap-1 border-r border-border pr-2 sm:pr-4 mr-2">
+                <button onclick="showWalletActions()" title="Wallet Actions" class="w-8 h-8 flex items-center justify-center rounded-lg text-blue-400 hover:bg-card hover:text-white transition-all"><i class="fas fa-paper-plane text-xs"></i></button>
+                <button onclick="showLPModal()" title="Liquidity" class="w-8 h-8 flex items-center justify-center rounded-lg text-green-400 hover:bg-card hover:text-white transition-all"><i class="fas fa-layer-group text-xs"></i></button>
+                <button onclick="showDonationModal()" title="Donate" class="w-8 h-8 flex items-center justify-center rounded-lg text-down hover:bg-card hover:text-white transition-all"><i class="fas fa-heart text-xs"></i></button>
+                <a href="faq.html" title="FAQ" class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-card hover:text-white transition-all"><i class="fas fa-question text-xs"></i></a>
+                <button onclick="toggleConsoleModal()" title="System Console" class="w-8 h-8 flex items-center justify-center rounded-lg text-up hover:bg-card hover:text-white transition-all"><i class="fas fa-terminal text-xs"></i></button>
+                <button onclick="window.WalletUI.showSettingsPanel()" title="Settings" class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-card hover:text-white transition-all"><i class="fas fa-cog text-xs"></i></button>
+            </div>
+
+            <div id="walletInfo" class="hidden sm:flex items-center gap-3 px-3 py-1.5 bg-card rounded-lg border border-border">
+                <div class="text-right">
+                    <div id="walletAddrShort" class="text-[10px] font-mono text-gray-400">...</div>
+                    <div id="walletBalance" class="text-xs font-bold text-up">0.00 PAXI</div>
+                </div>
+                <i class="fas fa-wallet text-gray-500"></i>
+            </div>
+            <button id="connectBtn" onclick="showConnectModal()" class="btn-trade px-3 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-bold shadow-lg flex items-center gap-2">
+                <i class="fas fa-plug"></i><span class="hidden xs:inline">Connect</span>
+            </button>
+        </div>
+    </header>
+
+    <div class="flex-1 flex overflow-hidden">
+        <!-- ===== LEFT SIDEBAR: TOKEN LIST ===== -->
+        <aside id="tokenSidebar" class="w-[320px] border-r border-border bg-surface flex flex-col lg:static fixed left-0 top-14 bottom-0 z-40 transition-transform duration-300 -translate-x-full lg:translate-x-0">
+            <div class="p-3">
+                <div class="relative mb-3">
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                    <input type="text" id="tokenSidebarSearch" placeholder="Search Symbol or Address..."
+                        class="w-full pl-9 pr-4 py-2 bg-bg border border-border rounded-xl text-sm focus:ring-1 focus:ring-up transition-all outline-none"
+                        oninput="filterTokenSidebar()">
+                </div>
+                <div class="flex gap-1 overflow-x-auto no-scrollbar pb-1">
+            <button onclick="setSort('hot', event)" class="sort-btn active">HOT</button>
+            <button onclick="setSort('new', event)" class="sort-btn">NEW</button>
+            <button onclick="setSort('gainer', event)" class="sort-btn">GAINER</button>
+            <button onclick="setSort('marketcap', event)" class="sort-btn">MCAP</button>
+            <button onclick="setSort('nonpump', event)" class="sort-btn">NON-PUMP</button>
+            <button onclick="setSort('verified', event)" class="sort-btn">VERIFIED</button>
+                </div>
+            </div>
+            <div id="tokenSidebarList" class="flex-1 overflow-y-auto no-scrollbar border-t border-border">
+                <div class="p-8 text-center text-gray-500">
+                    <div class="spinner mx-auto mb-4 scale-75"></div>
+                    <p class="text-xs">Initializing tokens...</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ===== MAIN CONTENT ===== -->
+        <main class="flex-1 overflow-y-auto bg-bg relative">
+            <!-- Chart -->
+            <div class="p-4">
+                <div class="glass-panel rounded-2xl overflow-hidden">
+                    <div class="p-3 border-b border-border flex items-center justify-between">
+                        <div class="flex items-center gap-3 overflow-x-auto no-scrollbar">
+                            <div class="flex gap-1 pr-3 border-r border-border">
+                                <button onclick="setTimeframe('realtime', this)" class="tf-btn px-2.5 py-1 text-[9px] font-black rounded bg-card hover:bg-border transition-all uppercase">REALTIME</button>
+                                <button onclick="setTimeframe('1h', this)" class="tf-btn px-2.5 py-1 text-[9px] font-black rounded bg-card hover:bg-border transition-all uppercase">1H</button>
+                                <button onclick="setTimeframe('24h', this)" class="tf-btn px-2.5 py-1 text-[9px] font-black rounded bg-up text-bg transition-all uppercase">24H</button>
+                                <button onclick="setTimeframe('7d', this)" class="tf-btn px-2.5 py-1 text-[9px] font-black rounded bg-card hover:bg-border transition-all uppercase">7D</button>
+                                <button onclick="setTimeframe('30d', this)" class="tf-btn px-2.5 py-1 text-[9px] font-black rounded bg-card hover:bg-border transition-all uppercase">30D</button>
+                            </div>
+                            <div class="flex gap-1">
+                                <button id="toggleMA7" onclick="toggleMA(7)" class="px-2.5 py-1 text-[9px] font-black rounded bg-up/20 text-up border border-up/30 transition-all uppercase">MA7</button>
+                                <button id="toggleMA25" onclick="toggleMA(25)" class="px-2.5 py-1 text-[9px] font-black rounded bg-up/20 text-up border border-up/30 transition-all uppercase">MA25</button>
+                            </div>
+                        </div>
+                        <div id="chartStatus" class="text-[10px] font-mono text-gray-500">Live Updates</div>
+                    </div>
+                    <div class="chart-container" id="chartWrapper">
+                        <div id="priceChart" class="w-full h-full"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Token Header / Stats (Simplified & Non-sticky) -->
+            <div class="bg-card/30 border-y border-border px-4 py-2 mb-5 z-30">
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <div id="tokenLogo" class="w-8 h-8 rounded-full bg-card flex items-center justify-center text-xs font-bold border border-border overflow-hidden">
+                            <i class="fas fa-coins text-gray-600"></i>
+                        </div>
+                        <div>
+                            <h2 id="selectedPair" class="text-sm font-black tracking-tighter">SELECT TOKEN</h2>
+                            <div class="flex items-center gap-2">
+                                <span id="currentPrice" class="text-[11px] text-up font-mono font-bold">0.00000000 PAXI</span>
+                                <span id="priceChange" class="text-[10px] font-bold text-up">-0.00%</span>
+                            </div>
+                        </div>
+                        <button id="aiBtn" onclick="showAIAnalysis()" class="px-2 py-1 bg-purple-600/20 text-purple-400 rounded border border-purple-500/20 hover:bg-purple-600/30 transition-all text-[9px] font-bold uppercase">
+                            <i class="fas fa-brain"></i> AI
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-3 sm:grid-cols-6 gap-x-6 sm:gap-x-10 gap-y-1">
+                        <div>
+                            <div class="text-[8px] text-gray-500 uppercase font-black">MCap</div>
+                            <div id="mcapVal" class="text-[10px] font-mono font-bold">0 PAXI</div>
+                        </div>
+                        <div>
+                            <div class="text-[8px] text-gray-500 uppercase font-black">Liq</div>
+                            <div id="liqVal" class="text-[10px] font-mono font-bold text-blue-400">0 PAXI</div>
+                        </div>
+                        <div>
+                            <div class="text-[8px] text-gray-500 uppercase font-black">24h High</div>
+                            <div id="high24h" class="text-[10px] font-mono font-bold text-up">0.00</div>
+                        </div>
+                        <div>
+                            <div class="text-[8px] text-gray-500 uppercase font-black">24h Low</div>
+                            <div id="low24h" class="text-[10px] font-mono font-bold text-down">0.00</div>
+                        </div>
+                        <div>
+                            <div class="text-[8px] text-gray-500 uppercase font-black">24h Vol</div>
+                            <div id="volVal" class="text-[10px] font-mono font-bold text-purple-400">0 PAXI</div>
+                        </div>
+                        <div>
+                            <div class="text-[8px] text-gray-500 uppercase font-black">Signal</div>
+                            <div id="tradeSignal" class="text-[10px] font-black uppercase tracking-tighter text-gray-400">Neutral</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Stats Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 px-4 pb-4">
+                <div class="stat-card">
+                    <h4 class="text-xs font-bold text-gray-500 mb-3 flex items-center gap-2">
+                        <i class="fas fa-chart-pie text-up"></i> TRADING STATS
+                    </h4>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-gray-400">Total Buys</span>
+                            <span id="buyCount" class="text-sm font-bold text-up">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-gray-400">Total Sells</span>
+                            <span id="sellCount" class="text-sm font-bold text-down">0</span>
+                        </div>
+                        <div class="h-1.5 w-full bg-down/20 rounded-full overflow-hidden flex">
+                            <div id="buyRatioBar" class="h-full bg-up" style="width: 50%"></div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-gray-400">Transactions</span>
+                            <span id="txCount" class="text-sm font-bold">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <h4 class="text-xs font-bold text-gray-500 mb-3 flex items-center gap-2">
+                        <i class="fas fa-droplet text-blue-400"></i> LIQUIDITY POOL
+                    </h4>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-gray-400">Native PAXI</span>
+                            <span id="resPaxi" class="text-sm font-bold">0.00</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span id="resTokenLabel" class="text-xs text-gray-400">PRC20 Tokens</span>
+                            <span id="resToken" class="text-sm font-bold">0.00</span>
+                        </div>
+                        <div class="flex justify-between items-center border-t border-border pt-2">
+                            <span class="text-xs text-gray-400">Holders</span>
+                            <span id="holderCount" class="text-sm font-bold">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <h4 class="text-xs font-bold text-gray-500 mb-3 flex items-center gap-2">
+                        <i class="fas fa-info-circle text-purple-400"></i> TOKEN INFO
+                    </h4>
+                    <div class="space-y-2">
+                        <div class="flex flex-col gap-1">
+                            <span class="text-[10px] text-gray-500">Contract Address</span>
+                            <div class="flex items-center gap-2 bg-bg p-1.5 rounded border border-border">
+                                <code id="caAddr" class="text-[10px] font-mono text-gray-300 truncate">paxi...</code>
+                                <button onclick="copyAddrText()" class="text-xs hover:text-up"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                        <div class="flex justify-between text-xs mt-2">
+                            <span class="text-gray-400">Minter</span>
+                            <span id="minterStatus" class="text-green-400 font-bold">Disabled</span>
+                        </div>
+                        <div id="socialLinks" class="flex gap-2 mt-1">
+                            <!-- Populated JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs Section (Holders) -->
+            <div class="px-4 pb-20">
+                <div class="border-b border-border flex gap-6 mb-4">
+                    <button onclick="window.loadTokenHolders()" id="tab-holders" class="tab-btn active pb-2 text-sm font-bold uppercase tracking-widest">Top Holders</button>
+                </div>
+                <div id="tabContent" class="glass-panel rounded-xl min-h-[300px]">
+                    <!-- Table goes here -->
+                </div>
+            </div>
+        </main>
+
+        <!-- ===== RIGHT SIDEBAR: UNIFIED WALLET & TRADE TERMINAL ===== -->
+        <aside id="unifiedSidebar" class="w-[380px] border-l border-border bg-surface flex flex-col lg:static fixed right-0 top-14 bottom-0 z-40 transition-transform duration-300 translate-x-full lg:translate-x-0 overflow-hidden">
+            <!-- Sidebar Navigation Tabs - Only Swap & Wallet -->
+            <div class="flex bg-bg/50 p-1 border-b border-border">
+                <button onclick="setSidebarTab('swap')" id="side-tab-swap" class="flex-1 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-up border-b-2 border-up transition-all">Swap</button>
+                <button onclick="setSidebarTab('wallet')" id="side-tab-wallet" class="flex-1 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-white transition-all">Wallet</button>
+                <!-- Hidden tabs - accessible via actions -->
+                <button onclick="setSidebarTab('history')" id="side-tab-history" class="hidden"></button>
+                <button onclick="setSidebarTab('lp')" id="side-tab-lp" class="hidden"></button>
+                <button onclick="setSidebarTab('send')" id="side-tab-send" class="hidden"></button>
+                <button onclick="setSidebarTab('burn')" id="side-tab-burn" class="hidden"></button>
+                <button onclick="setSidebarTab('donate')" id="side-tab-donate" class="hidden"></button>
+            </div>
+
+            <div id="sidebarContent" class="flex-1 overflow-y-auto p-4 no-scrollbar">
+                <!-- Content will be injected by JS based on tab -->
+                <div class="text-center py-20 text-gray-600">
+                    <i class="fas fa-wallet text-4xl mb-4 opacity-20"></i>
+                    <p class="text-xs font-bold uppercase tracking-widest">Connect wallet to unlock terminal</p>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Mobile Navigation Bar -->
+    <div class="lg:hidden fixed bottom-0 left-0 right-0 h-20 bg-surface/90 backdrop-blur-lg border-t border-border z-[100] flex flex-col justify-between px-4 py-2">
+        <div class="flex items-center justify-between w-full mb-1 px-2">
+            <div class="flex items-center gap-2">
+                <h1 class="text-sm font-black bg-gradient-to-r from-up via-purple-400 to-down bg-clip-text text-transparent italic">CANONIX</h1>
+                <div id="mobileWalletInfo" class="hidden flex items-center gap-2 px-2 py-0.5 bg-card rounded-full border border-border">
+                    <div id="mobileWalletBalance" class="text-[9px] font-bold text-up">0.00 PAXI</div>
+                </div>
+            </div>
+            <button id="mobileConnectBtn" onclick="showConnectModal()" class="px-3 py-1 bg-up text-bg rounded-full text-[10px] font-black uppercase tracking-tighter">Connect</button>
+        </div>
+        <div class="flex items-center justify-between w-full px-2">
+            <button onclick="toggleMobileSidebar()" class="flex flex-col items-center gap-1 text-gray-400">
+                <i class="fas fa-th-list text-lg"></i>
+                <span class="text-[8px] font-black uppercase tracking-tighter">Market</span>
+            </button>
+            <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="flex flex-col items-center gap-1 text-up">
+                <i class="fas fa-chart-line text-lg"></i>
+                <span class="text-[8px] font-black uppercase tracking-tighter">Chart</span>
+            </button>
+            <button onclick="toggleUnifiedSidebar()" class="w-12 h-12 -mt-10 rounded-full btn-trade shadow-glow-up flex items-center justify-center text-white border-4 border-bg relative">
+                <i class="fas fa-wallet text-xl"></i>
+            </button>
+            <button onclick="showAIAnalysis()" class="flex flex-col items-center gap-1 text-purple-400">
+                <i class="fas fa-brain text-lg"></i>
+                <span class="text-[8px] font-black uppercase tracking-tighter">AI Analysis</span>
+            </button>
+            <a href="faq.html" class="flex flex-col items-center gap-1 text-gray-400">
+                <i class="fas fa-question-circle text-lg"></i>
+                <span class="text-[8px] font-black uppercase tracking-tighter">FAQ</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- ===== MODALS & BOTTOM SHEETS ===== -->
+
+    <!-- Token Selection Modal -->
+    <div id="tokenModal" class="hidden fixed inset-0 bg-black bg-opacity-90 z-[333] flex items-center justify-center p-4">
+        <div class="bg-card rounded-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col">
+            <div class="p-4 border-b border-border flex justify-between items-center">
+                <h3 class="text-lg font-bold">Select Token</h3>
+                <button onclick="hideTokenSelector()" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="p-4 border-b border-border">
+                <input type="text" id="tokenSearch" placeholder="Search by name, symbol, or address..." class="w-full px-4 py-3 rounded-lg text-sm bg-bg border border-border outline-none focus:border-up" oninput="filterTokens()">
+            </div>
+            <div id="tokenList" class="flex-1 overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <!-- Connect Wallet Modal -->
+    <div id="connectModal" class="hidden fixed inset-0 bg-black/80 z-[100] items-center justify-center p-4">
+        <div class="bg-surface border border-border w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl">
+            <div class="p-4 border-b border-border flex justify-between items-center">
+                <h3 class="font-bold">Connect Wallet</h3>
+                <button onclick="hideConnectModal()" class="text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-4 space-y-3">
+                <button onclick="connectWallet('internal')" class="w-full flex items-center justify-between p-4 bg-card rounded-xl hover:border-up border border-border transition-all">
+                    <div class="flex items-center gap-3 text-left">
+                        <div class="w-10 h-10 rounded-full bg-up/10 flex items-center justify-center text-up"><i class="fas fa-shield-alt"></i></div>
+                        <div><div class="font-bold">Internal Wallet</div><div class="text-[10px] text-gray-500">Secure, encrypted, no extensions</div></div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-600"></i>
+                </button>
+                <button onclick="connectWallet('paxihub')" class="w-full flex items-center justify-between p-4 bg-card rounded-xl hover:border-purple-400 border border-border transition-all">
+                    <div class="flex items-center gap-3 text-left">
+                        <div class="w-10 h-10 rounded-full bg-purple-400/10 flex items-center justify-center text-purple-400"><i class="fas fa-wallet"></i></div>
+                        <div><div class="font-bold">PaxiHub</div><div class="text-[10px] text-gray-500">Official Mobile App & Extension</div></div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-600"></i>
+                </button>
+                <button onclick="connectWallet('keplr')" class="w-full flex items-center justify-between p-4 bg-card rounded-xl hover:border-orange-400 border border-border transition-all">
+                    <div class="flex items-center gap-3 text-left">
+                        <div class="w-10 h-10 rounded-full bg-orange-400/10 flex items-center justify-center text-orange-400"><i class="fas fa-rocket"></i></div>
+                        <div><div class="font-bold">Keplr</div><div class="text-[10px] text-gray-500">Standard Cosmos extension</div></div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-600"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PIN Bottom Sheet -->
+    <div id="pinSheet" class="hidden fixed inset-0 bg-black/90 z-[10000] items-end justify-center">
+        <div class="bg-surface w-full max-w-lg rounded-t-3xl border-t border-border animate-slide-up flex flex-col p-6 pb-12">
+            <div class="w-12 h-1.5 bg-border rounded-full mx-auto mb-6"></div>
+            <h3 id="pinTitle" class="text-xl font-black text-center mb-2 uppercase italic tracking-widest">Unlock Wallet</h3>
+            <p id="pinMsg" class="text-xs text-gray-500 text-center mb-8">Enter your 6-digit access PIN</p>
+
+            <!-- Pin Dots -->
+            <div id="pinDots" class="flex justify-center gap-4 mb-10">
+                <div class="pin-dot w-4 h-4 rounded-full border-2 border-border"></div>
+                <div class="pin-dot w-4 h-4 rounded-full border-2 border-border"></div>
+                <div class="pin-dot w-4 h-4 rounded-full border-2 border-border"></div>
+                <div class="pin-dot w-4 h-4 rounded-full border-2 border-border"></div>
+                <div class="pin-dot w-4 h-4 rounded-full border-2 border-border"></div>
+                <div class="pin-dot w-4 h-4 rounded-full border-2 border-border"></div>
+            </div>
+
+            <!-- Keypad -->
+            <div class="grid grid-cols-3 gap-4 max-w-xs mx-auto">
+                <button onclick="pressPin(1)" class="w-16 h-16 rounded-full bg-card flex items-center justify-center text-xl font-bold hover:bg-border active:bg-up active:text-bg transition-colors">1</button>
+                <button onclick="pressPin(2)" class="w-16 h-16 rounded-full bg-card flex items-center justify-center text-xl font-bold hover:bg-border active:bg-up active:text-bg transition-colors">2</button>
+                <button onclick="pressPin(3)" class="w-16 h-16 rounded-full bg-card flex items-center justify-center text-xl font-bold hover:bg-border active:bg-up active:text-bg transition-colors">3</button>
+                <button onclick="pressPin(4)" class="w-16 h-16 rounded-full bg-card flex items-center justify-center text-xl font-bold hover:bg-border active:bg-up active:text-bg transition-colors">4</button>
+                <button onclick="pressPin(5)" class="w-16 h-16 rounded-full bg-card flex items-center justify-center text-xl font-bold hover:bg-border active:bg-up active:text-bg transition-colors">5</button>
+                <button onclick="pressPin(6)" class="w-16 h-16 rounded-full bg-card flex items-center justify-center text-xl font-bold hover:bg-border active:bg-up active:text-bg transition-colors">6</button>
+                <button onclick="pressPin(7)" class="w-16 h-16 rounded-full bg-card flex items-center justify-center text-xl font-bold hover:bg-border active:bg-up active:text-bg transition-colors">7</button>
+                <button onclick="pressPin(8)" class="w-16 h-16 rounded-full bg-card flex items-center justify-center text-xl font-bold hover:bg-border active:bg-up active:text-bg transition-colors">8</button>
+                <button onclick="pressPin(9)" class="w-16 h-16 rounded-full bg-card flex items-center justify-center text-xl font-bold hover:bg-border active:bg-up active:text-bg transition-colors">9</button>
+                <button onclick="authenticateBiometric()" class="w-16 h-16 flex items-center justify-center text-up hover:scale-110 transition-transform"><i class="fas fa-fingerprint text-3xl"></i></button>
+                <button onclick="pressPin(0)" class="w-16 h-16 rounded-full bg-card flex items-center justify-center text-xl font-bold hover:bg-border active:bg-up active:text-bg transition-colors">0</button>
+                <button onclick="backspacePin()" class="w-16 h-16 flex items-center justify-center text-gray-500 hover:text-white"><i class="fas fa-backspace text-xl"></i></button>
+            </div>
+            <button onclick="hidePinSheet()" class="mt-8 text-xs text-gray-600 uppercase font-bold tracking-widest hover:text-gray-400">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Internal Wallet Sheet -->
+    <div id="internalWalletSheet" class="fixed inset-0 bg-black/80 z-[190] flex items-end justify-center transition-transform duration-300 translate-y-full">
+        <div class="bg-surface w-full max-w-lg rounded-t-[2.5rem] border-t border-border p-8 flex flex-col items-center">
+            <div class="w-12 h-1.5 bg-border rounded-full mb-8"></div>
+            <div id="walletSheetContent" class="w-full">
+                <!-- Dynamically populated -->
+            </div>
+            <button onclick="hideInternalWalletSheet()" class="mt-6 text-[10px] text-gray-600 uppercase font-black tracking-widest hover:text-gray-400">Close</button>
+        </div>
+    </div>
+
+    <!-- Slippage Settings Modal -->
+    <div id="slippageModal" class="hidden fixed inset-0 bg-black/80 z-[400] flex items-center justify-center p-4">
+        <div class="bg-card border border-border w-full max-w-[280px] rounded-2xl overflow-hidden shadow-2xl animate-fade-in">
+            <div class="p-4 border-b border-border flex justify-between items-center bg-surface">
+                <h3 class="font-bold text-sm">Slippage Settings</h3>
+                <button onclick="window.addClass('slippageModal', 'hidden')" class="text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-4 space-y-4">
+                <div class="flex gap-2">
+                    <button onclick="setSlippage(0.1)" class="flex-1 py-1.5 bg-bg border border-border rounded-lg text-xs hover:border-up transition-all">0.1%</button>
+                    <button onclick="setSlippage(0.5)" class="flex-1 py-1.5 bg-bg border border-border rounded-lg text-xs hover:border-up transition-all">0.5%</button>
+                    <button onclick="setSlippage(1.0)" class="flex-1 py-1.5 bg-bg border border-border rounded-lg text-xs hover:border-up transition-all">1.0%</button>
+                </div>
+                <div class="relative">
+                    <input type="number" id="customSlippage" placeholder="Custom %" class="w-full pl-3 pr-8 py-2 bg-bg border border-border rounded-lg text-sm outline-none focus:border-up" oninput="updateCustomSlippage()">
+                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs">%</span>
+                </div>
+                <button onclick="window.addClass('slippageModal', 'hidden')" class="w-full py-2 bg-up text-bg font-bold rounded-lg text-xs">SAVE SETTINGS</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer" class="fixed top-20 right-4 z-[9999] flex flex-col gap-2"></div>
+    <div id="sidebarOverlay" class="hidden fixed inset-0 bg-black/50 z-30 lg:hidden" onclick="window.closeAllSidebars()"></div>
+    <div id="sheetOverlay" class="hidden fixed inset-0 bg-black/60 z-[180] backdrop-blur-sm transition-opacity duration-300" onclick="hideInternalWalletSheet()"></div>
+
+    <!-- Transaction History Modal -->
+    <div id="txHistoryModal" class="hidden fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
+        <div class="bg-card rounded-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col border border-border">
+            <div class="p-4 border-b border-border flex justify-between items-center bg-surface">
+                <h3 class="text-lg font-bold"><i class="fas fa-history mr-2 text-up"></i>Transaction History</h3>
+                <button onclick="toggleTxHistory()" class="text-gray-400 hover:text-white"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            <div id="txHistoryList" class="flex-1 overflow-y-auto bg-bg"></div>
+            <div class="p-3 border-t border-border text-center bg-surface">
+                <a href="https://winscan.winsnip.xyz" target="_blank" class="text-xs text-gray-500 hover:text-up"><i class="fas fa-external-link-alt mr-1"></i>View on Winscan</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Liquidity Modal -->
+    <div id="lpModal" class="fixed inset-0 bg-black bg-opacity-80 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-card rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto border border-border">
+            <div class="p-4 border-b border-border flex justify-between items-center sticky top-0 bg-card z-10">
+                <h3 class="text-lg font-bold flex items-center gap-2"><i class="fas fa-water"></i> Liquidity Pool</h3>
+                <button onclick="hideLPModal()" class="text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="flex border-b border-border">
+                <button id="tabAddLP" onclick="switchLPTab('add')" class="flex-1 py-3 text-sm font-semibold border-b-2 border-up text-white">Add Liquidity</button>
+                <button id="tabRemoveLP" onclick="switchLPTab('remove')" class="flex-1 py-3 text-sm font-semibold text-gray-400 hover:text-white">Remove Liquidity</button>
+            </div>
+            <div id="contentAddLP" class="p-6">
+                <div class="space-y-4">
+                    <div class="bg-bg rounded-lg p-3 text-xs border border-border">
+                        <div class="flex justify-between"><span class="text-gray-400">Pool Ratio:</span><span id="poolRatioDisplay">-</span></div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between mb-2"><label class="text-sm text-gray-400">PAXI Amount</label><span class="text-xs text-gray-500">Bal: <span id="lpPaxiBalance">0</span></span></div>
+                        <input type="number" id="lpPaxiAmount" class="w-full bg-bg border border-border rounded-lg px-4 py-3 text-white text-lg outline-none focus:border-up" placeholder="0.00" oninput="updateLPFromInput('paxi')">
+                    </div>
+                    <div class="text-center text-up">+</div>
+                    <div>
+                        <div class="flex justify-between mb-2"><label class="text-sm text-gray-400" id="lpTokenSymbol">Token Amount</label><span class="text-xs text-gray-500">Bal: <span id="lpTokenBalance">0</span></span></div>
+                        <input type="number" id="lpTokenAmount" class="w-full bg-bg border border-border rounded-lg px-4 py-3 text-white text-lg outline-none focus:border-up" placeholder="0.00" oninput="updateLPFromInput('token')">
+                    </div>
+                    <button onclick="executeAddLP()" class="w-full py-3 btn-trade rounded-lg font-bold">ADD LIQUIDITY</button>
+                </div>
+            </div>
+            <div id="contentRemoveLP" class="p-6 hidden">
+                <div class="space-y-4">
+                    <div class="bg-bg rounded-lg p-3 text-xs border border-border">
+                        <div class="flex justify-between"><span class="text-gray-400">Your LP Tokens:</span><span id="yourLPTokens">0</span></div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between mb-2"><label class="text-sm text-gray-400">Amount to Remove</label><span class="text-xs text-gray-500">Max: <span id="maxLPTokens">0</span></span></div>
+                        <input type="number" id="lpRemoveAmount" class="w-full bg-bg border border-border rounded-lg px-4 py-3 text-white text-lg outline-none focus:border-down" placeholder="0.00">
+                    </div>
+                    <button onclick="executeRemoveLP()" class="w-full py-3 bg-down hover:opacity-90 rounded-lg font-bold">REMOVE LIQUIDITY</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Analysis Modal -->
+    <div id="aiModal" class="hidden fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
+        <div class="bg-card rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto border border-border">
+            <div class="p-4 border-b border-border flex justify-between items-center sticky top-0 bg-card z-10">
+                <h3 class="text-lg font-bold text-up italic"><i class="fas fa-brain mr-2"></i>AI Market Analysis</h3>
+                <button onclick="hideAI()" class="text-gray-400 hover:text-white"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            <div id="aiContent" class="p-4 text-sm text-gray-300"></div>
+        </div>
+    </div>
+
+    <!-- Donation Modal -->
+    <div id="donationModal" class="hidden fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
+        <div class="bg-card rounded-2xl w-full max-w-sm border border-border overflow-hidden">
+            <div class="p-4 border-b border-border flex justify-between items-center">
+                <h3 class="font-bold"><i class="fas fa-heart text-down mr-2"></i>Support Dev</h3>
+                <button onclick="hideDonationModal()" class="text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-6 text-center">
+                <p class="text-xs text-gray-400 mb-4">Support development by donating PAXI.</p>
+                <div class="bg-bg p-3 rounded-lg mb-4 border border-border">
+                    <input type="number" id="donationAmount" placeholder="Amount (PAXI)" class="w-full bg-transparent text-center text-xl font-bold outline-none" value="10">
+                </div>
+                <button onclick="executeDonation()" class="w-full py-3 btn-trade rounded-lg font-bold shadow-lg">DONATE NOW</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div id="errorModal" class="hidden fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
+        <div class="bg-card rounded-2xl w-full max-w-sm border border-down/30">
+            <div class="p-4 border-b border-border flex justify-between items-center bg-down/10">
+                <h3 class="font-bold text-down"><i class="fas fa-exclamation-circle mr-2"></i>Error</h3>
+                <button onclick="document.getElementById('errorModal').classList.add('hidden')" class="text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-4">
+                <p id="errorText" class="text-xs font-mono bg-bg p-3 rounded border border-border text-gray-400 break-words mb-4"></p>
+                <button onclick="document.getElementById('errorModal').classList.add('hidden')" class="w-full py-2 bg-down text-white rounded font-bold text-xs">CLOSE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wallet Actions Modal (Send/Receive) -->
+    <div id="walletActionsModal" class="hidden fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
+        <div class="bg-card rounded-2xl w-full max-w-md border border-border overflow-hidden">
+            <div class="p-4 border-b border-border flex justify-between items-center">
+                <h3 class="font-bold">Wallet Actions</h3>
+                <button onclick="hideWalletActions()" class="text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-4">
+                <div class="flex border-b border-border mb-4">
+                    <button onclick="switchWalletTab('send')" id="tabSend" class="flex-1 py-2 text-xs font-bold border-b-2 border-up text-white">SEND</button>
+                    <button onclick="switchWalletTab('receive')" id="tabReceive" class="flex-1 py-2 text-xs font-bold text-gray-500">RECEIVE</button>
+                </div>
+                <div id="contentSend" class="space-y-3">
+                    <div>
+                        <label class="text-[10px] text-gray-500 uppercase font-bold mb-1 block">Recipient</label>
+                        <input type="text" id="sendRecipient" placeholder="paxi1..." class="w-full p-2 bg-bg border border-border rounded text-sm outline-none focus:border-up">
+                    </div>
+                    <div class="flex gap-2">
+                        <div class="flex-1">
+                            <label class="text-[10px] text-gray-500 uppercase font-bold mb-1 block">Amount</label>
+                            <input type="number" id="sendAmount" placeholder="0.0" class="w-full p-2 bg-bg border border-border rounded text-sm outline-none focus:border-up">
+                        </div>
+                        <div class="w-24">
+                            <label class="text-[10px] text-gray-500 uppercase font-bold mb-1 block">Token</label>
+                            <select id="sendTokenSelect" class="w-full p-2 bg-bg border border-border rounded text-sm outline-none"></select>
+                        </div>
+                    </div>
+                    <button onclick="executeSend()" class="w-full py-3 btn-trade rounded-lg font-bold text-sm mt-2">SEND ASSETS</button>
+                </div>
+                <div id="contentReceive" class="hidden text-center space-y-4">
+                    <div class="bg-white p-2 rounded-lg inline-block"><img src="" id="receiveQR" class="w-40 h-40"></div>
+                    <div class="bg-bg p-2 rounded border border-border flex items-center gap-2">
+                        <code id="receiveAddress" class="text-[10px] font-mono flex-1 break-all text-gray-300">Not connected</code>
+                        <button onclick="copyAddress(event, document.getElementById('receiveAddress').innerText)" class="text-up"><i class="fas fa-copy"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Console Log Modal -->
+    <div id="consoleModal" class="hidden fixed inset-0 bg-black/95 z-[9999] flex items-center justify-center p-4">
+        <div class="bg-card border border-border w-full max-w-4xl h-[80vh] rounded-2xl flex flex-col overflow-hidden shadow-2xl">
+            <div class="p-3 border-b border-border flex justify-between items-center bg-surface">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-terminal text-green-400"></i>
+                    <span class="font-bold text-sm uppercase tracking-wider">System Console</span>
+                </div>
+                <button onclick="toggleConsoleModal()" class="text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="consoleContent" class="flex-1 overflow-y-auto p-4 font-mono text-[10px] text-gray-400 bg-black"></div>
+            <div class="p-2 border-t border-border bg-surface flex justify-between items-center text-[10px] text-gray-500">
+                <span id="consoleStats">0 Logs</span>
+                <button onclick="clearConsoleLogs()" class="hover:text-white">CLEAR LOGS</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODULAR JAVASCRIPT FILES ===== -->
+    <script src="./js/core/config.js"></script>
+    <script src="./js/core/utils.js"></script>
+    <script src="./js/core/api.js"></script>
+    <!-- New Wallet Section -->
+    <script src="./js/wallet-section/wallet-core.js"></script>
+    <script src="./js/wallet-section/ui-wallet.js"></script>
+    <!-- Other Modules -->
+    <script src="./js/modules/market/tokens.js"></script>
+    <script src="./js/modules/analytics/chart.js"></script>
+    <script src="./js/modules/trade/swap.js"></script>
+    <script src="./js/modules/trade/liquidity.js"></script>
+    <script src="./js/ui/common.js"></script>
+    <script src="./js/modules/market/holders.js"></script>
+    <script src="./js/modules/market/ai.js"></script>
+    <script src="./js/ui/rendering.js"></script>
+    <script src="./js/ui/console.js"></script>
+    <!-- Transaction logic merged into wallet-core, keeping UI interaction -->
+    <!-- <script src="./js/modules/trade/transaction.js"></script> Removed -->
+    <script src="./js/app.js"></script>
+
+    <script>
+        // REDESIGN SPECIFIC UI FUNCTIONS
+        window.toggleMobileSidebar = function() {
+            const sidebar = document.getElementById('tokenSidebar');
+            const isOpen = !sidebar.classList.contains('-translate-x-full');
+
+            if (isOpen) {
+                sidebar.classList.add('-translate-x-full');
+                window.hideSidebarOverlay();
+            } else {
+                document.getElementById('unifiedSidebar').classList.add('translate-x-full');
+                sidebar.classList.remove('-translate-x-full');
+                window.showSidebarOverlay();
+                // Load tokens when sidebar opened on mobile
+                if (window.loadTokensOptimized) window.loadTokensOptimized();
+            }
+        };
+
+        window.toggleUnifiedSidebar = function() {
+            const sidebar = document.getElementById('unifiedSidebar');
+            const isOpen = !sidebar.classList.contains('translate-x-full');
+
+            if (isOpen) {
+                sidebar.classList.add('translate-x-full');
+                window.hideSidebarOverlay();
+            } else {
+                document.getElementById('tokenSidebar').classList.add('-translate-x-full');
+                sidebar.classList.remove('translate-x-full');
+                window.showSidebarOverlay();
+            }
+        };
+
+        window.closeAllSidebars = function() {
+            document.getElementById('tokenSidebar').classList.add('-translate-x-full');
+            document.getElementById('unifiedSidebar').classList.add('translate-x-full');
+            window.hideSidebarOverlay();
+        };
+
+        window.showSidebarOverlay = function() {
+            if (window.innerWidth < 1024) {
+                const overlay = document.getElementById('sidebarOverlay');
+                if (overlay) overlay.classList.remove('hidden');
+            }
+        };
+
+        window.hideSidebarOverlay = function() {
+            const overlay = document.getElementById('sidebarOverlay');
+            if (overlay) overlay.classList.add('hidden');
+        };
+
+        // Ensure UI stays responsive
+        let lastWidth = window.innerWidth;
+        window.addEventListener('resize', () => {
+            const newWidth = window.innerWidth;
+            // Only trigger if we cross the desktop breakpoint
+            if ((lastWidth < 1024 && newWidth >= 1024) || (lastWidth >= 1024 && newWidth < 1024)) {
+                if (newWidth >= 1024) {
+                    document.getElementById('tokenSidebar').classList.remove('-translate-x-full');
+                    window.hideSidebarOverlay();
+                } else {
+                    document.getElementById('tokenSidebar').classList.add('-translate-x-full');
+                    window.hideSidebarOverlay();
+                }
+            }
+            lastWidth = newWidth;
+        });
+    </script>
+</body>
+</html>

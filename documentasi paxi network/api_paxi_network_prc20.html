@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Paxi Network PRC20 API</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-glass: rgba(20, 20, 30, 0.7);
+            --bg-glass-light: rgba(30, 30, 45, 0.5);
+            --accent: #a78bfa;
+            --accent-glow: rgba(167, 139, 250, 0.3);
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border: rgba(167, 139, 250, 0.2);
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            background-image: 
+                radial-gradient(at 20% 30%, rgba(139, 92, 246, 0.15) 0px, transparent 50%),
+                radial-gradient(at 80% 70%, rgba(167, 139, 250, 0.15) 0px, transparent 50%),
+                radial-gradient(at 50% 50%, rgba(99, 102, 241, 0.1) 0px, transparent 50%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .glass {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+        }
+
+        .glass-light {
+            background: var(--bg-glass-light);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 12px 0;
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #a78bfa, #c4b5fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo small {
+            display: block;
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-weight: 400;
+            -webkit-text-fill-color: var(--text-secondary);
+        }
+
+        .hero {
+            padding: 40px 0 30px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 32px;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #f1f5f9, #c4b5fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            color: var(--text-secondary);
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: var(--bg-glass-light);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 12px;
+            color: var(--accent);
+        }
+
+        .api-section {
+            padding: 20px 0;
+        }
+
+        .section-title {
+            font-size: 20px;
+            margin-bottom: 16px;
+            text-align: center;
+            color: var(--text-primary);
+        }
+
+        .api-grid {
+            display: grid;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .api-card {
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .api-card:active {
+            transform: scale(0.98);
+        }
+
+        .api-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), #c4b5fd);
+        }
+
+        .api-header {
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .api-info h3 {
+            font-size: 16px;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+        }
+
+        .api-endpoint {
+            font-size: 13px;
+            color: var(--accent);
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+        }
+
+        .method-badge {
+            padding: 4px 10px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            color: white;
+            white-space: nowrap;
+        }
+
+        .api-body {
+            padding: 0 16px 16px;
+        }
+
+        .params {
+            margin-bottom: 12px;
+        }
+
+        .params-title {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        .param-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            margin-bottom: 4px;
+            background: var(--bg-glass-light);
+            border-radius: 8px;
+            font-size: 12px;
+        }
+
+        .param-name {
+            color: var(--accent);
+            font-family: 'Courier New', monospace;
+        }
+
+        .param-type {
+            color: var(--text-secondary);
+        }
+
+        .demo-section {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        .input-group {
+            margin-bottom: 10px;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--text-secondary);
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--bg-glass-light);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 13px;
+            font-family: 'Courier New', monospace;
+            transition: border-color 0.2s;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px var(--accent-glow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .btn-secondary {
+            background: var(--bg-glass-light);
+            border: 1px solid var(--border);
+            box-shadow: none;
+        }
+
+        .response-container {
+            margin-top: 12px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .response-container.active {
+            max-height: 600px;
+        }
+
+        .response-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            background: var(--bg-glass-light);
+            border-radius: 8px 8px 0 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .response-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .copy-btn {
+            padding: 4px 12px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--accent);
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .copy-btn:active {
+            transform: scale(0.95);
+        }
+
+        .copy-btn.copied {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+
+        .response-body {
+            padding: 12px;
+            background: rgba(10, 10, 20, 0.5);
+            border-radius: 0 0 8px 8px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            line-height: 1.6;
+            color: #94a3b8;
+        }
+
+        .json-key { color: #f472b6; }
+        .json-string { color: #34d399; }
+        .json-number { color: #fbbf24; }
+        .json-boolean { color: #60a5fa; }
+        .json-null { color: #94a3b8; }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 30px;
+            height: 30px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .toast {
+            position: fixed;
+            top: 70px;
+            right: 16px;
+            padding: 12px 16px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 13px;
+            z-index: 200;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            max-width: calc(100% - 32px);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toast.active {
+            transform: translateX(0);
+        }
+
+        .toast.success { border-left: 3px solid var(--success); }
+        .toast.error { border-left: 3px solid var(--error); }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 300;
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 40px;
+        }
+
+        .modal-content {
+            width: 100%;
+            max-width: 1100px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            animation: modalSlideUp 0.3s ease;
+        }
+
+        @keyframes modalSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(167, 139, 250, 0.1), rgba(139, 92, 246, 0.1));
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .close-btn {
+            width: 36px;
+            height: 36px;
+            background: var(--bg-glass-light);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .close-btn:hover {
+            background: var(--error);
+            border-color: var(--error);
+        }
+
+        .modal-body {
+            padding: 20px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        /* Production-Grade Preview Styles */
+        .preview-container {
+            background: var(--bg-glass-light);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .preview-stats {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .stat-icon {
+            color: var(--accent);
+            font-size: 16px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Contract Card Preview */
+        .contract-card {
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .contract-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px var(--accent-glow);
+        }
+
+        .contract-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .contract-logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .contract-logo img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .contract-info {
+            flex: 1;
+        }
+
+        .contract-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .contract-symbol {
+            font-size: 14px;
+            color: var(--accent);
+            font-family: 'Courier New', monospace;
+        }
+
+        .verified-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            background: linear-gradient(135deg, var(--success), #059669);
+            border-radius: 12px;
+            font-size: 11px;
+            color: white;
+            font-weight: 600;
+        }
+
+        .contract-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .stat-box {
+            background: var(--bg-glass-light);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .stat-box-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-box-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .contract-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .contract-links {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .link-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: var(--bg-glass-light);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 12px;
+            color: var(--accent);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .link-btn:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        /* Table Styles */
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--bg-glass);
+            font-weight: 600;
+            color: var(--text-secondary);
+            position: sticky;
+            top: 0;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+        }
+
+        tbody tr {
+            background: var(--bg-glass-light);
+            transition: background 0.2s;
+        }
+
+        tbody tr:hover {
+            background: var(--bg-glass);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .address-cell {
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            color: var(--accent);
+        }
+
+        .number-cell {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .status-frozen {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--error);
+        }
+
+        footer {
+            padding: 30px 0;
+            text-align: center;
+            margin-top: 40px;
+            border-top: 1px solid var(--border);
+        }
+
+        footer p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+
+        @media (min-width: 768px) {
+            .api-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .hero h1 {
+                font-size: 48px;
+            }
+            
+            .hero p {
+                font-size: 18px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .container {
+                padding: 0 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="toast" class="toast"></div>
+
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-cube"></i> Paxi Network
+                    <small>PRC20 API Documentation</small>
+                </div>
+                <span class="badge"><i class="fas fa-code"></i> v1.0</span>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1><i class="fas fa-rocket"></i> PRC20 API</h1>
+            <p>Powerful API untuk akses data token PRC20</p>
+        </div>
+    </section>
+
+    <section class="api-section">
+        <div class="container">
+            <h2 class="section-title"><i class="fas fa-server"></i> API Endpoints</h2>
+            <div class="api-grid" id="api-grid"></div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p><i class="fas fa-copyright"></i> 2026 Paxi Network. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <div id="preview-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fas fa-eye"></i> Preview</h3>
+                <button class="close-btn" onclick="closeModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" id="modal-body"></div>
+        </div>
+    </div>
+
+    <script>
+        const CONFIG = {
+            proxies: [
+                'https://api.codetabs.com/v1/proxy?quest=',
+                'https://corsproxy.io/?',
+                'https://api.allorigins.win/raw?url=',
+                'https://cors-anywhere.herokuapp.com/',
+                'https://thingproxy.freeboard.io/fetch/'
+            ],
+            currentProxyIndex: 0,
+            messages: {
+                copySuccess: 'Berhasil disalin!',
+                copyError: 'Gagal menyalin',
+                apiSuccess: 'Request berhasil!',
+                apiError: 'Gagal request API',
+                networkError: 'Koneksi terputus',
+                fillFields: 'Isi field yang diperlukan',
+                noData: 'Jalankan request terlebih dahulu'
+            },
+            apis: [
+                {
+                    id: 'my_contract_accounts',
+                    name: 'My Contract Accounts',
+                    endpoint: '/api/prc20/my_contract_accounts',
+                    method: 'GET',
+                    description: 'GET daftar contract accounts yang dimiliki address',
+                    params: [
+                        { name: 'address', type: 'string', required: true, default: 'paxi15ntap5eh9yv79re3l3eeyps99d53m4dxfnj6dz' },
+                        { name: 'page', type: 'integer', required: false, default: '0' }
+                    ]
+                },
+                {
+                    id: 'contracts',
+                    name: 'Contracts List',
+                    endpoint: '/api/prc20/contracts',
+                    method: 'GET',
+                    description: 'GET daftar semua PRC20 contracts',
+                    params: [
+                        { name: 'page', type: 'integer', required: false, default: '0' }
+                    ]
+                },
+                {
+                    id: 'contract',
+                    name: 'Contract Detail',
+                    endpoint: '/api/prc20/contract',
+                    method: 'GET',
+                    description: 'GET detail contract berdasarkan address',
+                    params: [
+                       { name: 'address', type: 'string', required: true, default: 'paxi1ee6eaha77veuwpzgpe875yrmz2k45zyquqn9sztjv2w5h9gke02q65crh6' },
+                    ]
+                },
+                {
+                    id: 'holders',
+                    name: 'Token Holders',
+                    endpoint: '/api/prc20/holders',
+                    method: 'GET',
+                    description: 'GET daftar holders dari contract',
+                    params: [
+                        { name: 'contract_address', type: 'string', required: true, default: 'paxi1ee6eaha77veuwpzgpe875yrmz2k45zyquqn9sztjv2w5h9gke02q65crh6' },
+                        { name: 'page', type: 'integer', required: false, default: '0' }
+                    ]
+                }
+            ]
+        };
+
+        let lastResponses = {};
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderAPICards();
+        });
+
+        function renderAPICards() {
+            const grid = document.getElementById('api-grid');
+            
+            CONFIG.apis.forEach(api => {
+                const card = document.createElement('div');
+                card.className = 'api-card glass';
+                card.innerHTML = `
+                    <div class="api-header">
+                        <div class="api-info">
+                            <h3>${api.name}</h3>
+                            <div class="api-endpoint">${api.endpoint}</div>
+                        </div>
+                        <span class="method-badge">${api.method}</span>
+                    </div>
+                    <div class="api-body">
+                        <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">
+                            ${api.description}
+                        </p>
+                        
+                        <div class="params">
+                            <div class="params-title">Parameters:</div>
+                            ${api.params.map(param => `
+                                <div class="param-item">
+                                    <span class="param-name">${param.name}</span>
+                                    <span class="param-type">${param.type}${param.required ? ' *' : ''}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <div class="demo-section">
+                            ${api.params.map(param => `
+                                <div class="input-group">
+                                    <label class="input-label">${param.name}${param.required ? ' *' : ''}</label>
+                                    <input 
+                                        type="text" 
+                                        class="input-field" 
+                                        data-param="${param.name}"
+                                        placeholder="${param.default || ''}"
+                                        ${param.default ? `value="${param.default}"` : ''}
+                                    >
+                                </div>
+                            `).join('')}
+                            
+                            <button class="btn" onclick="executeAPI('${api.id}')">
+                                <i class="fas fa-play"></i>
+                                <span>Execute Request</span>
+                            </button>
+
+                            <div class="btn-group">
+                                <button class="btn btn-secondary" onclick="copyCode('${api.id}')">
+                                    <i class="fas fa-code"></i> Copy Code
+                                </button>
+                                <button class="btn btn-secondary" onclick="previewHTML('${api.id}')">
+                                    <i class="fas fa-eye"></i> Preview
+                                </button>
+                            </div>
+
+                            <div class="loading" id="loading-${api.id}">
+                                <div class="spinner"></div>
+                                <div style="font-size: 12px; color: var(--text-secondary);">Loading...</div>
+                            </div>
+
+                            <div class="response-container" id="response-${api.id}">
+                                <div class="response-header">
+                                    <span class="response-title"><i class="fas fa-brackets-curly"></i> Response JSON</span>
+                                    <button class="copy-btn" onclick="copyResponse('${api.id}')">
+                                        <i class="fas fa-copy"></i> Copy
+                                    </button>
+                                </div>
+                                <pre class="response-body" id="response-body-${api.id}"></pre>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        async function executeAPI(apiId) {
+            const api = CONFIG.apis.find(a => a.id === apiId);
+            if (!api) return;
+
+            const card = document.querySelector(`#response-${apiId}`).closest('.api-card');
+            const inputs = card.querySelectorAll('.input-field');
+            
+            const params = {};
+            let valid = true;
+            
+            inputs.forEach(input => {
+                const paramName = input.dataset.param;
+                const paramConfig = api.params.find(p => p.name === paramName);
+                const value = input.value.trim();
+                
+                if (paramConfig.required && !value) {
+                    valid = false;
+                    showToast(CONFIG.messages.fillFields, 'error');
+                }
+                
+                if (value) params[paramName] = value;
+            });
+
+            if (!valid) return;
+
+            showLoading(apiId, true);
+            hideResponse(apiId);
+
+            try {
+                const data = await fetchWithProxy(api.endpoint, params);
+                lastResponses[apiId] = data;
+                displayResponse(apiId, data);
+                showToast(CONFIG.messages.apiSuccess, 'success');
+            } catch (error) {
+                console.error('API Error:', error);
+                displayResponse(apiId, { error: error.message });
+                showToast(CONFIG.messages.apiError, 'error');
+            } finally {
+                showLoading(apiId, false);
+            }
+        }
+
+        async function fetchWithProxy(endpoint, params) {
+            const baseUrl = 'https://explorer.paxinet.io';
+            const queryString = new URLSearchParams(params).toString();
+            const targetUrl = `${baseUrl}${endpoint}${queryString ? '?' + queryString : ''}`;
+
+            try {
+                const response = await fetch(targetUrl);
+                if (response.ok) {
+                    return await response.json();
+                }
+            } catch (directError) {
+                console.log('Direct fetch failed, trying proxies...');
+            }
+
+            const maxAttempts = CONFIG.proxies.length * 2;
+            let attempts = 0;
+
+            while (attempts < maxAttempts) {
+                const proxy = CONFIG.proxies[CONFIG.currentProxyIndex];
+                const proxyUrl = proxy + encodeURIComponent(targetUrl);
+
+                try {
+                    const response = await fetch(proxyUrl, {
+                        headers: { 'Accept': 'application/json' }
+                    });
+
+                    if (response.ok) {
+                        const text = await response.text();
+                        return JSON.parse(text);
+                    }
+                } catch (error) {
+                    console.log(`Proxy ${CONFIG.currentProxyIndex} failed:`, error.message);
+                }
+
+                CONFIG.currentProxyIndex = (CONFIG.currentProxyIndex + 1) % CONFIG.proxies.length;
+                attempts++;
+            }
+
+            throw new Error(CONFIG.messages.networkError);
+        }
+
+        function displayResponse(apiId, data) {
+            const container = document.getElementById(`response-${apiId}`);
+            const body = document.getElementById(`response-body-${apiId}`);
+            
+            const formatted = JSON.stringify(data, null, 2);
+            const highlighted = syntaxHighlight(formatted);
+            
+            body.innerHTML = highlighted;
+            container.classList.add('active');
+        }
+
+        function syntaxHighlight(json) {
+            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, (match) => {
+                let cls = 'json-number';
+                if (/^"/.test(match)) {
+                    cls = /:$/.test(match) ? 'json-key' : 'json-string';
+                } else if (/true|false/.test(match)) {
+                    cls = 'json-boolean';
+                } else if (/null/.test(match)) {
+                    cls = 'json-null';
+                }
+                return `<span class="${cls}">${match}</span>`;
+            });
+        }
+
+        function showLoading(apiId, show) {
+            const loading = document.getElementById(`loading-${apiId}`);
+            if (show) {
+                loading.classList.add('active');
+            } else {
+                loading.classList.remove('active');
+            }
+        }
+
+        function hideResponse(apiId) {
+            const container = document.getElementById(`response-${apiId}`);
+            container.classList.remove('active');
+        }
+
+        async function copyResponse(apiId) {
+            const data = lastResponses[apiId];
+            if (!data) return;
+
+            const text = JSON.stringify(data, null, 2);
+            const success = await copyToClipboard(text);
+            
+            const btn = event.target.closest('.copy-btn');
+            if (success) {
+                const originalHTML = btn.innerHTML;
+                btn.classList.add('copied');
+                btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                showToast(CONFIG.messages.copySuccess, 'success');
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    btn.innerHTML = originalHTML;
+                }, 2000);
+            }
+        }
+
+        async function copyCode(apiId) {
+            const api = CONFIG.apis.find(a => a.id === apiId);
+            const card = document.querySelector(`#response-${apiId}`).closest('.api-card');
+            const inputs = card.querySelectorAll('.input-field');
+            
+            const params = {};
+            inputs.forEach(input => {
+                const value = input.value.trim();
+                if (value) params[input.dataset.param] = value;
+            });
+
+            const queryString = new URLSearchParams(params).toString();
+            const url = `https://explorer.paxinet.io${api.endpoint}${queryString ? '?' + queryString : ''}`;
+
+            const code = `fetch("${url}", {
+  method: "${api.method}",
+  headers: {
+    "accept": "application/json"
+  }
+})
+.then(response => response.json())
+.then(data => console.log(data))
+.catch(error => console.error('Error:', error));`;
+
+            const success = await copyToClipboard(code);
+            if (success) {
+                showToast(CONFIG.messages.copySuccess, 'success');
+            }
+        }
+
+        function previewHTML(apiId) {
+            const data = lastResponses[apiId];
+            if (!data) {
+                showToast(CONFIG.messages.noData, 'error');
+                return;
+            }
+
+            const html = generateHTMLPreview(apiId, data);
+            const modal = document.getElementById('preview-modal');
+            const body = document.getElementById('modal-body');
+            
+            body.innerHTML = html;
+            modal.classList.add('active');
+        }
+
+        function generateHTMLPreview(apiId, data) {
+            // Contract Detail Preview
+            if (apiId === 'contract' && data.contract) {
+                return generateContractPreview(data.contract);
+            }
+            
+            // Contracts List or My Contract Accounts
+            if (data.accounts && Array.isArray(data.accounts)) {
+                if (data.accounts[0] && data.accounts[0].contract) {
+                    return generateContractsGridPreview(data);
+                } else {
+                    return generateHoldersTablePreview(data);
+                }
+            }
+            
+            // Default fallback
+            return `<div class="preview-container">
+                <p style="text-align: center; color: var(--text-secondary);">
+                    <i class="fas fa-info-circle"></i> Data tidak tersedia untuk preview
+                </p>
+            </div>`;
+        }
+
+        function generateContractPreview(contract) {
+            const logoUrl = contract.logo && contract.logo.startsWith('ipfs://') 
+                ? `https://ipfs.io/ipfs/${contract.logo.replace('ipfs://', '')}` 
+                : contract.logo;
+
+            return `
+                <div class="preview-container">
+                    <div class="contract-card">
+                        <div class="contract-header">
+                            <div class="contract-logo">
+                                ${logoUrl ? `<img src="${logoUrl}" onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\\'fas fa-coins\\'></i>'">` : '<i class="fas fa-coins"></i>'}
+                            </div>
+                            <div class="contract-info">
+                                <div class="contract-name">
+                                    ${contract.name}
+                                    ${contract.official_verified ? '<span class="verified-badge"><i class="fas fa-check-circle"></i> Verified</span>' : ''}
+                                </div>
+                                <div class="contract-symbol">${contract.symbol}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="contract-stats">
+                            <div class="stat-box">
+                                <div class="stat-box-label"><i class="fas fa-users"></i> Holders</div>
+                                <div class="stat-box-value">${contract.holders?.toLocaleString('id-ID') || 0}</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-box-label"><i class="fas fa-layer-group"></i> Total Supply</div>
+                                <div class="stat-box-value">${(contract.total_supply / Math.pow(10, contract.decimals)).toLocaleString('id-ID', {maximumFractionDigits: 2})}</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-box-label"><i class="fas fa-exchange-alt"></i> Transactions</div>
+                                <div class="stat-box-value">${contract.txs_count?.toLocaleString('id-ID') || 0}</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-box-label"><i class="fas fa-chart-line"></i> Price Change</div>
+                                <div class="stat-box-value" style="color: ${contract.price_change >= 0 ? 'var(--success)' : 'var(--error)'}">
+                                    ${contract.price_change >= 0 ? '+' : ''}${(contract.price_change * 100).toFixed(2)}%
+                                </div>
+                            </div>
+                        </div>
+                        
+                        ${contract.desc ? `
+                            <div class="contract-desc">
+                                <i class="fas fa-info-circle"></i> ${contract.desc}
+                            </div>
+                        ` : ''}
+                        
+                        <div class="contract-links">
+                            ${contract.project ? `<a href="${contract.project}" target="_blank" class="link-btn"><i class="fas fa-globe"></i> Website</a>` : ''}
+                            <a href="https://explorer.paxinet.io/prc20/${contract.contract_address}" target="_blank" class="link-btn">
+                                <i class="fas fa-external-link-alt"></i> Explorer
+                            </a>
+                            <span class="link-btn"><i class="fas fa-coins"></i> Decimals: ${contract.decimals}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateContractsGridPreview(data) {
+            const items = data.accounts.slice(0, 12);
+            
+            let html = `
+                <div class="preview-container">
+                    <div class="preview-header">
+                        <div class="preview-stats">
+                            <div class="stat-item">
+                                <i class="fas fa-database stat-icon"></i>
+                                <div>
+                                    <div class="stat-label">Total Contracts</div>
+                                    <div class="stat-value">${data.total || items.length}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            `;
+
+            items.forEach(item => {
+                const contract = item.contract;
+                const logoUrl = contract.logo && contract.logo.startsWith('ipfs://') 
+                    ? `https://ipfs.io/ipfs/${contract.logo.replace('ipfs://', '')}` 
+                    : contract.logo;
+
+                html += `
+                    <div class="contract-card">
+                        <div class="contract-header">
+                            <div class="contract-logo">
+                                ${logoUrl ? `<img src="${logoUrl}" onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\\'fas fa-coins\\'></i>'">` : '<i class="fas fa-coins"></i>'}
+                            </div>
+                            <div class="contract-info">
+                                <div class="contract-name">
+                                    ${contract.name}
+                                    ${contract.official_verified ? '<span class="verified-badge"><i class="fas fa-check-circle"></i> Verified</span>' : ''}
+                                </div>
+                                <div class="contract-symbol">${contract.symbol}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="contract-stats">
+                            <div class="stat-box">
+                                <div class="stat-box-label"><i class="fas fa-users"></i> Holders</div>
+                                <div class="stat-box-value">${contract.holders?.toLocaleString('id-ID') || 0}</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-box-label"><i class="fas fa-exchange-alt"></i> Txs</div>
+                                <div class="stat-box-value">${contract.txs_count?.toLocaleString('id-ID') || 0}</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-box-label"><i class="fas fa-chart-line"></i> Change</div>
+                                <div class="stat-box-value" style="color: ${contract.price_change >= 0 ? 'var(--success)' : 'var(--error)'}">
+                                    ${contract.price_change >= 0 ? '+' : ''}${(contract.price_change * 100).toFixed(2)}%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            return html;
+        }
+
+        function generateHoldersTablePreview(data) {
+            const items = data.accounts.slice(0, 50);
+            
+            let html = `
+                <div class="preview-container">
+                    <div class="preview-header">
+                        <div class="preview-stats">
+                            <div class="stat-item">
+                                <i class="fas fa-users stat-icon"></i>
+                                <div>
+                                    <div class="stat-label">Total Holders</div>
+                                    <div class="stat-value">${data.total || items.length}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th><i class="fas fa-hashtag"></i> Rank</th>
+                                    <th><i class="fas fa-wallet"></i> Address</th>
+                                    <th><i class="fas fa-coins"></i> Balance</th>
+                                    <th><i class="fas fa-info-circle"></i> Status</th>
+                                    <th><i class="fas fa-clock"></i> Updated</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+            `;
+
+            items.forEach((item, index) => {
+                const date = new Date(item.updated_at);
+                const formattedDate = date.toLocaleDateString('id-ID', { 
+                    day: '2-digit', 
+                    month: 'short', 
+                    year: 'numeric' 
+                });
+
+                html += `
+                    <tr>
+                        <td><strong>${index + 1}</strong></td>
+                        <td class="address-cell">${item.address}</td>
+                        <td class="number-cell">${item.balance.toLocaleString('id-ID')}</td>
+                        <td>
+                            <span class="status-badge ${item.frozen ? 'status-frozen' : 'status-active'}">
+                                <i class="fas fa-${item.frozen ? 'snowflake' : 'check-circle'}"></i>
+                                ${item.frozen ? 'Frozen' : 'Active'}
+                            </span>
+                        </td>
+                        <td style="font-size: 11px; color: var(--text-secondary);">${formattedDate}</td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                            </tbody>
+                        </table>
+                    </div>
+                    ${items.length < data.total ? `
+                        <div style="text-align: center; margin-top: 16px; color: var(--text-secondary); font-size: 12px;">
+                            <i class="fas fa-info-circle"></i> Menampilkan ${items.length} dari ${data.total} holders
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+
+            return html;
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('preview-modal');
+            modal.classList.remove('active');
+        }
+
+        async function copyToClipboard(text) {
+            try {
+                if (navigator.clipboard) {
+                    await navigator.clipboard.writeText(text);
+                    return true;
+                } else {
+                    const textarea = document.createElement('textarea');
+                    textarea.value = text;
+                    textarea.style.position = 'fixed';
+                    textarea.style.opacity = '0';
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    const success = document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    return success;
+                }
+            } catch (err) {
+                console.error('Copy failed:', err);
+                return false;
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const icon = type === 'success' ? 'check-circle' : 'exclamation-circle';
+            toast.innerHTML = `<i class="fas fa-${icon}"></i> ${message}`;
+            toast.className = `toast ${type}`;
+            toast.classList.add('active');
+            
+            setTimeout(() => {
+                toast.classList.remove('active');
+            }, 3000);
+        }
+
+        document.getElementById('preview-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'preview-modal') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

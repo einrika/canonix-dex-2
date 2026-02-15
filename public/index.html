@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canonix - Modern DEX on Paxi Network</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bg: '#08060f',
+                        surface: '#0f0a1e',
+                        card: '#16102b',
+                        border: '#251b45',
+                        up: '#00f2fe',
+                        down: '#ff0080',
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/assets/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="msapplication-TileColor" content="#222222">
+    <meta name="msapplication-TileImage" content="/assets/ms-icon-144x144.png">
+    <meta name="theme-color" content="#222222">
+    <style>
+        body {
+            background-color: #08060f;
+            color: #e8eaed;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .glass {
+            background: rgba(22, 16, 43, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid #251b45;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #00f2fe 0%, #ff0080 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #00f2fe 0%, #764ba2 100%);
+            transition: 0.3s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.4);
+        }
+        
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+    <!-- Navbar -->
+    <nav class="border-b border-border bg-surface/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-exchange-alt text-up text-2xl"></i>
+                    <span class="text-xl font-black gradient-text">CANONIX</span>
+                </div>
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="#trending" class="text-sm font-bold text-gray-400 hover:text-white transition-colors">Trending</a>
+                    <a href="#new" class="text-sm font-bold text-gray-400 hover:text-white transition-colors">New Tokens</a>
+                    <a href="faq.html" class="text-sm font-bold text-gray-400 hover:text-white transition-colors">FAQ</a>
+                </div>
+                <div class="flex items-center gap-4">
+                    <a href="trade.html" class="btn-primary px-6 py-2 rounded-xl text-sm font-black text-white shadow-glow-up">LAUNCH APP</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="relative pt-20 pb-32 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+            <h1 class="text-5xl md:text-7xl font-black mb-6 leading-tight">
+                Canonix market Trading on <br>
+                <span class="gradient-text">Paxi Network</span>
+            </h1>
+            <p class="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
+                Trade PRC20 tokens instantly with AI-driven analysis, and lightning-fast execution. The most advanced DEX on Paxinet.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="trade.html" class="btn-primary px-10 py-4 rounded-2xl text-lg font-black text-white">Start Trading Now</a>
+                <a href="#trending" class="bg-card border border-border px-10 py-4 rounded-2xl text-lg font-black hover:bg-surface transition-all">View Markets</a>
+            </div>
+        </div>
+        
+        <!-- Decorative blobs -->
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-up/10 rounded-full blur-[120px] -z-10"></div>
+        <div class="absolute bottom-0 right-0 w-[400px] h-[400px] bg-down/10 rounded-full blur-[100px] -z-10"></div>
+    </section>
+    
+    <!-- Trending & New Tokens Grid -->
+    <section id="trending" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-border">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl font-black mb-4">Token Pump Markets</h2>
+            <p class="text-gray-400">Discover high-quality tokens strictly inside the pumpfun ecosystem</p>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <!-- Trending Top 10 -->
+            <div>
+                <div class="flex items-center justify-between mb-8">
+                    <h2 class="text-2xl font-black flex items-center gap-3 italic tracking-tighter uppercase">
+                        <i class="fas fa-fire text-down"></i>
+                        Hot Markets
+                    </h2>
+                </div>
+                <div id="trendingList" class="space-y-3">
+                    <!-- JS Populated -->
+                    <div class="animate-pulse flex flex-col gap-4">
+                        <div class="h-16 bg-card rounded-2xl"></div>
+                        <div class="h-16 bg-card rounded-2xl"></div>
+                        <div class="h-16 bg-card rounded-2xl"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- New Tokens -->
+            <div id="new">
+                <div class="flex items-center justify-between mb-8">
+                    <h2 class="text-2xl font-black flex items-center gap-3 italic tracking-tighter uppercase">
+                        <i class="fas fa-plus-circle text-up"></i> New Markets
+                    </h2>
+                </div>
+                <div id="newList" class="space-y-3">
+                    <!-- JS Populated -->
+                    <div class="animate-pulse flex flex-col gap-4">
+                        <div class="h-16 bg-card rounded-2xl"></div>
+                        <div class="h-16 bg-card rounded-2xl"></div>
+                        <div class="h-16 bg-card rounded-2xl"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Non-Pump Specialized Section -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-border bg-surface/30 rounded-[3rem] my-20 border border-border/50">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl font-black mb-4">Token Non-Pump Markets</h2>
+            <p class="text-gray-400">Discover high-quality tokens strictly outside the pumpfun ecosystem</p>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <!-- Trending Non-Pump -->
+            <div>
+                <div class="flex items-center justify-between mb-8">
+                    <h2 class="text-2xl font-black flex items-center gap-3 italic tracking-tighter uppercase">
+                        <i class="fas fa-fire text-down"></i>
+                        Hot Markets
+                    </h2>
+                </div>
+                <div id="trendingNonPumpList" class="space-y-3">
+                    <!-- JS Populated -->
+                </div>
+            </div>
+            <!-- New Non-Pump -->
+            <div>
+                <div class="flex items-center justify-between mb-8">
+                    <h2 class="text-2xl font-black flex items-center gap-3 italic tracking-tighter uppercase">
+                        <i class="fas fa-plus-circle text-up"></i> New Markets
+                    </h2>
+                </div>
+                <div id="newNonPumpList" class="space-y-3">
+                    <!-- JS Populated -->
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Details Section -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="glass p-8 rounded-[2rem]">
+                <div class="w-14 h-14 bg-up/20 rounded-2xl flex items-center justify-center text-up text-2xl mb-6"><i class="fas fa-bolt"></i></div>
+                <h3 class="text-xl font-black mb-4 italic">Instant Execution</h3>
+                <p class="text-gray-400 text-sm leading-relaxed">Experience zero-latency swaps on the high-performance Paxi Network. Trade in seconds, not minutes.</p>
+            </div>
+            <div class="glass p-8 rounded-[2rem]">
+                <div class="w-14 h-14 bg-purple-500/20 rounded-2xl flex items-center justify-center text-purple-400 text-2xl mb-6"><i class="fas fa-brain"></i></div>
+                <h3 class="text-xl font-black mb-4 italic">AI Analytics</h3>
+                <p class="text-gray-400 text-sm leading-relaxed">Integrated Gemini-powered market analysis gives you the edge with real-time sentiment and technical data.</p>
+            </div>
+            <div class="glass p-8 rounded-[2rem]">
+                <div class="w-14 h-14 bg-down/20 rounded-2xl flex items-center justify-center text-down text-2xl mb-6"><i class="fas fa-shield-alt"></i></div>
+                <h3 class="text-xl font-black mb-4 italic">Non-Custodial</h3>
+                <p class="text-gray-400 text-sm leading-relaxed">Your keys, your tokens. Secure internal wallet with AES-GCM encryption ensures full ownership of your assets.</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="border-t border-border py-12 bg-surface">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <div class="flex items-center justify-center gap-2 mb-6">
+                <i class="fas fa-exchange-alt text-up text-xl"></i>
+                <span class="text-lg font-black gradient-text">CANONIX</span>
+            </div>
+            <p class="text-gray-500 text-sm mb-8">Built for the next generation of DeFi on Paxi Network.</p>
+            <div class="flex justify-center gap-6 text-gray-400">
+                <a href="#" class="hover:text-white transition-colors"><i class="fab fa-twitter text-xl"></i></a>
+                <a href="#" class="hover:text-white transition-colors"><i class="fab fa-telegram text-xl"></i></a>
+                <a href="#" class="hover:text-white transition-colors"><i class="fab fa-github text-xl"></i></a>
+            </div>
+            <div class="mt-8 pt-8 border-t border-white/5 text-[10px] text-gray-600 font-bold uppercase tracking-widest">
+                &copy; 2026 Canonix Team. All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Scripts -->
+    <script src="./js/core/config.js"></script>
+    <script src="./js/core/utils.js"></script>
+    <script src="./js/core/api.js"></script>
+    <script src="./js/modules/market/tokens.js"></script>
+    <script src="./js/pages/landing.js"></script>
+</body>
+
+</html>

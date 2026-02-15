@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>paxi network history wallet API Docs</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: monospace; background: #000; color: #fff; font-size: 12px; line-height: 1.4; }
+        .container { max-width: 100%; padding: 10px; }
+        header { border-bottom: 1px solid #333; padding: 10px 0; margin-bottom: 10px; }
+        header h1 { font-size: 14px; font-weight: normal; }
+        .api { border: 1px solid #333; margin-bottom: 10px; background: #0a0a0a; }
+        .api-head { padding: 8px; border-bottom: 1px solid #333; cursor: pointer; user-select: none; }
+        .api-head:active { background: #111; }
+        .api-title { font-size: 11px; font-weight: bold; }
+        .api-body { padding: 8px; display: none; }
+        .api-body.show { display: block; }
+        .desc { margin-bottom: 8px; color: #999; font-size: 10px; }
+        .endpoint { background: #111; padding: 6px; margin: 8px 0; border-left: 2px solid #fff; font-size: 10px; word-break: break-all; position: relative; }
+        .param { background: #0a0a0a; padding: 4px 6px; margin: 4px 0; border-left: 1px solid #333; font-size: 10px; }
+        .param strong { color: #fff; }
+        input { width: 100%; padding: 6px; margin: 6px 0; background: #111; border: 1px solid #333; color: #fff; font-family: monospace; font-size: 10px; }
+        input:focus { outline: none; border-color: #fff; }
+        button { background: #fff; color: #000; border: none; padding: 6px 12px; margin: 4px 4px 4px 0; cursor: pointer; font-family: monospace; font-size: 10px; font-weight: bold; }
+        button:active { background: #ccc; }
+        .response { background: #111; padding: 8px; margin-top: 8px; font-size: 9px; max-height: 300px; overflow-y: auto; white-space: pre-wrap; word-wrap: break-word; display: none; border: 1px solid #333; }
+        .response.show { display: block; }
+        .loading { color: #999; }
+        .error { color: #f00; }
+        .copy { position: absolute; top: 4px; right: 4px; background: #333; color: #fff; border: none; padding: 2px 6px; cursor: pointer; font-size: 9px; }
+        .copy:active { background: #555; }
+        label { display: block; margin: 8px 0 2px 0; font-size: 10px; color: #999; }
+        .toggle { float: right; color: #666; }
+        .btn-group { margin-top: 8px; }
+        .copy-response { background: #333; color: #fff; border: none; padding: 4px 8px; margin: 4px 4px 4px 0; cursor: pointer; font-size: 9px; }
+        .note { background: #1a1a00; border-left: 2px solid #ff0; padding: 6px; margin: 8px 0; font-size: 10px; color: #ff0; }
+        .proxy-toggle { background: #003300; border-left: 2px solid #0f0; padding: 6px; margin: 8px 0; font-size: 10px; color: #0f0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header><h1>paxi network history wallet API DOCS</h1></header>
+        
+        <div class="proxy-toggle">
+            ✅ CORS PROXY: <strong id="proxyStatus">ENABLED</strong> 
+            <button onclick="toggleProxy()">TOGGLE</button>
+            <br><small>Proxy untuk RPC endpoints (mainnet-rpc.paxinet.io) - WAJIB AKTIF!</small>
+        </div>
+
+        <div class="api">
+            <div class="api-head" onclick="toggle('paxi3')">
+                <span class="api-title">GET /tx_search (RPC) - PAKAI PROXY!</span>
+                <span class="toggle">+</span>
+            </div>
+            <div id="paxi3" class="api-body">
+                <div class="desc">Search transactions by address</div>
+                <div class="note">⚠️ RPC tidak support OR. Gabungkan 3 request untuk full history.</div>
+                <label>ADDRESS</label>
+                <input id="paxi3addr" value="paxi15ntap5eh9yv79re3l3eeyps99d53m4dxfnj6dz">
+                <label>PAGE</label>
+                <input id="paxi3page" value="1" type="number">
+                <label>PER PAGE</label>
+                <input id="paxi3limit" value="10" type="number">
+                <button onclick="fetchPaxi3('message.sender')">MESSAGE.SENDER</button>
+                <button onclick="fetchPaxi3('transfer.sender')">TRANSFER OUT</button>
+                <button onclick="fetchPaxi3('transfer.recipient')">TRANSFER IN</button>
+                <div id="respaxi3" class="response"></div>
+            </div>
+        </div>
+
+        <div class="api">
+            <div class="api-head" onclick="toggle('paxi5')">
+                <span class="api-title">COMBINED WALLET ACTIVITY</span>
+                <span class="toggle">+</span>
+            </div>
+            <div id="paxi5" class="api-body">
+                <div class="desc">Gabungkan 3 RPC queries → dedup → sort</div>
+                <label>ADDRESS</label>
+                <input id="paxi5addr" value="paxi15ntap5eh9yv79re3l3eeyps99d53m4dxfnj6dz">
+                <label>PER PAGE</label>
+                <input id="paxi5limit" value="10" type="number">
+                <button onclick="fetchPaxi5Combined()">GET COMBINED</button>
+                <div id="respaxi5" class="response"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let USE_PROXY = true;
+        const PROXIES = [
+            'https://api.codetabs.com/v1/proxy?quest=',
+            'https://api.allorigins.win/raw?url=',
+            'https://thingproxy.freeboard.io/fetch/',
+            'https://corsproxy.io/?'
+        ];
+        let currentProxyIndex = 0;
+        
+        function toggleProxy() {
+            USE_PROXY = !USE_PROXY;
+            const el = document.getElementById('proxyStatus');
+            el.textContent = USE_PROXY ? 'ENABLED' : 'DISABLED';
+            el.parentElement.style.background = USE_PROXY ? '#003300' : '#330000';
+            el.parentElement.style.borderLeftColor = USE_PROXY ? '#0f0' : '#f00';
+        }
+
+        function px(url) {
+            if (!USE_PROXY || !url.includes('mainnet-rpc.paxinet.io')) return url;
+            return PROXIES[currentProxyIndex] + encodeURIComponent(url);
+        }
+
+        let lastURL = '';
+        
+        function toggle(id) {
+            const el = document.getElementById(id);
+            const head = el.previousElementSibling;
+            const tog = head.querySelector('.toggle');
+            el.classList.toggle('show');
+            tog.textContent = el.classList.contains('show') ? '−' : '+';
+        }
+        
+        function copy(btn) {
+            const txt = btn.parentElement.textContent.replace('copy', '').trim();
+            navigator.clipboard.writeText(txt);
+            btn.textContent = 'ok';
+            setTimeout(() => btn.textContent = 'copy', 1000);
+        }
+        
+        function addBtns(resId) {
+            const box = document.getElementById(resId);
+            const prev = box.previousElementSibling;
+            if (prev && prev.classList.contains('btn-group')) return;
+            
+            const div = document.createElement('div');
+            div.className = 'btn-group';
+            div.innerHTML = `
+                <button class="copy-response" onclick="copyJSON('${resId}')">COPY JSON</button>
+                <button class="copy-response" onclick="copyURL()">COPY URL</button>
+            `;
+            box.insertAdjacentElement('beforebegin', div);
+        }
+        
+        function copyJSON(resId) {
+            navigator.clipboard.writeText(document.getElementById(resId).textContent);
+            alert('JSON copied');
+        }
+        
+        function copyURL() {
+            if (!lastURL) return alert('No URL');
+            navigator.clipboard.writeText(lastURL);
+            alert('URL copied');
+        }
+        
+        async function fetchWithFallback(url, maxRetries = PROXIES.length) {
+            for (let i = 0; i < maxRetries; i++) {
+                currentProxyIndex = i % PROXIES.length;
+                const proxiedUrl = px(url);
+                
+                console.log(`[Attempt ${i + 1}/${maxRetries}] Trying proxy: ${PROXIES[currentProxyIndex]}`);
+                console.log(`URL: ${proxiedUrl}`);
+                
+                try {
+                    const res = await fetch(proxiedUrl, { 
+                        signal: AbortSignal.timeout(10000) // 10s timeout
+                    });
+                    
+                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                    
+                    const text = await res.text();
+                    
+                    // Check if response is valid JSON (not HTML error page)
+                    if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
+                        throw new Error('Got HTML instead of JSON (proxy blocked)');
+                    }
+                    
+                    const data = JSON.parse(text);
+                    console.log(`✅ Success with proxy ${i + 1}: ${PROXIES[currentProxyIndex]}`);
+                    return data;
+                    
+                } catch (e) {
+                    console.log(`❌ Failed with proxy ${i + 1}: ${e.message}`);
+                    
+                    // If last attempt, throw error
+                    if (i === maxRetries - 1) {
+                        throw new Error(`All ${maxRetries} proxies failed. Last error: ${e.message}`);
+                    }
+                    
+                    // Otherwise continue to next proxy
+                    continue;
+                }
+            }
+        }
+        
+        async function get(url, resId) {
+            const origURL = url;
+            lastURL = origURL;
+            
+            const box = document.getElementById(resId);
+            const oldBtns = box.previousElementSibling;
+            if (oldBtns && oldBtns.classList.contains('btn-group')) oldBtns.remove();
+            
+            box.classList.add('show');
+            box.innerHTML = '<span class="loading">loading...</span>';
+            
+            try {
+                let data;
+                
+                // If URL needs proxy, use fallback mechanism
+                if (USE_PROXY && url.includes('mainnet-rpc.paxinet.io')) {
+                    box.innerHTML = '<span class="loading">Trying multiple proxies...</span>';
+                    data = await fetchWithFallback(url);
+                } else {
+                    // Direct fetch for non-RPC endpoints
+                    const res = await fetch(url);
+                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                    data = await res.json();
+                }
+                
+                box.textContent = JSON.stringify(data, null, 2);
+                addBtns(resId);
+            } catch (e) {
+                box.innerHTML = `<span class="error">ERROR: ${e.message}</span>`;
+            }
+        }
+        
+        function fetchPaxi3(queryType) {
+            const addr = document.getElementById('paxi3addr').value.trim();
+            const page = Number(document.getElementById('paxi3page').value) || 1;
+            const limit = Number(document.getElementById('paxi3limit').value) || 10;
+            
+            const q = `"${queryType}='${addr}'"`;
+            const url = `https://mainnet-rpc.paxinet.io/tx_search?query=${encodeURIComponent(q)}&page=${page}&per_page=${limit}&order_by=desc`;
+            
+            console.log('Query:', q);
+            console.log('URL:', url);
+            
+            get(url, 'respaxi3');
+        }
+        
+        async function fetchPaxi5Combined() {
+            const addr = document.getElementById('paxi5addr').value.trim();
+            const perPage = Number(document.getElementById('paxi5limit').value) || 10;
+            const box = document.getElementById('respaxi5');
+            
+            box.classList.add('show');
+            box.innerHTML = '<span class="loading">Fetching 3 queries with auto-fallback...</span>';
+            
+            try {
+                const makeURL = ev => {
+                    const q = `"${ev}='${addr}'"`;
+                    return `https://mainnet-rpc.paxinet.io/tx_search?query=${encodeURIComponent(q)}&per_page=${perPage}&order_by=desc`;
+                };
+                
+                const urls = ['message.sender', 'transfer.sender', 'transfer.recipient'].map(makeURL);
+                
+                // Fetch with auto-fallback for each URL
+                const results = await Promise.all(
+                    urls.map(url => fetchWithFallback(url))
+                );
+                
+                const [d1, d2, d3] = results;
+                
+                const txs = [
+                    ...(d1.result?.txs || []),
+                    ...(d2.result?.txs || []),
+                    ...(d3.result?.txs || [])
+                ];
+                
+                const map = {};
+                txs.forEach(tx => map[tx.hash] = tx);
+                
+                const sorted = Object.values(map).sort((a, b) => Number(b.height) - Number(a.height));
+                
+                box.textContent = JSON.stringify({
+                    total_unique_txs: sorted.length,
+                    source_counts: {
+                        message_sender: d1.result?.total_count || '0',
+                        transfer_sender: d2.result?.total_count || '0',
+                        transfer_recipient: d3.result?.total_count || '0'
+                    },
+                    transactions: sorted
+                }, null, 2);
+                
+                addBtns('respaxi5');
+            } catch (e) {
+                box.innerHTML = `<span class="error">ERROR: ${e.message}</span>`;
+            }
+        }
+    </script>
+</body>
+</html>
