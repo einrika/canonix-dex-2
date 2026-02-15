@@ -7,6 +7,23 @@
 
     <!-- ===== PRIMARY META TAGS ===== -->
     <title>Canonix – Paxi Pumpfun Trade</title>
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/assets/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="msapplication-TileColor" content="#222222">
+    <meta name="msapplication-TileImage" content="/assets/ms-icon-144x144.png">
+    <meta name="theme-color" content="#222222">
     <meta name="title" content="Canonix – Paxi Pumpfun Trade">
     <meta name="description" content="Trade PRC20 tokens instantly on Paxinet blockchain with AI market analysis, real-time charts, and lightning-fast swaps. Zero KYC, full decentralization.">
     <meta name="keywords" content="Canonix, PRC20 tokens, Paxinet, decentralized exchange, crypto trading, AI analysis, DeFi, blockchain, instant swap, liquidity pool, meme coins">
@@ -168,7 +185,42 @@
 </head>
 
 <body class="h-screen flex flex-col">
-    <div id="nav-container"></div>
+    <!-- ===== HEADER ===== -->
+    <header class="h-14 border-b border-border hidden lg:flex items-center justify-between px-4 bg-surface z-50 shadow-lg shadow-black/20">
+        <div class="flex items-center gap-3">
+            <button onclick="toggleMobileSidebar()" class="lg:hidden text-gray-400 p-2"><i class="fas fa-bars"></i></button>
+            <a href="index.html" class="flex items-center group">
+                <h1 class="text-lg font-black bg-gradient-to-r from-up via-purple-400 to-down bg-clip-text text-transparent flex items-center group-hover:opacity-80 transition-opacity">
+                    <i class="fas fa-exchange-alt mr-2"></i>Canonix
+                    <span class="ml-2 text-[10px] px-1.5 py-0.5 rounded bg-green-500/20 text-green-400 border border-green-500/30 font-bold uppercase tracking-tighter hidden sm:inline">Mainnet</span>
+                </h1>
+            </a>
+        </div>
+
+        <div class="flex items-center gap-2 sm:gap-4">
+            <!-- Functional Icons -->
+            <div class="hidden md:flex items-center gap-1 border-r border-border pr-2 sm:pr-4 mr-2">
+                <button onclick="showWalletActions()" title="Wallet Actions" class="w-8 h-8 flex items-center justify-center rounded-lg text-blue-400 hover:bg-card hover:text-white transition-all"><i class="fas fa-paper-plane text-xs"></i></button>
+                <button onclick="showLPModal()" title="Liquidity" class="w-8 h-8 flex items-center justify-center rounded-lg text-green-400 hover:bg-card hover:text-white transition-all"><i class="fas fa-layer-group text-xs"></i></button>
+                <button onclick="showDonationModal()" title="Donate" class="w-8 h-8 flex items-center justify-center rounded-lg text-down hover:bg-card hover:text-white transition-all"><i class="fas fa-heart text-xs"></i></button>
+                <a href="faq.html" title="FAQ" class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-card hover:text-white transition-all"><i class="fas fa-question text-xs"></i></a>
+                <button onclick="toggleConsoleModal()" title="System Console" class="w-8 h-8 flex items-center justify-center rounded-lg text-up hover:bg-card hover:text-white transition-all"><i class="fas fa-terminal text-xs"></i></button>
+                <button onclick="window.WalletUI.showSettingsPanel()" title="Settings" class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-card hover:text-white transition-all"><i class="fas fa-cog text-xs"></i></button>
+            </div>
+
+            <div id="walletInfo" class="hidden sm:flex items-center gap-3 px-3 py-1.5 bg-card rounded-lg border border-border">
+                <div class="text-right">
+                    <div id="walletAddrShort" class="text-[10px] font-mono text-gray-400">...</div>
+                    <div id="walletBalance" class="text-xs font-bold text-up">0.00 PAXI</div>
+                </div>
+                <i class="fas fa-wallet text-gray-500"></i>
+            </div>
+            <button id="connectBtn" onclick="showConnectModal()" class="btn-trade px-3 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-bold shadow-lg flex items-center gap-2">
+                <i class="fas fa-plug"></i><span class="hidden xs:inline">Connect</span>
+            </button>
+        </div>
+    </header>
+
     <!-- Ticker News -->
     <div class="ticker-wrap z-[60]">
         <div id="tickerContent" class="ticker-content">
@@ -178,7 +230,7 @@
 
     <div class="flex-1 flex overflow-hidden">
         <!-- ===== LEFT SIDEBAR: TOKEN LIST ===== -->
-        <aside id="tokenSidebar" class="w-[320px] border-r border-border bg-surface flex flex-col lg:static fixed left-0 top-16 bottom-0 z-40 transition-transform duration-300 -translate-x-full lg:translate-x-0">
+        <aside id="tokenSidebar" class="w-[320px] border-r border-border bg-surface flex flex-col lg:static fixed left-0 top-14 bottom-0 z-40 transition-transform duration-300 -translate-x-full lg:translate-x-0">
             <div class="p-3">
                 <div class="relative mb-3">
                     <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
@@ -381,8 +433,95 @@
         </aside>
     </div>
 
+    <!-- Mobile Navigation Bar -->
+    <div class="lg:hidden fixed bottom-0 left-0 right-0 h-20 bg-surface/90 backdrop-blur-lg border-t border-border z-[100] flex flex-col justify-between px-4 py-2">
+        <div class="flex items-center justify-between w-full mb-1 px-2">
+            <div class="flex items-center gap-2">
+                <h1 class="text-sm font-black bg-gradient-to-r from-up via-purple-400 to-down bg-clip-text text-transparent italic">CANONIX</h1>
+                <div id="mobileWalletInfo" class="hidden flex items-center gap-2 px-2 py-0.5 bg-card rounded-full border border-border">
+                    <div id="mobileWalletBalance" class="text-[9px] font-bold text-up">0.00 PAXI</div>
+                </div>
+            </div>
+            <button id="mobileConnectBtn" onclick="showConnectModal()" class="px-3 py-1 bg-up text-bg rounded-full text-[10px] font-black uppercase tracking-tighter">Connect</button>
+        </div>
+        <div class="flex items-center justify-between w-full px-2">
+            <button onclick="toggleMobileSidebar()" class="flex flex-col items-center gap-1 text-gray-400">
+                <i class="fas fa-th-list text-lg"></i>
+                <span class="text-[8px] font-black uppercase tracking-tighter">Market</span>
+            </button>
+            <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="flex flex-col items-center gap-1 text-up">
+                <i class="fas fa-chart-line text-lg"></i>
+                <span class="text-[8px] font-black uppercase tracking-tighter">Chart</span>
+            </button>
+            <button onclick="toggleUnifiedSidebar()" class="w-12 h-12 -mt-10 rounded-full btn-trade shadow-glow-up flex items-center justify-center text-white border-4 border-bg relative">
+                <i class="fas fa-wallet text-xl"></i>
+            </button>
+            <button onclick="showAIAnalysis()" class="flex flex-col items-center gap-1 text-purple-400">
+                <i class="fas fa-brain text-lg"></i>
+                <span class="text-[8px] font-black uppercase tracking-tighter">AI Analysis</span>
+            </button>
+            <button onclick="toggleMoreMenu()" class="flex flex-col items-center gap-1 text-gray-400">
+                <i class="fas fa-ellipsis-h text-lg"></i>
+                <span class="text-[8px] font-black uppercase tracking-tighter">More</span>
+            </button>
+        </div>
+    </div>
+
 
     <!-- ===== MODALS & BOTTOM SHEETS ===== -->
+
+    <!-- More Menu Modal -->
+    <div id="moreMenuModal" class="hidden fixed inset-0 bg-bg/95 z-[200] flex flex-col animate-fade-in">
+        <div class="flex justify-between items-center p-6 border-b border-border">
+            <h2 class="text-xl font-black italic tracking-tighter bg-gradient-to-r from-up to-purple-400 bg-clip-text text-transparent uppercase">Explorer</h2>
+            <button onclick="toggleMoreMenu()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-card border border-border text-gray-400 hover:text-white transition-all">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="flex-1 overflow-y-auto p-6">
+            <div class="grid grid-cols-2 gap-4">
+                <a href="launchpad.html" class="flex flex-col items-center gap-3 p-6 rounded-2xl bg-card border border-border hover:border-up/50 transition-all group">
+                    <div class="w-12 h-12 rounded-xl bg-up/10 flex items-center justify-center text-up group-hover:scale-110 transition-transform"><i class="fas fa-rocket text-xl"></i></div>
+                    <span class="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-white">Launchpad</span>
+                </a>
+                <a href="pre-market.html" class="flex flex-col items-center gap-3 p-6 rounded-2xl bg-card border border-border hover:border-up/50 transition-all group">
+                    <div class="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform"><i class="fas fa-clock text-xl"></i></div>
+                    <span class="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-white">Pre-Market</span>
+                </a>
+                <a href="vesting.html" class="flex flex-col items-center gap-3 p-6 rounded-2xl bg-card border border-border hover:border-up/50 transition-all group">
+                    <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform"><i class="fas fa-layer-group text-xl"></i></div>
+                    <span class="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-white">Vesting</span>
+                </a>
+                <a href="locked-liquidity-pool.html" class="flex flex-col items-center gap-3 p-6 rounded-2xl bg-card border border-border hover:border-up/50 transition-all group">
+                    <div class="w-12 h-12 rounded-xl bg-down/10 flex items-center justify-center text-down group-hover:scale-110 transition-transform"><i class="fas fa-lock text-xl"></i></div>
+                    <span class="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-white">Liquidity Lock</span>
+                </a>
+                <a href="reward.html" class="flex flex-col items-center gap-3 p-6 rounded-2xl bg-card border border-border hover:border-up/50 transition-all group">
+                    <div class="w-12 h-12 rounded-xl bg-yellow-500/10 flex items-center justify-center text-yellow-500 group-hover:scale-110 transition-transform"><i class="fas fa-gift text-xl"></i></div>
+                    <span class="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-white">Rewards</span>
+                </a>
+                <a href="daily.html" class="flex flex-col items-center gap-3 p-6 rounded-2xl bg-card border border-border hover:border-up/50 transition-all group">
+                    <div class="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center text-green-400 group-hover:scale-110 transition-transform"><i class="fas fa-calendar-check text-xl"></i></div>
+                    <span class="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-white">Daily Claim</span>
+                </a>
+                <a href="lottery.html" class="flex flex-col items-center gap-3 p-6 rounded-2xl bg-card border border-border hover:border-up/50 transition-all group">
+                    <div class="w-12 h-12 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-400 group-hover:scale-110 transition-transform"><i class="fas fa-ticket-alt text-xl"></i></div>
+                    <span class="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-white">Lottery</span>
+                </a>
+                <a href="setting.html" class="flex flex-col items-center gap-3 p-6 rounded-2xl bg-card border border-border hover:border-up/50 transition-all group">
+                    <div class="w-12 h-12 rounded-xl bg-gray-500/10 flex items-center justify-center text-gray-400 group-hover:scale-110 transition-transform"><i class="fas fa-cog text-xl"></i></div>
+                    <span class="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-white">Settings</span>
+                </a>
+                <a href="faq.html" class="flex flex-col items-center gap-3 p-6 rounded-2xl bg-card border border-border hover:border-up/50 transition-all group col-span-2">
+                    <div class="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-white group-hover:scale-110 transition-transform"><i class="fas fa-question-circle text-xl"></i></div>
+                    <span class="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-white">Help Center / FAQ</span>
+                </a>
+            </div>
+        </div>
+        <div class="p-6 border-t border-border">
+            <button onclick="showConnectModal()" class="w-full py-4 bg-up text-bg font-black rounded-2xl shadow-glow-up uppercase italic">Connect Wallet</button>
+        </div>
+    </div>
 
     <!-- Token Selection Modal -->
     <div id="tokenModal" class="hidden fixed inset-0 bg-black bg-opacity-90 z-[333] flex items-center justify-center p-4">
@@ -666,7 +805,6 @@
 
     <!-- ===== MODULAR JAVASCRIPT FILES ===== -->
     <script src="./js/core/config.js"></script>
-    <script src="./js/ui/navigation.js"></script>
     <script src="./js/core/utils.js"></script>
     <script src="./js/core/api.js"></script>
     <!-- New Wallet Section -->
@@ -716,6 +854,17 @@
                 document.getElementById('tokenSidebar').classList.add('-translate-x-full');
                 sidebar.classList.remove('translate-x-full');
                 window.showSidebarOverlay();
+            }
+        };
+
+        window.toggleMoreMenu = function() {
+            const modal = document.getElementById('moreMenuModal');
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            } else {
+                modal.classList.add('hidden');
+                document.body.style.overflow = '';
             }
         };
 

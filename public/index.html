@@ -77,7 +77,24 @@
 </head>
 
 <body class="min-h-screen">
-    <div id="nav-container"></div>
+    <nav class="border-b border-border bg-surface/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-exchange-alt text-up text-2xl"></i>
+                    <span class="text-xl font-black gradient-text">CANONIX</span>
+                </div>
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="#trending" class="text-sm font-bold text-gray-400 hover:text-white transition-colors">Trending</a>
+                    <a href="#new" class="text-sm font-bold text-gray-400 hover:text-white transition-colors">New Tokens</a>
+                    <a href="faq.html" class="text-sm font-bold text-gray-400 hover:text-white transition-colors">FAQ</a>
+                </div>
+                <div class="flex items-center gap-4">
+                    <a href="trade.html" class="btn-primary px-6 py-2 rounded-xl text-sm font-black text-white shadow-glow-up">LAUNCH APP</a>
+                </div>
+            </div>
+        </div>
+    </nav>
     
     <!-- Hero Section -->
     <section class="relative pt-20 pb-32 overflow-hidden">
@@ -263,7 +280,6 @@
     
     <!-- Scripts -->
     <script src="./js/core/config.js"></script>
-    <script src="./js/ui/navigation.js"></script>
     <script src="./js/core/utils.js"></script>
     <script src="./js/core/api.js"></script>
     <script src="./js/modules/market/ai.js"></script>
