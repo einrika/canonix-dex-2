@@ -52,21 +52,7 @@
 </head>
 
 <body class="min-h-screen flex flex-col">
-    <!-- Navbar -->
-    <nav class="border-b border-border bg-surface/80 backdrop-blur-md sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
-                <a href="index.html" class="flex items-center gap-2">
-                    <i class="fas fa-exchange-alt text-up text-2xl"></i>
-                    <span class="text-xl font-black gradient-text">CANONIX</span>
-                </a>
-                <div class="flex items-center gap-4">
-                    <a href="index.html" class="text-sm font-bold text-gray-400 hover:text-white transition-colors">Home</a>
-                    <a href="trade.html" class="bg-gradient-to-r from-up to-purple-600 px-6 py-2 rounded-xl text-sm font-black text-white">TRADE</a>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <div id="nav-container"></div>
 
     <main class="flex-1 max-w-3xl mx-auto px-4 py-20 w-full">
         <h1 class="text-4xl font-black mb-4 italic tracking-tight">FREQUENTLY ASKED <span class="text-up">QUESTIONS</span></h1>
@@ -117,6 +103,8 @@
     <footer class="border-t border-border py-8 text-center text-xs text-gray-600 font-bold uppercase tracking-widest">
         &copy; 2026 Canonix Team.
     </footer>
+    <script src="./js/core/config.js"></script>
+    <script src="./js/ui/navigation.js"></script>
 </body>
 
 </html>

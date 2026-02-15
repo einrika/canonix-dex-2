@@ -399,13 +399,14 @@ window.generateAIAnalysis = async function() {
         const symbol = window.currentTokenInfo?.symbol || 'TOKEN';
         const name = window.currentTokenInfo?.name || 'Unknown Token';
 
-        // Prepare data for Server AI
+        // Prepare data for Server AI - Strictly real-time
         const analysisData = {
             symbol, 
             price: latestPrice, 
             change24h, 
             liquidity, 
-            volume: volume24h
+            volume: volume24h,
+            onChainActivity: `Recent RSI: ${rsi.toFixed(2)}, Trend: ${trend}, Volatility: ${volatilityLabel}`
         };
 
         let aiText = '';
