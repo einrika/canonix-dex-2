@@ -282,6 +282,13 @@
                 </div>
             </div>
 
+            <!-- Swap Section (Visible only when connected) -->
+            <div id="mainSwapContainer" class="px-4 pb-4 hidden">
+                <div class="glass-panel rounded-2xl overflow-hidden p-4" id="mainSwapTerminal">
+                    <!-- Swap Content Injected by JS -->
+                </div>
+            </div>
+
             <!-- Token Header / Stats (Simplified & Non-sticky) -->
             <div class="bg-card/30 border-y border-border px-4 py-2 mb-5 z-30">
                 <div class="flex flex-wrap items-center justify-between gap-4">
@@ -409,13 +416,13 @@
             </div>
         </main>
 
-        <!-- ===== RIGHT SIDEBAR: UNIFIED WALLET & TRADE TERMINAL ===== -->
+        <!-- ===== RIGHT SIDEBAR: UNIFIED WALLET TERMINAL ===== -->
         <aside id="unifiedSidebar" class="w-[380px] border-l border-border bg-surface flex flex-col lg:static fixed right-0 top-14 bottom-0 z-40 transition-transform duration-300 translate-x-full lg:translate-x-0 overflow-hidden">
-            <!-- Sidebar Navigation Tabs - Only Swap & Wallet -->
+            <!-- Sidebar Navigation Tabs - Dedicated Wallet -->
             <div class="flex bg-bg/50 p-1 border-b border-border">
-                <button onclick="setSidebarTab('swap')" id="side-tab-swap" class="flex-1 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-up border-b-2 border-up transition-all">Swap</button>
-                <button onclick="setSidebarTab('wallet')" id="side-tab-wallet" class="flex-1 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-white transition-all">Wallet</button>
+                <button onclick="setSidebarTab('wallet')" id="side-tab-wallet" class="flex-1 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-up border-b-2 border-up transition-all">My Wallet</button>
                 <!-- Hidden tabs - accessible via actions -->
+                <button onclick="setSidebarTab('swap')" id="side-tab-swap" class="hidden"></button>
                 <button onclick="setSidebarTab('history')" id="side-tab-history" class="hidden"></button>
                 <button onclick="setSidebarTab('lp')" id="side-tab-lp" class="hidden"></button>
                 <button onclick="setSidebarTab('send')" id="side-tab-send" class="hidden"></button>

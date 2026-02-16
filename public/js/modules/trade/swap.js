@@ -4,44 +4,8 @@
 
 // ===== GLOBAL SWAP STATE =====
 window.tradeType = 'buy'; // buy or sell
-window.orderType = 'instant'; // instant or auto
 window.feeEnabled = true;
 window.slippage = 1.0;
-window.autoOrders = []; // To store pending auto orders
-
-// ===== SET ORDER TYPE (Instant vs Auto) =====
-window.setOrderType = function(type) {
-    window.orderType = type;
-    const btnInstant = document.getElementById('type-instant');
-    const btnAuto = document.getElementById('type-auto');
-    const autoContainer = document.getElementById('autoOrderContainer');
-    const executeBtn = document.querySelector('button[onclick="window.executeTrade()"]') ||
-                       document.querySelector('button[onclick="executeTrade()"]');
-
-    if (type === 'auto') {
-        window.removeClass(btnInstant, 'bg-border');
-        window.removeClass(btnInstant, 'text-white');
-        window.addClass(btnInstant, 'text-gray-500');
-
-        window.addClass(btnAuto, 'bg-border');
-        window.addClass(btnAuto, 'text-white');
-        window.removeClass(btnAuto, 'text-gray-500');
-
-        window.removeClass(autoContainer, 'hidden');
-        window.setText(executeBtn, 'CREATE AUTO ORDER');
-    } else {
-        window.addClass(btnInstant, 'bg-border');
-        window.addClass(btnInstant, 'text-white');
-        window.removeClass(btnInstant, 'text-gray-500');
-
-        window.removeClass(btnAuto, 'bg-border');
-        window.removeClass(btnAuto, 'text-white');
-        window.addClass(btnAuto, 'text-gray-500');
-
-        window.addClass(autoContainer, 'hidden');
-        window.setText(executeBtn, 'SWAP TOKENS');
-    }
-};
 
 // ===== SET SWAP MODE (Buy vs Sell) =====
 window.setSwapMode = function(mode) {
@@ -77,13 +41,6 @@ window.setSwapMode = function(mode) {
     if (window.updateTradeBalances) window.updateTradeBalances();
 };
 
-// ===== USE CURRENT PRICE AS LIMIT =====
-window.useCurrentPriceAsLimit = function() {
-    if (window.priceHistory && window.priceHistory.length > 0) {
-        const currentPrice = window.priceHistory.at(-1).price;
-        window.setValue('limitPriceInput', currentPrice.toFixed(8));
-    }
-};
 
 // ===== REVERSE TRADE PAIR =====
 window.reverseTradePair = function() {
@@ -224,36 +181,6 @@ window.executeTrade = async function() {
 
     window.updateTradeOutput();
 
-    if (window.orderType === 'auto') {
-        const limitPrice = parseFloat(document.getElementById('limitPriceInput')?.value);
-        if (!limitPrice || limitPrice <= 0) {
-            window.showNotif('Enter a valid limit price', 'error');
-            return;
-        }
-
-        const minReceivedStr = document.getElementById('minRecv').textContent.split(' ')[0];
-        const minReceived = parseFloat(minReceivedStr) || 0;
-
-        const order = {
-            id: Date.now(),
-            token: window.currentPRC20,
-            symbol: window.currentTokenInfo?.symbol,
-            type: window.tradeType,
-            payAmount: payAmount,
-            limitPrice: limitPrice,
-            minReceived: minReceived,
-            status: 'pending',
-            timestamp: new Date().getTime()
-        };
-
-        window.autoOrders.push(order);
-        localStorage.setItem('canonix_auto_orders', JSON.stringify(window.autoOrders));
-
-        window.showNotif(`Auto Order Created: ${window.tradeType.toUpperCase()} ${window.currentTokenInfo?.symbol} at ${limitPrice} PAXI`, 'info');
-        console.log("Auto Order Added:", order);
-        return;
-    }
-
     const minReceivedStr = document.getElementById('minRecv').textContent.split(' ')[0];
     const minReceived = parseFloat(minReceivedStr) || 0;
     const offerDenom = window.tradeType === 'buy' ? window.APP_CONFIG.DENOM : window.currentPRC20;
@@ -263,68 +190,6 @@ window.executeTrade = async function() {
         await window.executeSwap(window.currentPRC20, offerDenom, payAmount, minReceived);
     } catch (e) {
         console.error(e);
-    }
-};
-
-// ===== AUTO ORDER CHECKER =====
-// This function should be called periodically (e.g., when price updates)
-window.checkAutoOrders = async function(currentToken, currentPrice) {
-    if (!window.autoOrders || window.autoOrders.length === 0) return;
-
-    const now = new Date().getTime();
-    const oneHour = 3600 * 1000;
-
-    // Auto-expire orders older than 1 hour
-    const beforeCount = window.autoOrders.length;
-    window.autoOrders = window.autoOrders.filter(order => {
-        if (now - order.timestamp > oneHour) {
-            console.log(`Auto-expiring Order #${order.id} (expired)`);
-            return false;
-        }
-        return true;
-    });
-
-    if (window.autoOrders.length !== beforeCount) {
-        localStorage.setItem('canonix_auto_orders', JSON.stringify(window.autoOrders));
-    }
-
-    const pendingOrders = window.autoOrders.filter(o => o.status === 'pending' && o.token === currentToken);
-
-    for (const order of pendingOrders) {
-        let shouldTrigger = false;
-
-        if (order.type === 'buy') {
-            // Trigger if current price is AT OR BELOW limit price
-            if (currentPrice <= order.limitPrice) shouldTrigger = true;
-        } else {
-            // Trigger if current price is AT OR ABOVE limit price
-            if (currentPrice >= order.limitPrice) shouldTrigger = true;
-        }
-
-        if (shouldTrigger) {
-            console.log(`Triggering Auto Order #${order.id}: ${order.type} ${order.symbol} at ${currentPrice}`);
-            order.status = 'executing';
-
-            try {
-                window.showNotif(`Executing Auto Order: ${order.type.toUpperCase()} ${order.symbol}`, 'info');
-                const offerDenom = order.type === 'buy' ? window.APP_CONFIG.DENOM : order.token;
-
-                // For auto orders, we might want to recalculate minReceived based on current price
-                // but let's use the one saved when creating the order for safety (slippage already included)
-                await window.executeSwap(order.token, offerDenom, order.payAmount, order.minReceived);
-
-                order.status = 'completed';
-                window.showNotif(`Auto Order Completed!`, 'success');
-            } catch (err) {
-                console.error(`Auto Order #${order.id} failed:`, err);
-                order.status = 'failed';
-                window.showNotif(`Auto Order Failed: ${err.message || 'Unknown error'}`, 'error');
-            }
-
-            // Clean up completed/failed orders
-            window.autoOrders = window.autoOrders.filter(o => o.id !== order.id);
-            localStorage.setItem('canonix_auto_orders', JSON.stringify(window.autoOrders));
-        }
     }
 };
 

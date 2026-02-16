@@ -269,13 +269,13 @@ window.patchTokenElement = function(el, addr) {
     // Update MCap
     const mcapEl = el.querySelector('.token-mcap');
     const marketCap = window.numtokenlist(detail.market_cap);
-    const mcapText = `MCap ${window.formatAmount(marketCap)}`;
+    const mcapText = `MCap $${window.formatAmount(marketCap)}`;
     if (mcapEl.textContent !== mcapText) mcapEl.textContent = mcapText;
 
     // Update Liquidity
     const liqEl = el.querySelector('.token-liq');
     const liquidity = window.numtokenlist(detail.liquidity);
-    const liqText = `Liq ${window.formatAmount(liquidity)}`;
+    const liqText = `Liq $${window.formatAmount(liquidity)}`;
     if (liqEl.textContent !== liqText) liqEl.textContent = liqText;
 
     // Update Indicators
@@ -336,10 +336,31 @@ window.updateTicker = function() {
     window.setHtml(tickerContainer, html);
 };
 
-// ===== RENDER SWAP TERMINAL (SIDEBAR) =====
+// ===== RENDER SWAP TERMINAL (MAIN CONTENT or SIDEBAR) =====
 window.renderSwapTerminal = async function() {
-    const container = document.getElementById('sidebarContent');
+    let container = document.getElementById('mainSwapTerminal');
+    const mainWrapper = document.getElementById('mainSwapContainer');
+
+    if (!container) {
+        container = document.getElementById('sidebarContent');
+    }
+
     if (!container) return;
+
+    // Visibility Rule: Swap only shows if wallet is connected
+    if (!window.wallet) {
+        if (mainWrapper) mainWrapper.classList.add('hidden');
+        if (container.id === 'sidebarContent') {
+            container.innerHTML = `
+                <div class="text-center py-20 text-gray-600">
+                    <i class="fas fa-wallet text-4xl mb-4 opacity-20"></i>
+                    <p class="text-xs font-bold uppercase tracking-widest">Connect wallet to unlock terminal</p>
+                </div>`;
+        }
+        return;
+    } else if (mainWrapper) {
+        mainWrapper.classList.remove('hidden');
+    }
 
     // Fetch fresh pool data directly from blockchain
     if (window.fetchPoolData) {
@@ -347,13 +368,8 @@ window.renderSwapTerminal = async function() {
     }
     const symbol = window.currentTokenInfo?.symbol || 'TOKEN';
     const isBuy = window.tradeType === 'buy';
-    const isAuto = window.orderType === 'auto';
     container.innerHTML = `
         <div class="flex flex-col gap-4 animate-fade-in">
-            <div class="flex bg-bg/50 p-1 rounded-xl border border-border/50">
-                <button onclick="window.setOrderType('instant')" id="type-instant" class="flex-1 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-tighter transition-all ${!isAuto ? 'bg-border text-white' : 'text-gray-500'}">Instant</button>
-                <button onclick="window.setOrderType('auto')" id="type-auto" class="flex-1 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-tighter transition-all ${isAuto ? 'bg-border text-white' : 'text-gray-500'}">Auto Order</button>
-            </div>
             <div class="flex bg-bg p-1 rounded-xl border border-border shadow-inner">
                 <button onclick="window.setSwapMode('buy')" id="buyTab" class="flex-1 py-2 rounded-lg text-xs font-black transition-all ${isBuy ? 'bg-up text-bg shadow-glow-up' : 'text-gray-400'}">BUY</button>
                 <button onclick="window.setSwapMode('sell')" id="sellTab" class="flex-1 py-2 rounded-lg text-xs font-black transition-all ${!isBuy ? 'bg-down text-white shadow-glow-down' : 'text-gray-400'}">SELL</button>
@@ -381,11 +397,6 @@ window.renderSwapTerminal = async function() {
                         <div class="px-3 py-1 bg-bg border border-border rounded-lg text-[10px] font-black" id="recvTokenSymbol">${isBuy ? symbol : 'PAXI'}</div>
                     </div>
                 </div>
-                <div id="autoOrderContainer" class="${isAuto ? '' : 'hidden'} animate-slide-down bg-purple-500/5 border border-purple-500/20 p-4 rounded-2xl space-y-3">
-                    <div class="flex justify-between items-center"><label class="text-[10px] font-black text-purple-400 uppercase tracking-widest">Trigger Price (PAXI)</label><button onclick="window.useCurrentPriceAsLimit()" class="text-[9px] font-bold text-gray-500 hover:text-white uppercase underline">Use Current</button></div>
-                    <input type="number" id="limitPriceInput" placeholder="0.000000" class="w-full bg-bg border border-purple-500/30 rounded-xl p-3 text-white font-mono text-sm outline-none focus:border-purple-500">
-                    <p class="text-[9px] text-gray-500 italic">Order will execute automatically when price hits this level.</p>
-                </div>
                 <div class="p-4 bg-white/5 rounded-2xl border border-white/10 space-y-2.5">
                     <div class="flex justify-between text-[9px] font-black uppercase tracking-tighter"><span class="text-gray-500">Rate</span><span id="tradeRate" class="text-white font-mono">1 PAXI = 0 ${symbol}</span></div>
                     <div class="flex justify-between text-[9px] font-black uppercase tracking-tighter"><span class="text-gray-500">Minimum Received</span><span id="minRecv" class="text-gray-400 font-mono">0.00 ${isBuy ? symbol : 'PAXI'}</span></div>
@@ -393,7 +404,7 @@ window.renderSwapTerminal = async function() {
                     <div class="flex justify-between text-[9px] font-black uppercase tracking-tighter"><span class="text-gray-500">Slippage Tolerance</span><button onclick="window.showSlippageModal()" class="text-up hover:underline flex items-center gap-1"><span id="slippageVal">1.0%</span> <i class="fas fa-cog text-[8px]"></i></button></div>
                     <div class="flex justify-between text-[9px] font-black uppercase tracking-tighter pt-1 border-t border-white/5"><span class="text-gray-500">Network Fee</span><span id="networkFee" class="text-gray-400 font-mono">~0.0063 PAXI</span></div>
                 </div>
-                <button onclick="window.executeTrade()" class="btn-trade w-full py-4 rounded-2xl text-white font-black text-sm uppercase tracking-widest shadow-glow-up transform active:scale-[0.98] transition-all">${isAuto ? 'Create Auto Order' : 'Execute ' + window.tradeType.toUpperCase()}</button>
+                <button onclick="window.executeTrade()" class="btn-trade w-full py-4 rounded-2xl text-white font-black text-sm uppercase tracking-widest shadow-glow-up transform active:scale-[0.98] transition-all">Execute ${window.tradeType.toUpperCase()}</button>
             </div>
         </div>`;
     
@@ -743,9 +754,9 @@ window.showTokenDetail = function(event, address) {
                     </div>
                     <div class="bg-bg rounded-xl p-4 border border-border space-y-3">
                         <h4 class="text-xs font-bold text-gray-500 uppercase">Market Data</h4>
-                        <div class="flex justify-between text-xs"><span class="text-gray-500">Price</span><span class="font-bold text-up">${window.formatPrice(detail.price_paxi)} PAXI</span></div>
-                        <div class="flex justify-between text-xs"><span class="text-gray-500">MCap</span><span class="font-bold">${window.formatAmount(detail.market_cap)} PAXI</span></div>
-                        <div class="flex justify-between text-xs"><span class="text-gray-500">Liquidity</span><span class="font-bold text-blue-400">${window.formatAmount(detail.liquidity)} PAXI</span></div>
+                        <div class="flex justify-between text-xs"><span class="text-gray-500">Price</span><span class="font-bold text-up">$${window.formatPrice(detail.price_paxi * (window.paxiPriceUSD || 0.05))}</span></div>
+                        <div class="flex justify-between text-xs"><span class="text-gray-500">MCap</span><span class="font-bold">$${window.formatAmount(detail.market_cap)}</span></div>
+                        <div class="flex justify-between text-xs"><span class="text-gray-500">Liquidity</span><span class="font-bold text-blue-400">$${window.formatAmount(detail.liquidity)}</span></div>
                     </div>
                 </div>
                 <div class="bg-bg rounded-xl p-4 border border-border">

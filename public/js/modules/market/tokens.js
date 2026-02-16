@@ -29,7 +29,7 @@ window.processTokenDetail = function(contractAddress, data) {
         pricePaxi = (parseFloat(c.reserve_paxi) / parseFloat(c.reserve_prc20)) * Math.pow(10, decimals - 6);
     }
 
-    const marketCap = totalSupply * pricePaxi;
+    const marketCap = totalSupply * pricePaxi * (window.paxiPriceUSD || 0.05);
     const logo = window.normalizeLogoUrl(c.logo);
     
     return {
@@ -45,7 +45,7 @@ window.processTokenDetail = function(contractAddress, data) {
         project: c.project || '',
         marketing: c.marketing || '',
         holders: parseInt(c.holders || 0, 10),
-        liquidity: (parseFloat(c.reserve_paxi || 0) * 2) / 1000000,
+        liquidity: (parseFloat(c.reserve_paxi || 0) * 2 * (window.paxiPriceUSD || 0.05)) / 1000000,
         verified: c.official_verified === true,
         price_change_24h: parseFloat(c.price_change || 0),
         reserve_paxi: parseFloat(c.reserve_paxi || 0),
@@ -349,6 +349,7 @@ window.refreshAllUI = async function() {
         ]);
 
         if (window.loadTokenHolders) window.loadTokenHolders();
+        if (window.renderSwapTerminal) await window.renderSwapTerminal();
     } catch (e) {
         console.error('Refresh UI error:', e);
     }

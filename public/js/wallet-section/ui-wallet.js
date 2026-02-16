@@ -272,7 +272,7 @@ window.WalletUI = {
                 </div>
 
                 <!-- Action Bar -->
-                <div class="grid grid-cols-3 gap-3">
+                <div class="grid grid-cols-2 gap-3">
                     <button onclick="window.WalletUI.showSendBottomSheet()" class="flex flex-col items-center gap-2 p-3 bg-up/5 border border-up/10 rounded-2xl hover:bg-up/10 transition-all group">
                         <div class="w-10 h-10 rounded-full bg-up/20 flex items-center justify-center text-up group-hover:scale-110 transition-transform"><i class="fas fa-paper-plane"></i></div>
                         <span class="text-[9px] font-black uppercase tracking-widest text-up">Send</span>
@@ -280,10 +280,6 @@ window.WalletUI = {
                     <button onclick="window.WalletUI.showReceiveModal()" class="flex flex-col items-center gap-2 p-3 bg-blue-500/5 border border-blue-500/10 rounded-2xl hover:bg-blue-500/10 transition-all group">
                         <div class="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform"><i class="fas fa-qrcode"></i></div>
                         <span class="text-[9px] font-black uppercase tracking-widest text-blue-400">Receive</span>
-                    </button>
-                    <button onclick="window.setSidebarTab('swap')" class="flex flex-col items-center gap-2 p-3 bg-purple-500/5 border border-purple-500/10 rounded-2xl hover:bg-purple-100/10 transition-all group">
-                        <div class="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform"><i class="fas fa-exchange-alt"></i></div>
-                        <span class="text-[9px] font-black uppercase tracking-widest text-purple-400">Trade</span>
                     </button>
                 </div>
 
@@ -546,10 +542,6 @@ window.WalletUI = {
                             <h4 class="text-[10px] font-black uppercase tracking-widest text-gray-500">Market Statistics</h4>
                             <div class="grid grid-cols-2 gap-3">
                                 <div class="p-3 bg-card/30 rounded-xl border border-border">
-                                    <div class="text-[9px] text-gray-500 font-bold uppercase mb-1">Market Cap</div>
-                                    <div class="text-sm font-mono text-white">${formatUSD(c.market_cap || 0)}</div>
-                                </div>
-                                <div class="p-3 bg-card/30 rounded-xl border border-border">
                                     <div class="text-[9px] text-gray-500 font-bold uppercase mb-1">24h Volume</div>
                                     <div class="text-sm font-mono text-white">${formatUSD(c.volume || 0)}</div>
                                 </div>
@@ -557,7 +549,7 @@ window.WalletUI = {
                                     <div class="text-[9px] text-gray-500 font-bold uppercase mb-1">Holders</div>
                                     <div class="text-sm font-mono text-white">${formatNumber(c.holders || 0)}</div>
                                 </div>
-                                <div class="p-3 bg-card/30 rounded-xl border border-border">
+                                <div class="p-3 bg-card/30 rounded-xl border border-border col-span-2">
                                     <div class="text-[9px] text-gray-500 font-bold uppercase mb-1">Total Supply</div>
                                     <div class="text-sm font-mono text-white">${formatNumber(c.total_supply / Math.pow(10, c.decimals || 6))}</div>
                                 </div>
@@ -709,14 +701,14 @@ window.WalletUI = {
 
         // For send, use custom enhanced UI
         if (action === 'send') {
-            this.showEnhancedSendBottomSheet(address);
+            this.showSendBottomSheet(address);
         } else {
             // For LP and Burn, use original sidebar content
             this.showActionBottomSheet(action);
         }
     },
 
-    showEnhancedSendBottomSheet: function(selectedAddress) {
+    showSendBottomSheet: function(selectedAddress) {
         const activeWallet = window.WalletManager.getActiveWallet();
         if (!activeWallet) return;
 
@@ -1053,12 +1045,14 @@ window.WalletUI = {
                 const balEl = document.getElementById(`bal-${token.address}`);
                 if (balEl) window.setText(balEl, amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 }));
 
-                // Update USD value - use price data from my_contract_accounts API
+                // Update USD value - standardized calculation
                 const valEl = document.getElementById(`val-${token.address}`);
                 if (valEl) {
                     const meta = window.AssetManager.getAssetMeta(token.address);
-                    // Price already in metadata from my_contract_accounts response
-                    const usdValue = amount * (token.address === 'PAXI' ? (window.paxiPrice || 0.05) : meta.priceUSD);
+                    // Standardized price calculation: PRC20 value follows PAXI
+                    const currentPaxiPrice = window.paxiPriceUSD || 0.05;
+                    const priceUSD = token.address === 'PAXI' ? currentPaxiPrice : (meta.price * currentPaxiPrice);
+                    const usdValue = amount * priceUSD;
                     window.setText(valEl, `$${usdValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
                 }
 
@@ -1600,6 +1594,7 @@ window.connectInternalWallet = async function(id, pin) {
 
         window.showNotif("Internal wallet connected!", "success");
         if (window.WalletUI) window.WalletUI.renderDashboard();
+        if (window.renderSwapTerminal) window.renderSwapTerminal();
     } catch (e) {
         window.showNotif("Failed to connect: " + e.message, "error");
     }
@@ -1656,6 +1651,7 @@ window.connectWallet = async function(type) {
         
         await window.updateBalances();
         await window.updateMyTokens();
+        if (window.renderSwapTerminal) window.renderSwapTerminal();
 
         window.addClass('connectBtn', 'hidden');
         window.addClass('mobileConnectBtn', 'hidden');
@@ -1721,7 +1717,7 @@ window.updateBalances = async function() {
         // Update portfolio USD
         const portfolioUSD = document.getElementById('portfolio-usd');
         if (portfolioUSD) {
-            const usdValue = paxiAmount * (window.paxiPrice || 0.05);
+            const usdValue = paxiAmount * (window.paxiPriceUSD || 0.05);
             window.setText(portfolioUSD, `$${usdValue.toFixed(2)} USD`);
         }
 

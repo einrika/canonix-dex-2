@@ -3,7 +3,7 @@
 // ============================================
 
 // ===== PAXI PRICE ORACLE =====
-window.paxiPrice = 0.00; // cache 15 menit
+window.paxiPriceUSD = 0.00; // cache 15 menit
 window.fetchPaxiPrice = async function() {
   try {
     const response = await fetch(
@@ -24,13 +24,13 @@ window.fetchPaxiPrice = async function() {
       throw new Error("Invalid price data");
     }
     
-    window.paxiPrice = price;
+    window.paxiPriceUSD = price;
     return price;
     
   } catch (e) {
     console.error("CoinGecko fetch error:", e);
     
-    window.paxiPrice = 0.00;
+    window.paxiPriceUSD = 0.00;
     return 0.00;
   }
 };
@@ -125,7 +125,7 @@ window.fetchGasEstimate = async function(msgCount = 1) {
       gasPrice: "0.025",
       gasLimit: (250000 * msgCount).toString(),
       estimatedFee: (6250 * msgCount).toString(),
-      usdValue: (6250 * msgCount / 1e6 * window.paxiPrice).toFixed(4)
+      usdValue: (6250 * msgCount / 1e6 * (window.paxiPriceUSD || 0.05)).toFixed(4)
     };
   }
 };
@@ -210,9 +210,9 @@ window.fetchUserLPPositions = async function(userAddress) {
       const myPaxi = paxiReserve * share;
       const myPrc20 = prc20Reserve * share;
 
-      const paxiPrice = window.paxiPrice || 0.05;
-      const prc20PriceUSD = (tokenDetail && tokenDetail.priceUSD) ? tokenDetail.priceUSD : (paxiPrice * (paxiReserve / prc20Reserve));
-      const totalUSD = (myPaxi * paxiPrice) + (myPrc20 * (prc20PriceUSD || 0));
+      const paxiPriceUSD = window.paxiPriceUSD || 0.05;
+      const prc20PriceUSD = (tokenDetail && tokenDetail.priceUSD) ? tokenDetail.priceUSD : (paxiPriceUSD * (paxiReserve / prc20Reserve));
+      const totalUSD = (myPaxi * paxiPriceUSD) + (myPrc20 * (prc20PriceUSD || 0));
 
       return {
         prc20: pool.prc20,

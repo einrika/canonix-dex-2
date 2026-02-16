@@ -7,19 +7,16 @@ window.poolData = null;
 
 // ===== INITIALIZE APP =====
 window.addEventListener('load', async () => {
+    // Fetch PAXI price first as single source of truth
+    await window.fetchPaxiPrice();
+
     // Initialize chart
     window.initChart();
     
-    // Load auto orders from localStorage
-    try {
-        const savedOrders = localStorage.getItem('canonix_auto_orders');
-        if (savedOrders) {
-            window.autoOrders = JSON.parse(savedOrders);
-        }
-    } catch (e) {
-        console.error("Error loading auto orders", e);
-        window.autoOrders = [];
-    }
+    // Setup update interval
+    window.updateInterval = setInterval(() => {
+        window.updateAppUI();
+    }, 30000);
 
     // Load swap fee setting
     const savedFee = localStorage.getItem('swap_fee_enabled');
@@ -51,8 +48,7 @@ window.addEventListener('load', async () => {
 
     // Set initial trade type
     if (window.setSwapMode) window.setSwapMode('buy');
-    if (window.setOrderType) window.setOrderType('instant');
-    if (window.setSidebarTab) window.setSidebarTab('swap');
+    if (window.setSidebarTab) window.setSidebarTab('wallet');
 
     // Update ticker periodically
     if (window.updateTicker) {
@@ -67,6 +63,31 @@ window.addEventListener('load', async () => {
 
     window.log('Canonix loaded', 'info');
 });
+
+window.fetchPaxiPrice = async function() {
+    try {
+        const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=paxi-network&vs_currencies=usd');
+        const data = await response.json();
+        window.paxiPriceUSD = data['paxi-network']?.usd || 0.05;
+        console.log('✅ PAXI Price Updated:', window.paxiPriceUSD);
+    } catch (e) {
+        console.error('❌ Failed to fetch PAXI price:', e);
+        window.paxiPriceUSD = window.paxiPriceUSD || 0.05;
+    }
+};
+
+window.updateAppUI = async function() {
+    // Refresh prices
+    await window.fetchPaxiPrice();
+
+    // Refresh swap terminal
+    if (window.renderSwapTerminal) await window.renderSwapTerminal();
+
+    // Refresh wallet if active
+    if (window.WalletUI && window.currentSidebarTab === 'wallet') {
+        window.WalletUI.renderDashboard();
+    }
+};
 
 // ===== CLEANUP ON UNLOAD =====
 window.addEventListener('beforeunload', () => {

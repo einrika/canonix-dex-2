@@ -318,11 +318,10 @@ window.WalletManager = new WalletManager();
             });
         }
         
-        // Update balances after short delay to ensure DOM is ready
+        // Update balances and Swap UI after short delay to ensure DOM is ready
         setTimeout(() => {
-            if (window.updateBalances) {
-                window.updateBalances();
-            }
+            if (window.updateBalances) window.updateBalances();
+            if (window.renderSwapTerminal) window.renderSwapTerminal();
         }, 500);
     } else {
         console.log('ℹ️ No active wallet found for auto-connect');
@@ -486,10 +485,14 @@ class AssetManager {
                 // Also update metadata if contract info available
                 data.accounts.forEach(item => {
                     const c = item.contract;
+                    const priceInPaxi = parseFloat(c.price_paxi || c.reserve_paxi / c.reserve_prc20 || 0);
+                    // Standardized price calculation: PRC20 value follows PAXI
+                    const priceUSD = priceInPaxi * (window.paxiPriceUSD || 0.05);
+
                     this.metadata.set(c.contract_address, {
-                        price: parseFloat(c.price_paxi || c.reserve_paxi / c.reserve_prc20 || 0),
+                        price: priceInPaxi,
                         change24h: parseFloat(c.price_change || 0),
-                        priceUSD: parseFloat(c.price_usd || (c.price_paxi * (window.paxiPrice || 0.05))),
+                        priceUSD: priceUSD,
                         holders: c.holders || 0,
                         volume: c.volume || 0,
                         marketCap: c.market_cap || 0,
@@ -582,7 +585,7 @@ class AssetManager {
                                 share: (share * 100).toFixed(2),
                                 paxiReserve: window.formatAmount(paxiVal, 2),
                                 prc20Reserve: window.formatAmount(prc20Val, 2),
-                                totalUSD: window.formatAmount((paxiVal * 2) * (window.paxiPrice || 0.05), 2),
+                                totalUSD: window.formatAmount((paxiVal * 2) * (window.paxiPriceUSD || 0.05), 2),
                                 contractData: { ...contract, ...pool },
                                 positionData: lpData
                             };
@@ -687,7 +690,7 @@ window.simulateGas = async function(messages, memo = "") {
                 baseFee: estimatedFee.toString(),
                 priorityFee: "0",
                 estimatedFee: estimatedFee.toString(),
-                estimatedFeeUSD: window.formatAmount(estimatedFee / 1e6 * (window.paxiPrice || 0.05), 4)
+                estimatedFeeUSD: window.formatAmount(estimatedFee / 1e6 * (window.paxiPriceUSD || 0.05), 4)
             };
         }
         throw new Error("Invalid simulation response");
