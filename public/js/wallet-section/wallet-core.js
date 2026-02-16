@@ -300,9 +300,9 @@ class AssetManager {
     loadSettings() {
         try {
             const data = localStorage.getItem(this.settingsStorageKey);
-            return data ? JSON.parse(data) : { hideZeroBalance: false };
+            return data ? JSON.parse(data) : { hideZeroBalance: false, assetSort: 'most' };
         } catch (e) {
-            return { hideZeroBalance: false };
+            return { hideZeroBalance: false, assetSort: 'most' };
         }
     }
 
@@ -383,26 +383,6 @@ class AssetManager {
 
         // Add API tokens FIRST (highest priority - from my_contract_accounts)
         this.apiTokens.forEach(t => tokenMap.set(t.address, t));
-
-        // Add priority tokens from config (only if not already in API tokens)
-        const defaults = (window.APP_CONFIG.PRIORITY_TOKENS || []).map(addr => {
-            const detail = window.tokenDetails.get(addr);
-            return {
-                address: addr,
-                symbol: detail?.symbol || 'TOKEN',
-                name: detail?.name || 'Unknown Token',
-                decimals: detail?.decimals || 6,
-                logo: detail?.logo || '',
-                isDefault: true
-            };
-        });
-        
-        defaults.forEach(t => {
-            // Don't override API tokens
-            if (!tokenMap.has(t.address) && t.address !== 'PAXI') {
-                tokenMap.set(t.address, t);
-            }
-        });
 
         // Add custom tokens (only if not already present)
         this.customTokens.forEach(t => {

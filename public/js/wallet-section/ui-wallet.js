@@ -296,6 +296,26 @@ window.WalletUI = {
                             <h4 class="text-[10px] font-black uppercase tracking-widest text-gray-500 italic">Token List</h4>
                             <button onclick="window.WalletUI.showImportTokenModal()" class="text-xs text-up hover:underline"><i class="fas fa-plus-circle"></i></button>
                         </div>
+
+                        <!-- Asset Filters & Sorting -->
+                        <div class="flex items-center justify-between px-3 py-2 bg-black/20 rounded-xl border border-white/5">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-sort-amount-down text-[10px] text-gray-600"></i>
+                                <select onchange="window.WalletUI.setAssetSort(this.value)" class="bg-transparent text-[9px] font-black uppercase tracking-widest text-gray-400 outline-none cursor-pointer hover:text-white transition-colors">
+                                    <option value="most" ${window.AssetManager.settings.assetSort === 'most' ? 'selected' : ''}>Most Balance</option>
+                                    <option value="least" ${window.AssetManager.settings.assetSort === 'least' ? 'selected' : ''}>Least Balance</option>
+                                    <option value="name" ${window.AssetManager.settings.assetSort === 'name' ? 'selected' : ''}>Name</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[9px] font-black uppercase tracking-widest text-gray-500">Hide 0</span>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" onchange="window.WalletUI.toggleHideZero(this.checked)" class="sr-only peer" ${window.AssetManager.settings.hideZeroBalance ? 'checked' : ''}>
+                                    <div class="w-7 h-4 bg-surface border border-border rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-500 after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-up/20 peer-checked:after:bg-up"></div>
+                                </label>
+                            </div>
+                        </div>
+
                         <div id="asset-list-container" class="space-y-2">
                             <!-- Assets populated here -->
                         </div>
@@ -361,6 +381,16 @@ window.WalletUI = {
         }, 100);
     },
 
+    setAssetSort: function(sort) {
+        window.AssetManager.saveSettings({ assetSort: sort });
+        this.renderAssets();
+    },
+
+    toggleHideZero: function(enabled) {
+        window.AssetManager.saveSettings({ hideZeroBalance: enabled });
+        this.renderAssets();
+    },
+
     renderAssets: async function() {
         const container = document.getElementById('asset-list-container');
         if (!container) return;
@@ -373,8 +403,36 @@ window.WalletUI = {
             await window.AssetManager.fetchUserAssets(activeWallet.address);
         }
 
-        const tokens = window.AssetManager.getTokens();
+        let tokens = window.AssetManager.getTokens();
         const settings = window.AssetManager.settings;
+
+        // Filter: Hide Zero Balance
+        if (settings.hideZeroBalance) {
+            tokens = tokens.filter(token => {
+                const amount = token.balance !== undefined ? (token.balance / Math.pow(10, token.decimals || 6)) : 0;
+                return amount > 0;
+            });
+        }
+
+        // Sort Logic
+        tokens.sort((a, b) => {
+            const balA = a.balance !== undefined ? (a.balance / Math.pow(10, a.decimals || 6)) : 0;
+            const balB = b.balance !== undefined ? (b.balance / Math.pow(10, b.decimals || 6)) : 0;
+
+            const metaA = window.AssetManager.getAssetMeta(a.address);
+            const metaB = window.AssetManager.getAssetMeta(b.address);
+
+            // Compare by PAXI value (single source of truth)
+            const valA = balA * (metaA.price || 0);
+            const valB = balB * (metaB.price || 0);
+
+            switch (settings.assetSort) {
+                case 'most': return valB - valA;
+                case 'least': return valA - valB;
+                case 'name': return a.name.localeCompare(b.name);
+                default: return valB - valA;
+            }
+        });
 
         // Helper function to resolve IPFS and blockchain hosting URLs
         const resolveImageUrl = (url) => {
