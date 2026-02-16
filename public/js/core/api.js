@@ -3,15 +3,35 @@
 // ============================================
 
 // ===== PAXI PRICE ORACLE =====
-window.paxiPrice = 0.05;
+window.paxiPrice = 0.00; // cache 15 menit
 window.fetchPaxiPrice = async function() {
   try {
-    // Note: In production, fetch from a real oracle or DEX pool (e.g. PAXI/USDT)
-    // For now we use the benchmark price
-    window.paxiPrice = 0.05;
-    return window.paxiPrice;
+    const response = await fetch(
+      "https://api.coingecko.com/api/v3/simple/price?ids=paxi-network&vs_currencies=usd"
+    );
+    
+    if (!response.ok) {
+      throw new Error("Failed to fetch price");
+    }
+    
+    const data = await response.json();
+    
+    // response:
+    // {"paxi-network":{"usd":0.01299487}}
+    const price = data["paxi-network"]?.usd;
+    
+    if (typeof price !== "number") {
+      throw new Error("Invalid price data");
+    }
+    
+    window.paxiPrice = price;
+    return price;
+    
   } catch (e) {
-    return 0.05;
+    console.error("CoinGecko fetch error:", e);
+    
+    window.paxiPrice = 0.00;
+    return 0.00;
   }
 };
 
