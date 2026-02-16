@@ -299,6 +299,7 @@ class AssetManager {
         this.metadata = new Map(); // address -> { price, change24h, valueUSD }
         this.lpAssets = [];
         this.apiTokens = [];
+        this.paxiBalanceRaw = '0';
     }
 
     loadSettings() {
@@ -385,7 +386,17 @@ class AssetManager {
         // Use a Map to ensure unique tokens by address
         const tokenMap = new Map();
 
-        // Add API tokens FIRST (highest priority - from my_contract_accounts)
+        // ALWAYS INCLUDE PAXI
+        tokenMap.set('PAXI', {
+            address: 'PAXI',
+            symbol: 'PAXI',
+            name: 'Paxi Network',
+            decimals: 6,
+            logo: 'https://raw.githubusercontent.com/paxinetwork/logos/main/paxi.png',
+            balance: this.paxiBalanceRaw
+        });
+
+        // Add API tokens
         this.apiTokens.forEach(t => tokenMap.set(t.address, t));
 
         // Add custom tokens (only if not already present)
@@ -403,8 +414,16 @@ class AssetManager {
             console.log('🔍 Fetching user assets for:', address);
             
             // Use smartFetch - will auto-fallback to proxy if CORS error
-            const data = await window.smartFetch(`https://explorer.paxinet.io/api/prc20/my_contract_accounts?address=${address}`);
+            const [data, paxiRes] = await Promise.all([
+                window.smartFetch(`https://explorer.paxinet.io/api/prc20/my_contract_accounts?address=${address}`),
+                window.smartFetch(`${window.APP_CONFIG.LCD}/cosmos/bank/v1beta1/balances/${address}`).catch(() => null)
+            ]);
             
+            if (paxiRes && paxiRes.balances) {
+                const b = paxiRes.balances.find(x => x.denom === 'upaxi');
+                this.paxiBalanceRaw = b ? b.amount : '0';
+            }
+
             if (data && data.accounts) {
                 console.log(`✅ Loaded ${data.accounts.length} token accounts`);
                 
@@ -1017,7 +1036,7 @@ window.executeRemoveLPTransaction = async function(contractAddress, lpAmount) {
 };
 
 // 3. SEND FUNCTION
-window.executeSendTransaction = async function(tokenAddress, recipient, amount) {
+window.executeSendTransaction = async function(tokenAddress, recipient, amount, memo = "Send from Canonix") {
     if (!window.wallet) return;
     
     const tokenDetail = window.tokenDetails?.get(tokenAddress);
@@ -1056,7 +1075,35 @@ window.executeSendTransaction = async function(tokenAddress, recipient, amount) 
         }));
     }
 
-    return await window.buildAndSendTx(msgs, "Send from Canonix");
+    return await window.buildAndSendTx(msgs, memo);
+};
+
+// 5. BURN FUNCTION
+window.executeBurnTransaction = async function(contractAddress, amount) {
+    if (!window.wallet) return;
+
+    const tokenDetail = window.tokenDetails?.get(contractAddress);
+    const decimals = tokenDetail?.decimals || 6;
+
+    const microAmount = String(Math.floor(amount * Math.pow(10, decimals)));
+
+    const burnMsg = {
+        burn: {
+            amount: microAmount
+        }
+    };
+
+    const anyMsg = PaxiCosmJS.Any.fromPartial({
+        typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+        value: PaxiCosmJS.MsgExecuteContract.encode({
+            sender: window.wallet.address,
+            contract: contractAddress,
+            msg: new TextEncoder().encode(JSON.stringify(burnMsg)),
+            funds: []
+        }).finish()
+    });
+
+    return await window.buildAndSendTx([anyMsg], "Burn Tokens");
 };
 
 // 4. DONATION FUNCTION

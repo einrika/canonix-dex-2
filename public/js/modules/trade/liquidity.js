@@ -247,3 +247,38 @@ window.updateBurnBalanceDisplay = async function() {
     window.setText(balEl, `Bal: ${amount.toFixed(2)}`);
 };
 
+window.executeBurn = async function() {
+    if (!window.wallet) {
+        window.showNotif(window.NOTIF_CONFIG.CONNECT_WALLET_FIRST, 'error');
+        return;
+    }
+
+    if (!window.currentPRC20) {
+        window.showNotif(window.NOTIF_CONFIG.SELECT_TOKEN_FIRST, 'error');
+        return;
+    }
+
+    const amount = parseFloat(document.getElementById('burnAmount')?.value);
+
+    if (!amount || amount <= 0) {
+        window.showNotif('Enter a valid amount to burn', 'error');
+        return;
+    }
+
+    try {
+        await window.executeBurnTransaction(window.currentPRC20, amount);
+
+        // Close bottom sheet if open
+        document.getElementById('actionBottomSheet')?.remove();
+
+        // Refresh balances
+        setTimeout(async () => {
+            if (window.updateBalances) await window.updateBalances();
+            if (window.updateBurnBalanceDisplay) await window.updateBurnBalanceDisplay();
+            if (window.WalletUI && window.WalletUI.renderAssets) window.WalletUI.renderAssets();
+        }, 3000);
+
+    } catch (e) {
+        console.error("Burn failed:", e);
+    }
+};

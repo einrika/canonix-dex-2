@@ -904,7 +904,7 @@ window.WalletUI = {
                             <button onclick="window.WalletUI.reviewSend()" class="w-full py-4 bg-up text-black rounded-xl font-black text-sm hover:bg-up/90 transition-all">
                                 Review Send
                             </button>
-                            <button id="confirm-send-btn" class="hidden w-full py-4 bg-up text-black rounded-xl font-black text-sm hover:bg-up/90 transition-all">
+                            <button id="confirm-send-btn" onclick="window.WalletUI.confirmSend()" class="hidden w-full py-4 bg-up text-black rounded-xl font-black text-sm hover:bg-up/90 transition-all">
                                 Confirm & Send
                             </button>
                             <button onclick="document.getElementById('sendBottomSheet').remove()" class="w-full py-3 bg-surface border border-border text-white rounded-xl font-bold text-sm hover:bg-card transition-all">
@@ -1034,6 +1034,9 @@ window.WalletUI = {
         document.getElementById('send-confirmation')?.classList.remove('hidden');
         document.getElementById('confirm-send-btn')?.classList.remove('hidden');
         
+        // Hide review button
+        event.target.closest('button')?.classList.add('hidden');
+
         // Fill confirmation
         document.getElementById('confirm-token').textContent = token.symbol;
         document.getElementById('confirm-amount').textContent = `${amount} ${token.symbol}`;
@@ -1042,6 +1045,50 @@ window.WalletUI = {
         
         // Scroll to confirmation
         document.getElementById('send-confirmation')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    },
+
+    confirmSend: async function() {
+        const tokenAddress = window.selectedSendToken;
+        const recipient = document.getElementById('send-recipient')?.value;
+        const amount = parseFloat(document.getElementById('send-amount')?.value);
+        const memo = document.getElementById('send-memo')?.value || "Send from Canonix";
+
+        if (!tokenAddress || !recipient || isNaN(amount) || amount <= 0) {
+            window.showNotif('Invalid send parameters', 'error');
+            return;
+        }
+
+        const btn = document.getElementById('confirm-send-btn');
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Sending...';
+        }
+
+        try {
+            await window.executeSendTransaction(tokenAddress, recipient, amount, memo);
+
+            // Close sheet on success
+            document.getElementById('sendBottomSheet')?.remove();
+
+            // Refresh balances
+            setTimeout(async () => {
+                if (window.AssetManager) {
+                    const activeWallet = window.WalletManager.getActiveWallet();
+                    if (activeWallet) await window.AssetManager.fetchUserAssets(activeWallet.address);
+                }
+                if (window.updateBalances) await window.updateBalances();
+                this.renderAssets();
+            }, 3000);
+
+        } catch (e) {
+            console.error('Send failed:', e);
+            // Error notif handled by buildAndSendTx
+        } finally {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = 'Confirm & Send';
+            }
+        }
     },
 
     showActionBottomSheet: function(action) {
