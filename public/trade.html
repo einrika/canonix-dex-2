@@ -200,12 +200,12 @@
         <div class="flex items-center gap-2 sm:gap-4">
             <!-- Functional Icons -->
             <div class="hidden md:flex items-center gap-1 border-r border-border pr-2 sm:pr-4 mr-2">
-                <button onclick="showWalletActions()" title="Wallet Actions" class="w-8 h-8 flex items-center justify-center rounded-lg text-blue-400 hover:bg-card hover:text-white transition-all"><i class="fas fa-paper-plane text-xs"></i></button>
-                <button onclick="showLPModal()" title="Liquidity" class="w-8 h-8 flex items-center justify-center rounded-lg text-green-400 hover:bg-card hover:text-white transition-all"><i class="fas fa-layer-group text-xs"></i></button>
-                <button onclick="showDonationModal()" title="Donate" class="w-8 h-8 flex items-center justify-center rounded-lg text-down hover:bg-card hover:text-white transition-all"><i class="fas fa-heart text-xs"></i></button>
+                <button onclick="window.setSidebarTab('send')" title="Send Assets" class="w-8 h-8 flex items-center justify-center rounded-lg text-blue-400 hover:bg-card hover:text-white transition-all"><i class="fas fa-paper-plane text-xs"></i></button>
+                <button onclick="window.setSidebarTab('lp')" title="Liquidity" class="w-8 h-8 flex items-center justify-center rounded-lg text-green-400 hover:bg-card hover:text-white transition-all"><i class="fas fa-layer-group text-xs"></i></button>
+                <button onclick="window.setSidebarTab('donate')" title="Donate" class="w-8 h-8 flex items-center justify-center rounded-lg text-down hover:bg-card hover:text-white transition-all"><i class="fas fa-heart text-xs"></i></button>
                 <a href="faq.html" title="FAQ" class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-card hover:text-white transition-all"><i class="fas fa-question text-xs"></i></a>
                 <button onclick="toggleConsoleModal()" title="System Console" class="w-8 h-8 flex items-center justify-center rounded-lg text-up hover:bg-card hover:text-white transition-all"><i class="fas fa-terminal text-xs"></i></button>
-                <button onclick="window.WalletUI.showSettingsPanel()" title="Settings" class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-card hover:text-white transition-all"><i class="fas fa-cog text-xs"></i></button>
+                <button onclick="window.location.href='setting.html'" title="Settings" class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-card hover:text-white transition-all"><i class="fas fa-cog text-xs"></i></button>
             </div>
 
             <div id="walletInfo" class="hidden sm:flex items-center gap-3 px-3 py-1.5 bg-card rounded-lg border border-border">
@@ -661,49 +661,6 @@
     </div>
 
     <!-- Liquidity Modal -->
-    <div id="lpModal" class="fixed inset-0 bg-black bg-opacity-80 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-card rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto border border-border">
-            <div class="p-4 border-b border-border flex justify-between items-center sticky top-0 bg-card z-10">
-                <h3 class="text-lg font-bold flex items-center gap-2"><i class="fas fa-water"></i> Liquidity Pool</h3>
-                <button onclick="hideLPModal()" class="text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="flex border-b border-border">
-                <button id="tabAddLP" onclick="switchLPTab('add')" class="flex-1 py-3 text-sm font-semibold border-b-2 border-up text-white">Add Liquidity</button>
-                <button id="tabRemoveLP" onclick="switchLPTab('remove')" class="flex-1 py-3 text-sm font-semibold text-gray-400 hover:text-white">Remove Liquidity</button>
-            </div>
-            <div id="contentAddLP" class="p-6">
-                <div class="space-y-4">
-                    <div class="bg-bg rounded-lg p-3 text-xs border border-border">
-                        <div class="flex justify-between"><span class="text-gray-400">Pool Ratio:</span><span id="poolRatioDisplay">-</span></div>
-                    </div>
-                    <div>
-                        <div class="flex justify-between mb-2"><label class="text-sm text-gray-400">PAXI Amount</label><span class="text-xs text-gray-500">Bal: <span id="lpPaxiBalance">0</span></span></div>
-                        <input type="number" id="lpPaxiAmount" class="w-full bg-bg border border-border rounded-lg px-4 py-3 text-white text-lg outline-none focus:border-up" placeholder="0.00" oninput="updateLPFromInput('paxi')">
-                    </div>
-                    <div class="text-center text-up">+</div>
-                    <div>
-                        <div class="flex justify-between mb-2"><label class="text-sm text-gray-400" id="lpTokenSymbol">Token Amount</label><span class="text-xs text-gray-500">Bal: <span id="lpTokenBalance">0</span></span></div>
-                        <input type="number" id="lpTokenAmount" class="w-full bg-bg border border-border rounded-lg px-4 py-3 text-white text-lg outline-none focus:border-up" placeholder="0.00" oninput="updateLPFromInput('token')">
-                    </div>
-                    <button onclick="executeAddLP()" class="w-full py-3 btn-trade rounded-lg font-bold">ADD LIQUIDITY</button>
-                </div>
-            </div>
-            <div id="contentRemoveLP" class="p-6 hidden">
-                <div class="space-y-4">
-                    <div class="bg-bg rounded-lg p-3 text-xs border border-border">
-                        <div class="flex justify-between"><span class="text-gray-400">Your LP Tokens:</span><span id="yourLPTokens">0</span></div>
-                    </div>
-                    <div>
-                        <div class="flex justify-between mb-2"><label class="text-sm text-gray-400">Amount to Remove</label><span class="text-xs text-gray-500">Max: <span id="maxLPTokens">0</span></span></div>
-                        <input type="number" id="lpRemoveAmount" class="w-full bg-bg border border-border rounded-lg px-4 py-3 text-white text-lg outline-none focus:border-down" placeholder="0.00">
-                    </div>
-                    <button onclick="executeRemoveLP()" class="w-full py-3 bg-down hover:opacity-90 rounded-lg font-bold">REMOVE LIQUIDITY</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- AI Analysis Modal -->
     <div id="aiModal" class="hidden fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
         <div class="bg-card rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto border border-border">
             <div class="p-4 border-b border-border flex justify-between items-center sticky top-0 bg-card z-10">
@@ -715,75 +672,7 @@
     </div>
 
     <!-- Donation Modal -->
-    <div id="donationModal" class="hidden fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
-        <div class="bg-card rounded-2xl w-full max-w-sm border border-border overflow-hidden">
-            <div class="p-4 border-b border-border flex justify-between items-center">
-                <h3 class="font-bold"><i class="fas fa-heart text-down mr-2"></i>Support Dev</h3>
-                <button onclick="hideDonationModal()" class="text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="p-6 text-center">
-                <p class="text-xs text-gray-400 mb-4">Support development by donating PAXI.</p>
-                <div class="bg-bg p-3 rounded-lg mb-4 border border-border">
-                    <input type="number" id="donationAmount" placeholder="Amount (PAXI)" class="w-full bg-transparent text-center text-xl font-bold outline-none" value="10">
-                </div>
-                <button onclick="executeDonation()" class="w-full py-3 btn-trade rounded-lg font-bold shadow-lg">DONATE NOW</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Error Modal -->
-    <div id="errorModal" class="hidden fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
-        <div class="bg-card rounded-2xl w-full max-w-sm border border-down/30">
-            <div class="p-4 border-b border-border flex justify-between items-center bg-down/10">
-                <h3 class="font-bold text-down"><i class="fas fa-exclamation-circle mr-2"></i>Error</h3>
-                <button onclick="document.getElementById('errorModal').classList.add('hidden')" class="text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="p-4">
-                <p id="errorText" class="text-xs font-mono bg-bg p-3 rounded border border-border text-gray-400 break-words mb-4"></p>
-                <button onclick="document.getElementById('errorModal').classList.add('hidden')" class="w-full py-2 bg-down text-white rounded font-bold text-xs">CLOSE</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Wallet Actions Modal (Send/Receive) -->
-    <div id="walletActionsModal" class="hidden fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
-        <div class="bg-card rounded-2xl w-full max-w-md border border-border overflow-hidden">
-            <div class="p-4 border-b border-border flex justify-between items-center">
-                <h3 class="font-bold">Wallet Actions</h3>
-                <button onclick="hideWalletActions()" class="text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="p-4">
-                <div class="flex border-b border-border mb-4">
-                    <button onclick="switchWalletTab('send')" id="tabSend" class="flex-1 py-2 text-xs font-bold border-b-2 border-up text-white">SEND</button>
-                    <button onclick="switchWalletTab('receive')" id="tabReceive" class="flex-1 py-2 text-xs font-bold text-gray-500">RECEIVE</button>
-                </div>
-                <div id="contentSend" class="space-y-3">
-                    <div>
-                        <label class="text-[10px] text-gray-500 uppercase font-bold mb-1 block">Recipient</label>
-                        <input type="text" id="sendRecipient" placeholder="paxi1..." class="w-full p-2 bg-bg border border-border rounded text-sm outline-none focus:border-up">
-                    </div>
-                    <div class="flex gap-2">
-                        <div class="flex-1">
-                            <label class="text-[10px] text-gray-500 uppercase font-bold mb-1 block">Amount</label>
-                            <input type="number" id="sendAmount" placeholder="0.0" class="w-full p-2 bg-bg border border-border rounded text-sm outline-none focus:border-up">
-                        </div>
-                        <div class="w-24">
-                            <label class="text-[10px] text-gray-500 uppercase font-bold mb-1 block">Token</label>
-                            <select id="sendTokenSelect" class="w-full p-2 bg-bg border border-border rounded text-sm outline-none"></select>
-                        </div>
-                    </div>
-                    <button onclick="executeSend()" class="w-full py-3 btn-trade rounded-lg font-bold text-sm mt-2">SEND ASSETS</button>
-                </div>
-                <div id="contentReceive" class="hidden text-center space-y-4">
-                    <div class="bg-white p-2 rounded-lg inline-block"><img src="" id="receiveQR" class="w-40 h-40"></div>
-                    <div class="bg-bg p-2 rounded border border-border flex items-center gap-2">
-                        <code id="receiveAddress" class="text-[10px] font-mono flex-1 break-all text-gray-300">Not connected</code>
-                        <button onclick="copyAddress(event, document.getElementById('receiveAddress').innerText)" class="text-up"><i class="fas fa-copy"></i></button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Console Log Modal -->
     <div id="consoleModal" class="hidden fixed inset-0 bg-black/95 z-[9999] flex items-center justify-center p-4">
@@ -819,7 +708,6 @@
     <script src="./js/modules/market/holders.js"></script>
     <script src="./js/modules/market/ai.js"></script>
     <script src="./js/ui/rendering.js"></script>
-    <script src="./js/old-code/legacy.js"></script>
     <script src="./js/ui/console.js"></script>
     <!-- Transaction logic merged into wallet-core, keeping UI interaction -->
     <!-- <script src="./js/modules/trade/transaction.js"></script> Removed -->

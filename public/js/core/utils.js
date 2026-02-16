@@ -359,23 +359,68 @@ window.setCachedData = function(key, value) {
 };
 
 // ===== NOTIFICATION SYSTEM =====
-window.showNotif = function(msg, type) {
+window.showNotif = function(msg, type = 'info') {
   const safeMsg = window.escapeHtml(msg);
-  const colors = {
-    success: 'bg-cyan-600',
-    error: 'bg-pink-600',
-    info: 'bg-purple-600'
-  };
-  const icons = {
-    success: 'check-circle',
-    error: 'times-circle',
-    info: 'info-circle'
-  };
+
+  // Ensure styles are present
+  if (!document.getElementById('paxi-notif-styles')) {
+    const style = document.createElement('style');
+    style.id = 'paxi-notif-styles';
+    style.innerHTML = `
+      .paxi-notif {
+        position: fixed; top: 24px; right: 24px; z-index: 10000;
+        padding: 16px 20px; border-radius: 20px;
+        background: rgba(15, 10, 30, 0.8); backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        display: flex; align-items: center; gap: 14px;
+        min-width: 280px; max-width: 420px; color: #fff;
+        transform: translateX(120%); transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        overflow: hidden; pointer-events: auto;
+      }
+      .paxi-notif.show { transform: translateX(0); }
+      .paxi-notif-progress {
+        position: absolute; bottom: 0; left: 0; height: 3px;
+        background: linear-gradient(90deg, #00f2fe, #ff0080);
+        width: 100%; transition: width 4s linear;
+      }
+      .paxi-notif-icon {
+        width: 36px; height: 36px; border-radius: 12px;
+        display: flex; align-items: center; justify-content: center; font-size: 16px;
+        flex-shrink: 0;
+      }
+      .paxi-notif-success .paxi-notif-icon { background: rgba(0, 242, 254, 0.15); color: #00f2fe; }
+      .paxi-notif-error .paxi-notif-icon { background: rgba(255, 0, 128, 0.15); color: #ff0080; }
+      .paxi-notif-info .paxi-notif-icon { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
+      .paxi-notif-text { font-size: 13px; font-weight: 600; line-height: 1.4; color: rgba(255,255,255,0.9); }
+    `;
+    document.head.appendChild(style);
+  }
+
+  const icons = { success: 'check-circle', error: 'exclamation-circle', info: 'info-circle' };
+
   const notif = document.createElement('div');
-  notif.className = `fixed top-4 right-4 ${colors[type]} text-white px-4 py-3 rounded-lg shadow-lg z-[999] flex items-center gap-3 text-sm max-w-sm`;
-  notif.innerHTML = `<i class="fas fa-${icons[type]}"></i><span>${safeMsg}</span>`;
+  notif.className = `paxi-notif paxi-notif-${type}`;
+  notif.innerHTML = `
+    <div class="paxi-notif-icon"><i class="fas fa-${icons[type] || icons.info}"></i></div>
+    <div class="paxi-notif-text">${safeMsg}</div>
+    <div class="paxi-notif-progress" style="width: 100%"></div>
+  `;
+
   document.body.appendChild(notif);
-  setTimeout(() => notif.remove(), 4000);
+
+  // Trigger animations
+  requestAnimationFrame(() => {
+    notif.classList.add('show');
+    const progress = notif.querySelector('.paxi-notif-progress');
+    setTimeout(() => { progress.style.width = '0%'; }, 50);
+  });
+
+  // Remove
+  setTimeout(() => {
+    notif.classList.remove('show');
+    setTimeout(() => notif.remove(), 600);
+  }, 4000);
 };
 
 // ===== LOGGER =====
@@ -446,6 +491,12 @@ window.waitForLibrary = function(globalName, timeout = 10000) {
 window.setText = function(idOrEl, text) {
     const el = typeof idOrEl === 'string' ? document.getElementById(idOrEl) : idOrEl;
     if (el) el.textContent = text;
+};
+
+window.shortenAddress = function(address, chars = 8) {
+    if (!address) return '';
+    if (address.length <= (chars * 2) + 3) return address;
+    return `${address.slice(0, chars)}...${address.slice(-chars)}`;
 };
 
 window.setHtml = function(idOrEl, html) {

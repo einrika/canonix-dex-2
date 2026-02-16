@@ -129,7 +129,7 @@ window.WalletUI = {
                                                 <span class="text-xs font-bold ${color}">${type}</span>
                                                 <span class="text-xs font-mono">${tx.amount || '0'} ${tx.symbol || 'PAXI'}</span>
                                             </div>
-                                            <div class="text-[10px] text-gray-500 truncate">${isSent ? tx.to : tx.from}</div>
+                                            <div class="text-[10px] text-gray-500">${window.shortenAddress(isSent ? tx.to : tx.from)}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -264,7 +264,7 @@ window.WalletUI = {
                     </div>
 
                     <div class="flex items-center gap-2 p-2 bg-black/40 rounded-xl border border-white/5">
-                        <code class="text-[9px] font-mono text-gray-400 flex-1 truncate">${wallet.address}</code>
+                        <code class="text-[9px] font-mono text-gray-400 flex-1">${window.shortenAddress(wallet.address)}</code>
                         <button onclick="window.copyAddress(event, '${wallet.address}')" class="w-6 h-6 flex items-center justify-center rounded bg-up/10 text-up hover:bg-up/20 transition-all">
                             <i class="fas fa-copy text-[10px]"></i>
                         </button>
@@ -972,7 +972,7 @@ window.WalletUI = {
         // Fill confirmation
         document.getElementById('confirm-token').textContent = token.symbol;
         document.getElementById('confirm-amount').textContent = `${amount} ${token.symbol}`;
-        document.getElementById('confirm-address').textContent = recipient.slice(0, 12) + '...' + recipient.slice(-8);
+        document.getElementById('confirm-address').textContent = window.shortenAddress(recipient, 10);
         document.getElementById('confirm-balance').textContent = `${window.currentSendTokenBalance || 0} ${token.symbol}`;
         
         // Scroll to confirmation
@@ -1090,7 +1090,7 @@ window.WalletUI = {
                         <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${wallet.address}" class="w-48 h-48">
                     </div>
                     <div class="bg-surface border border-border rounded-2xl p-4 w-full flex items-center gap-3 mb-6">
-                        <code class="text-[10px] font-mono text-gray-400 truncate flex-1">${wallet.address}</code>
+                        <code class="text-[10px] font-mono text-gray-400 flex-1">${window.shortenAddress(wallet.address, 10)}</code>
                         <button onclick="window.copyAddress(event, '${wallet.address}')" class="text-up hover:scale-110 transition-transform"><i class="fas fa-copy"></i></button>
                     </div>
                     <button onclick="document.getElementById('qrModal').remove()" class="w-full py-4 bg-surface text-gray-500 font-black rounded-2xl text-xs uppercase italic border border-border hover:text-white transition-all">Close</button>
@@ -1651,7 +1651,7 @@ window.connectWallet = async function(type) {
             window.walletType = 'paxihub';
         }
 
-        btn.innerHTML = `<i class="fas fa-check-circle mr-2"></i>${window.wallet.address.slice(0,6)}...${window.wallet.address.slice(-4)}`;
+        btn.innerHTML = `<i class="fas fa-check-circle mr-2"></i>${window.shortenAddress(window.wallet.address)}`;
         btn.className = 'btn-trade px-3 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-bold shadow-lg flex items-center gap-2 bg-green-600';
         
         await window.updateBalances();
@@ -1706,7 +1706,7 @@ window.updateBalances = async function() {
 
         window.setText('walletBalance', paxiAmount.toFixed(2) + ' PAXI');
         if (window.wallet?.address) {
-            window.setText('walletAddrShort', window.wallet.address.slice(0, 8) + '...' + window.wallet.address.slice(-6));
+            window.setText('walletAddrShort', window.shortenAddress(window.wallet.address));
         }
         window.removeClass('walletInfo', 'hidden');
 
@@ -1731,70 +1731,83 @@ window.updateBalances = async function() {
 };
 
 window.updateLPBalances = async function() {
-    if (!window.wallet || !window.currentPRC20) return;
+    if (!window.currentPRC20) return;
     
+    // Ensure lpBalances object exists
+    if (!window.lpBalances) {
+        window.lpBalances = { paxi: 0, token: 0, lpTokens: 0 };
+    }
+
     try {
-        // Fetch fresh PAXI balance dari blockchain
-        const response = await window.smartFetch(
-            `${window.APP_CONFIG.LCD}/cosmos/bank/v1beta1/balances/${window.wallet.address}`
-        );
-        const balances = response.balances || [];
-        const paxiBalance = balances.find(b => b.denom === 'upaxi');
-        window.lpBalances.paxi = paxiBalance ? parseInt(paxiBalance.amount) / 1000000 : 0;
-        
-        // Fetch fresh PRC20 balance dari blockchain
-        const tokenDecimals = window.currentTokenInfo?.decimals || 6;
-        const tokenBalance = await window.getPRC20Balance(window.wallet.address, window.currentPRC20);
-        window.lpBalances.token = tokenBalance / Math.pow(10, tokenDecimals);
-        
-        // Fetch LP position dari blockchain
-        try {
-            const posData = await window.smartFetch(
-                `${window.APP_CONFIG.LCD}/paxi/swap/position/${window.wallet.address}/${window.currentPRC20}`
+        // 1. Handle Wallet Balances if connected
+        if (window.wallet) {
+            // Fetch fresh PAXI balance dari blockchain
+            const response = await window.smartFetch(
+                `${window.APP_CONFIG.LCD}/cosmos/bank/v1beta1/balances/${window.wallet.address}`
             );
-            window.lpBalances.lpTokens = posData.position?.lp_amount ? parseFloat(posData.position.lp_amount) / 1000000 : 0;
-        } catch (e) {
-            window.lpBalances.lpTokens = 0;
+            const balances = response.balances || [];
+            const paxiBalance = balances.find(b => b.denom === 'upaxi');
+            window.lpBalances.paxi = paxiBalance ? parseInt(paxiBalance.amount) / 1000000 : 0;
+
+            // Fetch fresh PRC20 balance dari blockchain
+            const tokenDecimals = window.currentTokenInfo?.decimals || 6;
+            const tokenBalance = await window.getPRC20Balance(window.wallet.address, window.currentPRC20);
+            window.lpBalances.token = tokenBalance / Math.pow(10, tokenDecimals);
+
+            // Fetch LP position dari blockchain
+            try {
+                const posData = await window.smartFetch(
+                    `${window.APP_CONFIG.LCD}/paxi/swap/position/${window.wallet.address}/${window.currentPRC20}`
+                );
+                window.lpBalances.lpTokens = posData.position?.lp_amount ? parseFloat(posData.position.lp_amount) / 1000000 : 0;
+            } catch (e) {
+                window.lpBalances.lpTokens = 0;
+            }
         }
         
-        // Update UI
+        // 2. Update UI Balances (always update labels, even if 0 or not connected)
         if (document.getElementById('lpPaxiBalance')) {
-            window.setText('lpPaxiBalance', window.lpBalances.paxi.toFixed(6));
+            window.setText('lpPaxiBalance', (window.lpBalances.paxi || 0).toFixed(6));
         }
         if (document.getElementById('lpTokenBalance')) {
-            window.setText('lpTokenBalance', window.lpBalances.token.toFixed(6));
+            window.setText('lpTokenBalance', (window.lpBalances.token || 0).toFixed(6));
         }
         if (document.getElementById('yourLPTokens')) {
-            window.setText('yourLPTokens', window.lpBalances.lpTokens.toFixed(6));
+            window.setText('yourLPTokens', (window.lpBalances.lpTokens || 0).toFixed(6));
         }
         if (document.getElementById('maxLPTokens')) {
-            window.setText('maxLPTokens', window.lpBalances.lpTokens.toFixed(6));
+            window.setText('maxLPTokens', (window.lpBalances.lpTokens || 0).toFixed(6));
         }
         
+        // 3. Handle Pool Data & Ratio (Always update if currentPRC20 exists)
+        if (!window.poolData) {
+            await window.fetchPoolData();
+        }
+
         if (window.poolData) {
-            const reservePaxi = parseFloat(window.poolData.reserve_paxi) / 1000000;
-            const reserveToken = parseFloat(window.poolData.reserve_prc20) / Math.pow(10, window.currentTokenInfo?.decimals || 6);
+            const reservePaxi = parseFloat(window.poolData.reserve_paxi || 0) / 1000000;
+            const reserveToken = parseFloat(window.poolData.reserve_prc20 || 0) / Math.pow(10, window.currentTokenInfo?.decimals || 6);
             const ratio = reservePaxi > 0 ? (reserveToken / reservePaxi).toFixed(6) : '0';
             
             if (document.getElementById('poolRatioDisplay')) {
                 window.setText('poolRatioDisplay', `1 PAXI = ${ratio} ${window.currentTokenInfo?.symbol || 'TOKEN'}`);
             }
 
-            if (window.lpBalances.lpTokens > 0) {
-                const totalLP = parseFloat(window.poolData.total_lp_amount || window.poolData.total_lp || 1) / 1000000;
-                const share = window.lpBalances.lpTokens / totalLP;
-                const myPaxi = reservePaxi * share;
-                const myToken = reserveToken * share;
+            const posInfo = document.getElementById('yourPositionDetails');
+            if (posInfo) {
+                if (window.lpBalances.lpTokens > 0) {
+                    const totalLP = parseFloat(window.poolData.total_lp_amount || window.poolData.total_lp || 1) / 1000000;
+                    const share = window.lpBalances.lpTokens / totalLP;
+                    const myPaxi = reservePaxi * share;
+                    const myToken = reserveToken * share;
 
-                const posInfo = document.getElementById('yourPositionDetails');
-                if (posInfo) {
                     posInfo.innerHTML = `
                         <div class="flex justify-between text-[10px] mt-1 border-t border-border pt-1">
                             <span class="text-gray-500">Pooled PAXI</span>
                             <span class="text-gray-300 font-mono">${myPaxi.toFixed(2)}</span>
                         </div>
                         <div class="flex justify-between text-[10px]">
-                            <span class="text-gray-500">Pooled ${window.currentTokenInfo?.symbol}</span>
+                            <span class="text-gray-500">Pooled ${window.currentTokenInfo?.symbol || 'TOKEN'}</span>
                             <span class="text-gray-300 font-mono">${myToken.toFixed(2)}</span>
                         </div>
                         <div class="flex justify-between text-[10px]">
@@ -1802,6 +1815,8 @@ window.updateLPBalances = async function() {
                             <span class="text-gray-300 font-mono">${(share * 100).toFixed(4)}%</span>
                         </div>
                     `;
+                } else {
+                    posInfo.innerHTML = ''; // Clear if no position
                 }
             }
         }
@@ -2143,7 +2158,7 @@ window.connectWithMnemonic = async function(mnemonic) {
         window.walletType = 'internal';
 
         const btn = document.getElementById('connectBtn');
-        btn.innerHTML = `<i class="fas fa-check-circle mr-2"></i>${window.wallet.address.slice(0,6)}...${window.wallet.address.slice(-4)}`;
+        btn.innerHTML = `<i class="fas fa-check-circle mr-2"></i>${window.shortenAddress(window.wallet.address)}`;
         btn.className = 'btn-trade px-3 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-bold shadow-lg flex items-center gap-2 bg-green-600';
 
         await window.updateBalances();

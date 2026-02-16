@@ -152,7 +152,7 @@ window.renderHoldersTable = function(list, page) {
         const addr = item.address || item.account_address || item;
         const bal = item.balance !== undefined ? item.balance : '-';
         const pct = item.percentage !== undefined ? item.percentage : '-';
-        const shortAddr = typeof addr === 'string' ? addr.slice(0, 8) + '...' + addr.slice(-6) : 'Unknown';
+        const shortAddr = typeof addr === 'string' ? window.shortenAddress(addr) : 'Unknown';
         const fullAddr = typeof addr === 'string' ? addr : '';
         
         let balanceDisplay = bal, balanceTitle = bal;

@@ -133,6 +133,18 @@ window.updateRemoveLPFromSlider = function(percent) {
     }
 };
 
+window.updateRemoveLPFromInput = function() {
+    const input = document.getElementById('lpRemoveAmount');
+    const slider = document.getElementById('lpRemoveSlider');
+    if (!input || !slider) return;
+
+    const amount = parseFloat(input.value) || 0;
+    const percent = window.lpBalances.lpTokens > 0 ? Math.min(100, (amount / window.lpBalances.lpTokens * 100)) : 0;
+
+    slider.value = percent;
+    window.updateSliderGradient('lpRemoveSlider', percent);
+};
+
 // ===== SET REMOVE LP PERCENT =====
 window.setRemoveLPPercent = function(percent) {
     const slider = document.getElementById('lpRemoveSlider');

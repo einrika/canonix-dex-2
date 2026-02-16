@@ -18,6 +18,14 @@ window.renderTokenSidebar = function(filter = '', isAppend = false) {
   }
   
   let filtered = [...window.tokenAddresses];
+
+  // Remove initial loader or any non-managed elements (except subTabs)
+  Array.from(container.children).forEach(child => {
+      if (child.id !== 'tokenSubTabs' && !child.classList.contains('token-sidebar-item') &&
+          child.id !== 'tokenPager' && child.id !== 'tokenEndMarker') {
+          child.remove();
+      }
+  });
   
   // Apply Filters
   if (!filter) {
@@ -484,13 +492,59 @@ window.renderLPTerminal = async function() {
             <div class="bg-down/5 p-4 rounded-2xl border border-down/10">
                 <h5 class="text-[10px] font-black text-down uppercase mb-3 tracking-widest">Remove Liquidity</h5>
                 <div class="flex justify-between text-[9px] text-gray-500 mb-2 font-bold">AMOUNT TO WITHDRAW</div>
-                <input type="number" id="lpRemoveAmount" placeholder="0.00" class="bg-bg border border-border rounded-xl p-3 w-full text-white font-bold mb-2 outline-none focus:border-down">
+                <input type="number" id="lpRemoveAmount" placeholder="0.00" class="bg-bg border border-border rounded-xl p-3 w-full text-white font-bold mb-2 outline-none focus:border-down" oninput="window.updateRemoveLPFromInput()">
                 <input type="range" id="lpRemoveSlider" min="0" max="100" step="1" value="0" class="w-full mb-4 h-1.5 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-down" oninput="window.updateRemoveLPFromSlider(this.value)">
                 <button onclick="window.executeRemoveLP()" class="w-full py-3 bg-down/20 text-down border border-down/30 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-down hover:text-white transition-all">Withdraw Assets</button>
             </div>
         </div>`;
     
     // Update LP balances immediately - fetch langsung dari blockchain
+    if (window.updateLPBalances) {
+        window.updateLPBalances();
+    }
+};
+
+// ===== RENDER REMOVE LP TERMINAL (SIDEBAR) =====
+window.renderRemoveLPTerminal = async function() {
+    const container = document.getElementById('sidebarContent');
+    if (!container) return;
+
+    await window.fetchPoolData();
+    const symbol = window.currentTokenInfo?.symbol || 'TOKEN';
+
+    container.innerHTML = `
+        <div class="space-y-4 animate-in slide-in-from-right duration-300">
+            <div class="flex items-center justify-between mb-2">
+                <h3 class="text-xs font-black uppercase tracking-tighter text-gray-400">Remove Liquidity</h3>
+                <div class="px-2 py-0.5 bg-down/10 text-down text-[9px] rounded-full border border-down/20 font-bold">BURN LP</div>
+            </div>
+
+            <div class="bg-card p-4 rounded-2xl border border-border space-y-4">
+                <div>
+                    <div class="flex justify-between text-[10px] text-gray-400 mb-1">LP Tokens to Remove <span class="text-[9px]">Max: <span id="maxLPTokens">0.00</span></span></div>
+                    <div class="relative">
+                        <input type="number" id="removeLPInput" placeholder="0.00" class="w-full bg-bg border border-border rounded-xl px-4 py-3 text-sm font-mono focus:border-down outline-none transition-all pr-12">
+                        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-gray-500">LP</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-surface border border-border p-4 rounded-2xl space-y-2.5">
+                <h5 class="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Estimated Return</h5>
+                <div class="flex justify-between text-xs"><span class="text-gray-400 font-bold uppercase text-[9px]">PAXI</span><span id="estPaxiReturn" class="font-black text-white">0.00</span></div>
+                <div class="flex justify-between text-xs"><span class="text-gray-400 font-bold uppercase text-[9px]">${symbol}</span><span id="estTokenReturn" class="font-black text-white">0.00</span></div>
+            </div>
+
+            <button onclick="window.removeLiquidity()" class="w-full py-4 bg-down/20 text-down border border-down/30 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-down hover:text-white transition-all">
+                Remove Liquidity
+            </button>
+
+            <div class="flex justify-center">
+                <button onclick="setSidebarTab('lp')" class="text-[10px] font-black text-gray-500 hover:text-white uppercase tracking-widest transition-colors">Switch to Add Liquidity</button>
+            </div>
+        </div>
+    `;
+
     if (window.updateLPBalances) {
         window.updateLPBalances();
     }
@@ -619,7 +673,7 @@ window.showTransactionDetailModal = async function(hash) {
                 <div class="p-4 bg-bg rounded-2xl border border-border">
                     <div class="text-[9px] text-gray-500 uppercase font-black mb-1">Transaction Hash</div>
                     <div class="flex items-center gap-2">
-                        <code class="text-[10px] font-mono text-gray-300 truncate flex-1">${hash}</code>
+                        <code class="text-[10px] font-mono text-gray-300 flex-1">${window.shortenAddress(hash, 12)}</code>
                         <button onclick="window.copyAddress(event, '${hash}')" class="text-xs text-up"><i class="fas fa-copy"></i></button>
                     </div>
                 </div>
@@ -696,7 +750,7 @@ window.showTokenDetail = function(event, address) {
                 </div>
                 <div class="bg-bg rounded-xl p-4 border border-border">
                     <h4 class="text-xs font-bold text-gray-500 uppercase mb-2">Contract Address</h4>
-                    <div class="flex items-center gap-2"><code class="text-xs text-gray-400 font-mono flex-1 break-all">${address}</code><button onclick="window.copyAddress(event, '${address}')" class="px-3 py-1 bg-card border border-border rounded text-[10px] font-bold hover:text-up transition-all">COPY</button></div>
+                    <div class="flex items-center gap-2"><code class="text-xs text-gray-400 font-mono flex-1">${window.shortenAddress(address, 12)}</code><button onclick="window.copyAddress(event, '${address}')" class="px-3 py-1 bg-card border border-border rounded text-[10px] font-bold hover:text-up transition-all">COPY</button></div>
                 </div>
                 <button onclick="window.selectPRC20('${address}'); this.closest('.fixed').remove();" class="w-full py-4 btn-trade rounded-xl font-black text-sm uppercase tracking-widest shadow-glow-up">Trade This Token</button>
             </div>

@@ -361,7 +361,7 @@ window.updateTradeBalances = async function() {
     }
 
     // Update Header Wallet Info
-    window.setText('walletAddrShort', window.wallet.address.slice(0, 10) + '...');
+    window.setText('walletAddrShort', window.shortenAddress(window.wallet.address));
     window.setText('walletBalance', paxiAmount.toFixed(2) + ' PAXI');
     window.removeClass('walletInfo', 'hidden');
 
@@ -454,6 +454,9 @@ window.renderSidebarContent = function(tab) {
             break;
         case 'lp':
             window.renderLPTerminal();
+            break;
+        case 'remove_lp':
+            window.renderRemoveLPTerminal();
             break;
         case 'send':
             window.renderSendTerminal();
