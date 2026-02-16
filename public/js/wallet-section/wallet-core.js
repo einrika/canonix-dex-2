@@ -185,6 +185,10 @@ class WalletManager {
         return this.wallets.find(w => w.id === this.activeId) || null;
     }
 
+    getWallet(id) {
+        return this.wallets.find(w => w.id === id) || null;
+    }
+
     setActiveWallet(id) {
         if (this.wallets.some(w => w.id === id)) {
             this.activeId = id;
@@ -661,25 +665,35 @@ window.buildAndSendTx = async function(messages, memo = "", options = {}) {
     try {
         // For internal wallet, ensure signer exists
         if (window.walletType === 'internal' && !window.wallet.signer) {
-            // Create signer from encrypted data
-            const activeWallet = window.WalletManager.getActiveWallet();
-            if (!activeWallet || !activeWallet.encryptedData) {
-                throw new Error("Wallet data not found");
+            // Use wallet ID from state if available, otherwise get active
+            const walletId = window.wallet?.id;
+            const targetWallet = walletId ? window.WalletManager.getWallet(walletId) : window.WalletManager.getActiveWallet();
+
+            if (!targetWallet) {
+                throw new Error("Connected wallet not found in storage. Please reconnect.");
+            }
+
+            if (targetWallet.isWatchOnly) {
+                throw new Error("Cannot send transactions from a Watch-Only wallet.");
+            }
+
+            if (!targetWallet.encryptedData) {
+                throw new Error("Wallet encryption data missing. Please re-import your wallet.");
             }
             
             const pin = window.WalletSecurity.getSessionPin();
             if (!pin) {
-                throw new Error("Please unlock wallet first");
+                throw new Error("Wallet is locked. Please unlock it first from the sidebar.");
             }
             
             // Decrypt and create signer
-            const decrypted = await window.WalletSecurity.decrypt(activeWallet.encryptedData, pin);
+            const decrypted = await window.WalletSecurity.decrypt(targetWallet.encryptedData, pin);
             const paxi = await window.waitForLibrary('PaxiCosmJS');
             
-            if (activeWallet.type === 'mnemonic') {
+            if (targetWallet.type === 'mnemonic') {
                 const HDWallet = paxi.DirectSecp256k1HdWallet;
                 window.wallet.signer = await HDWallet.fromMnemonic(decrypted, { prefix: "paxi" });
-            } else if (activeWallet.type === 'privatekey') {
+            } else if (targetWallet.type === 'privatekey') {
                 const DirectWallet = paxi.DirectSecp256k1Wallet;
                 const hexToBytes = hex => {
                     const bytes = new Uint8Array(hex.length / 2);

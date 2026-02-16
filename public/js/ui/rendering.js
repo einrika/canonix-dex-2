@@ -381,10 +381,19 @@ window.renderSwapTerminal = async function() {
 
     const symbol = window.currentTokenInfo?.symbol || 'TOKEN';
     const isBuy = window.tradeType === 'buy';
+    const isWatchOnly = window.wallet?.isWatchOnly;
 
     // Render structure immediately
     container.innerHTML = `
         <div class="flex flex-col gap-4 animate-fade-in">
+            ${isWatchOnly ? `
+                <div class="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl flex items-center gap-3 mb-1">
+                    <i class="fas fa-eye text-yellow-500"></i>
+                    <div class="text-[10px] font-bold text-yellow-500 uppercase leading-tight">
+                        Watch-only Mode: <span class="text-white opacity-60 font-medium">You can view balances but cannot execute trades from this wallet.</span>
+                    </div>
+                </div>
+            ` : ''}
             <div class="flex bg-bg p-1 rounded-xl border border-border shadow-inner">
                 <button onclick="window.setSwapMode('buy')" id="buyTab" class="flex-1 py-2 rounded-lg text-xs font-black transition-all ${isBuy ? 'bg-up text-bg shadow-glow-up' : 'text-gray-400'}">BUY</button>
                 <button onclick="window.setSwapMode('sell')" id="sellTab" class="flex-1 py-2 rounded-lg text-xs font-black transition-all ${!isBuy ? 'bg-down text-white shadow-glow-down' : 'text-gray-400'}">SELL</button>
@@ -419,7 +428,10 @@ window.renderSwapTerminal = async function() {
                     <div class="flex justify-between text-[9px] font-black uppercase tracking-tighter"><span class="text-gray-500">Slippage Tolerance</span><button onclick="window.showSlippageModal()" class="text-up hover:underline flex items-center gap-1"><span id="slippageVal">1.0%</span> <i class="fas fa-cog text-[8px]"></i></button></div>
                     <div class="flex justify-between text-[9px] font-black uppercase tracking-tighter pt-1 border-t border-white/5"><span class="text-gray-500">Network Fee</span><span id="networkFee" class="text-gray-400 font-mono">~0.0063 PAXI</span></div>
                 </div>
-                <button onclick="window.executeTrade()" class="btn-trade w-full py-4 rounded-2xl text-white font-black text-sm uppercase tracking-widest shadow-glow-up transform active:scale-[0.98] transition-all">Swap Now</button>
+                <button onclick="${isWatchOnly ? 'window.showNotif(\'Cannot trade from watch-only wallet\', \'error\')' : 'window.executeTrade()'}"
+                        class="btn-trade w-full py-4 rounded-2xl text-white font-black text-sm uppercase tracking-widest shadow-glow-up transform active:scale-[0.98] transition-all ${isWatchOnly ? 'opacity-50 grayscale cursor-not-allowed' : ''}">
+                    ${isWatchOnly ? 'Swap (Watch-Only)' : 'Swap Now'}
+                </button>
             </div>
         </div>`;
     

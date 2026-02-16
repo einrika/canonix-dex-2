@@ -338,8 +338,12 @@ window.WalletUI = {
             window.wallet = {
                 address: wallet.address,
                 name: wallet.name,
-                type: wallet.isWatchOnly ? 'watch-only' : 'internal'
+                type: 'internal',
+                id: wallet.id,
+                isWatchOnly: !!wallet.isWatchOnly,
+                signer: null
             };
+            window.walletType = 'internal';
         }
         
         // Setup button event listeners
@@ -422,9 +426,13 @@ window.WalletUI = {
             const metaA = window.AssetManager.getAssetMeta(a.address);
             const metaB = window.AssetManager.getAssetMeta(b.address);
 
+            // Fix for PAXI metadata (price is 1 PAXI)
+            const priceA = a.address === 'PAXI' ? 1 : (metaA.price || 0);
+            const priceB = b.address === 'PAXI' ? 1 : (metaB.price || 0);
+
             // Compare by PAXI value (single source of truth)
-            const valA = balA * (metaA.price || 0);
-            const valB = balB * (metaB.price || 0);
+            const valA = balA * priceA;
+            const valB = balB * priceB;
 
             switch (settings.assetSort) {
                 case 'most': return valB - valA;
@@ -1662,15 +1670,29 @@ window.internalWalletState = {
 
 window.connectInternalWallet = async function(id, pin) {
     try {
-        const walletData = window.WalletManager.wallets.find(w => w.id === id);
+        const walletData = window.WalletManager.getWallet(id);
         if (!walletData) throw new Error("Wallet not found");
 
         if (walletData.isWatchOnly) {
-            window.wallet = { address: walletData.address, signer: null };
+            window.wallet = {
+                address: walletData.address,
+                name: walletData.name,
+                type: 'internal',
+                id: walletData.id,
+                isWatchOnly: true,
+                signer: null
+            };
             window.walletType = 'internal';
         } else {
             const mnemonic = await window.WalletSecurity.decrypt(walletData.encryptedData, pin);
             await window.connectWithMnemonic(mnemonic);
+
+            // Ensure window.wallet has ID and watch-only status
+            if (window.wallet) {
+                window.wallet.id = walletData.id;
+                window.wallet.isWatchOnly = false;
+                window.wallet.name = walletData.name;
+            }
         }
 
         window.showNotif("Internal wallet connected!", "success");
@@ -2230,7 +2252,8 @@ window.connectWithMnemonic = async function(mnemonic) {
         window.wallet = {
             address: accounts[0].address,
             public_key: accounts[0].pubkey,
-            signer: wallet
+            signer: wallet,
+            type: 'internal'
         };
         window.walletType = 'internal';
 

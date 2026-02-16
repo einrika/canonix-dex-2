@@ -39,20 +39,22 @@ window.addEventListener('load', async () => {
         const active = window.WalletManager.getActiveWallet();
         if (active) {
             console.log('🔄 Auto-connecting wallet:', active.name);
-            if (active.isWatchOnly) {
-                await window.connectInternalWallet(active.id);
-            } else {
-                // Set initial state for non-watch-only internal wallet
-                window.wallet = {
-                    address: active.address,
-                    name: active.name,
-                    type: 'internal',
-                    id: active.id,
-                    signer: null
-                };
-                window.walletType = 'internal';
-                window.dispatchEvent(new CustomEvent('paxi_wallet_connected', { detail: { wallet: active } }));
-            }
+
+            // Set initial state for active wallet (will be fully connected if watch-only or unlocked)
+            window.wallet = {
+                address: active.address,
+                name: active.name,
+                type: 'internal',
+                id: active.id,
+                isWatchOnly: !!active.isWatchOnly,
+                signer: null
+            };
+            window.walletType = 'internal';
+
+            window.dispatchEvent(new CustomEvent('paxi_wallet_connected', { detail: { wallet: active } }));
+
+            // Trigger immediate UI update for connected wallet
+            if (window.renderSwapTerminal) window.renderSwapTerminal();
 
             // Background fetch user assets
             if (window.AssetManager) {
