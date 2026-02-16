@@ -347,9 +347,26 @@ window.renderSwapTerminal = async function() {
 
     if (!container) return;
 
-    // Visibility Rule: Swap only shows if wallet is connected
+    // Visibility Rule: Swap terminal functionality only shows if wallet is connected
+    // But we show a "Connect Wallet" button in the section if not connected
     if (!window.wallet) {
-        if (mainWrapper) mainWrapper.classList.add('hidden');
+        if (mainWrapper) {
+            mainWrapper.classList.remove('hidden');
+            container.innerHTML = `
+                <div class="flex flex-col items-center justify-center py-12 gap-5 animate-fade-in">
+                    <div class="w-20 h-20 bg-up/10 rounded-full flex items-center justify-center">
+                        <i class="fas fa-wallet text-3xl text-up opacity-50"></i>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-1">Trading Terminal Locked</p>
+                        <p class="text-[9px] text-gray-600 uppercase font-bold">Connect your wallet to start swapping ${window.currentTokenInfo?.symbol || 'tokens'}</p>
+                    </div>
+                    <button onclick="showConnectModal()" class="btn-trade px-10 py-4 rounded-2xl text-xs font-black uppercase tracking-widest shadow-glow-up transform active:scale-95 transition-all">
+                        <i class="fas fa-plug mr-2"></i> Connect Wallet
+                    </button>
+                </div>`;
+        }
+
         if (container.id === 'sidebarContent') {
             container.innerHTML = `
                 <div class="text-center py-20 text-gray-600">
@@ -404,7 +421,7 @@ window.renderSwapTerminal = async function() {
                     <div class="flex justify-between text-[9px] font-black uppercase tracking-tighter"><span class="text-gray-500">Slippage Tolerance</span><button onclick="window.showSlippageModal()" class="text-up hover:underline flex items-center gap-1"><span id="slippageVal">1.0%</span> <i class="fas fa-cog text-[8px]"></i></button></div>
                     <div class="flex justify-between text-[9px] font-black uppercase tracking-tighter pt-1 border-t border-white/5"><span class="text-gray-500">Network Fee</span><span id="networkFee" class="text-gray-400 font-mono">~0.0063 PAXI</span></div>
                 </div>
-                <button onclick="window.executeTrade()" class="btn-trade w-full py-4 rounded-2xl text-white font-black text-sm uppercase tracking-widest shadow-glow-up transform active:scale-[0.98] transition-all">Execute ${window.tradeType.toUpperCase()}</button>
+                <button onclick="window.executeTrade()" class="btn-trade w-full py-4 rounded-2xl text-white font-black text-sm uppercase tracking-widest shadow-glow-up transform active:scale-[0.98] transition-all">Swap Now</button>
             </div>
         </div>`;
     
@@ -763,7 +780,7 @@ window.showTokenDetail = function(event, address) {
                     <h4 class="text-xs font-bold text-gray-500 uppercase mb-2">Contract Address</h4>
                     <div class="flex items-center gap-2"><code class="text-xs text-gray-400 font-mono flex-1">${window.shortenAddress(address, 12)}</code><button onclick="window.copyAddress(event, '${address}')" class="px-3 py-1 bg-card border border-border rounded text-[10px] font-bold hover:text-up transition-all">COPY</button></div>
                 </div>
-                <button onclick="window.selectPRC20('${address}'); this.closest('.fixed').remove();" class="w-full py-4 btn-trade rounded-xl font-black text-sm uppercase tracking-widest shadow-glow-up">Trade This Token</button>
+                <button onclick="window.selectPRC20('${address}'); this.closest('.fixed').remove();" class="w-full py-4 btn-trade rounded-xl font-black text-sm uppercase tracking-widest shadow-glow-up">Swap This Token</button>
             </div>
         </div>`;
     document.body.appendChild(modal);
