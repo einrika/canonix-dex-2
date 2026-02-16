@@ -64,18 +64,6 @@ window.addEventListener('load', async () => {
     window.log('Canonix loaded', 'info');
 });
 
-window.fetchPaxiPrice = async function() {
-    try {
-        const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=paxi-network&vs_currencies=usd');
-        const data = await response.json();
-        window.paxiPriceUSD = data['paxi-network']?.usd || 0.05;
-        console.log('✅ PAXI Price Updated:', window.paxiPriceUSD);
-    } catch (e) {
-        console.error('❌ Failed to fetch PAXI price:', e);
-        window.paxiPriceUSD = window.paxiPriceUSD || 0.05;
-    }
-};
-
 window.updateAppUI = async function() {
     // Refresh prices
     await window.fetchPaxiPrice();

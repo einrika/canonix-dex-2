@@ -400,6 +400,13 @@ window.WalletUI = {
                 <div class="p-4 bg-card/30 border border-border rounded-2xl hover:border-border/60 transition-all group cursor-pointer relative"
                      id="asset-item-${token.address}">
                     <div class="absolute top-2 right-2 flex gap-1 z-10">
+                        ${token.address !== 'PAXI' ? `
+                            <button onclick="event.stopPropagation(); window.WalletUI.selectAssetForTrade('${token.address}')"
+                                    class="w-5 h-5 rounded-full bg-up/20 text-up flex items-center justify-center text-[10px] hover:bg-up/30 transition-all"
+                                    title="Swap">
+                                <i class="fas fa-exchange-alt"></i>
+                            </button>
+                        ` : ''}
                         ${canHide ? `
                             <button onclick="event.stopPropagation(); window.WalletUI.confirmHideToken('${token.address}')" 
                                     class="w-5 h-5 rounded-full bg-yellow-500/20 text-yellow-500 flex items-center justify-center text-[10px] hover:bg-yellow-500/30 transition-all"
@@ -1045,15 +1052,20 @@ window.WalletUI = {
                 const balEl = document.getElementById(`bal-${token.address}`);
                 if (balEl) window.setText(balEl, amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 }));
 
-                // Update USD value - standardized calculation
+                // Update value display
                 const valEl = document.getElementById(`val-${token.address}`);
                 if (valEl) {
                     const meta = window.AssetManager.getAssetMeta(token.address);
-                    // Standardized price calculation: PRC20 value follows PAXI
-                    const currentPaxiPrice = window.paxiPriceUSD || 0.05;
-                    const priceUSD = token.address === 'PAXI' ? currentPaxiPrice : (meta.price * currentPaxiPrice);
-                    const usdValue = amount * priceUSD;
-                    window.setText(valEl, `$${usdValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
+                    if (token.address === 'PAXI') {
+                        // For PAXI, show USD value
+                        const currentPaxiPrice = window.paxiPriceUSD || 0.05;
+                        const usdValue = amount * currentPaxiPrice;
+                        window.setText(valEl, `$${usdValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
+                    } else {
+                        // For PRC20, show PAXI value (single source of truth)
+                        const paxiValue = amount * meta.price;
+                        window.setText(valEl, `${paxiValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })} PAXI`);
+                    }
                 }
 
                 // Auto hide zero balance if setting enabled
@@ -1069,7 +1081,18 @@ window.WalletUI = {
     selectAssetForTrade: function(address) {
         if (address === 'PAXI') return;
         if (window.selectPRC20) window.selectPRC20(address);
-        window.setSidebarTab('swap');
+
+        // Phase 4 Revision: Swap is now under Chart on main page
+        // Close sidebar if on mobile
+        if (window.innerWidth < 1024) {
+            if (window.closeAllSidebars) window.closeAllSidebars();
+        }
+
+        // Scroll to swap container
+        const swapContainer = document.getElementById('mainSwapContainer');
+        if (swapContainer) {
+            swapContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
     },
 
     showReceiveModal: function() {
