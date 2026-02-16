@@ -342,14 +342,20 @@ window.refreshAllUI = async function() {
         const detail = window.tokenDetails.get(window.currentPRC20);
         if (detail) window.updateDashboard(detail);
 
-        await Promise.all([
-            window.loadPriceHistory(window.currentPRC20, window.currentTimeframe),
-            window.fetchPoolData(),
-            window.updateBalances()
-        ]);
+        // Start long-running fetches in parallel without awaiting them all if they block UI
+        await window.loadPriceHistory(window.currentPRC20, window.currentTimeframe);
 
+        // Background tasks
         if (window.loadTokenHolders) window.loadTokenHolders();
-        if (window.renderSwapTerminal) await window.renderSwapTerminal();
+
+        // Immediate UI updates
+        if (window.renderSwapTerminal) window.renderSwapTerminal();
+
+        // Non-blocking data refresh
+        (async () => {
+            if (window.fetchPoolData) await window.fetchPoolData();
+            if (window.updateBalances) await window.updateBalances();
+        })();
     } catch (e) {
         console.error('Refresh UI error:', e);
     }

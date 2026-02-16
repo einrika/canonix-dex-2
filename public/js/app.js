@@ -34,11 +34,30 @@ window.addEventListener('load', async () => {
     // Load tokens optimized
     await window.loadTokensOptimized();
 
-    // Upgraded Wallet: Auto-connect watch-only if active
+    // Upgraded Wallet: Auto-connect if active wallet exists
     if (window.WalletManager) {
         const active = window.WalletManager.getActiveWallet();
-        if (active && active.isWatchOnly) {
-            window.connectInternalWallet(active.id);
+        if (active) {
+            console.log('🔄 Auto-connecting wallet:', active.name);
+            if (active.isWatchOnly) {
+                await window.connectInternalWallet(active.id);
+            } else {
+                // Set initial state for non-watch-only internal wallet
+                window.wallet = {
+                    address: active.address,
+                    name: active.name,
+                    type: 'internal',
+                    id: active.id,
+                    signer: null
+                };
+                window.walletType = 'internal';
+                window.dispatchEvent(new CustomEvent('paxi_wallet_connected', { detail: { wallet: active } }));
+            }
+
+            // Background fetch user assets
+            if (window.AssetManager) {
+                window.AssetManager.fetchUserAssets(active.address);
+            }
         }
     }
 

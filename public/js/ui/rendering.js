@@ -379,12 +379,10 @@ window.renderSwapTerminal = async function() {
         mainWrapper.classList.remove('hidden');
     }
 
-    // Fetch fresh pool data directly from blockchain
-    if (window.fetchPoolData) {
-        await window.fetchPoolData();
-    }
     const symbol = window.currentTokenInfo?.symbol || 'TOKEN';
     const isBuy = window.tradeType === 'buy';
+
+    // Render structure immediately
     container.innerHTML = `
         <div class="flex flex-col gap-4 animate-fade-in">
             <div class="flex bg-bg p-1 rounded-xl border border-border shadow-inner">
@@ -425,10 +423,12 @@ window.renderSwapTerminal = async function() {
             </div>
         </div>`;
     
-    // Update balances immediately - fetch langsung dari blockchain
-    if (window.updateTradeBalances) {
-        window.updateTradeBalances();
-    }
+    // Fetch fresh pool data and update balances in background
+    (async () => {
+        if (window.fetchPoolData) await window.fetchPoolData();
+        if (window.updateTradeBalances) await window.updateTradeBalances();
+        if (window.updateTradeOutput) window.updateTradeOutput();
+    })();
 };
 
 // ===== RENDER TRANSACTION HISTORY (SIDEBAR) =====

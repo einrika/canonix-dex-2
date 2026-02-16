@@ -282,52 +282,6 @@ class WalletManager {
 
 window.WalletManager = new WalletManager();
 
-// ===== AUTO-CONNECT FUNCTIONALITY =====
-// Automatically set window.wallet if active wallet exists
-(function initAutoConnect() {
-    const activeWallet = window.WalletManager.getActiveWallet();
-    
-    if (activeWallet) {
-        console.log('🔄 Auto-connecting wallet:', activeWallet.name);
-        
-        // Set window.wallet for backward compatibility
-        window.wallet = {
-            address: activeWallet.address,
-            name: activeWallet.name,
-            type: activeWallet.isWatchOnly ? 'watch-only' : 'internal',
-            id: activeWallet.id
-        };
-        
-        // Set walletType for transaction signing
-        window.walletType = activeWallet.isWatchOnly ? null : 'internal';
-        
-        // Signer will be created by WalletSecurity when PIN is entered
-        window.wallet.signer = null;
-        
-        // Dispatch wallet connected event
-        window.dispatchEvent(new CustomEvent('paxi_wallet_connected', {
-            detail: { wallet: activeWallet }
-        }));
-        
-        console.log('✅ Auto-connected to:', activeWallet.address, '| Type:', window.walletType);
-        
-        // Fetch user assets (PRC20 tokens) immediately
-        if (window.AssetManager) {
-            window.AssetManager.fetchUserAssets(activeWallet.address).then(() => {
-                console.log('✅ User assets loaded for swap');
-            });
-        }
-        
-        // Update balances and Swap UI after short delay to ensure DOM is ready
-        setTimeout(() => {
-            if (window.updateBalances) window.updateBalances();
-            if (window.renderSwapTerminal) window.renderSwapTerminal();
-        }, 500);
-    } else {
-        console.log('ℹ️ No active wallet found for auto-connect');
-    }
-})();
-
 // ===== 4. ASSET MANAGER MODULE =====
 class AssetManager {
     constructor() {
