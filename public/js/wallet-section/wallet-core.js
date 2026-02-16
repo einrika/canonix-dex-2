@@ -673,6 +673,15 @@ window.buildAndSendTx = async function(messages, memo = "", options = {}) {
     if (!window.wallet) throw new Error("Wallet not connected");
 
     const { silent = false, sequenceOverride = null } = options;
+
+    // Safety check: Prevent automatic/silent transactions if wallet is locked
+    if (window.walletType === 'internal' && !window.WalletSecurity.getSessionPin()) {
+        if (silent) {
+            // Silently block background transactions when locked to prevent console noise/loop on refresh
+            return { success: false, error: "Wallet locked" };
+        }
+    }
+
     const endpoints = window.NetworkManager ? window.NetworkManager.getEndpoints() : {
         rpc: window.APP_CONFIG.RPC,
         lcd: window.APP_CONFIG.LCD,
@@ -702,7 +711,11 @@ window.buildAndSendTx = async function(messages, memo = "", options = {}) {
             
             const pin = window.WalletSecurity.getSessionPin();
             if (!pin) {
-                throw new Error("Wallet is locked. Please unlock it first from the sidebar.");
+                // For non-silent (user initiated) transactions, trigger PIN modal
+                if (window.WalletUI && window.WalletUI.unlockActiveWallet) {
+                    window.WalletUI.unlockActiveWallet();
+                }
+                throw new Error("Wallet is locked. Please unlock it first.");
             }
             
             // Decrypt and create signer
