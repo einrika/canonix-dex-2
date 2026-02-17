@@ -428,7 +428,10 @@ window.renderSwapTerminal = async function() {
                     <div class="flex justify-between text-[9px] font-black uppercase tracking-tighter"><span class="text-gray-500">Slippage Tolerance</span><button onclick="window.showSlippageModal()" class="text-up hover:underline flex items-center gap-1"><span id="slippageVal">1.0%</span> <i class="fas fa-cog text-[8px]"></i></button></div>
                     <div class="flex justify-between text-[9px] font-black uppercase tracking-tighter pt-1 border-t border-white/5"><span class="text-gray-500">Network Fee</span><span id="networkFee" class="text-gray-400 font-mono">~0.0063 PAXI</span></div>
                 </div>
-                <button onclick="${isWatchOnly ? '' : 'Swap Now'}
+                <button onclick="${isWatchOnly ? '' : 'window.executeTrade()'}"
+                        ${isWatchOnly ? 'disabled' : ''}
+                        class="w-full py-4 ${isBuy ? 'bg-up text-bg shadow-glow-up' : 'bg-down text-white shadow-glow-down'} font-black rounded-2xl text-xs uppercase italic transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+                    ${isWatchOnly ? 'WATCH-ONLY WALLET' : (isBuy ? 'BUY NOW' : 'SELL NOW')}
                 </button>
             </div>
         </div>`;

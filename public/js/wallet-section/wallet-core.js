@@ -692,6 +692,7 @@ window.confirmTxCustom = function(memo, feeStr) {
     return new Promise((resolve) => {
         const modal = document.getElementById('txConfirmModal');
         const actionEl = document.getElementById('txConfirmAction');
+        const networkEl = document.getElementById('txConfirmNetwork');
         const feeEl = document.getElementById('txConfirmFee');
         const confirmBtn = document.getElementById('txConfirmBtn');
         const cancelBtn = document.getElementById('txCancelBtn');
@@ -704,6 +705,7 @@ window.confirmTxCustom = function(memo, feeStr) {
 
         actionEl.textContent = memo || 'Execute Transaction';
         feeEl.textContent = feeStr || 'Calculating...';
+        if (networkEl) networkEl.textContent = window.NetworkManager?.getActiveNetwork().name || 'Paxi Mainnet';
 
         modal.classList.remove('hidden');
         modal.classList.add('flex');
@@ -725,7 +727,7 @@ window.confirmTxCustom = function(memo, feeStr) {
 window.buildAndSendTx = async function(messages, memo = "", options = {}) {
     if (!window.wallet) throw new Error("Wallet not connected");
 
-    const { silent = false, sequenceOverride = null, type = 'default' } = options;
+    const { silent = false, sequenceOverride = null, type = 'default', metadata = {} } = options;
 
     // Safety check: Prevent automatic/silent transactions if wallet is locked
     if (window.walletType === 'internal' && !window.WalletSecurity.getSessionPin()) {
@@ -930,7 +932,16 @@ window.buildAndSendTx = async function(messages, memo = "", options = {}) {
 
         if (broadcastRes.tx_response && broadcastRes.tx_response.code === 0) {
             const hash = broadcastRes.tx_response.txhash;
-            if (!silent) window.showNotif('Success', 'success');
+            if (!silent) {
+                window.showTxResult({
+                    status: 'success',
+                    type: metadata.type || 'Transaction',
+                    asset: metadata.asset || '--',
+                    amount: metadata.amount || '--',
+                    address: metadata.address || window.wallet.address,
+                    hash: hash
+                });
+            }
             console.log('✅ TX Hash:', hash);
             
             return { success: true, hash, ...broadcastRes.tx_response };
@@ -943,7 +954,14 @@ window.buildAndSendTx = async function(messages, memo = "", options = {}) {
         console.error("Transaction Error:", err);
         if (!silent) {
             if (err.message !== "Transaction cancelled") {
-                window.showNotif('Failed', 'error');
+                window.showTxResult({
+                    status: 'failed',
+                    type: metadata.type || 'Transaction',
+                    asset: metadata.asset || '--',
+                    amount: metadata.amount || '--',
+                    address: metadata.address || (window.wallet ? window.wallet.address : '--'),
+                    error: err.message || "Unknown Error"
+                });
             }
         }
         throw err;
@@ -1005,7 +1023,13 @@ window.executeSwap = async function(contractAddress, offerDenom, offerAmount, mi
 
     // 4. Send Bundled Transaction (Atomic)
     console.log(`🔄 Sending Bundled Swap TX (${msgs.length} messages)...`);
-    const result = await window.buildAndSendTx(msgs, memo, { type: 'swap' });
+    const metadata = {
+        type: 'Swap',
+        asset: offerDenom === window.APP_CONFIG.DENOM ? `PAXI / ${tokenDetail?.symbol || 'TOKEN'}` : `${tokenDetail?.symbol || 'TOKEN'} / PAXI`,
+        amount: `${offerAmount} ${offerDenom === window.APP_CONFIG.DENOM ? 'PAXI' : (tokenDetail?.symbol || 'TOKEN')}`,
+        address: window.wallet.address
+    };
+    const result = await window.buildAndSendTx(msgs, memo, { type: 'swap', metadata });
     
     // Refresh UI after delay
     setTimeout(async () => {
@@ -1058,7 +1082,14 @@ window.executeAddLPTransaction = async function(contractAddress, paxiAmount, tok
         value: PaxiCosmJS.MsgProvideLiquidity.encode(lpMsg).finish()
     }));
 
-    return await window.buildAndSendTx(msgs, "Add Liquidity", { type: 'add_lp' });
+    const metadata = {
+        type: 'Add Liquidity',
+        asset: `PAXI / ${tokenDetail?.symbol || 'TOKEN'}`,
+        amount: `${paxiAmount} PAXI + ${tokenAmount} ${tokenDetail?.symbol || 'TOKEN'}`,
+        address: window.wallet.address
+    };
+
+    return await window.buildAndSendTx(msgs, "Add Liquidity", { type: 'add_lp', metadata });
 };
 
 window.executeRemoveLPTransaction = async function(contractAddress, lpAmount) {
@@ -1076,7 +1107,14 @@ window.executeRemoveLPTransaction = async function(contractAddress, lpAmount) {
         value: PaxiCosmJS.MsgWithdrawLiquidity.encode(msg).finish()
     });
 
-    return await window.buildAndSendTx([anyMsg], "Remove Liquidity", { type: 'remove_lp' });
+    const metadata = {
+        type: 'Remove Liquidity',
+        asset: `PAXI / ${window.tokenDetails?.get(contractAddress)?.symbol || 'TOKEN'}`,
+        amount: `${lpAmount} LP Tokens`,
+        address: window.wallet.address
+    };
+
+    return await window.buildAndSendTx([anyMsg], "Remove Liquidity", { type: 'remove_lp', metadata });
 };
 
 // 3. SEND FUNCTION
@@ -1119,7 +1157,14 @@ window.executeSendTransaction = async function(tokenAddress, recipient, amount, 
         }));
     }
 
-    return await window.buildAndSendTx(msgs, memo, { type: 'send' });
+    const metadata = {
+        type: 'Send',
+        asset: tokenAddress === 'PAXI' ? 'PAXI' : (tokenDetail?.symbol || 'TOKEN'),
+        amount: `${amount} ${tokenAddress === 'PAXI' ? 'PAXI' : (tokenDetail?.symbol || 'TOKEN')}`,
+        address: recipient
+    };
+
+    return await window.buildAndSendTx(msgs, memo, { type: 'send', metadata });
 };
 
 // 5. BURN FUNCTION
@@ -1147,7 +1192,14 @@ window.executeBurnTransaction = async function(contractAddress, amount) {
         }).finish()
     });
 
-    return await window.buildAndSendTx([anyMsg], "Burn Tokens", { type: 'burn' });
+    const metadata = {
+        type: 'Burn',
+        asset: tokenDetail?.symbol || 'TOKEN',
+        amount: `${amount} ${tokenDetail?.symbol || 'TOKEN'}`,
+        address: window.wallet.address
+    };
+
+    return await window.buildAndSendTx([anyMsg], "Burn Tokens", { type: 'burn', metadata });
 };
 
 // 4. DONATION FUNCTION

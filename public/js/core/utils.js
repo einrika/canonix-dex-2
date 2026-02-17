@@ -359,6 +359,74 @@ window.setCachedData = function(key, value) {
 };
 
 // ===== NOTIFICATION SYSTEM =====
+window.showTxResult = function(data) {
+    const modal = document.getElementById('txResultModal');
+    if (!modal) return;
+
+    const { status, type, asset, amount, network, address, hash, error } = data;
+    const isSuccess = status === 'success';
+
+    // Status UI
+    const statusEl = document.getElementById('txResultStatus');
+    const iconEl = document.getElementById('txResultIcon');
+    const typeEl = document.getElementById('txResultType');
+
+    statusEl.textContent = isSuccess ? 'Success' : 'Failed';
+    statusEl.className = `text-2xl font-black uppercase italic tracking-widest mb-2 ${isSuccess ? 'text-up' : 'text-down'}`;
+
+    iconEl.className = `w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 ${isSuccess ? 'bg-up/10 text-up' : 'bg-down/10 text-down'}`;
+    iconEl.innerHTML = `<i class="fas ${isSuccess ? 'fa-check-circle' : 'fa-times-circle'} text-4xl"></i>`;
+
+    typeEl.textContent = `${type} Details`;
+
+    // Log Details
+    document.getElementById('txResultTime').textContent = new Date().toLocaleTimeString();
+    document.getElementById('logType').textContent = type || '--';
+    document.getElementById('logAsset').textContent = asset || '--';
+    document.getElementById('logAmount').textContent = amount || '0.00';
+    document.getElementById('logAmount').className = `text-xs font-mono font-bold ${isSuccess ? 'text-up' : 'text-gray-400'}`;
+
+    const activeNet = window.NetworkManager?.getActiveNetwork();
+    document.getElementById('logNetwork').textContent = network || (activeNet?.name || 'Paxi Mainnet');
+
+    const addrEl = document.getElementById('logAddress');
+    addrEl.textContent = address || '--';
+    document.getElementById('copyAddressBtn').onclick = () => {
+        if (address) navigator.clipboard.writeText(address);
+    };
+
+    const hashEl = document.getElementById('logHash');
+    const hashContainer = document.getElementById('logHashContainer');
+    if (isSuccess && hash) {
+        hashContainer.classList.remove('hidden');
+        hashEl.textContent = hash;
+        const explorer = activeNet?.explorer || 'https://explorer.paxinet.io';
+        document.getElementById('viewHashBtn').onclick = () => window.open(`${explorer}/tx/${hash}`, '_blank');
+    } else {
+        hashContainer.classList.add('hidden');
+    }
+
+    // Error
+    const errorContainer = document.getElementById('logErrorContainer');
+    if (!isSuccess && error) {
+        errorContainer.classList.remove('hidden');
+        document.getElementById('logError').textContent = error;
+    } else {
+        errorContainer.classList.add('hidden');
+    }
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+};
+
+window.closeTxResult = function() {
+    const modal = document.getElementById('txResultModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+};
+
 window.activeNotifs = [];
 window.showNotif = function(msg, type = 'info') {
   if (!msg) return;
