@@ -121,11 +121,14 @@ window.fetchGasEstimate = async function(msgCount = 1) {
     const data = await window.fetchDirect(`/api/gas-estimate?msgs=${msgCount}`);
     return data;
   } catch (e) {
+    // Network requires min 40,000 upaxi fee
+    const gasLimit = 500000 + (300000 * (msgCount - 1));
+    const est = Math.max(Math.ceil(gasLimit * 0.025), 40000);
     return {
       gasPrice: "0.025",
-      gasLimit: (250000 * msgCount).toString(),
-      estimatedFee: (6250 * msgCount).toString(),
-      usdValue: (6250 * msgCount / 1e6 * (window.paxiPriceUSD || 0.05)).toFixed(4)
+      gasLimit: gasLimit.toString(),
+      estimatedFee: est.toString(),
+      usdValue: (est / 1e6 * (window.paxiPriceUSD || 0.05)).toFixed(4)
     };
   }
 };

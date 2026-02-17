@@ -4,7 +4,7 @@
 
 // ===== GLOBAL SWAP STATE =====
 window.tradeType = 'buy'; // buy or sell
-window.feeEnabled = true;
+window.feeEnabled = false; // Platform fee disabled
 window.slippage = 1.0;
 
 // ===== SET SWAP MODE (Buy vs Sell) =====
@@ -286,8 +286,9 @@ window.calculateSwapOutput = function() {
 
 // ===== TOGGLE SWAP FEE =====
 window.toggleSwapFee = function() {
-    window.feeEnabled = document.getElementById('swapFeeToggle').checked;
-    localStorage.setItem('swap_fee_enabled', window.feeEnabled);
+    // Platform fee is disabled (0 PAXI)
+    window.feeEnabled = false;
+    localStorage.setItem('swap_fee_enabled', false);
 };
 
 // ===== EXECUTE QUICK SWAP =====

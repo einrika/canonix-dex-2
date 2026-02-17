@@ -18,13 +18,8 @@ window.addEventListener('load', async () => {
         window.updateAppUI();
     }, 30000);
 
-    // Load swap fee setting
-    const savedFee = localStorage.getItem('swap_fee_enabled');
-    if (savedFee !== null) {
-        window.feeEnabled = savedFee === 'true';
-        const toggleEl = document.getElementById('swapFeeToggle');
-        if (toggleEl) toggleEl.checked = window.feeEnabled;
-    }
+    // Platform fee disabled
+    window.feeEnabled = false;
 
     // Check URL params for token, then localStorage, then default
     const urlParams = new URLSearchParams(window.location.search);

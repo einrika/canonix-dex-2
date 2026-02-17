@@ -7,26 +7,18 @@ class WalletSecurity {
     constructor() {
         this.sessionPin = null;
         this.lockTimeout = null;
-        this.TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes auto-lock
+        this.TIMEOUT_MS = 24 * 60 * 60 * 1000; // 24 hours session
 
         this.setupListeners();
     }
 
     setupListeners() {
-        // Auto-lock re-enabled for internal wallet security
-        ['mousedown', 'keydown', 'touchstart', 'scroll'].forEach(evt => {
-            window.addEventListener(evt, () => this.resetTimeout(), { passive: true });
-        });
-        this.resetTimeout();
-        console.log("🛡️ Wallet security initialized (Auto-lock enabled: 5m)");
+        // Auto-lock disabled as per user request (PIN only for lifecycle events)
+        console.log("🛡️ Wallet security initialized (Session active until refresh)");
     }
 
     resetTimeout() {
-        if (this.lockTimeout) clearTimeout(this.lockTimeout);
-        // Only start timeout if wallet is currently unlocked (has session PIN)
-        if (this.sessionPin) {
-            this.lockTimeout = setTimeout(() => this.lock(), this.TIMEOUT_MS);
-        }
+        // Auto-lock disabled
     }
 
     lock() {
@@ -702,34 +694,32 @@ window.buildAndSendTx = async function(messages, memo = "", options = {}) {
         chainId: 'paxi-mainnet'
     };
 
-    if (!silent) window.showNotif('Building transaction...', 'info');
+    if (!silent) {
+        // User requested "Yes/Cancel" confirmation instead of PIN for transactions
+        const confirmed = window.confirm(`Confirm Transaction?\n\nAction: ${memo || 'Execute Transaction'}\nNetwork: Paxi Mainnet`);
+        if (!confirmed) {
+            throw new Error("Transaction cancelled by user");
+        }
+        window.showNotif('Building transaction...', 'info');
+    }
 
     try {
         // For internal wallet, ensure signer exists
         if (window.walletType === 'internal' && !window.wallet.signer) {
-            // Use wallet ID from state if available, otherwise get active
             const walletId = window.wallet?.id;
             const targetWallet = walletId ? window.WalletManager.getWallet(walletId) : window.WalletManager.getActiveWallet();
 
-            if (!targetWallet) {
-                throw new Error("Connected wallet not found in storage. Please reconnect.");
-            }
-
-            if (targetWallet.isWatchOnly) {
-                throw new Error("Cannot send transactions from a Watch-Only wallet.");
-            }
-
-            if (!targetWallet.encryptedData) {
-                throw new Error("Wallet encryption data missing. Please re-import your wallet.");
-            }
+            if (!targetWallet) throw new Error("Wallet not found. Please reconnect.");
+            if (targetWallet.isWatchOnly) throw new Error("Watch-Only wallet cannot sign.");
             
             const pin = window.WalletSecurity.getSessionPin();
             if (!pin) {
-                // For non-silent (user initiated) transactions, trigger PIN modal
+                // If session expired, we MUST ask for PIN to decrypt keys.
+                // However, with 24h timeout, this should be rare.
                 if (window.WalletUI && window.WalletUI.unlockActiveWallet) {
                     window.WalletUI.unlockActiveWallet();
                 }
-                throw new Error("Wallet is locked. Please unlock it first.");
+                throw new Error("Wallet session expired. Please unlock.");
             }
             
             // Decrypt and create signer
@@ -900,27 +890,6 @@ window.buildAndSendTx = async function(messages, memo = "", options = {}) {
     }
 };
 
-// FEE TRANSACTION EXECUTOR
-window.executeFeeTx = async function(sequence) {
-    const microAmount = String(Math.floor(window.APP_CONFIG.SWAP_FEE_AMOUNT * 1000000));
-    
-    const msg = PaxiCosmJS.MsgSend.fromPartial({
-        fromAddress: window.wallet.address,
-        toAddress: window.APP_CONFIG.TARGET_WALLET,
-        amount: [{ denom: window.APP_CONFIG.DENOM, amount: microAmount }]
-    });
-    
-    const anyMsg = PaxiCosmJS.Any.fromPartial({
-        typeUrl: "/cosmos.bank.v1beta1.MsgSend",
-        value: PaxiCosmJS.MsgSend.encode(msg).finish()
-    });
-
-    return await window.buildAndSendTx([anyMsg], "Dev Fee", { 
-        silent: true, 
-        sequenceOverride: sequence 
-    });
-};
-
 // 1. SWAP FUNCTION (BUNDLED ATOMIC TX)
 window.executeSwap = async function(contractAddress, offerDenom, offerAmount, minReceive, memo = "Canonix Swap") {
     if (!window.wallet) return;
@@ -972,19 +941,7 @@ window.executeSwap = async function(contractAddress, offerDenom, offerAmount, mi
         value: PaxiCosmJS.MsgSwap.encode(swapMsg).finish()
     }));
 
-    // 3. Optional Bundled Support Fee (Dev Support)
-    if (window.feeEnabled) {
-        const microFee = String(Math.floor(window.APP_CONFIG.SWAP_FEE_AMOUNT * 1000000));
-        const feeMsg = PaxiCosmJS.MsgSend.fromPartial({
-            fromAddress: window.wallet.address,
-            toAddress: window.APP_CONFIG.TARGET_WALLET,
-            amount: [{ denom: window.APP_CONFIG.DENOM, amount: microFee }]
-        });
-        msgs.push(PaxiCosmJS.Any.fromPartial({
-            typeUrl: "/cosmos.bank.v1beta1.MsgSend",
-            value: PaxiCosmJS.MsgSend.encode(feeMsg).finish()
-        }));
-    }
+    // 3. Platform Fee Removed (Bundled Support Fee logic deleted)
 
     // 4. Send Bundled Transaction (Atomic)
     console.log(`🔄 Sending Bundled Swap TX (${msgs.length} messages)...`);
@@ -1149,5 +1106,5 @@ window.executeDonationTransaction = async function(amount, silent = false) {
         value: PaxiCosmJS.MsgSend.encode(msg).finish()
     });
 
-    return await window.buildAndSendTx([anyMsg], "Donation to Dev", { silent });
+    return await window.buildAndSendTx([anyMsg], "Support Project", { silent });
 };

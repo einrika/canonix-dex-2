@@ -901,7 +901,7 @@ window.WalletUI = {
 
                         <!-- Actions -->
                         <div class="space-y-2">
-                            <button onclick="window.WalletUI.reviewSend()" class="w-full py-4 bg-up text-black rounded-xl font-black text-sm hover:bg-up/90 transition-all">
+                            <button onclick="window.WalletUI.reviewSend(event)" class="w-full py-4 bg-up text-black rounded-xl font-black text-sm hover:bg-up/90 transition-all">
                                 Review Send
                             </button>
                             <button id="confirm-send-btn" onclick="window.WalletUI.confirmSend()" class="hidden w-full py-4 bg-up text-black rounded-xl font-black text-sm hover:bg-up/90 transition-all">
@@ -1020,7 +1020,7 @@ window.WalletUI = {
         }
     },
 
-    reviewSend: function() {
+    reviewSend: function(event) {
         const token = window.AssetManager.getTokens().find(t => t.address === window.selectedSendToken);
         const recipient = document.getElementById('send-recipient')?.value;
         const amount = document.getElementById('send-amount')?.value;
@@ -1035,7 +1035,9 @@ window.WalletUI = {
         document.getElementById('confirm-send-btn')?.classList.remove('hidden');
         
         // Hide review button
-        event.target.closest('button')?.classList.add('hidden');
+        if (event && event.target) {
+            event.target.closest('button')?.classList.add('hidden');
+        }
 
         // Fill confirmation
         document.getElementById('confirm-token').textContent = token.symbol;

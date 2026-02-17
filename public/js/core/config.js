@@ -24,7 +24,7 @@ window.APP_CONFIG = {
     DENOM: 'upaxi',
     SWAP_MODULE: 'paxi1mfru9azs5nua2wxcd4sq64g5nt7nn4n80r745t',
     TARGET_WALLET: 'paxi1ktdl4hmruyn9vjpf72fxku0jx4lz4q4xknd6ya',
-    SWAP_FEE_AMOUNT: 0.04,
+    SWAP_FEE_AMOUNT: 0.0,
     
     CACHE_DURATION: 1 * 60 * 60 * 1000, // 1 hour
     BATCH_SIZE: 50,
