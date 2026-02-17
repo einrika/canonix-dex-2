@@ -359,8 +359,7 @@ window.WalletUI = {
                     window.AssetManager.fetchUserAssets(wallet.address).then(() => {
                         this.updateAssetBalances();
                         if (window.updateBalances) window.updateBalances();
-                        window.showNotif('Wallet refreshed', 'success');
-                        setTimeout(() => {
+                                                setTimeout(() => {
                             refreshBtn.querySelector('i').classList.remove('fa-spin');
                         }, 500);
                     });
@@ -516,8 +515,7 @@ window.WalletUI = {
     showAssetDetailModal: function(address) {
         const token = window.AssetManager.apiTokens.find(t => t.address === address);
         if (!token || !token.contractData) {
-            window.showNotif('No detailed data available for this token', 'info');
-            return;
+                        return;
         }
 
         const c = token.contractData;
@@ -636,7 +634,7 @@ window.WalletUI = {
                                 <div class="text-[10px] text-gray-500 mb-2">Contract Address</div>
                                 <div class="flex items-center gap-2">
                                     <code class="text-[9px] font-mono text-white truncate flex-1">${c.contract_address}</code>
-                                    <button onclick="navigator.clipboard.writeText('${c.contract_address}'); window.showNotif('Address copied!', 'success');" class="text-up hover:scale-110 transition-transform">
+                                    <button onclick="navigator.clipboard.writeText('${c.contract_address}'); " class="text-up hover:scale-110 transition-transform">
                                         <i class="fas fa-copy text-xs"></i>
                                     </button>
                                 </div>
@@ -672,7 +670,7 @@ window.WalletUI = {
                                 class="py-3 bg-surface border border-border text-white rounded-xl font-black text-sm hover:bg-card transition-all">
                             Cancel
                         </button>
-                        <button onclick="window.AssetManager.toggleVisibility('${address}'); window.WalletUI.renderAssets(); document.getElementById('hideTokenModal').remove(); window.showNotif('${token.symbol} hidden', 'success');" 
+                        <button onclick="window.AssetManager.toggleVisibility('${address}'); window.WalletUI.renderAssets(); document.getElementById('hideTokenModal').remove(); "
                                 class="py-3 bg-yellow-500/20 border border-yellow-500/30 text-yellow-500 rounded-xl font-black text-sm hover:bg-yellow-500 hover:text-black transition-all">
                             Hide
                         </button>
@@ -1026,8 +1024,7 @@ window.WalletUI = {
         const amount = document.getElementById('send-amount')?.value;
         
         if (!token || !recipient || !amount) {
-            window.showNotif('Please fill all required fields', 'error');
-            return;
+                        return;
         }
         
         // Show confirmation details
@@ -1056,8 +1053,7 @@ window.WalletUI = {
         const memo = document.getElementById('send-memo')?.value || "Send from Canonix";
 
         if (!tokenAddress || !recipient || isNaN(amount) || amount <= 0) {
-            window.showNotif('Invalid send parameters', 'error');
-            return;
+                        return;
         }
 
         const btn = document.getElementById('confirm-send-btn');
@@ -1251,10 +1247,8 @@ window.WalletUI = {
                 if (window.checkWalletLock) window.checkWalletLock();
 
                 this.renderDashboard();
-                window.showNotif("Success", "success");
-            } catch (e) {
-                window.showNotif("Incorrect PIN", "error");
-            }
+                            } catch (e) {
+                            }
         });
     },
 
@@ -1263,8 +1257,7 @@ window.WalletUI = {
         
         if (!window.WalletManager) {
             console.error('❌ WalletManager not found!');
-            window.showNotif('Wallet manager not initialized', 'error');
-            return;
+                        return;
         }
         
         const walletId = id || window.WalletManager.activeId;
@@ -1272,8 +1265,7 @@ window.WalletUI = {
         
         if (!wallet) {
             console.error('❌ Wallet not found, id:', walletId);
-            window.showNotif('Wallet not found', 'error');
-            return;
+                        return;
         }
 
         console.log('✅ Opening settings for wallet:', wallet.name);
@@ -1327,8 +1319,7 @@ window.WalletUI = {
     processRename: function(id) {
         const newName = document.getElementById('renameInput').value.trim();
         if (newName && window.WalletManager.renameWallet(id, newName)) {
-            window.showNotif("Wallet renamed", "success");
-            document.getElementById('settingsModal').remove();
+                        document.getElementById('settingsModal').remove();
             this.renderDashboard();
         }
     },
@@ -1336,8 +1327,7 @@ window.WalletUI = {
     processDelete: function(id) {
         if (confirm("Are you sure you want to delete this wallet? This action cannot be undone. Make sure you have backed up your secrets!")) {
             if (window.WalletManager.deleteWallet(id)) {
-                window.showNotif("Wallet deleted", "success");
-                document.getElementById('settingsModal').remove();
+                                document.getElementById('settingsModal').remove();
                 this.renderDashboard();
             }
         }
@@ -1382,7 +1372,7 @@ window.WalletUI = {
                                                 <div class="text-xs text-gray-500">${token.symbol}</div>
                                             </div>
                                         </div>
-                                        <button onclick="window.AssetManager.toggleVisibility('${token.address}'); window.WalletUI.showHiddenTokens(); window.WalletUI.renderAssets(); window.showNotif('${token.symbol} unhidden', 'success');" 
+                                        <button onclick="window.AssetManager.toggleVisibility('${token.address}'); window.WalletUI.showHiddenTokens(); window.WalletUI.renderAssets(); "
                                                 class="px-4 py-2 bg-up/10 text-up rounded-xl text-xs font-black hover:bg-up hover:text-black transition-all">
                                             <i class="fas fa-eye mr-1"></i> Unhide
                                         </button>
@@ -1430,8 +1420,7 @@ window.WalletUI = {
                 `;
                 document.body.insertAdjacentHTML('beforeend', secretModalHtml);
             } catch (e) {
-                window.showNotif("Incorrect PIN", "error");
-            }
+                            }
         });
     },
 
@@ -1542,22 +1531,19 @@ window.WalletUI = {
             const name = document.getElementById('importName').value || 'Imported Wallet';
             const value = document.getElementById('importValue').value.trim();
 
-            if (!value) return window.showNotif("Please enter the required value", "error");
-
+            if (!value) return
             if (type === 'watchonly') {
                 console.log("👀 Adding watch-only", { name, value });
                 await window.WalletManager.addWatchOnly(name, value);
                 const modal = document.getElementById('importModal');
                 if (modal) modal.remove();
-                window.showNotif("Watch-only wallet added", "success");
-                this.renderDashboard();
+                                this.renderDashboard();
                 return;
             }
 
             window.showPinSheet('Set 6-Digit PIN', async (pin) => {
             try {
-                window.showNotif("Importing...", "info");
-                if (type === 'mnemonic') {
+                                if (type === 'mnemonic') {
                     await window.WalletManager.importMnemonic(name, value, pin);
                 } else {
                     await window.WalletManager.importPrivateKey(name, value, pin);
@@ -1565,7 +1551,6 @@ window.WalletUI = {
 
                 window.WalletSecurity.setSessionPin(pin);
                 document.getElementById('importModal').remove();
-                window.showNotif("Wallet imported successfully!", "success");
 
                 // Trigger auto-connect for the new wallet
                 const active = window.WalletManager.getActiveWallet();
@@ -1573,8 +1558,7 @@ window.WalletUI = {
 
                 this.renderDashboard();
             } catch (e) {
-                window.showNotif("Import failed: " + e.message, "error");
-            }
+                            }
             });
         } catch (e) {
             console.error("❌ processImport error:", e);
@@ -1582,8 +1566,7 @@ window.WalletUI = {
     },
 
     showCreateModal: function() {
-        window.showNotif("Generating...", "info");
-        window.setupNewWallet(); // Reusing some of the existing logic but we should move it
+                window.setupNewWallet(); // Reusing some of the existing logic but we should move it
     }
 };
 
@@ -1747,12 +1730,10 @@ window.connectInternalWallet = async function(id, pin) {
             }
         }
 
-        window.showNotif("Success", "success");
-        if (window.WalletUI) window.WalletUI.renderDashboard();
+                if (window.WalletUI) window.WalletUI.renderDashboard();
         if (window.renderSwapTerminal) window.renderSwapTerminal();
     } catch (e) {
-        window.showNotif("Failed to connect: " + e.message, "error");
-    }
+            }
 };
 
 window.connectWallet = async function(type) {
@@ -1811,11 +1792,9 @@ window.connectWallet = async function(type) {
         window.addClass('connectBtn', 'hidden');
         window.addClass('mobileConnectBtn', 'hidden');
 
-        window.showNotif(window.NOTIF_CONFIG.WALLET_CONNECT_SUCCESS, 'success');
-        if (window.closeAllSidebars) window.closeAllSidebars();
+                if (window.closeAllSidebars) window.closeAllSidebars();
     } catch (e) {
-        window.showNotif(window.NOTIF_CONFIG.WALLET_CONNECT_FAILED + ': ' + e.message, 'error');
-        btn.innerHTML = '<i class="fas fa-plug"></i><span class="hidden xs:inline">Connect</span>';
+                btn.innerHTML = '<i class="fas fa-plug"></i><span class="hidden xs:inline">Connect</span>';
         btn.className = 'btn-trade px-3 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-bold shadow-lg flex items-center gap-2';
     }
 };
@@ -1986,8 +1965,7 @@ window.disconnectWallet = function() {
     window.removeClass('mobileConnectBtn', 'hidden');
     window.addClass('walletInfo', 'hidden');
     window.addClass('mobileWalletInfo', 'hidden');
-    window.showNotif('Wallet disconnected', 'info');
-};
+    };
 
 // Internal Wallet UI Logic
 window.showInternalWalletSheet = function() {
@@ -2117,8 +2095,7 @@ window.renderWalletOptions = function() {
 };
 
 window.setupNewWallet = async function() {
-    window.showNotif('Loading components...', 'info');
-    try {
+        try {
         const paxi = await window.waitForLibrary('PaxiCosmJS');
 
         if (!window.DirectSecp256k1HdWallet && !paxi.DirectSecp256k1HdWallet) {
@@ -2138,8 +2115,7 @@ window.setupNewWallet = async function() {
              throw new Error('DirectSecp256k1HdWallet component missing in PaxiCosmJS bundle');
         }
 
-        window.showNotif('Generating mnemonic...', 'info');
-        const wallet = await HDWallet.generate(12, { prefix: "paxi" });
+                const wallet = await HDWallet.generate(12, { prefix: "paxi" });
         const mnemonic = wallet.mnemonic;
 
         window.internalWalletState.tempMnemonic = mnemonic;
@@ -2156,8 +2132,7 @@ window.setupNewWallet = async function() {
             </button>
         `;
     } catch (e) {
-        window.showNotif('Failed to generate wallet: ' + e.message, 'error');
-    }
+            }
 };
 
 window.confirmBackup = function() {
@@ -2166,11 +2141,9 @@ window.confirmBackup = function() {
             const encryptedMnemonic = await window.cryptoUtils.encrypt(window.internalWalletState.tempMnemonic, pin);
             localStorage.setItem('paxi_internal_wallet', encryptedMnemonic);
             window.internalWalletState.tempMnemonic = '';
-            window.showNotif('Wallet created successfully!', 'success');
-            window.renderWalletOptions();
+                        window.renderWalletOptions();
         } catch (e) {
-            window.showNotif('Encryption failed', 'error');
-        }
+                    }
     });
 };
 
@@ -2194,14 +2167,12 @@ window.unlockInternalWallet = function() {
             await window.connectWithMnemonic(mnemonic);
             window.hideInternalWalletSheet();
         } catch (e) {
-            window.showNotif('Invalid PIN', 'error');
-        }
+                    }
     });
 };
 
 window.connectWithMnemonic = async function(mnemonic) {
-    window.showNotif('Loading components...', 'info');
-    try {
+        try {
         const paxi = await window.waitForLibrary('PaxiCosmJS');
         if (!window.DirectSecp256k1HdWallet && !paxi.DirectSecp256k1HdWallet) {
             await new Promise(r => {
@@ -2218,8 +2189,7 @@ window.connectWithMnemonic = async function(mnemonic) {
         const HDWallet = paxi.DirectSecp256k1HdWallet || window.DirectSecp256k1HdWallet;
         if (!HDWallet) throw new Error('DirectSecp256k1HdWallet component missing in PaxiCosmJS bundle');
 
-        window.showNotif('Connecting...', 'info');
-        const wallet = await HDWallet.fromMnemonic(mnemonic, { prefix: "paxi" });
+                const wallet = await HDWallet.fromMnemonic(mnemonic, { prefix: "paxi" });
         const accounts = await wallet.getAccounts();
 
         window.wallet = {
@@ -2236,12 +2206,10 @@ window.connectWithMnemonic = async function(mnemonic) {
 
         await window.updateBalances();
         await window.updateMyTokens();
-        window.showNotif('Success', 'success');
-        if (window.closeAllSidebars) window.closeAllSidebars();
+                if (window.closeAllSidebars) window.closeAllSidebars();
 
     } catch (e) {
-        window.showNotif('Failed to connect: ' + e.message, 'error');
-    }
+            }
 };
 
 window.confirmRemoveWallet = function() {
@@ -2266,9 +2234,7 @@ window.authenticateBiometric = async function() {
         };
         const credential = await navigator.credentials.get(options);
         if (credential) {
-            window.showNotif('Biometric verified!', 'success');
-        }
+                    }
     } catch (e) {
-        window.showNotif('Biometric failed', 'error');
-    }
+            }
 };

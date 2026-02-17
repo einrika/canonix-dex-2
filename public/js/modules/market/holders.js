@@ -11,8 +11,7 @@ window.holdersCache = {}; // Changed to object for pagination caching
 // ===== SHOW HOLDERS MODAL =====
 window.showHolders = function() {
     if (!window.currentPRC20) {
-        window.showNotif(window.NOTIF_CONFIG.SELECT_TOKEN_FIRST, 'error');
-        return;
+                return;
     }
 
     // Check if we have the tab system

@@ -167,20 +167,17 @@ window.updateTradeOutput = async function() {
 // ===== EXECUTE TRADE =====
 window.executeTrade = async function() {
     if (!window.wallet) {
-        window.showNotif(window.NOTIF_CONFIG.CONNECT_WALLET_FIRST, 'error');
-        window.showConnectModal();
+                window.showConnectModal();
         return;
     }
 
     if (!window.currentPRC20) {
-        window.showNotif(window.NOTIF_CONFIG.SELECT_TOKEN_FIRST, 'error');
-        return;
+                return;
     }
 
     const payAmount = parseFloat(document.getElementById('tradePayAmount')?.value);
     if (!payAmount || payAmount <= 0) {
-        window.showNotif('Enter a valid amount', 'error');
-        return;
+                return;
     }
 
     window.updateTradeOutput();
@@ -190,8 +187,7 @@ window.executeTrade = async function() {
     const offerDenom = window.tradeType === 'buy' ? window.APP_CONFIG.DENOM : window.currentPRC20;
 
     try {
-        window.showNotif('Broadcasting transaction...', 'info');
-        await window.executeSwap(window.currentPRC20, offerDenom, payAmount, minReceived);
+                await window.executeSwap(window.currentPRC20, offerDenom, payAmount, minReceived);
     } catch (e) {
         console.error(e);
     }
@@ -227,8 +223,7 @@ window.toggleSwapDirection = function() {
 // ===== SET SWAP PERCENT =====
 window.setSwapPercent = function(percent) {
     if (!window.wallet) {
-        window.showNotif(window.NOTIF_CONFIG.CONNECT_WALLET_FIRST, 'error');
-        return;
+                return;
     }
     const balEl = document.getElementById('fromBalance');
     if (!balEl) return;
@@ -298,19 +293,16 @@ window.toggleSwapFee = function() {
 // ===== EXECUTE QUICK SWAP =====
 window.executeQuickSwap = async function() {
     if (!window.wallet) {
-        window.showNotif(window.NOTIF_CONFIG.CONNECT_WALLET_FIRST, 'error');
-        return;
+                return;
     }
     
     if (!window.currentPRC20) {
-        window.showNotif(window.NOTIF_CONFIG.SELECT_TOKEN_FIRST, 'error');
-        return;
+                return;
     }
     
     const fromAmount = parseFloat(document.getElementById('swapFromAmount')?.value);
     if (!fromAmount || fromAmount <= 0) {
-        window.showNotif('Enter a valid amount', 'error');
-        return;
+                return;
     }
     
     // Calculate min receive for slippage protection (1%)
@@ -335,8 +327,7 @@ window.executeSend = async function() {
     const amount = parseFloat(document.getElementById('sendAmount')?.value);
     
     if (!recipient || amount <= 0) {
-        window.showNotif('Invalid input', 'error');
-        return;
+                return;
     }
 
     try {
@@ -351,8 +342,7 @@ window.executeSend = async function() {
 window.executeDonation = async function() {
     const amount = parseFloat(document.getElementById('donationAmount')?.value);
     if (!amount || amount <= 0) {
-        window.showNotif('Invalid donation amount', 'error');
-        return;
+                return;
     }
     try {
         await window.executeDonationTransaction(amount);

@@ -44,8 +44,7 @@ window.renderWalletDetails = async function() {
 
 window.showWalletActions = function() {
     if (!window.wallet) {
-        window.showNotif(window.NOTIF_CONFIG.CONNECT_WALLET_FIRST, 'error');
-        return;
+                return;
     }
     window.removeClass('walletActionsModal', 'hidden');
     window.setText('receiveAddress', window.wallet.address);
@@ -73,12 +72,10 @@ window.switchWalletTab = function(tab) {
 
 window.showLPModal = function() {
     if (!window.wallet) {
-        window.showNotif(window.NOTIF_CONFIG.CONNECT_WALLET_FIRST, 'error');
-        return;
+                return;
     }
     if (!window.currentPRC20) {
-        window.showNotif(window.NOTIF_CONFIG.SELECT_TOKEN_FIRST, 'error');
-        return;
+                return;
     }
     window.removeClass('lpModal', 'hidden');
     const symbol = window.currentTokenInfo?.symbol || 'TOKEN';
@@ -107,8 +104,7 @@ window.toggleTxHistory = function() {
     const modal = document.getElementById('txHistoryModal');
     if (modal.classList.contains('hidden')) {
         if (!window.wallet) {
-            window.showNotif(window.NOTIF_CONFIG.CONNECT_WALLET_FIRST, 'error');
-            return;
+                        return;
         }
         modal.classList.remove('hidden');
         window.renderTxHistory();

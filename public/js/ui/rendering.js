@@ -428,9 +428,7 @@ window.renderSwapTerminal = async function() {
                     <div class="flex justify-between text-[9px] font-black uppercase tracking-tighter"><span class="text-gray-500">Slippage Tolerance</span><button onclick="window.showSlippageModal()" class="text-up hover:underline flex items-center gap-1"><span id="slippageVal">1.0%</span> <i class="fas fa-cog text-[8px]"></i></button></div>
                     <div class="flex justify-between text-[9px] font-black uppercase tracking-tighter pt-1 border-t border-white/5"><span class="text-gray-500">Network Fee</span><span id="networkFee" class="text-gray-400 font-mono">~0.0063 PAXI</span></div>
                 </div>
-                <button onclick="${isWatchOnly ? 'window.showNotif(\'Cannot trade from watch-only wallet\', \'error\')' : 'window.executeTrade()'}"
-                        class="btn-trade w-full py-4 rounded-2xl text-white font-black text-sm uppercase tracking-widest shadow-glow-up transform active:scale-[0.98] transition-all ${isWatchOnly ? 'opacity-50 grayscale cursor-not-allowed' : ''}">
-                    ${isWatchOnly ? 'Swap (Watch-Only)' : 'Swap Now'}
+                <button onclick="${isWatchOnly ? '' : 'Swap Now'}
                 </button>
             </div>
         </div>`;
@@ -667,11 +665,9 @@ window.updateTokenCard = function(address) {
 
 // ===== SHOW TRANSACTION DETAIL MODAL =====
 window.showTransactionDetailModal = async function(hash) {
-    window.showNotif('Fetching transaction details...', 'info');
-    const data = await window.fetchTxDetail(hash);
+        const data = await window.fetchTxDetail(hash);
     if (!data || !data.tx_response) {
-        window.showNotif('Failed to fetch transaction details', 'error');
-        return;
+                return;
     }
 
     const tx = data.tx_response;
@@ -752,7 +748,7 @@ window.showTransactionDetailModal = async function(hash) {
 window.showTokenDetail = function(event, address) {
     event.stopPropagation();
     const detail = window.tokenDetails.get(address);
-    if (!detail) { window.showNotif('Token details not loaded', 'error'); return; }
+    if (!detail) {  return; }
     const totalSupply = detail.total_supply ? (parseInt(detail.total_supply) / Math.pow(10, detail.decimals)).toLocaleString() : 'N/A';
     const safeName = window.escapeHtml(detail.name); const safeSymbol = window.escapeHtml(detail.symbol);
     const safeDescription = window.escapeHtml(detail.description); const safeProject = window.escapeHtml(detail.project);

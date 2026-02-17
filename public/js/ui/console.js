@@ -248,10 +248,8 @@ function downloadConsoleLogs() {
     const content = JSON.stringify(consoleLogBuffer, null, 2);
 
     navigator.clipboard.writeText(content).then(() => {
-        showNotif('All console logs copied to clipboard!', 'success');
-    }).catch(err => {
-        showNotif('Failed to copy logs: ' + err, 'error');
-    });
+            }).catch(err => {
+            });
 }
 
 

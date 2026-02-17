@@ -157,21 +157,18 @@ window.setRemoveLPPercent = function(percent) {
 // ===== EXECUTE ADD LP =====
 window.executeAddLP = async function() {
     if (!window.wallet) {
-        window.showNotif(window.NOTIF_CONFIG.CONNECT_WALLET_FIRST, 'error');
-        return;
+                return;
     }
     
     if (!window.currentPRC20) {
-        window.showNotif(window.NOTIF_CONFIG.SELECT_TOKEN_FIRST, 'error');
-        return;
+                return;
     }
     
     const paxiAmount = parseFloat(document.getElementById('lpPaxiAmount')?.value);
     const tokenAmount = parseFloat(document.getElementById('lpTokenAmount')?.value);
     
     if (!paxiAmount || paxiAmount <= 0 || !tokenAmount || tokenAmount <= 0) {
-        window.showNotif('Enter valid amounts', 'error');
-        return;
+                return;
     }
     
     try {
@@ -185,20 +182,17 @@ window.executeAddLP = async function() {
 // ===== EXECUTE REMOVE LP =====
 window.executeRemoveLP = async function() {
     if (!window.wallet) {
-        window.showNotif(window.NOTIF_CONFIG.CONNECT_WALLET_FIRST, 'error');
-        return;
+                return;
     }
     
     if (!window.currentPRC20) {
-        window.showNotif(window.NOTIF_CONFIG.SELECT_TOKEN_FIRST, 'error');
-        return;
+                return;
     }
     
     const lpAmount = parseFloat(document.getElementById('lpRemoveAmount')?.value);
     
     if (!lpAmount || lpAmount <= 0) {
-        window.showNotif('Enter valid LP amount', 'error');
-        return;
+                return;
     }
     
     try {
@@ -249,20 +243,17 @@ window.updateBurnBalanceDisplay = async function() {
 
 window.executeBurn = async function() {
     if (!window.wallet) {
-        window.showNotif(window.NOTIF_CONFIG.CONNECT_WALLET_FIRST, 'error');
-        return;
+                return;
     }
 
     if (!window.currentPRC20) {
-        window.showNotif(window.NOTIF_CONFIG.SELECT_TOKEN_FIRST, 'error');
-        return;
+                return;
     }
 
     const amount = parseFloat(document.getElementById('burnAmount')?.value);
 
     if (!amount || amount <= 0) {
-        window.showNotif('Enter a valid amount to burn', 'error');
-        return;
+                return;
     }
 
     try {

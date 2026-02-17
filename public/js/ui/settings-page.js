@@ -27,7 +27,6 @@ window.SettingsPage = {
 
     saveConfig: function() {
         localStorage.setItem('canonix_settings', JSON.stringify(this.config));
-        window.showNotif('Settings saved successfully', 'success');
 
         // Dispatch event for other modules to pick up changes
         window.dispatchEvent(new CustomEvent('canonix_settings_updated', { detail: this.config }));

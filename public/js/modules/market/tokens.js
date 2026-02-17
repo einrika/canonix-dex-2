@@ -374,8 +374,7 @@ window.selectPRC20 = async function(contractAddress) {
 
     if (window.closeAllSidebars) window.closeAllSidebars();
     window.hideTokenSelector();
-    window.showNotif('Loading token data...', 'info');
-    
+
     const url = new URL(window.location);
     url.searchParams.set('token', contractAddress);
     window.history.pushState({}, '', url);
@@ -383,8 +382,7 @@ window.selectPRC20 = async function(contractAddress) {
     try {
         window.currentTokenInfo = await window.loadTokenDetail(contractAddress);
         if (!window.currentTokenInfo) {
-            window.showNotif('Failed to load token info', 'error');
-            return;
+                        return;
         }
         
         await window.refreshAllUI();
@@ -405,11 +403,9 @@ window.selectPRC20 = async function(contractAddress) {
         
         if (window.updateTokenCard) window.updateTokenCard(contractAddress);
         
-        window.showNotif(window.NOTIF_CONFIG.TOKEN_LOADED, 'success');
-    } catch (e) {
+            } catch (e) {
         console.error('Failed to load token:', e);
-        window.showNotif(window.NOTIF_CONFIG.ERROR_LOADING_TOKEN, 'error');
-    }
+            }
 };
 
 // ===== DEBUG HELPER =====

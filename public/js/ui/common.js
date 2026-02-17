@@ -215,8 +215,7 @@ window.showError = function(message) {
         window.setText('errorText', message);
         modal.classList.remove('hidden');
     } else {
-        window.showNotif(message, 'error');
-    }
+            }
 };
 
 // ===== UPDATE DASHBOARD =====
@@ -375,8 +374,7 @@ window.updateTradeBalances = async function() {
 window.copyAddrText = function() {
     if (!window.currentPRC20) return;
     navigator.clipboard.writeText(window.currentPRC20);
-    window.showNotif('Address copied!', 'success');
-};
+    };
 
 window.showSlippageModal = function() {
     window.removeClass('slippageModal', 'hidden');

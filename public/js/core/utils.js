@@ -489,14 +489,12 @@ window.normalizeLogoUrl = function(rawUrl) {
 window.copyAddress = function(event, address) {
   event.stopPropagation();
   navigator.clipboard.writeText(address);
-  window.showNotif(window.NOTIF_CONFIG.ADDRESS_COPIED, 'success');
 };
 
 // ===== SHARE TOKEN =====
 window.shareToken = function(address) {
   const url = window.location.origin + window.location.pathname + '?token=' + address;
   navigator.clipboard.writeText(url);
-  window.showNotif(window.NOTIF_CONFIG.SHARE_LINK_COPIED, 'success');
 };
 
 // ===== HELPER NUMERIC =====
