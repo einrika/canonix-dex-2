@@ -372,10 +372,10 @@ window.showTxResult = function(data) {
     const typeEl = document.getElementById('txResultType');
 
     statusEl.textContent = isSuccess ? 'Success' : 'Failed';
-    statusEl.className = `text-2xl font-black uppercase italic tracking-widest mb-2 ${isSuccess ? 'text-up' : 'text-down'}`;
+    statusEl.className = `text-xl font-black uppercase italic tracking-widest mb-1 ${isSuccess ? 'text-up' : 'text-down'}`;
 
-    iconEl.className = `w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 ${isSuccess ? 'bg-up/10 text-up' : 'bg-down/10 text-down'}`;
-    iconEl.innerHTML = `<i class="fas ${isSuccess ? 'fa-check-circle' : 'fa-times-circle'} text-4xl"></i>`;
+    iconEl.className = `w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3 ${isSuccess ? 'bg-up/10 text-up' : 'bg-down/10 text-down'}`;
+    iconEl.innerHTML = `<i class="fas ${isSuccess ? 'fa-check-circle' : 'fa-times-circle'} text-2xl"></i>`;
 
     typeEl.textContent = `${type} Details`;
 
@@ -384,7 +384,7 @@ window.showTxResult = function(data) {
     document.getElementById('logType').textContent = type || '--';
     document.getElementById('logAsset').textContent = asset || '--';
     document.getElementById('logAmount').textContent = amount || '0.00';
-    document.getElementById('logAmount').className = `text-xs font-mono font-bold ${isSuccess ? 'text-up' : 'text-gray-400'}`;
+    document.getElementById('logAmount').className = `text-[10px] font-mono font-bold ${isSuccess ? 'text-up' : 'text-gray-400'}`;
 
     const activeNet = window.NetworkManager?.getActiveNetwork();
     document.getElementById('logNetwork').textContent = network || (activeNet?.name || 'Paxi Mainnet');

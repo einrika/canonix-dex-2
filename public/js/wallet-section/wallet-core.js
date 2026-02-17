@@ -946,7 +946,8 @@ window.buildAndSendTx = async function(messages, memo = "", options = {}) {
             
             return { success: true, hash, ...broadcastRes.tx_response };
         } else {
-            throw new Error("Broadcast failed");
+            const errorLog = broadcastRes.tx_response?.raw_log || broadcastRes.tx_response?.message || "Unknown Network Error";
+            throw new Error(`Broadcast failed: ${errorLog}`);
         }
 
     } catch (err) {
