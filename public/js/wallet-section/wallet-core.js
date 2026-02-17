@@ -13,16 +13,28 @@ class WalletSecurity {
     }
 
     setupListeners() {
-        // Auto-lock disabled as per user request
-        console.log("🛡️ Wallet security initialized (Auto-lock disabled)");
+        // Auto-lock re-enabled for internal wallet security
+        ['mousedown', 'keydown', 'touchstart', 'scroll'].forEach(evt => {
+            window.addEventListener(evt, () => this.resetTimeout(), { passive: true });
+        });
+        this.resetTimeout();
+        console.log("🛡️ Wallet security initialized (Auto-lock enabled: 5m)");
     }
 
     resetTimeout() {
-        // No-op: Auto-lock disabled
+        if (this.lockTimeout) clearTimeout(this.lockTimeout);
+        // Only start timeout if wallet is currently unlocked (has session PIN)
+        if (this.sessionPin) {
+            this.lockTimeout = setTimeout(() => this.lock(), this.TIMEOUT_MS);
+        }
     }
 
     lock() {
         this.sessionPin = null;
+        // Clear signer from global wallet state to ensure it can't sign anymore
+        if (window.wallet && window.wallet.type === 'internal') {
+            window.wallet.signer = null;
+        }
         window.dispatchEvent(new CustomEvent('paxi_wallet_locked'));
         if (window.log) window.log("Wallet session locked", "info");
     }
@@ -639,7 +651,8 @@ window.simulateGas = async function(messages, memo = "") {
             const gasAdjustment = 1.4; // 40% safety buffer
             const gasLimit = Math.ceil(gasUsed * gasAdjustment);
             const minGasPrice = 0.025;
-            const estimatedFee = Math.ceil(gasLimit * minGasPrice);
+            // Ensure minimum fee of 40,000 upaxi (0.04 PAXI) as required by network
+            const estimatedFee = Math.max(Math.ceil(gasLimit * minGasPrice), 40000);
 
             return {
                 gasPrice: minGasPrice.toString(),
@@ -656,14 +669,15 @@ window.simulateGas = async function(messages, memo = "") {
         console.error('Simulation failed, using fallback:', e);
         // Fallback formula
         const gasLimit = 500000 + (300000 * (messages.length - 1));
-        const est = Math.ceil(gasLimit * 0.025);
+        // Ensure minimum fee of 40,000 upaxi (0.04 PAXI) as required by network
+        const est = Math.max(Math.ceil(gasLimit * 0.025), 40000);
         return {
             gasPrice: "0.025",
             gasLimit: gasLimit.toString(),
             baseFee: est.toString(),
             priorityFee: "0",
             estimatedFee: est.toString(),
-            estimatedFeeUSD: "0.00"
+            estimatedFeeUSD: window.formatAmount(est / 1e6 * (window.paxiPriceUSD || 0.05), 4)
         };
     }
 };
