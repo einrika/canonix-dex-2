@@ -171,11 +171,8 @@ window.fetchUserLPPositions = async function(userAddress) {
     );
     const userTokens = (accountsData.accounts || []).map(a => a.contract.contract_address);
 
-    // 3. Filter pools where user might have assets (priority + held tokens)
-    const priorityTokens = window.APP_CONFIG.PRIORITY_TOKENS || [];
-    const relevantPools = pools.filter(p =>
-      priorityTokens.includes(p.prc20) || userTokens.includes(p.prc20)
-    );
+    // 3. Filter pools where user might have assets
+    const relevantPools = pools.filter(p => userTokens.includes(p.prc20));
 
     // 4. Batch fetch positions from LCD
     const positions = [];
