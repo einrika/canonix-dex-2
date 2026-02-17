@@ -29,6 +29,9 @@ class WalletSecurity {
         }
         window.dispatchEvent(new CustomEvent('paxi_wallet_locked'));
         if (window.log) window.log("Wallet session locked", "info");
+
+        // Block features immediately
+        if (window.checkWalletLock) window.checkWalletLock();
     }
 
     setSessionPin(pin) {
@@ -585,9 +588,11 @@ window.wallet = null;
 window.walletType = null; // 'paxihub', 'keplr', 'internal'
 
 // HELPER: GAS SIMULATION
-window.simulateGas = async function(messages, memo = "") {
+window.simulateGas = async function(messages, memo = "", options = {}) {
     try {
         if (!window.wallet) throw new Error("Wallet not connected");
+
+        const { type = 'default' } = options;
 
         // 1. Prepare dummy signer data for simulation
         const accountRes = await window.fetchDirect(`${window.APP_CONFIG.LCD}/cosmos/auth/v1beta1/accounts/${window.wallet.address}`);
@@ -643,8 +648,12 @@ window.simulateGas = async function(messages, memo = "") {
             const gasAdjustment = 1.4; // 40% safety buffer
             const gasLimit = Math.ceil(gasUsed * gasAdjustment);
             const minGasPrice = 0.025;
-            // Ensure minimum fee of 40,000 upaxi (0.04 PAXI) as required by network
-            const estimatedFee = Math.max(Math.ceil(gasLimit * minGasPrice), 40000);
+
+            // Dynamic Minimum Fee Rules
+            let minFee = 25000; // Default for swap, send, burn
+            if (type === 'add_lp') minFee = 40000;
+
+            const estimatedFee = Math.max(Math.ceil(gasLimit * minGasPrice), minFee);
 
             return {
                 gasPrice: minGasPrice.toString(),
@@ -659,10 +668,14 @@ window.simulateGas = async function(messages, memo = "") {
 
     } catch (e) {
         console.error('Simulation failed, using fallback:', e);
+        const { type = 'default' } = options;
         // Fallback formula
         const gasLimit = 500000 + (300000 * (messages.length - 1));
-        // Ensure minimum fee of 40,000 upaxi (0.04 PAXI) as required by network
-        const est = Math.max(Math.ceil(gasLimit * 0.025), 40000);
+
+        let minFee = 25000;
+        if (type === 'add_lp') minFee = 40000;
+
+        const est = Math.max(Math.ceil(gasLimit * 0.025), minFee);
         return {
             gasPrice: "0.025",
             gasLimit: gasLimit.toString(),
@@ -674,11 +687,45 @@ window.simulateGas = async function(messages, memo = "") {
     }
 };
 
+// HELPER: CUSTOM TX CONFIRMATION
+window.confirmTxCustom = function(memo, feeStr) {
+    return new Promise((resolve) => {
+        const modal = document.getElementById('txConfirmModal');
+        const actionEl = document.getElementById('txConfirmAction');
+        const feeEl = document.getElementById('txConfirmFee');
+        const confirmBtn = document.getElementById('txConfirmBtn');
+        const cancelBtn = document.getElementById('txCancelBtn');
+
+        if (!modal || !actionEl || !feeEl || !confirmBtn || !cancelBtn) {
+            // Fallback to window.confirm if UI elements missing
+            resolve(window.confirm(`Confirm Tx: ${memo}\nEst Fee: ${feeStr}`));
+            return;
+        }
+
+        actionEl.textContent = memo || 'Execute Transaction';
+        feeEl.textContent = feeStr || 'Calculating...';
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+
+        const cleanup = (result) => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            confirmBtn.onclick = null;
+            cancelBtn.onclick = null;
+            resolve(result);
+        };
+
+        confirmBtn.onclick = () => cleanup(true);
+        cancelBtn.onclick = () => cleanup(false);
+    });
+};
+
 // HELPER: BUILD & SEND TX
 window.buildAndSendTx = async function(messages, memo = "", options = {}) {
     if (!window.wallet) throw new Error("Wallet not connected");
 
-    const { silent = false, sequenceOverride = null } = options;
+    const { silent = false, sequenceOverride = null, type = 'default' } = options;
 
     // Safety check: Prevent automatic/silent transactions if wallet is locked
     if (window.walletType === 'internal' && !window.WalletSecurity.getSessionPin()) {
@@ -694,16 +741,22 @@ window.buildAndSendTx = async function(messages, memo = "", options = {}) {
         chainId: 'paxi-mainnet'
     };
 
-    if (!silent) {
-        // User requested "Yes/Cancel" confirmation instead of PIN for transactions
-        const confirmed = window.confirm(`Confirm Transaction?\n\nAction: ${memo || 'Execute Transaction'}\nNetwork: Paxi Mainnet`);
-        if (!confirmed) {
-            throw new Error("Transaction cancelled by user");
-        }
-        window.showNotif('Building transaction...', 'info');
-    }
+    const loader = document.getElementById('txLoader');
+    const showLoader = () => { if (!silent && loader) { loader.classList.remove('hidden'); loader.classList.add('flex'); } };
+    const hideLoader = () => { if (loader) { loader.classList.add('hidden'); loader.classList.remove('flex'); } };
 
     try {
+        if (!silent) {
+            window.showNotif('Loading', 'info');
+            // 1. Simulation first to show fee in confirmation
+            const gasEstimate = await window.simulateGas(messages, memo, { type });
+            const feeDisplay = `${window.formatAmount(parseInt(gasEstimate.estimatedFee) / 1e6, 4)} PAXI`;
+
+            const confirmed = await window.confirmTxCustom(memo, feeDisplay);
+            if (!confirmed) throw new Error("Transaction cancelled");
+
+            showLoader();
+        }
         // For internal wallet, ensure signer exists
         if (window.walletType === 'internal' && !window.wallet.signer) {
             const walletId = window.wallet?.id;
@@ -745,11 +798,11 @@ window.buildAndSendTx = async function(messages, memo = "", options = {}) {
             console.log('✅ Signer created for transaction');
         }
 
-        // 1. Fetch Chain ID, Account Info & Gas Simulation
+        // 2. Fetch Chain ID & Account Info
         const [chainRes, accountRes, gasEstimate] = await Promise.all([
             window.fetchDirect(`${endpoints.rpc}/status`),
             window.fetchDirect(`${endpoints.lcd}/cosmos/auth/v1beta1/accounts/${window.wallet.address}`),
-            window.simulateGas(messages, memo)
+            window.simulateGas(messages, memo, { type }) // Re-simulate to be sure
         ]);
 
         const chainId = chainRes.result.node_info.network;
@@ -873,19 +926,26 @@ window.buildAndSendTx = async function(messages, memo = "", options = {}) {
             body: JSON.stringify({ tx_bytes: txBytesBase64, mode: 'BROADCAST_MODE_SYNC' })
         });
 
+        hideLoader();
+
         if (broadcastRes.tx_response && broadcastRes.tx_response.code === 0) {
             const hash = broadcastRes.tx_response.txhash;
-            if (!silent) window.showNotif(`Transaction Sent! Hash: ${hash.slice(0,6)}...`, 'success');
+            if (!silent) window.showNotif('Success', 'success');
             console.log('✅ TX Hash:', hash);
             
             return { success: true, hash, ...broadcastRes.tx_response };
         } else {
-            throw new Error(broadcastRes.tx_response?.raw_log || "Broadcast failed");
+            throw new Error("Broadcast failed");
         }
 
     } catch (err) {
+        hideLoader();
         console.error("Transaction Error:", err);
-        if (!silent) window.showNotif(`Error: ${err.message}`, 'error');
+        if (!silent) {
+            if (err.message !== "Transaction cancelled") {
+                window.showNotif('Failed', 'error');
+            }
+        }
         throw err;
     }
 };
@@ -945,7 +1005,7 @@ window.executeSwap = async function(contractAddress, offerDenom, offerAmount, mi
 
     // 4. Send Bundled Transaction (Atomic)
     console.log(`🔄 Sending Bundled Swap TX (${msgs.length} messages)...`);
-    const result = await window.buildAndSendTx(msgs, memo);
+    const result = await window.buildAndSendTx(msgs, memo, { type: 'swap' });
     
     // Refresh UI after delay
     setTimeout(async () => {
@@ -998,7 +1058,7 @@ window.executeAddLPTransaction = async function(contractAddress, paxiAmount, tok
         value: PaxiCosmJS.MsgProvideLiquidity.encode(lpMsg).finish()
     }));
 
-    return await window.buildAndSendTx(msgs, "Add Liquidity");
+    return await window.buildAndSendTx(msgs, "Add Liquidity", { type: 'add_lp' });
 };
 
 window.executeRemoveLPTransaction = async function(contractAddress, lpAmount) {
@@ -1016,7 +1076,7 @@ window.executeRemoveLPTransaction = async function(contractAddress, lpAmount) {
         value: PaxiCosmJS.MsgWithdrawLiquidity.encode(msg).finish()
     });
 
-    return await window.buildAndSendTx([anyMsg], "Remove Liquidity");
+    return await window.buildAndSendTx([anyMsg], "Remove Liquidity", { type: 'remove_lp' });
 };
 
 // 3. SEND FUNCTION
@@ -1059,7 +1119,7 @@ window.executeSendTransaction = async function(tokenAddress, recipient, amount, 
         }));
     }
 
-    return await window.buildAndSendTx(msgs, memo);
+    return await window.buildAndSendTx(msgs, memo, { type: 'send' });
 };
 
 // 5. BURN FUNCTION
@@ -1087,7 +1147,7 @@ window.executeBurnTransaction = async function(contractAddress, amount) {
         }).finish()
     });
 
-    return await window.buildAndSendTx([anyMsg], "Burn Tokens");
+    return await window.buildAndSendTx([anyMsg], "Burn Tokens", { type: 'burn' });
 };
 
 // 4. DONATION FUNCTION

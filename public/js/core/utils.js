@@ -362,14 +362,24 @@ window.setCachedData = function(key, value) {
 window.activeNotifs = [];
 window.showNotif = function(msg, type = 'info') {
   if (!msg) return;
-  const safeMsg = window.escapeHtml(msg);
   const lowerMsg = msg.toLowerCase();
 
-  // Suppress specific notifications as per user request
-  const blackList = ['wallet connected', 'wallet unlocked', 'internal wallet connected'];
-  if (blackList.some(term => lowerMsg.includes(term))) {
-    return;
+  // Strict Implementation: Only Loading, Success, Failed allowed.
+  let finalMsg = '';
+  if (lowerMsg.includes('loading') || lowerMsg.includes('process') || lowerMsg.includes('broadcasting') || lowerMsg.includes('building')) {
+      finalMsg = 'Loading';
+      type = 'info';
+  } else if (lowerMsg.includes('success') || lowerMsg.includes('sent') || lowerMsg.includes('confirmed') || lowerMsg.includes('completed')) {
+      finalMsg = 'Success';
+      type = 'success';
+  } else if (lowerMsg.includes('fail') || lowerMsg.includes('error') || lowerMsg.includes('reject')) {
+      finalMsg = 'Failed';
+      type = 'error';
   }
+
+  if (!finalMsg) return; // Block all other notifications (Address copied, etc. per strict requirements)
+
+  const safeMsg = finalMsg;
 
   // Ensure styles are present
   if (!document.getElementById('paxi-notif-styles')) {

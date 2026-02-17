@@ -1247,8 +1247,11 @@ window.WalletUI = {
                 // Initialize the signer and connect
                 await window.connectInternalWallet(wallet.id, pin);
 
+                // Hide lock overlay
+                if (window.checkWalletLock) window.checkWalletLock();
+
                 this.renderDashboard();
-                window.showNotif("Wallet unlocked!", "success");
+                window.showNotif("Success", "success");
             } catch (e) {
                 window.showNotif("Incorrect PIN", "error");
             }
@@ -1744,7 +1747,7 @@ window.connectInternalWallet = async function(id, pin) {
             }
         }
 
-        window.showNotif("Internal wallet connected!", "success");
+        window.showNotif("Success", "success");
         if (window.WalletUI) window.WalletUI.renderDashboard();
         if (window.renderSwapTerminal) window.renderSwapTerminal();
     } catch (e) {
@@ -2312,7 +2315,7 @@ window.connectWithMnemonic = async function(mnemonic) {
 
         await window.updateBalances();
         await window.updateMyTokens();
-        window.showNotif('Internal wallet connected!', 'success');
+        window.showNotif('Success', 'success');
         if (window.closeAllSidebars) window.closeAllSidebars();
 
     } catch (e) {

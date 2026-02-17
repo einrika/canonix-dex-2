@@ -29,7 +29,8 @@ window.processTokenDetail = function(contractAddress, data) {
         pricePaxi = (parseFloat(c.reserve_paxi) / parseFloat(c.reserve_prc20)) * Math.pow(10, decimals - 6);
     }
 
-    const marketCap = totalSupply * pricePaxi * (window.paxiPriceUSD || 0.05);
+    const marketCapPaxi = totalSupply * pricePaxi;
+    const marketCapUsd = marketCapPaxi * (window.paxiPriceUSD || 0.05);
     const logo = window.normalizeLogoUrl(c.logo);
     
     return {
@@ -45,14 +46,17 @@ window.processTokenDetail = function(contractAddress, data) {
         project: c.project || '',
         marketing: c.marketing || '',
         holders: parseInt(c.holders || 0, 10),
-        liquidity: (parseFloat(c.reserve_paxi || 0) * 2 * (window.paxiPriceUSD || 0.05)) / 1000000,
+        liquidity: (parseFloat(c.reserve_paxi || 0) * 2) / 1000000,
+        liquidity_usd: (parseFloat(c.reserve_paxi || 0) * 2 * (window.paxiPriceUSD || 0.05)) / 1000000,
         verified: c.official_verified === true,
         price_change_24h: parseFloat(c.price_change || 0),
         reserve_paxi: parseFloat(c.reserve_paxi || 0),
         reserve_prc20: parseFloat(c.reserve_prc20 || 0),
         price_paxi: pricePaxi,
+        price_usd: pricePaxi * (window.paxiPriceUSD || 0.05),
         volume_24h: parseFloat(c.volume || 0),
-        market_cap: marketCap,
+        market_cap: marketCapPaxi,
+        market_cap_usd: marketCapUsd,
         buys: parseInt(c.buys || 0),
         sells: parseInt(c.sells || 0),
         is_pump: c.is_pump === true,

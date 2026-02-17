@@ -268,14 +268,14 @@ window.patchTokenElement = function(el, addr) {
 
     // Update MCap
     const mcapEl = el.querySelector('.token-mcap');
-    const marketCap = window.numtokenlist(detail.market_cap);
-    const mcapText = `MCap $${window.formatAmount(marketCap)}`;
+    const mcapUsd = window.numtokenlist(detail.market_cap_usd);
+    const mcapText = `MCap $${window.formatAmount(mcapUsd)}`;
     if (mcapEl.textContent !== mcapText) mcapEl.textContent = mcapText;
 
     // Update Liquidity
     const liqEl = el.querySelector('.token-liq');
-    const liquidity = window.numtokenlist(detail.liquidity);
-    const liqText = `Liq $${window.formatAmount(liquidity)}`;
+    const liqUsd = window.numtokenlist(detail.liquidity_usd);
+    const liqText = `Liq $${window.formatAmount(liqUsd)}`;
     if (liqEl.textContent !== liqText) liqEl.textContent = liqText;
 
     // Update Indicators
@@ -783,9 +783,9 @@ window.showTokenDetail = function(event, address) {
                     </div>
                     <div class="bg-bg rounded-xl p-4 border border-border space-y-3">
                         <h4 class="text-xs font-bold text-gray-500 uppercase">Market Data</h4>
-                        <div class="flex justify-between text-xs"><span class="text-gray-500">Price</span><span class="font-bold text-up">$${window.formatPrice(detail.price_paxi * (window.paxiPriceUSD || 0.05))}</span></div>
-                        <div class="flex justify-between text-xs"><span class="text-gray-500">MCap</span><span class="font-bold">$${window.formatAmount(detail.market_cap)}</span></div>
-                        <div class="flex justify-between text-xs"><span class="text-gray-500">Liquidity</span><span class="font-bold text-blue-400">$${window.formatAmount(detail.liquidity)}</span></div>
+                        <div class="flex justify-between text-xs"><span class="text-gray-500">Price</span><span class="font-bold text-up">$${window.formatPrice(detail.price_usd)}</span></div>
+                        <div class="flex justify-between text-xs"><span class="text-gray-500">MCap</span><span class="font-bold">$${window.formatAmount(detail.market_cap_usd)}</span></div>
+                        <div class="flex justify-between text-xs"><span class="text-gray-500">Liquidity</span><span class="font-bold text-blue-400">$${window.formatAmount(detail.liquidity_usd)}</span></div>
                     </div>
                 </div>
                 <div class="bg-bg rounded-xl p-4 border border-border">

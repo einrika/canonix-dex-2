@@ -88,8 +88,12 @@ window.setSlippage = function(val) {
 };
 
 window.updateCustomSlippage = function() {
-    const val = parseFloat(document.getElementById('customSlippage')?.value);
-    if (!isNaN(val) && val > 0 && val <= 50) {
+    let val = parseFloat(document.getElementById('customSlippage')?.value);
+    if (!isNaN(val) && val > 0) {
+        if (val > 29) {
+            val = 29;
+            window.setValue('customSlippage', 29);
+        }
         window.slippage = val;
         window.setText('slippageVal', val.toFixed(1) + '%');
         window.updateTradeOutput();
@@ -120,7 +124,7 @@ window.updateTradeOutput = async function() {
         const fee = fromAmountBase * 0.003;
         const amountAfterFee = fromAmountBase - fee;
         outputAmount = (amountAfterFee * reservePrc20) / (reservePaxi + amountAfterFee);
-        priceImpact = ((amountAfterFee / reservePaxi) * 100);
+        priceImpact = (amountAfterFee / (reservePaxi + amountAfterFee)) * 100;
         targetDecimals = tokenDecimals;
     } else {
         // Sell: TOKEN -> PAXI
@@ -128,7 +132,7 @@ window.updateTradeOutput = async function() {
         const fee = fromAmountBase * 0.003;
         const amountAfterFee = fromAmountBase - fee;
         outputAmount = (amountAfterFee * reservePaxi) / (reservePrc20 + amountAfterFee);
-        priceImpact = ((amountAfterFee / reservePrc20) * 100);
+        priceImpact = (amountAfterFee / (reservePrc20 + amountAfterFee)) * 100;
         targetDecimals = 6;
     }
 
@@ -257,7 +261,7 @@ window.calculateSwapOutput = function() {
         const fee = fromAmountBase * 0.003;
         const amountAfterFee = fromAmountBase - fee;
         outputAmount = (amountAfterFee * reservePrc20) / (reservePaxi + amountAfterFee);
-        priceImpact = ((amountAfterFee / reservePaxi) * 100);
+        priceImpact = (amountAfterFee / (reservePaxi + amountAfterFee)) * 100;
         targetDecimals = tokenDecimals;
     } else {
         // Swap PRC20 -> PAXI
@@ -265,7 +269,7 @@ window.calculateSwapOutput = function() {
         const fee = fromAmountBase * 0.003;
         const amountAfterFee = fromAmountBase - fee;
         outputAmount = (amountAfterFee * reservePaxi) / (reservePrc20 + amountAfterFee);
-        priceImpact = ((amountAfterFee / reservePrc20) * 100);
+        priceImpact = (amountAfterFee / (reservePrc20 + amountAfterFee)) * 100;
         targetDecimals = 6;
     }
     

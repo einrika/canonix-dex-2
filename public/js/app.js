@@ -55,6 +55,9 @@ window.addEventListener('load', async () => {
             if (window.AssetManager) {
                 window.AssetManager.fetchUserAssets(active.address);
             }
+
+            // AUTO-UNLOCK REQUIREMENT (Strict Security)
+            window.checkWalletLock();
         }
     }
 
@@ -79,6 +82,28 @@ window.addEventListener('load', async () => {
 
     window.log('Canonix loaded', 'info');
 });
+
+window.checkWalletLock = function() {
+    const overlay = document.getElementById('featureLockOverlay');
+    if (!overlay) return;
+
+    const active = window.WalletManager?.getActiveWallet();
+    // If wallet exists and is NOT watch-only and is NOT unlocked
+    if (active && !active.isWatchOnly && !window.WalletSecurity.getSessionPin()) {
+        overlay.classList.remove('hidden');
+        overlay.classList.add('flex');
+
+        // Auto-show PIN sheet if not already shown
+        if (document.getElementById('pinSheet')?.classList.contains('hidden')) {
+            if (window.WalletUI && window.WalletUI.unlockActiveWallet) {
+                window.WalletUI.unlockActiveWallet();
+            }
+        }
+    } else {
+        overlay.classList.add('hidden');
+        overlay.classList.remove('flex');
+    }
+};
 
 window.updateAppUI = async function() {
     // Refresh prices
