@@ -13,6 +13,21 @@ window.escapeHtml = function(unsafe) {
     .replace(/'/g, "&#039;");
 };
 
+window.toMicroAmount = function(amount, decimals) {
+    if (amount === undefined || amount === null || amount === '') return "0";
+
+    let str = String(amount);
+    if (str.includes('e')) {
+        str = Number(amount).toFixed(decimals);
+    }
+
+    let [int, frac = ""] = str.split('.');
+    frac = frac.padEnd(decimals, '0').slice(0, decimals);
+
+    const combined = (int.replace(/^-/, '').replace(/^0+/, '') || "0") + frac;
+    return BigInt(combined.replace(/^0+/, '') || "0").toString();
+};
+
 window.formatAmount = function(num, decimals = 2) {
     if (num === undefined || num === null) return '-';
     const val = typeof num === 'string' ? parseFloat(num) : num;

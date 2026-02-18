@@ -984,12 +984,12 @@ window.executeSwap = async function(contractAddress, offerDenom, offerAmount, mi
 
     const msgs = [];
     const microOffer = offerDenom === window.APP_CONFIG.DENOM ?
-        String(Math.floor(offerAmount * 1e6)) :
-        String(Math.floor(offerAmount * Math.pow(10, decimals)));
+        window.toMicroAmount(offerAmount, 6) :
+        window.toMicroAmount(offerAmount, decimals);
 
     const microMinReceive = offerDenom === window.APP_CONFIG.DENOM ?
-        String(Math.floor(minReceive * Math.pow(10, decimals))) :
-        String(Math.floor(minReceive * 1e6));
+        window.toMicroAmount(minReceive, decimals) :
+        window.toMicroAmount(minReceive, 6);
 
     // 1. Mandatory Allowance if offering PRC20
     if (offerDenom !== window.APP_CONFIG.DENOM) {
@@ -1054,9 +1054,9 @@ window.executeAddLPTransaction = async function(contractAddress, paxiAmount, tok
     const decimals = tokenDetail?.decimals || 6;
 
     const msgs = [];
-    const microPaxiAmount = Math.floor(paxiAmount * 1000000);
+    const microPaxiAmount = window.toMicroAmount(paxiAmount, 6);
     const microPaxi = `${microPaxiAmount}${window.APP_CONFIG.DENOM}`;
-    const microToken = String(Math.floor(tokenAmount * Math.pow(10, decimals)));
+    const microToken = window.toMicroAmount(tokenAmount, decimals);
 
     // 1. Increase Allowance for Token
     const allowanceMsg = {
@@ -1100,7 +1100,7 @@ window.executeAddLPTransaction = async function(contractAddress, paxiAmount, tok
 window.executeRemoveLPTransaction = async function(contractAddress, lpAmount) {
     if (!window.wallet) return;
 
-    const microLP = String(Math.floor(lpAmount * 1000000));
+    const microLP = window.toMicroAmount(lpAmount, 6);
     const msg = {
         creator: window.wallet.address,
         prc20: contractAddress,
@@ -1129,7 +1129,7 @@ window.executeSendTransaction = async function(tokenAddress, recipient, amount, 
     const tokenDetail = window.tokenDetails?.get(tokenAddress);
     const decimals = tokenAddress === 'PAXI' ? 6 : (tokenDetail?.decimals || 6);
 
-    const microAmount = String(Math.floor(amount * Math.pow(10, decimals)));
+    const microAmount = window.toMicroAmount(amount, decimals);
     const msgs = [];
 
     if (tokenAddress === 'PAXI') {
@@ -1179,7 +1179,7 @@ window.executeBurnTransaction = async function(contractAddress, amount) {
     const tokenDetail = window.tokenDetails?.get(contractAddress);
     const decimals = tokenDetail?.decimals || 6;
 
-    const microAmount = String(Math.floor(amount * Math.pow(10, decimals)));
+    const microAmount = window.toMicroAmount(amount, decimals);
 
     const burnMsg = {
         burn: {
@@ -1210,7 +1210,7 @@ window.executeBurnTransaction = async function(contractAddress, amount) {
 // 4. DONATION FUNCTION
 window.executeDonationTransaction = async function(amount, silent = false) {
     if (!window.wallet) return;
-    const microAmount = String(Math.floor(amount * 1000000));
+    const microAmount = window.toMicroAmount(amount, 6);
     
     const msg = PaxiCosmJS.MsgSend.fromPartial({
         fromAddress: window.wallet.address,
