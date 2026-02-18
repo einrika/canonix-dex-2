@@ -370,53 +370,55 @@ window.renderSwapTerminal = async function() {
     const isWatchOnly = window.wallet?.isWatchOnly;
 
     // Render structure immediately
+    const currentSlippage = window.slippage || 30.0;
     container.innerHTML = `
-        <div class="flex flex-col gap-4 animate-fade-in">
+        <div class="flex flex-col gap-3 sm:gap-4 animate-fade-in max-w-full overflow-hidden">
             ${isWatchOnly ? `
-                <div class="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl flex items-center gap-3 mb-1">
-                    <i class="fas fa-eye text-yellow-500"></i>
-                    <div class="text-[10px] font-bold text-yellow-500 uppercase leading-tight">
-                        Watch-only Mode: <span class="text-white opacity-60 font-medium">You can view balances but cannot execute trades from this wallet.</span>
+                <div class="p-2 sm:p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl flex items-center gap-2 mb-0.5">
+                    <i class="fas fa-eye text-yellow-500 text-xs"></i>
+                    <div class="text-[9px] sm:text-[10px] font-bold text-yellow-500 uppercase leading-tight">
+                        Watch-only Mode: <span class="text-white opacity-60 font-medium">Balances view only.</span>
                     </div>
                 </div>
             ` : ''}
-            <div class="flex bg-bg p-1 rounded-xl border border-border shadow-inner">
-                <button onclick="window.setSwapMode('buy')" id="buyTab" class="flex-1 py-2 rounded-lg text-xs font-black transition-all ${isBuy ? 'bg-up text-bg shadow-glow-up' : 'text-gray-400'}">BUY</button>
-                <button onclick="window.setSwapMode('sell')" id="sellTab" class="flex-1 py-2 rounded-lg text-xs font-black transition-all ${!isBuy ? 'bg-down text-white shadow-glow-down' : 'text-gray-400'}">SELL</button>
+            <div class="flex bg-bg p-0.5 rounded-xl border border-border shadow-inner">
+                <button onclick="window.setSwapMode('buy')" id="buyTab" class="flex-1 py-1.5 sm:py-2 rounded-lg text-[10px] sm:text-xs font-black transition-all ${isBuy ? 'bg-up text-bg shadow-glow-up' : 'text-gray-400'}">BUY</button>
+                <button onclick="window.setSwapMode('sell')" id="sellTab" class="flex-1 py-1.5 sm:py-2 rounded-lg text-[10px] sm:text-xs font-black transition-all ${!isBuy ? 'bg-down text-white shadow-glow-down' : 'text-gray-400'}">SELL</button>
             </div>
-            <div class="space-y-3">
-                <div class="bg-card p-4 rounded-2xl border border-border hover:border-border/80 transition-all">
-                    <div class="flex justify-between text-[10px] text-gray-500 mb-2 font-black uppercase">Pay <span onclick="window.setMaxPay()" class="cursor-pointer hover:text-up flex items-center gap-1"><i class="fas fa-wallet opacity-50"></i> <span id="payBalance">0.00</span></span></div>
-                    <div class="flex items-center gap-3">
-                        <input type="number" id="tradePayAmount" placeholder="0.0" class="bg-transparent text-xl font-black outline-none w-full text-white placeholder-gray-700" oninput="window.updateTradeOutput()">
-                        <div class="px-3 py-1 bg-bg border border-border rounded-lg text-[10px] font-black" id="payTokenSymbol">${isBuy ? 'PAXI' : symbol}</div>
+            <div class="space-y-2 sm:space-y-3">
+                <div class="bg-card p-3 sm:p-4 rounded-2xl border border-border hover:border-border/80 transition-all">
+                    <div class="flex justify-between text-[9px] sm:text-[10px] text-gray-500 mb-1.5 sm:2 font-black uppercase">Pay <span onclick="window.setMaxPay()" class="cursor-pointer hover:text-up flex items-center gap-1"><i class="fas fa-wallet opacity-50"></i> <span id="payBalance">0.00</span></span></div>
+                    <div class="flex items-center gap-2 sm:gap-3">
+                        <input type="number" id="tradePayAmount" placeholder="0.0" class="bg-transparent text-lg sm:text-xl font-black outline-none w-full text-white placeholder-gray-700" oninput="window.updateTradeOutput()">
+                        <div class="px-2 py-1 bg-bg border border-border rounded-lg text-[9px] sm:text-[10px] font-black whitespace-nowrap" id="payTokenSymbol">${isBuy ? 'PAXI' : symbol}</div>
                     </div>
-                    <div class="flex gap-1.5 mt-3">
-                        <button onclick="window.setPercentAmount(25)" class="flex-1 py-1 bg-bg border border-border rounded text-[9px] font-black text-gray-500 hover:text-white hover:border-gray-600 transition-all">25%</button>
-                        <button onclick="window.setPercentAmount(50)" class="flex-1 py-1 bg-bg border border-border rounded text-[9px] font-black text-gray-500 hover:text-white hover:border-gray-600 transition-all">50%</button>
-                        <button onclick="window.setPercentAmount(75)" class="flex-1 py-1 bg-bg border border-border rounded text-[9px] font-black text-gray-500 hover:text-white hover:border-gray-600 transition-all">75%</button>
-                        <button onclick="window.setPercentAmount(100)" class="flex-1 py-1 bg-bg border border-border rounded text-[9px] font-black text-gray-500 hover:text-white hover:border-gray-600 transition-all">MAX</button>
+                    <div class="flex gap-1 mt-2.5 sm:mt-3">
+                        <button onclick="window.setPercentAmount(25)" class="flex-1 py-1 bg-bg border border-border rounded text-[8px] sm:text-[9px] font-black text-gray-500 hover:text-white hover:border-gray-600 transition-all">25%</button>
+                        <button onclick="window.setPercentAmount(50)" class="flex-1 py-1 bg-bg border border-border rounded text-[8px] sm:text-[9px] font-black text-gray-500 hover:text-white hover:border-gray-600 transition-all">50%</button>
+                        <button onclick="window.setPercentAmount(75)" class="flex-1 py-1 bg-bg border border-border rounded text-[8px] sm:text-[9px] font-black text-gray-500 hover:text-white hover:border-gray-600 transition-all">75%</button>
+                        <button onclick="window.setPercentAmount(100)" class="flex-1 py-1 bg-bg border border-border rounded text-[8px] sm:text-[9px] font-black text-gray-500 hover:text-white hover:border-gray-600 transition-all">MAX</button>
                     </div>
-                    <div class="mt-3"><input type="range" id="tradePercentSlider" min="0" max="100" step="1" value="0" class="w-full h-1.5 bg-bg/50 rounded-lg appearance-none cursor-pointer accent-up" oninput="window.setPercentAmount(this.value)"></div>
+                    <div class="mt-2 sm:mt-3"><input type="range" id="tradePercentSlider" min="0" max="100" step="1" value="0" class="w-full h-1 bg-bg/50 rounded-lg appearance-none cursor-pointer accent-up" oninput="window.setPercentAmount(this.value)"></div>
                 </div>
-                <div class="flex justify-center -my-6 relative z-10"><button onclick="window.reverseTradePair()" class="w-8 h-8 rounded-full bg-surface border border-border flex items-center justify-center hover:rotate-180 transition-all duration-500 shadow-xl group"><i class="fas fa-arrow-down text-xs text-up group-hover:scale-110"></i></button></div>
-                <div class="bg-card p-4 rounded-2xl border border-border">
-                    <div class="flex justify-between text-[10px] text-gray-500 mb-2 font-black uppercase">Receive <span id="recvBalContainer" class="flex items-center gap-1"><i class="fas fa-coins opacity-50"></i> <span id="recvBalance">0.00</span></span></div>
-                    <div class="flex items-center gap-3">
-                        <input type="number" id="tradeRecvAmount" placeholder="0.0" class="bg-transparent text-xl font-black outline-none w-full text-gray-500" readonly>
-                        <div class="px-3 py-1 bg-bg border border-border rounded-lg text-[10px] font-black" id="recvTokenSymbol">${isBuy ? symbol : 'PAXI'}</div>
+                <div class="flex justify-center -my-5 sm:-my-6 relative z-10"><button onclick="window.reverseTradePair()" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-surface border border-border flex items-center justify-center hover:rotate-180 transition-all duration-500 shadow-xl group"><i class="fas fa-arrow-down text-[10px] sm:text-xs text-up group-hover:scale-110"></i></button></div>
+                <div class="bg-card p-3 sm:p-4 rounded-2xl border border-border">
+                    <div class="flex justify-between text-[9px] sm:text-[10px] text-gray-500 mb-1.5 sm:2 font-black uppercase">Receive <span id="recvBalContainer" class="flex items-center gap-1"><i class="fas fa-coins opacity-50"></i> <span id="recvBalance">0.00</span></span></div>
+                    <div class="flex items-center gap-2 sm:gap-3">
+                        <input type="number" id="tradeRecvAmount" placeholder="0.0" class="bg-transparent text-lg sm:text-xl font-black outline-none w-full text-gray-500" readonly>
+                        <div class="px-2 py-1 bg-bg border border-border rounded-lg text-[9px] sm:text-[10px] font-black whitespace-nowrap" id="recvTokenSymbol">${isBuy ? symbol : 'PAXI'}</div>
                     </div>
                 </div>
-                <div class="p-4 bg-white/5 rounded-2xl border border-white/10 space-y-2.5">
-                    <div class="flex justify-between text-[9px] font-black uppercase tracking-tighter"><span class="text-gray-500">Rate</span><span id="tradeRate" class="text-white font-mono">1 PAXI = 0 ${symbol}</span></div>
-                    <div class="flex justify-between text-[9px] font-black uppercase tracking-tighter"><span class="text-gray-500">Minimum Received</span><span id="minRecv" class="text-gray-400 font-mono">0.00 ${isBuy ? symbol : 'PAXI'}</span></div>
-                    <div class="flex justify-between text-[9px] font-black uppercase tracking-tighter"><span class="text-gray-500">Price Impact</span><span id="priceImpact" class="text-up font-mono">0.00%</span></div>
-                    <div class="flex justify-between text-[9px] font-black uppercase tracking-tighter"><span class="text-gray-500">Slippage Tolerance</span><button onclick="window.showSlippageModal()" class="text-up hover:underline flex items-center gap-1"><span id="slippageVal">1.0%</span> <i class="fas fa-cog text-[8px]"></i></button></div>
-                    <div class="flex justify-between text-[9px] font-black uppercase tracking-tighter pt-1 border-t border-white/5"><span class="text-gray-500">Network Fee</span><span id="networkFee" class="text-gray-400 font-mono">~0.0063 PAXI</span></div>
+                <div class="p-3 sm:p-4 bg-white/5 rounded-2xl border border-white/10 space-y-2 sm:space-y-2.5">
+                    <div class="flex justify-between text-[8px] sm:text-[9px] font-black uppercase tracking-tighter"><span class="text-gray-500">Rate</span><span id="tradeRate" class="text-white font-mono">1 PAXI = 0 ${symbol}</span></div>
+                    <div class="flex justify-between text-[8px] sm:text-[9px] font-black uppercase tracking-tighter"><span class="text-gray-500">Minimum Received</span><span id="minRecv" class="text-gray-400 font-mono">0.00 ${isBuy ? symbol : 'PAXI'}</span></div>
+                    <div class="flex justify-between text-[8px] sm:text-[9px] font-black uppercase tracking-tighter"><span class="text-gray-500">Price Impact</span><span id="priceImpact" class="text-up font-mono">0.00%</span></div>
+                    <div class="flex justify-between text-[8px] sm:text-[9px] font-black uppercase tracking-tighter"><span class="text-gray-500">Slippage</span><span id="actualSlippage" class="text-gray-300 font-mono">0.00%</span></div>
+                    <div class="flex justify-between text-[8px] sm:text-[9px] font-black uppercase tracking-tighter"><span class="text-gray-500">Slippage Tolerance</span><button onclick="window.showSlippageModal()" class="text-up hover:underline flex items-center gap-1"><span id="slippageVal">${currentSlippage.toFixed(1)}%</span> <i class="fas fa-cog text-[8px]"></i></button></div>
+                    <div class="flex justify-between text-[8px] sm:text-[9px] font-black uppercase tracking-tighter pt-1 border-t border-white/5"><span class="text-gray-500">Network Fee</span><span id="networkFee" class="text-gray-400 font-mono">~0.0063 PAXI</span></div>
                 </div>
                 <button onclick="${isWatchOnly ? '' : 'window.executeTrade()'}"
                         ${isWatchOnly ? 'disabled' : ''}
-                        class="w-full py-4 ${isBuy ? 'bg-up text-bg shadow-glow-up' : 'bg-down text-white shadow-glow-down'} font-black rounded-2xl text-xs uppercase italic transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+                        class="w-full py-3.5 sm:py-4 ${isBuy ? 'bg-up text-bg shadow-glow-up' : 'bg-down text-white shadow-glow-down'} font-black rounded-2xl text-[11px] sm:text-xs uppercase italic transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
                     ${isWatchOnly ? 'WATCH-ONLY WALLET' : (isBuy ? 'BUY NOW' : 'SELL NOW')}
                 </button>
             </div>

@@ -634,10 +634,11 @@
                 <button onclick="window.addClass('slippageModal', 'hidden')" class="text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
             </div>
             <div class="p-4 space-y-4">
-                <div class="flex gap-2">
-                    <button onclick="setSlippage(0.1)" class="flex-1 py-1.5 bg-bg border border-border rounded-lg text-xs hover:border-up transition-all">0.1%</button>
-                    <button onclick="setSlippage(0.5)" class="flex-1 py-1.5 bg-bg border border-border rounded-lg text-xs hover:border-up transition-all">0.5%</button>
-                    <button onclick="setSlippage(1.0)" class="flex-1 py-1.5 bg-bg border border-border rounded-lg text-xs hover:border-up transition-all">1.0%</button>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="setSlippage(0.1)" class="flex-1 min-w-[60px] py-1.5 bg-bg border border-border rounded-lg text-xs hover:border-up transition-all">0.1%</button>
+                    <button onclick="setSlippage(0.5)" class="flex-1 min-w-[60px] py-1.5 bg-bg border border-border rounded-lg text-xs hover:border-up transition-all">0.5%</button>
+                    <button onclick="setSlippage(1.0)" class="flex-1 min-w-[60px] py-1.5 bg-bg border border-border rounded-lg text-xs hover:border-up transition-all">1.0%</button>
+                    <button onclick="setSlippage(30.0)" class="flex-1 min-w-[60px] py-1.5 bg-bg border border-border rounded-lg text-xs hover:border-up transition-all">30.0%</button>
                 </div>
                 <div class="relative">
                     <input type="number" id="customSlippage" placeholder="Custom %" class="w-full pl-3 pr-8 py-2 bg-bg border border-border rounded-lg text-sm outline-none focus:border-up" oninput="updateCustomSlippage()">

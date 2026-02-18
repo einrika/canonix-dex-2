@@ -5,7 +5,7 @@
 // ===== GLOBAL SWAP STATE =====
 window.tradeType = 'buy'; // buy or sell
 window.feeEnabled = false; // Platform fee disabled
-window.slippage = 1.0;
+window.slippage = 30.0;
 
 // ===== SET SWAP MODE (Buy vs Sell) =====
 window.setSwapMode = function(mode) {
@@ -109,9 +109,9 @@ window.setSlippage = function(val) {
 window.updateCustomSlippage = function() {
     let val = parseFloat(document.getElementById('customSlippage')?.value);
     if (!isNaN(val) && val > 0) {
-        if (val > 29) {
-            val = 29;
-            window.setValue('customSlippage', 29);
+        if (val > 50) {
+            val = 50;
+            window.setValue('customSlippage', 50);
         }
         window.slippage = val;
         window.setText('slippageVal', val.toFixed(1) + '%');
@@ -157,6 +157,21 @@ window.updateTradeOutput = async function() {
 
     const outputDisplay = (outputAmount / Math.pow(10, targetDecimals)).toFixed(6);
     window.setValue('tradeRecvAmount', outputDisplay);
+
+    // Update Price Impact and Actual Slippage UI
+    const impactEl = document.getElementById('priceImpact');
+    if (impactEl) {
+        window.setText(impactEl, priceImpact.toFixed(2) + '%');
+        impactEl.className = priceImpact > 5 ? 'font-mono text-down' :
+                             priceImpact > 2 ? 'font-mono text-yellow-400' :
+                             'font-mono text-up';
+    }
+
+    const actualSlippageEl = document.getElementById('actualSlippage');
+    if (actualSlippageEl) {
+        // In this context, we show Price Impact as the "Actual Slippage" expected
+        window.setText(actualSlippageEl, priceImpact.toFixed(2) + '%');
+    }
 
     // Min received with slippage
     const minRecv = (outputAmount * (1 - (window.slippage / 100)) / Math.pow(10, targetDecimals)).toFixed(6);
