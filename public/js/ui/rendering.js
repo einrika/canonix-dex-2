@@ -347,27 +347,13 @@ window.renderSwapTerminal = async function() {
 
     if (!container) return;
 
-    // Visibility Rule: Swap terminal functionality only shows if wallet is connected
-    // But we show a "Connect Wallet" button in the section if not connected
+    // Visibility Rule: Swap terminal functionality only shows if wallet is connected (Phase 4 Revision)
     if (!window.wallet) {
         if (mainWrapper) {
-            mainWrapper.classList.remove('hidden');
-            container.innerHTML = `
-                <div class="flex flex-col items-center justify-center py-12 gap-5 animate-fade-in">
-                    <div class="w-20 h-20 bg-up/10 rounded-full flex items-center justify-center">
-                        <i class="fas fa-wallet text-3xl text-up opacity-50"></i>
-                    </div>
-                    <div class="text-center">
-                        <p class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-1">Trading Terminal Locked</p>
-                        <p class="text-[9px] text-gray-600 uppercase font-bold">Connect your wallet to start swapping ${window.currentTokenInfo?.symbol || 'tokens'}</p>
-                    </div>
-                    <button onclick="showConnectModal()" class="btn-trade px-10 py-4 rounded-2xl text-xs font-black uppercase tracking-widest shadow-glow-up transform active:scale-95 transition-all">
-                        <i class="fas fa-plug mr-2"></i> Connect Wallet
-                    </button>
-                </div>`;
+            mainWrapper.classList.add('hidden');
         }
 
-        if (container.id === 'sidebarContent') {
+        if (container && container.id === 'sidebarContent') {
             container.innerHTML = `
                 <div class="text-center py-20 text-gray-600">
                     <i class="fas fa-wallet text-4xl mb-4 opacity-20"></i>

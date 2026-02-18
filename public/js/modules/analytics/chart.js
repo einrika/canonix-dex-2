@@ -7,7 +7,7 @@ window.lineSeries = null;
 window.ma7Series = null;
 window.ma25Series = null;
 window.currentPriceData = [];
-window.currentTimeframe = '24h';
+window.currentTimeframe = localStorage.getItem('chartTimeframe') || 'realtime';
 window.refreshCountdown = 10;
 window.countdownInterval = null;
 
@@ -49,6 +49,9 @@ window.initChart = function() {
     });
 
     // MA Series
+    const ma7Visible = localStorage.getItem('ma7Visible') === 'true'; // Default false
+    const ma25Visible = localStorage.getItem('ma25Visible') === 'true'; // Default false
+
     window.ma7Series = window.lightweightChart.addLineSeries({
         color: '#ffeb3b',
         lineWidth: 1.5,
@@ -57,6 +60,7 @@ window.initChart = function() {
         baseLineVisible: false,
         crosshairMarkerVisible: false,
         lastValueVisible: false,
+        visible: ma7Visible
     });
 
     window.ma25Series = window.lightweightChart.addLineSeries({
@@ -67,6 +71,35 @@ window.initChart = function() {
         baseLineVisible: false,
         crosshairMarkerVisible: false,
         lastValueVisible: false,
+        visible: ma25Visible
+    });
+
+    // Update buttons state
+    const btn7 = document.getElementById('toggleMA7');
+    const btn25 = document.getElementById('toggleMA25');
+    if (btn7) {
+        btn7.classList.toggle('bg-up/20', ma7Visible);
+        btn7.classList.toggle('text-up', ma7Visible);
+        btn7.classList.toggle('border-up/30', ma7Visible);
+        btn7.classList.toggle('text-gray-500', !ma7Visible);
+    }
+    if (btn25) {
+        btn25.classList.toggle('bg-up/20', ma25Visible);
+        btn25.classList.toggle('text-up', ma25Visible);
+        btn25.classList.toggle('border-up/30', ma25Visible);
+        btn25.classList.toggle('text-gray-500', !ma25Visible);
+    }
+
+    // Sync Timeframe Buttons
+    document.querySelectorAll('.tf-btn').forEach(btn => {
+        const tf = btn.getAttribute('onclick').match(/'([^']+)'/)[1];
+        if (tf === window.currentTimeframe) {
+            btn.classList.remove('bg-card');
+            btn.classList.add('bg-up', 'text-bg');
+        } else {
+            btn.classList.add('bg-card');
+            btn.classList.remove('bg-up', 'text-bg');
+        }
     });
 
     // Tooltip
@@ -139,18 +172,27 @@ window.toggleMA = function(period) {
     if (btn) {
         btn.classList.toggle('bg-up/20', !isVisible);
         btn.classList.toggle('text-up', !isVisible);
+        btn.classList.toggle('border-up/30', !isVisible);
         btn.classList.toggle('text-gray-500', isVisible);
     }
+    localStorage.setItem(period === 7 ? 'ma7Visible' : 'ma25Visible', !isVisible);
 };
 
 window.setTimeframe = function(timeframe, btn) {
     if (!window.currentPRC20) return;
 
+    window.currentTimeframe = timeframe;
+    localStorage.setItem('chartTimeframe', timeframe);
+
     // Update UI
     document.querySelectorAll('.tf-btn').forEach(b => {
         b.classList.remove('bg-up', 'text-bg');
         b.classList.add('bg-card');
+
+        // If btn not provided, try to find it by text content or other means if needed
+        // but usually btn is provided via onclick
     });
+
     if (btn) {
         btn.classList.remove('bg-card');
         btn.classList.add('bg-up', 'text-bg');

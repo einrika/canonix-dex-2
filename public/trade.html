@@ -263,15 +263,15 @@
                     <div class="p-3 border-b border-border flex items-center justify-between">
                         <div class="flex items-center gap-3 overflow-x-auto no-scrollbar">
                             <div class="flex gap-1 pr-3 border-r border-border">
-                                <button onclick="setTimeframe('realtime', this)" class="tf-btn px-2.5 py-1 text-[9px] font-black rounded bg-card hover:bg-border transition-all uppercase">REALTIME</button>
+                                <button onclick="setTimeframe('realtime', this)" class="tf-btn px-2.5 py-1 text-[9px] font-black rounded bg-up text-bg transition-all uppercase">REALTIME</button>
                                 <button onclick="setTimeframe('1h', this)" class="tf-btn px-2.5 py-1 text-[9px] font-black rounded bg-card hover:bg-border transition-all uppercase">1H</button>
-                                <button onclick="setTimeframe('24h', this)" class="tf-btn px-2.5 py-1 text-[9px] font-black rounded bg-up text-bg transition-all uppercase">24H</button>
+                                <button onclick="setTimeframe('24h', this)" class="tf-btn px-2.5 py-1 text-[9px] font-black rounded bg-card hover:bg-border transition-all uppercase">24H</button>
                                 <button onclick="setTimeframe('7d', this)" class="tf-btn px-2.5 py-1 text-[9px] font-black rounded bg-card hover:bg-border transition-all uppercase">7D</button>
                                 <button onclick="setTimeframe('30d', this)" class="tf-btn px-2.5 py-1 text-[9px] font-black rounded bg-card hover:bg-border transition-all uppercase">30D</button>
                             </div>
                             <div class="flex gap-1">
-                                <button id="toggleMA7" onclick="toggleMA(7)" class="px-2.5 py-1 text-[9px] font-black rounded bg-up/20 text-up border border-up/30 transition-all uppercase">MA7</button>
-                                <button id="toggleMA25" onclick="toggleMA(25)" class="px-2.5 py-1 text-[9px] font-black rounded bg-up/20 text-up border border-up/30 transition-all uppercase">MA25</button>
+                                <button id="toggleMA7" onclick="toggleMA(7)" class="px-2.5 py-1 text-[9px] font-black rounded bg-card text-gray-500 hover:text-white transition-all uppercase">MA7</button>
+                                <button id="toggleMA25" onclick="toggleMA(25)" class="px-2.5 py-1 text-[9px] font-black rounded bg-card text-gray-500 hover:text-white transition-all uppercase">MA25</button>
                             </div>
                         </div>
                         <div id="chartStatus" class="text-[10px] font-mono text-gray-500">Live Updates</div>
