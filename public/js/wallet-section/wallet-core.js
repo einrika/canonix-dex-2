@@ -1041,6 +1041,9 @@ window.executeSwap = async function(contractAddress, offerDenom, offerAmount, mi
         if(window.updateBalances) await window.updateBalances();
         if(window.updateLPBalances) await window.updateLPBalances();
         if(window.fetchPoolData) await window.fetchPoolData();
+        if(window.loadPriceHistory && window.currentPRC20) {
+            window.loadPriceHistory(window.currentPRC20, window.currentTimeframe || '24h');
+        }
     }, 3000);
 
     return result;

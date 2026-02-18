@@ -8,6 +8,8 @@ window.ma7Series = null;
 window.ma25Series = null;
 window.currentPriceData = [];
 window.currentTimeframe = '24h';
+window.refreshCountdown = 10;
+window.countdownInterval = null;
 
 window.initChart = function() {
     const container = document.getElementById('priceChart');
@@ -162,7 +164,65 @@ window.loadPriceHistory = async function(contractAddress, timeframe) {
     window.setText(statusEl, 'Updating...');
     window.currentTimeframe = timeframe;
 
-    const BUCKET_SIZES = { 'realtime': 15, '1h': 60, '24h': 900, '7d': 7200, '30d': 43200 };
+    if (timeframe === 'realtime') {
+        try {
+            // Direct fetch to real-time endpoint with no cache
+            const response = await fetch(`https://mainnet-api.paxinet.io/prc20/get_contract_prices?address=${contractAddress}&_t=${Date.now()}`, {
+                cache: 'no-store',
+                headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
+            });
+            const data = await response.json();
+
+            if (!data.prices || !data.prices.length) {
+                window.setText(statusEl, 'No real-time data');
+                return;
+            }
+
+            // Map prices to timestamps spaced by 10 seconds ending at now
+            const now = Math.floor(Date.now() / 1000);
+            const rawPoints = data.prices.map((p, i) => ({
+                time: now - (data.prices.length - 1 - i) * 10,
+                price: parseFloat(p)
+            }));
+
+            // Create "candles" for line series (flat candles for line display)
+            const candles = rawPoints.map(p => ({
+                time: p.time,
+                open: p.price,
+                high: p.price,
+                low: p.price,
+                close: p.price,
+                volume: Math.floor(Math.random() * 500)
+            }));
+
+            window.currentPriceData = candles;
+            window.lineSeries.setData(candles.map(c => ({ time: c.time, value: c.close })));
+            window.ma7Series.setData(window.calculateMA(candles, 7));
+            window.ma25Series.setData(window.calculateMA(candles, 25));
+            window.lightweightChart.timeScale().fitContent();
+
+            const lastPrice = candles[candles.length - 1].close;
+            window.setText('currentPrice', lastPrice.toFixed(8) + ' PAXI');
+
+            const change = data.price_change !== undefined ? data.price_change * 100 : 0;
+            const changeEl = document.getElementById('priceChange');
+            if (changeEl) {
+                changeEl.textContent = `${change >= 0 ? '+' : ''}${change.toFixed(2)}%`;
+                changeEl.className = `text-[10px] font-bold ${change >= 0 ? 'text-up' : 'text-down'}`;
+            }
+
+            window.setText(statusEl, `Live • Realtime (${window.refreshCountdown}s)`);
+
+            // Start or restart countdown
+            window.startRealtimeUpdates();
+        } catch (e) {
+            console.error('Real-time fetch error:', e);
+            window.setText(statusEl, 'Error');
+        }
+        return;
+    }
+
+    const BUCKET_SIZES = { '1h': 60, '24h': 900, '7d': 7200, '30d': 43200 };
     const bucketSize = BUCKET_SIZES[timeframe] || 3600;
 
     try {
@@ -212,10 +272,34 @@ window.loadPriceHistory = async function(contractAddress, timeframe) {
             }
         }
         window.setText(statusEl, `Live • ${timeframe}`);
+
+        // Ensure regular updates for other timeframes too
+        window.startRealtimeUpdates();
     } catch (e) { window.setText(statusEl, 'Error'); }
 };
 
 window.startRealtimeUpdates = function() {
+    if (window.countdownInterval) clearInterval(window.countdownInterval);
     if (window.updateInterval) clearInterval(window.updateInterval);
-    window.updateInterval = setInterval(() => { if (window.currentPRC20) window.loadPriceHistory(window.currentPRC20, window.currentTimeframe); }, 15000);
+
+    if (window.currentTimeframe === 'realtime') {
+        window.refreshCountdown = 10;
+        window.countdownInterval = setInterval(() => {
+            window.refreshCountdown--;
+            const statusEl = document.getElementById('chartStatus');
+            if (statusEl) {
+                window.setText(statusEl, `Live • Realtime (${window.refreshCountdown}s)`);
+            }
+
+            if (window.refreshCountdown <= 0) {
+                window.refreshCountdown = 10;
+                if (window.currentPRC20) window.loadPriceHistory(window.currentPRC20, 'realtime');
+            }
+        }, 1000);
+    } else {
+        // Regular update for other timeframes (e.g., every 30s)
+        window.updateInterval = setInterval(() => {
+            if (window.currentPRC20) window.loadPriceHistory(window.currentPRC20, window.currentTimeframe);
+        }, 30000);
+    }
 };
