@@ -160,8 +160,24 @@ window.updateTradeOutput = async function() {
 
     // Min received with slippage
     const minRecv = (outputAmount * (1 - (window.slippage / 100)) / Math.pow(10, targetDecimals)).toFixed(6);
-    const recvSymbol = document.getElementById('recvTokenSymbol').textContent;
+    const recvSymbol = window.tradeType === 'buy' ? (window.currentTokenInfo?.symbol || 'TOKEN') : 'PAXI';
     window.setText('minRecv', `${minRecv} ${recvSymbol}`);
+
+    // Balance Validation & Button state
+    const swapBtn = document.querySelector('#mainSwapTerminal button[onclick*="executeTrade"]');
+    if (swapBtn && !window.wallet?.isWatchOnly) {
+        const rawBal = document.getElementById('payBalance')?.getAttribute('data-raw') || "0";
+        const balanceRaw = BigInt(rawBal);
+        const amountToPayRaw = BigInt(window.toMicroAmount(payAmount, window.tradeType === 'buy' ? 6 : tokenDecimals));
+
+        if (amountToPayRaw > balanceRaw) {
+            swapBtn.disabled = true;
+            swapBtn.textContent = "INSUFFICIENT BALANCE";
+        } else {
+            swapBtn.disabled = false;
+            swapBtn.textContent = window.tradeType === 'buy' ? "BUY NOW" : "SELL NOW";
+        }
+    }
 
     // Rate
     const rate = window.tradeType === 'buy' ?

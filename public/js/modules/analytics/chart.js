@@ -166,32 +166,21 @@ window.loadPriceHistory = async function(contractAddress, timeframe) {
 
     if (timeframe === 'realtime') {
         try {
-            // Direct fetch to real-time endpoint with no cache
-            const response = await fetch(`https://mainnet-api.paxinet.io/prc20/get_contract_prices?address=${contractAddress}&_t=${Date.now()}`, {
-                cache: 'no-store',
-                headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
-            });
-            const data = await response.json();
+            // Fetch realtime data via Netlify function (routing through fetchDirect)
+            const data = await window.fetchDirect(`${window.APP_CONFIG.BACKEND_API}/api/token-price?address=${contractAddress}&timeframe=realtime&_t=${Date.now()}`);
 
-            if (!data.prices || !data.prices.length) {
+            if (!data.history || !data.history.length) {
                 window.setText(statusEl, 'No real-time data');
                 return;
             }
 
-            // Map prices to timestamps spaced by 10 seconds ending at now
-            const now = Math.floor(Date.now() / 1000);
-            const rawPoints = data.prices.map((p, i) => ({
-                time: now - (data.prices.length - 1 - i) * 10,
-                price: parseFloat(p)
-            }));
-
-            // Create "candles" for line series (flat candles for line display)
-            const candles = rawPoints.map(p => ({
-                time: p.time,
-                open: p.price,
-                high: p.price,
-                low: p.price,
-                close: p.price,
+            // Data is already normalized by the Netlify function
+            const candles = data.history.map(item => ({
+                time: Math.floor(item.timestamp / 1000),
+                open: parseFloat(item.price_paxi),
+                high: parseFloat(item.price_paxi),
+                low: parseFloat(item.price_paxi),
+                close: parseFloat(item.price_paxi),
                 volume: Math.floor(Math.random() * 500)
             }));
 

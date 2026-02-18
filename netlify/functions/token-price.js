@@ -17,8 +17,12 @@ exports.handler = async (event) => {
     const tf = allowedTFs.includes(timeframe) ? timeframe : '24h';
 
     const cacheKey = `price_${address}_${tf}`;
-    const cachedData = getCached(cacheKey);
-    if (cachedData) return sendResponse(true, cachedData);
+
+    // Bypass cache for realtime requests
+    if (tf !== 'realtime') {
+        const cachedData = getCached(cacheKey);
+        if (cachedData) return sendResponse(true, cachedData);
+    }
 
     try {
         let apiUrl;
@@ -28,7 +32,10 @@ exports.handler = async (event) => {
             apiUrl = `https://paxi-pumpfun.winsnip.xyz/api/prc20-price-history/${address}?timeframe=${tf}`;
         }
 
-        const response = await fetch(apiUrl, { timeout: 10000 });
+        const response = await fetch(apiUrl, {
+            timeout: 10000,
+            headers: tf === 'realtime' ? { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' } : {}
+        });
 
         if (!response.ok) {
             // Fallback
@@ -41,7 +48,7 @@ exports.handler = async (event) => {
             const normalized = {
                 history: fallbackData.price_history || fallbackData.history || []
             };
-            setCached(cacheKey, normalized, 60);
+            if (tf !== 'realtime') setCached(cacheKey, normalized, 60);
             return sendResponse(true, normalized);
         }
 
@@ -52,8 +59,9 @@ exports.handler = async (event) => {
             const prices = data.prices || [];
             const now = Date.now();
             normalized = {
+                price_change: data.price_change || 0,
                 history: prices.map((p, i) => ({
-                    timestamp: now - (prices.length - 1 - i) * 15000,
+                    timestamp: now - (prices.length - 1 - i) * 10000, // 10s intervals
                     price_paxi: p
                 }))
             };
@@ -65,7 +73,7 @@ exports.handler = async (event) => {
             };
         }
 
-        setCached(cacheKey, normalized, 60);
+        if (tf !== 'realtime') setCached(cacheKey, normalized, 60);
         return sendResponse(true, normalized);
     } catch (error) {
         console.error('Price history fetch error:', error);
