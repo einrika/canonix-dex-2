@@ -1813,25 +1813,27 @@ window.updateBalances = async function() {
         );
         const balances = response.balances || [];
         const paxiBalance = balances.find(b => b.denom === 'upaxi');
-        const paxiAmount = paxiBalance ? parseInt(paxiBalance.amount) / 1e6 : 0;
+        const paxiRaw = paxiBalance ? paxiBalance.amount : '0';
+        const paxiAmount = parseInt(paxiRaw) / 1e6;
 
         const payBalEl = document.getElementById('payBalance');
         const recvBalEl = document.getElementById('recvBalance');
 
         let prc20Amount = 0;
+        let prc20Raw = '0';
         if (window.currentPRC20) {
-            // Fetch fresh dari blockchain
             const tokenDecimals = window.currentTokenInfo?.decimals || 6;
             const bal = await window.getPRC20Balance(walletAddress, window.currentPRC20);
+            prc20Raw = bal.toString();
             prc20Amount = bal / Math.pow(10, tokenDecimals);
         }
 
         if (window.tradeType === 'buy') {
-            if (payBalEl) window.setText(payBalEl, paxiAmount.toFixed(4));
-            if (recvBalEl) window.setText(recvBalEl, prc20Amount.toFixed(4));
+            if (payBalEl) { window.setText(payBalEl, paxiAmount.toFixed(4)); payBalEl.setAttribute('data-raw', paxiRaw); }
+            if (recvBalEl) { window.setText(recvBalEl, prc20Amount.toFixed(4)); recvBalEl.setAttribute('data-raw', prc20Raw); }
         } else {
-            if (payBalEl) window.setText(payBalEl, prc20Amount.toFixed(4));
-            if (recvBalEl) window.setText(recvBalEl, paxiAmount.toFixed(4));
+            if (payBalEl) { window.setText(payBalEl, prc20Amount.toFixed(4)); payBalEl.setAttribute('data-raw', prc20Raw); }
+            if (recvBalEl) { window.setText(recvBalEl, paxiAmount.toFixed(4)); recvBalEl.setAttribute('data-raw', paxiRaw); }
         }
 
         window.setText('walletBalance', paxiAmount.toFixed(2) + ' PAXI');
@@ -1871,42 +1873,52 @@ window.updateLPBalances = async function() {
     try {
         // 1. Handle Wallet Balances if connected
         if (window.wallet) {
-            // Fetch fresh PAXI balance dari blockchain
             const response = await window.smartFetch(
                 `${window.APP_CONFIG.LCD}/cosmos/bank/v1beta1/balances/${window.wallet.address}`
             );
             const balances = response.balances || [];
             const paxiBalance = balances.find(b => b.denom === 'upaxi');
-            window.lpBalances.paxi = paxiBalance ? parseInt(paxiBalance.amount) / 1000000 : 0;
+            const paxiRaw = paxiBalance ? paxiBalance.amount : '0';
+            window.lpBalances.paxi = parseInt(paxiRaw) / 1000000;
+            window.lpBalances.paxiRaw = paxiRaw;
 
-            // Fetch fresh PRC20 balance dari blockchain
             const tokenDecimals = window.currentTokenInfo?.decimals || 6;
             const tokenBalance = await window.getPRC20Balance(window.wallet.address, window.currentPRC20);
             window.lpBalances.token = tokenBalance / Math.pow(10, tokenDecimals);
+            window.lpBalances.tokenRaw = tokenBalance.toString();
 
-            // Fetch LP position dari blockchain
             try {
                 const posData = await window.smartFetch(
                     `${window.APP_CONFIG.LCD}/paxi/swap/position/${window.wallet.address}/${window.currentPRC20}`
                 );
-                window.lpBalances.lpTokens = posData.position?.lp_amount ? parseFloat(posData.position.lp_amount) / 1000000 : 0;
+                const lpAmount = posData.position?.lp_amount || '0';
+                window.lpBalances.lpTokens = parseFloat(lpAmount) / 1000000;
+                window.lpBalances.lpRaw = lpAmount.toString();
             } catch (e) {
                 window.lpBalances.lpTokens = 0;
+                window.lpBalances.lpRaw = '0';
             }
         }
         
-        // 2. Update UI Balances (always update labels, even if 0 or not connected)
-        if (document.getElementById('lpPaxiBalance')) {
-            window.setText('lpPaxiBalance', (window.lpBalances.paxi || 0).toFixed(6));
+        const paxiEl = document.getElementById('lpPaxiBalance');
+        if (paxiEl) {
+            window.setText(paxiEl, (window.lpBalances.paxi || 0).toFixed(6));
+            paxiEl.setAttribute('data-raw', window.lpBalances.paxiRaw || '0');
         }
-        if (document.getElementById('lpTokenBalance')) {
-            window.setText('lpTokenBalance', (window.lpBalances.token || 0).toFixed(6));
+        const tokenEl = document.getElementById('lpTokenBalance');
+        if (tokenEl) {
+            window.setText(tokenEl, (window.lpBalances.token || 0).toFixed(6));
+            tokenEl.setAttribute('data-raw', window.lpBalances.tokenRaw || '0');
         }
-        if (document.getElementById('yourLPTokens')) {
-            window.setText('yourLPTokens', (window.lpBalances.lpTokens || 0).toFixed(6));
+        const yourLP = document.getElementById('yourLPTokens');
+        if (yourLP) {
+            window.setText(yourLP, (window.lpBalances.lpTokens || 0).toFixed(6));
+            yourLP.setAttribute('data-raw', window.lpBalances.lpRaw || '0');
         }
-        if (document.getElementById('maxLPTokens')) {
-            window.setText('maxLPTokens', (window.lpBalances.lpTokens || 0).toFixed(6));
+        const maxLP = document.getElementById('maxLPTokens');
+        if (maxLP) {
+            window.setText(maxLP, (window.lpBalances.lpTokens || 0).toFixed(6));
+            maxLP.setAttribute('data-raw', window.lpBalances.lpRaw || '0');
         }
         
         // 3. Handle Pool Data & Ratio (Always update if currentPRC20 exists)

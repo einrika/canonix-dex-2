@@ -336,27 +336,31 @@ window.setTradeType = function(type) {
 window.updateTradeBalances = async function() {
     if (!window.wallet) return;
 
-    // Fetch fresh PAXI balance dari blockchain
     const balData = await window.smartFetch(
         `${window.APP_CONFIG.LCD}/cosmos/bank/v1beta1/balances/${window.wallet.address}`
     );
     const paxiBalance = balData.balances.find(b => b.denom === 'upaxi');
-    const paxiAmount = paxiBalance ? parseInt(paxiBalance.amount) / 1e6 : 0;
+    const paxiRaw = paxiBalance ? paxiBalance.amount : '0';
+    const paxiAmount = parseInt(paxiRaw) / 1e6;
 
-    // Fetch fresh PRC20 balance dari blockchain
     let prc20Amount = 0;
+    let prc20Raw = '0';
     if (window.currentPRC20) {
         const tokenDecimals = window.currentTokenInfo?.decimals || 6;
         const bal = await window.getPRC20Balance(window.wallet.address, window.currentPRC20);
+        prc20Raw = bal.toString();
         prc20Amount = bal / Math.pow(10, tokenDecimals);
     }
 
+    const payBalEl = document.getElementById('payBalance');
+    const recvBalEl = document.getElementById('recvBalance');
+
     if (window.tradeType === 'buy') {
-        window.setText('payBalance', paxiAmount.toFixed(4));
-        window.setText('recvBalance', prc20Amount.toFixed(4));
+        if (payBalEl) { window.setText(payBalEl, paxiAmount.toFixed(4)); payBalEl.setAttribute('data-raw', paxiRaw); }
+        if (recvBalEl) { window.setText(recvBalEl, prc20Amount.toFixed(4)); recvBalEl.setAttribute('data-raw', prc20Raw); }
     } else {
-        window.setText('payBalance', prc20Amount.toFixed(4));
-        window.setText('recvBalance', paxiAmount.toFixed(4));
+        if (payBalEl) { window.setText(payBalEl, prc20Amount.toFixed(4)); payBalEl.setAttribute('data-raw', prc20Raw); }
+        if (recvBalEl) { window.setText(recvBalEl, paxiAmount.toFixed(4)); recvBalEl.setAttribute('data-raw', paxiRaw); }
     }
 
     // Update Header Wallet Info

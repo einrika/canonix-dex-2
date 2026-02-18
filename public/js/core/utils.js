@@ -16,16 +16,30 @@ window.escapeHtml = function(unsafe) {
 window.toMicroAmount = function(amount, decimals) {
     if (amount === undefined || amount === null || amount === '') return "0";
 
-    let str = String(amount);
+    // Use string to avoid float precision issues as much as possible
+    let str = String(amount).trim();
+
+    // Handle scientific notation
     if (str.includes('e')) {
         str = Number(amount).toFixed(decimals);
     }
 
+    // Clean up negative signs and leading zeros
+    const isNegative = str.startsWith('-');
+    if (isNegative) str = str.slice(1);
+
     let [int, frac = ""] = str.split('.');
+
+    // TRUNCATE extra decimals instead of rounding to prevent "Cannot Sub" errors
     frac = frac.padEnd(decimals, '0').slice(0, decimals);
 
-    const combined = (int.replace(/^-/, '').replace(/^0+/, '') || "0") + frac;
-    return BigInt(combined.replace(/^0+/, '') || "0").toString();
+    // Combine into a large integer string
+    let combined = (int.replace(/^0+/, '') || "0") + frac;
+
+    // Remove leading zeros for BigInt (except if the whole thing is 0)
+    combined = combined.replace(/^0+/, '') || "0";
+
+    return combined;
 };
 
 window.formatAmount = function(num, decimals = 2) {

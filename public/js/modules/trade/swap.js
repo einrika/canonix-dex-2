@@ -51,19 +51,38 @@ window.reverseTradePair = function() {
 // ===== SET PERCENT AMOUNT =====
 window.setPercentAmount = function(val) {
     const balEl = document.getElementById('payBalance');
-    const balanceText = balEl ? balEl.textContent : '0';
-    const balance = parseFloat(balanceText) || 0;
+    const rawBal = balEl?.getAttribute('data-raw');
+    const balance = parseFloat(balEl?.textContent || '0');
     const percent = parseFloat(val) / 100;
 
-    let amount = balance * percent;
-
-    // For native PAXI, leave some for gas if it's a large percentage
+    let amountStr = '';
     const paySymbol = document.getElementById('payTokenSymbol')?.textContent;
-    if ((window.tradeType === 'buy' || paySymbol === 'PAXI') && percent > 0.9) {
-        amount = Math.max(0, amount - 0.1);
+
+    if (rawBal && val === "100") {
+        // Use BigInt for MAX to avoid precision loss
+        let rawBig = BigInt(rawBal);
+        const decimals = (window.tradeType === 'buy' || paySymbol === 'PAXI') ? 6 : (window.currentTokenInfo?.decimals || 6);
+
+        if (window.tradeType === 'buy' || paySymbol === 'PAXI') {
+            const gasReserve = BigInt(100000); // 0.1 PAXI
+            if (rawBig > gasReserve) rawBig -= gasReserve;
+            else rawBig = 0n;
+        }
+
+        // Convert raw back to human for the input field
+        const s = rawBig.toString().padStart(decimals + 1, '0');
+        amountStr = s.slice(0, -decimals) + '.' + s.slice(-decimals);
+        amountStr = amountStr.replace(/\.?0+$/, '');
+        if (amountStr.startsWith('.')) amountStr = '0' + amountStr;
+    } else {
+        let amount = balance * percent;
+        if ((window.tradeType === 'buy' || paySymbol === 'PAXI') && percent > 0.9) {
+            amount = Math.max(0, amount - 0.1);
+        }
+        amountStr = amount > 0 ? amount.toFixed(6) : '';
     }
 
-    window.setValue('tradePayAmount', amount > 0 ? amount.toFixed(6) : '');
+    window.setValue('tradePayAmount', amountStr);
 
     // Sync slider if called from button
     const slider = document.getElementById('tradePercentSlider');
@@ -210,9 +229,15 @@ window.toggleSwapDirection = function() {
     const toBalEl = document.getElementById('toBalance');
     if (fromBalEl && toBalEl) {
         const fromBalance = fromBalEl.textContent;
+        const fromRaw = fromBalEl.getAttribute('data-raw');
         const toBalance = toBalEl.textContent;
+        const toRaw = toBalEl.getAttribute('data-raw');
+
         window.setText(fromBalEl, toBalance);
+        if (toRaw) fromBalEl.setAttribute('data-raw', toRaw); else fromBalEl.removeAttribute('data-raw');
+
         window.setText(toBalEl, fromBalance);
+        if (fromRaw) toBalEl.setAttribute('data-raw', fromRaw); else toBalEl.removeAttribute('data-raw');
     }
     
     window.setValue('swapFromAmount', '');
@@ -222,15 +247,30 @@ window.toggleSwapDirection = function() {
 
 // ===== SET SWAP PERCENT =====
 window.setSwapPercent = function(percent) {
-    if (!window.wallet) {
-                return;
-    }
+    if (!window.wallet) return;
     const balEl = document.getElementById('fromBalance');
     if (!balEl) return;
-    const balanceText = balEl.textContent;
-    const balance = parseFloat(balanceText.split(' ')[0]) || 0;
-    const amount = (balance * percent / 100).toFixed(6);
-    window.setValue('swapFromAmount', amount);
+    const rawBal = balEl.getAttribute('data-raw');
+    const balance = parseFloat(balEl.textContent.split(' ')[0]) || 0;
+
+    let amountStr = '';
+    if (rawBal && percent === 100) {
+        const decimals = (window.swapDirection === 'buy') ? 6 : (window.currentTokenInfo?.decimals || 6);
+        let rawBig = BigInt(rawBal);
+        if (window.swapDirection === 'buy') {
+            const gasReserve = BigInt(100000);
+            if (rawBig > gasReserve) rawBig -= gasReserve;
+            else rawBig = 0n;
+        }
+        const s = rawBig.toString().padStart(decimals + 1, '0');
+        amountStr = s.slice(0, -decimals) + '.' + s.slice(-decimals);
+        amountStr = amountStr.replace(/\.?0+$/, '');
+        if (amountStr.startsWith('.')) amountStr = '0' + amountStr;
+    } else {
+        amountStr = (balance * percent / 100).toFixed(6);
+    }
+
+    window.setValue('swapFromAmount', amountStr);
     window.calculateSwapOutput();
 };
 
