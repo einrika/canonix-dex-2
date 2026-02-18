@@ -650,8 +650,10 @@ window.simulateGas = async function(messages, memo = "", options = {}) {
             const minGasPrice = 0.025;
 
             // Dynamic Minimum Fee Rules
-            let minFee = 25000; // Default for swap, send, burn
-            if (type === 'add_lp') minFee = 40000;
+            let minFee = 25000; // Default for simple send
+            if (['swap', 'add_lp', 'remove_lp', 'burn'].includes(type)) {
+                minFee = 40000;
+            }
 
             const estimatedFee = Math.max(Math.ceil(gasLimit * minGasPrice), minFee);
 
@@ -673,7 +675,9 @@ window.simulateGas = async function(messages, memo = "", options = {}) {
         const gasLimit = 500000 + (300000 * (messages.length - 1));
 
         let minFee = 25000;
-        if (type === 'add_lp') minFee = 40000;
+        if (['swap', 'add_lp', 'remove_lp', 'burn'].includes(type)) {
+            minFee = 40000;
+        }
 
         const est = Math.max(Math.ceil(gasLimit * 0.025), minFee);
         return {
