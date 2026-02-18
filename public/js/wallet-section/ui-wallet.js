@@ -3,7 +3,9 @@
 // ============================================
 
 // ===== 1. WALLET UI MAIN MODULE =====
-window.WalletUI = {
+window.WalletUI = window.WalletUI || {};
+
+Object.assign(window.WalletUI, {
     init: function() {
         this.setupListeners();
         // Don't auto render - lazy load when tab is opened
@@ -465,13 +467,6 @@ window.WalletUI = {
                 <div class="p-4 bg-card/30 border border-border rounded-2xl hover:border-border/60 transition-all group cursor-pointer relative"
                      id="asset-item-${token.address}">
                     <div class="absolute top-2 right-2 flex gap-1 z-10">
-                        ${token.address !== 'PAXI' ? `
-                            <button onclick="event.stopPropagation(); window.WalletUI.selectAssetForTrade('${token.address}')"
-                                    class="w-5 h-5 rounded-full bg-up/20 text-up flex items-center justify-center text-[10px] hover:bg-up/30 transition-all"
-                                    title="Swap">
-                                <i class="fas fa-exchange-alt"></i>
-                            </button>
-                        ` : ''}
                         ${canHide ? `
                             <button onclick="event.stopPropagation(); window.WalletUI.confirmHideToken('${token.address}')" 
                                     class="w-5 h-5 rounded-full bg-yellow-500/20 text-yellow-500 flex items-center justify-center text-[10px] hover:bg-yellow-500/30 transition-all"
@@ -1566,9 +1561,9 @@ window.WalletUI = {
     },
 
     showCreateModal: function() {
-                window.setupNewWallet(); // Reusing some of the existing logic but we should move it
+        window.setupNewWallet();
     }
-};
+});
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => window.WalletUI.init());
@@ -1977,7 +1972,10 @@ window.disconnectWallet = function() {
     window.removeClass('mobileConnectBtn', 'hidden');
     window.addClass('walletInfo', 'hidden');
     window.addClass('mobileWalletInfo', 'hidden');
-    };
+
+    if (window.renderSwapTerminal) window.renderSwapTerminal();
+    if (window.WalletUI) window.WalletUI.renderDashboard();
+};
 
 // Internal Wallet UI Logic
 window.showInternalWalletSheet = function() {

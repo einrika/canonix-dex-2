@@ -3,78 +3,160 @@
  * Handles fetching and rendering for the homepage (index.html)
  */
 
+window.marketTokens = [];
+window.marketFilter = 'hot';
+window.marketSearchQuery = '';
+window.marketLimit = 12;
+
 window.addEventListener('load', async () => {
     // Only run on homepage
-    if (!document.getElementById('trendingList')) return;
+    if (!document.getElementById('marketGrid')) return;
 
     console.log('🚀 Canonix Landing Page Initializing...');
 
-    // Load data for all sections
-    await Promise.all([
-        loadTrendingTokens(),
-        loadNewTokens(),
-        loadVerifiedTokens()
-    ]);
+    // Load initial market data
+    await loadMarketData();
 
     // Initial Global Market Analysis
     initGlobalMarketAI();
 });
 
-async function loadTrendingTokens() {
+async function loadMarketData() {
     try {
-        // Trending sorted by Volume (Hot)
+        const grid = document.getElementById('marketGrid');
+        if (!grid) return;
+
+        // Fetch tokens (reusing tokens.js logic if possible, or direct fetch)
+        // For landing, we fetch page 0 of all contracts
         const url = `${window.APP_CONFIG.EXPLORER_API}/prc20/contracts?page=0&_t=${Date.now()}`;
         const data = await window.fetchDirect(url);
 
         if (data && data.contracts) {
-            const processed = data.contracts.map(c => window.processTokenDetail(c.contract_address, c));
-            // Sort by volume descending
-            const trending = processed.sort((a, b) => b.volume_24h - a.volume_24h).slice(0, 10);
-            renderLandingList('trendingList', trending);
+            window.marketTokens = data.contracts.map(c => window.processTokenDetail(c.contract_address, c));
+            renderMarketGrid();
         }
     } catch (e) {
-        console.error('Failed to load trending tokens', e);
+        console.error('Failed to load market data', e);
     }
 }
 
-async function loadNewTokens() {
-    try {
-        // New sorted by ID or timestamp
-        const url = `${window.APP_CONFIG.EXPLORER_API}/prc20/contracts?page=0&_t=${Date.now()}`;
-        const data = await window.fetchDirect(url);
+window.setMarketFilter = function(type, btn) {
+    window.marketFilter = type;
 
-        if (data && data.contracts) {
-            const processed = data.contracts.map(c => window.processTokenDetail(c.contract_address, c));
-            // Sort by id descending (assuming higher ID is newer)
-            const news = processed.sort((a, b) => b.id - a.id).slice(0, 10);
-            renderLandingList('newList', news);
-        }
-    } catch (e) {
-        console.error('Failed to load new tokens', e);
+    // Update UI buttons
+    document.querySelectorAll('.market-filter-btn').forEach(b => {
+        b.classList.remove('bg-up', 'text-bg', 'border-up');
+        b.classList.add('text-gray-400', 'border-border');
+    });
+
+    if (btn) {
+        btn.classList.add('bg-up', 'text-bg', 'border-up');
+        btn.classList.remove('text-gray-400', 'border-border');
     }
-}
 
-async function loadVerifiedTokens() {
-    try {
-        // Non-pump (Verified)
-        const url = `${window.APP_CONFIG.BACKEND_API}/token-list?type=nonpump&_t=${Date.now()}`;
-        const data = await window.fetchDirect(url);
+    renderMarketGrid();
+};
 
-        if (data && data.contracts) {
-            const processed = data.contracts
-                .map(c => window.processTokenDetail(c.contract_address, c))
-                .filter(t => t.is_pump === false); // Strictly Non-Pump
+window.filterMarket = function() {
+    window.marketSearchQuery = document.getElementById('marketSearch').value.toLowerCase();
+    renderMarketGrid();
+};
 
-            // Trending Non-Pump (by volume)
-            const trendingNp = [...processed].sort((a, b) => b.volume_24h - a.volume_24h).slice(0, 10);
-            renderLandingList('trendingNonPumpList', trendingNp);
+window.loadMoreMarket = function() {
+    window.marketLimit += 12;
+    renderMarketGrid();
+};
 
-            // New Non-Pump (by ID/Time)
-            const newNp = [...processed].sort((a, b) => b.id - a.id).slice(0, 10);
-            renderLandingList('newNonPumpList', newNp);
+function renderMarketGrid() {
+    const grid = document.getElementById('marketGrid');
+    if (!grid) return;
+
+    let filtered = [...window.marketTokens];
+
+    // Apply Filter Logic
+    switch (window.marketFilter) {
+        case 'pumping':
+            filtered = filtered.filter(t => t.is_pump);
+            break;
+        case 'new':
+            filtered.sort((a, b) => b.id - a.id);
+            break;
+        case 'marketcap':
+            filtered.sort((a, b) => b.market_cap - a.market_cap);
+            break;
+        case 'gainers':
+            filtered.sort((a, b) => b.price_change_24h - a.price_change_24h);
+            break;
+        case 'hot':
+        default:
+            filtered.sort((a, b) => b.volume_24h - a.volume_24h);
+            break;
+    }
+
+    // Apply Search Query
+    if (window.marketSearchQuery) {
+        filtered = filtered.filter(t =>
+            t.symbol.toLowerCase().includes(window.marketSearchQuery) ||
+            t.address.toLowerCase().includes(window.marketSearchQuery) ||
+            t.name.toLowerCase().includes(window.marketSearchQuery)
+        );
+    }
+
+    const display = filtered.slice(0, window.marketLimit);
+
+    if (display.length === 0) {
+        grid.innerHTML = '<div class="col-span-full text-center py-20 text-gray-500 font-bold">No tokens match your criteria</div>';
+        return;
+    }
+
+    grid.innerHTML = display.map(t => {
+        const change = (t.price_change_24h * 100).toFixed(2);
+        const colorClass = t.price_change_24h >= 0 ? 'text-up bg-up/10' : 'text-down bg-down/10';
+        const vol = window.formatAmount(t.volume_24h);
+
+        return `
+            <a href="trade.html?token=${t.address}" class="bg-card border border-border p-6 rounded-[2rem] hover:border-up/50 transition-all group block">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="relative">
+                        ${t.logo ?
+                            `<img src="${t.logo}" class="w-12 h-12 rounded-full border border-border group-hover:scale-110 transition-transform">` :
+                            `<div class="w-12 h-12 rounded-full bg-surface border border-border flex items-center justify-center text-sm font-black text-gray-500">${t.symbol.charAt(0)}</div>`
+                        }
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="font-black text-white text-lg tracking-tighter uppercase italic">${t.symbol}</span>
+                            ${t.verified ? `<i class="fas fa-check-circle text-blue-400 text-[10px]"></i>` : ''}
+                        </div>
+                        <div class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">PRC-20</div>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <div class="text-xl font-mono font-black text-white">${t.price_paxi.toFixed(8)} PAXI</div>
+                        <div class="mt-2 inline-block px-3 py-1 rounded-full text-[10px] font-black ${colorClass}">
+                            ${t.price_change_24h >= 0 ? '+' : ''}${change}%
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t border-white/5 flex justify-between items-center">
+                        <span class="text-[10px] text-gray-500 font-black uppercase">Vol</span>
+                        <span class="text-[10px] text-gray-300 font-mono font-bold">${vol} PAXI</span>
+                    </div>
+                </div>
+            </a>
+        `;
+    }).join('');
+
+    // Hide Load More if no more tokens
+    const loadMoreBtn = document.getElementById('loadMoreMarket');
+    if (loadMoreBtn) {
+        if (window.marketLimit >= filtered.length) {
+            loadMoreBtn.classList.add('hidden');
+        } else {
+            loadMoreBtn.classList.remove('hidden');
         }
-    } catch (e) {
-        console.error('Failed to load verified tokens', e);
     }
 }
 
@@ -99,7 +181,7 @@ async function initGlobalMarketAI() {
             symbol: topToken.symbol,
             price: topToken.price_paxi,
             change24h: topToken.price_change_24h * 100,
-            liquidity: topToken.liquidity * 500000, // Re-scaling for display if needed
+            liquidity: topToken.liquidity * 500000,
             volume: topToken.volume_24h,
             onChainActivity: "High DEX activity, increasing liquidity depth, strong holder retention."
         };
@@ -108,7 +190,6 @@ async function initGlobalMarketAI() {
         const serverResult = await window.callServerAI(analysisData);
 
         if (serverResult) {
-            // Parse result (structured by prompt) and render
             renderIndexAI(container, topToken, serverResult);
         } else {
             container.innerHTML = '<p class="text-gray-500">AI analysis failed to load</p>';
@@ -121,7 +202,6 @@ async function initGlobalMarketAI() {
 }
 
 function renderIndexAI(container, token, aiText) {
-    // Extract sentiment for color coding
     const sentiment = aiText.toUpperCase().includes('BULLISH') ? 'BULLISH' :
                       aiText.toUpperCase().includes('BEARISH') ? 'BEARISH' : 'NEUTRAL';
     const colorClass = sentiment === 'BULLISH' ? 'text-up' : sentiment === 'BEARISH' ? 'text-down' : 'text-gray-400';
@@ -177,44 +257,4 @@ function renderIndexAI(container, token, aiText) {
             </a>
         </div>
     `;
-}
-
-function renderLandingList(containerId, tokens) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-
-    if (tokens.length === 0) {
-        container.innerHTML = '<div class="text-gray-500 text-sm py-4">No tokens found</div>';
-        return;
-    }
-
-    container.innerHTML = tokens.map((t, index) => {
-        const change = t.price_change_24h * 100;
-        const colorClass = change >= 0 ? 'text-up' : 'text-down';
-        const mcap = window.formatAmount(t.market_cap);
-        const vol = window.formatAmount(t.volume_24h);
-
-        return `
-            <a href="trade.html?token=${t.address}" class="flex items-center justify-between p-4 bg-card/40 border border-border/50 rounded-2xl hover:border-up/50 transition-all group">
-                <div class="flex items-center gap-4">
-                    <span class="text-xs font-black text-gray-600 w-4">${index + 1}</span>
-                    <div class="relative">
-                        ${t.logo ?
-                            `<img src="${t.logo}" class="w-10 h-10 rounded-full border border-border group-hover:scale-110 transition-transform">` :
-                            `<div class="w-10 h-10 rounded-full bg-surface flex items-center justify-center text-xs font-bold text-gray-500 border border-border">${t.symbol.charAt(0)}</div>`
-                        }
-                        ${t.verified ? `<div class="absolute -bottom-1 -right-1 text-[8px] text-blue-400 bg-bg rounded-full p-0.5"><i class="fas fa-check-circle"></i></div>` : ''}
-                    </div>
-                    <div>
-                        <div class="font-black text-sm group-hover:text-up transition-colors">${t.symbol}</div>
-                        <div class="text-[10px] text-gray-500 font-bold uppercase tracking-tighter">MCap ${mcap}</div>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <div class="text-xs font-mono font-black ${colorClass}">${change >= 0 ? '+' : ''}${change.toFixed(2)}%</div>
-                    <div class="text-[9px] text-gray-600 font-bold uppercase tracking-widest">Vol ${vol}</div>
-                </div>
-            </a>
-        `;
-    }).join('');
 }
