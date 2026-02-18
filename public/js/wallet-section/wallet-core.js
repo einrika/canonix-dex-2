@@ -647,15 +647,9 @@ window.simulateGas = async function(messages, memo = "", options = {}) {
             const gasUsed = parseInt(result.gas_info.gas_used);
             const gasAdjustment = 1.4; // 40% safety buffer
             const gasLimit = Math.ceil(gasUsed * gasAdjustment);
-            const minGasPrice = 0.025;
+            const minGasPrice = 0.05;
 
-            // Dynamic Minimum Fee Rules
-            let minFee = 25000; // Default for simple send
-            if (['swap', 'add_lp', 'remove_lp', 'burn'].includes(type)) {
-                minFee = 40000;
-            }
-
-            const estimatedFee = Math.max(Math.ceil(gasLimit * minGasPrice), minFee);
+            const estimatedFee = Math.ceil(gasLimit * minGasPrice);
 
             return {
                 gasPrice: minGasPrice.toString(),
@@ -674,14 +668,11 @@ window.simulateGas = async function(messages, memo = "", options = {}) {
         // Fallback formula
         const gasLimit = 500000 + (300000 * (messages.length - 1));
 
-        let minFee = 25000;
-        if (['swap', 'add_lp', 'remove_lp', 'burn'].includes(type)) {
-            minFee = 40000;
-        }
+        const minGasPrice = 0.05;
+        const est = Math.ceil(gasLimit * minGasPrice);
 
-        const est = Math.max(Math.ceil(gasLimit * 0.025), minFee);
         return {
-            gasPrice: "0.025",
+            gasPrice: minGasPrice.toString(),
             gasLimit: gasLimit.toString(),
             baseFee: est.toString(),
             priorityFee: "0",
