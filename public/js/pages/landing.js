@@ -45,15 +45,15 @@ async function loadMarketData() {
 window.setMarketFilter = function(type, btn) {
     window.marketFilter = type;
 
-    // Update UI buttons
+    // Update UI buttons - Brutal Style
     document.querySelectorAll('.market-filter-btn').forEach(b => {
-        b.classList.remove('border-up', 'bg-up', 'text-bg');
-        b.classList.add('text-gray-500', 'border-white/10');
+        b.classList.remove('bg-meme-green', 'text-black');
+        b.classList.add('bg-meme-bg', 'text-white');
     });
 
     if (btn) {
-        btn.classList.add('border-up', 'bg-up', 'text-bg');
-        btn.classList.remove('text-gray-500', 'border-white/10');
+        btn.classList.add('bg-meme-green', 'text-black');
+        btn.classList.remove('bg-meme-bg', 'text-white');
     }
 
     renderMarketGrid();
@@ -183,41 +183,43 @@ function renderMarketGrid() {
 
     grid.innerHTML = display.map(t => {
         const change = (t.price_change_24h * 100).toFixed(2);
-        const colorClass = t.price_change_24h >= 0 ? 'text-up bg-up/10' : 'text-down bg-down/10';
+        const colorClass = t.price_change_24h >= 0 ? 'bg-meme-green text-black' : 'bg-meme-pink text-white';
+        const shadowClass = t.price_change_24h >= 0 ? 'shadow-brutal-green' : 'shadow-brutal-pink';
         const vol = window.formatAmount(t.volume_24h);
 
         return `
-            <a href="trade.html?token=${t.address}" class="bg-surface border border-white/5 p-6 rounded-3xl hover:border-up/30 transition-all group block relative overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent pointer-events-none"></div>
-                <div class="flex items-center gap-4 mb-8">
+            <a href="trade.html?token=${t.address}" class="bg-meme-surface border-4 border-black p-8 ${shadowClass} hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all group block relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 -rotate-45 translate-x-16 -translate-y-16 group-hover:bg-white/10 transition-colors"></div>
+
+                <div class="flex items-center gap-6 mb-10">
                     <div class="relative flex-shrink-0">
                         ${t.logo ?
-                            `<img src="${t.logo}" class="w-12 h-12 rounded-2xl border border-white/10 group-hover:scale-110 transition-transform">` :
-                            `<div class="w-12 h-12 rounded-2xl bg-bg border border-white/10 flex items-center justify-center text-xs font-black text-gray-500">${t.symbol.charAt(0)}</div>`
+                            `<img src="${t.logo}" class="w-16 h-16 rounded-none border-4 border-black group-hover:scale-110 group-hover:rotate-6 transition-transform shadow-brutal">` :
+                            `<div class="w-16 h-16 bg-meme-yellow border-4 border-black flex items-center justify-center text-xl font-display text-black group-hover:rotate-6 transition-transform shadow-brutal">${t.symbol.charAt(0)}</div>`
                         }
                     </div>
                     <div class="min-w-0">
-                        <div class="flex items-center gap-1.5">
-                            <span class="font-black text-white text-lg tracking-tighter uppercase italic truncate">${t.symbol}</span>
-                            ${t.verified ? `<i class="fas fa-check-circle text-up text-[10px]"></i>` : ''}
+                        <div class="flex items-center gap-2">
+                            <span class="font-display text-3xl text-white tracking-tight uppercase italic truncate">${t.symbol}</span>
+                            ${t.verified ? `<i class="fas fa-check-circle text-meme-cyan text-sm"></i>` : ''}
                         </div>
-                        <div class="text-[10px] text-gray-600 font-black uppercase tracking-widest">PRC-20 TOKEN</div>
+                        <div class="text-[10px] text-meme-cyan font-mono font-bold uppercase tracking-[0.2em]">PRC-20 ASSET</div>
                     </div>
                 </div>
 
-                <div class="space-y-4 relative z-10">
+                <div class="space-y-6 relative z-10">
                     <div>
-                        <div class="text-xs text-gray-500 font-black uppercase tracking-widest mb-1">Price</div>
-                        <div class="text-xl font-black text-white italic tracking-tight truncate">${t.price_paxi.toFixed(8)} PAXI</div>
+                        <div class="text-xs text-gray-500 font-mono font-bold uppercase tracking-widest mb-2">CURRENT PRICE</div>
+                        <div class="text-3xl font-display text-white italic tracking-tight truncate">${t.price_paxi.toFixed(8)} <span class="text-meme-yellow">PAXI</span></div>
                     </div>
 
-                    <div class="flex justify-between items-center pt-4 border-t border-white/5">
-                        <div class="px-3 py-1 rounded-lg text-[10px] font-black ${colorClass}">
+                    <div class="flex justify-between items-center pt-6 border-t-4 border-black">
+                        <div class="px-4 py-1.5 border-2 border-black font-display text-xl ${colorClass}">
                             ${t.price_change_24h >= 0 ? '+' : ''}${change}%
                         </div>
                         <div class="text-right">
-                            <div class="text-[8px] text-gray-600 font-black uppercase tracking-widest">Volume</div>
-                            <div class="text-[10px] text-gray-300 font-bold tracking-tight">${vol} PAXI</div>
+                            <div class="text-[10px] text-gray-600 font-mono font-bold uppercase tracking-widest">24H VOLUME</div>
+                            <div class="text-lg font-display text-meme-cyan italic tracking-tight">${vol}</div>
                         </div>
                     </div>
                 </div>
@@ -280,62 +282,62 @@ async function initGlobalMarketAI() {
 function renderIndexAI(container, token, aiText) {
     const sentiment = aiText.toUpperCase().includes('BULLISH') ? 'BULLISH' :
                       aiText.toUpperCase().includes('BEARISH') ? 'BEARISH' : 'NEUTRAL';
-    const colorClass = sentiment === 'BULLISH' ? 'text-up' : sentiment === 'BEARISH' ? 'text-down' : 'text-gray-400';
-    const bgClass = sentiment === 'BULLISH' ? 'bg-up/10' : sentiment === 'BEARISH' ? 'bg-down/10' : 'bg-gray-500/10';
+    const colorClass = sentiment === 'BULLISH' ? 'text-meme-green' : sentiment === 'BEARISH' ? 'text-meme-pink' : 'text-meme-cyan';
+    const bgClass = sentiment === 'BULLISH' ? 'bg-meme-green' : sentiment === 'BEARISH' ? 'bg-meme-pink' : 'bg-meme-cyan';
 
     container.innerHTML = `
-        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-12">
-            <div class="flex items-center gap-6">
-                <div class="w-16 h-16 rounded-3xl ${bgClass} flex items-center justify-center ${colorClass} text-3xl shadow-lg border border-current opacity-50">
+        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-12 mb-16">
+            <div class="flex items-center gap-8">
+                <div class="w-24 h-24 bg-surface border-4 border-black flex items-center justify-center ${colorClass} text-5xl shadow-brutal rotate-[-5deg]">
                     <i class="fas fa-brain"></i>
                 </div>
                 <div>
-                    <h3 class="font-black italic uppercase text-2xl tracking-tighter">Market <span class="${colorClass}">Verified</span></h3>
-                    <p class="text-[10px] text-gray-600 font-black uppercase tracking-[0.3em]">GEMINI PRO 1.5 REAL-TIME SCAN</p>
+                    <h3 class="font-display italic uppercase text-6xl tracking-tighter">AI <span class="${colorClass}">SCAN</span></h3>
+                    <p class="font-mono text-sm text-gray-600 font-bold uppercase tracking-[0.4em]">GEMINI PRO 1.5 VERIFIED</p>
                 </div>
             </div>
-            <div class="px-8 py-2 rounded-full ${bgClass} ${colorClass} text-xs font-black uppercase tracking-widest border border-current shadow-glow">
-                ${sentiment} SENTIMENT
+            <div class="px-10 py-4 bg-black border-4 border-current ${colorClass} font-display text-4xl shadow-brutal rotate-[2deg]">
+                ${sentiment} VIBES
             </div>
         </div>
 
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-            <div class="p-6 bg-bg/50 rounded-3xl border border-white/5">
-                <div class="text-[10px] text-gray-600 font-black uppercase tracking-widest mb-2">Target Asset</div>
-                <div class="text-lg font-black text-white italic tracking-tight">${token.symbol}</div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-10 mb-16">
+            <div class="p-8 bg-meme-surface border-4 border-black shadow-brutal">
+                <div class="text-[10px] text-gray-500 font-mono font-bold uppercase tracking-widest mb-3">TARGET</div>
+                <div class="text-4xl font-display text-white italic tracking-tight">${token.symbol}</div>
             </div>
-            <div class="p-6 bg-bg/50 rounded-3xl border border-white/5">
-                <div class="text-[10px] text-gray-600 font-black uppercase tracking-widest mb-2">Risk Level</div>
-                <div class="text-lg font-black ${token.liquidity > 10000 ? 'text-up' : 'text-yellow-400'} italic tracking-tight">
-                    ${token.liquidity > 20000 ? 'LOW-SEC' : token.liquidity > 5000 ? 'MED-VOL' : 'HIGH-RISK'}
+            <div class="p-8 bg-meme-surface border-4 border-black shadow-brutal">
+                <div class="text-[10px] text-gray-500 font-mono font-bold uppercase tracking-widest mb-3">RISK LVL</div>
+                <div class="text-4xl font-display ${token.liquidity > 10000 ? 'text-meme-green' : 'text-meme-yellow'} italic tracking-tight">
+                    ${token.liquidity > 20000 ? 'GIGA' : token.liquidity > 5000 ? 'MID' : 'REKT'}
                 </div>
             </div>
-            <div class="p-6 bg-bg/50 rounded-3xl border border-white/5">
-                <div class="text-[10px] text-gray-600 font-black uppercase tracking-widest mb-2">Trend Cycle</div>
-                <div class="text-lg font-black text-accent italic tracking-tight">${token.price_change_24h > 0 ? 'ACCUMULATION' : 'DISTRIBUTION'}</div>
+            <div class="p-8 bg-meme-surface border-4 border-black shadow-brutal">
+                <div class="text-[10px] text-gray-500 font-mono font-bold uppercase tracking-widest mb-3">TREND</div>
+                <div class="text-4xl font-display text-meme-cyan italic tracking-tight">${token.price_change_24h > 0 ? 'MOON' : 'BLEED'}</div>
             </div>
-            <div class="p-6 bg-bg/50 rounded-3xl border border-white/5">
-                <div class="text-[10px] text-gray-600 font-black uppercase tracking-widest mb-2">Liq Score</div>
-                <div class="text-lg font-black text-white italic tracking-tight">9.8/10</div>
+            <div class="p-8 bg-meme-surface border-4 border-black shadow-brutal">
+                <div class="text-[10px] text-gray-500 font-mono font-bold uppercase tracking-widest mb-3">BRAIN</div>
+                <div class="text-4xl font-display text-white italic tracking-tight">9.8/10</div>
             </div>
         </div>
 
-        <div class="bg-bg/40 rounded-[2rem] border border-white/5 p-8 relative overflow-hidden group">
-            <div class="absolute inset-0 bg-grid opacity-5"></div>
+        <div class="bg-meme-surface border-4 border-black p-10 relative overflow-hidden group shadow-brutal">
+            <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/micro-carbon.png')] opacity-10"></div>
             <div class="relative z-10">
-                <div class="flex items-center gap-2 mb-4">
-                    <div class="w-2 h-2 rounded-full bg-up animate-pulse"></div>
-                    <div class="text-[10px] font-black text-gray-500 uppercase tracking-widest">AI Interpretation Engine</div>
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-4 h-4 bg-meme-green animate-ping"></div>
+                    <div class="font-mono text-sm font-bold text-gray-500 uppercase tracking-widest">AI INTERPRETATION OUTPUT</div>
                 </div>
-                <div class="text-sm text-gray-300 leading-relaxed italic font-medium">
+                <div class="text-2xl text-gray-300 leading-tight italic font-mono">
                     "${aiText}"
                 </div>
             </div>
         </div>
 
-        <div class="mt-10 flex justify-end">
-            <a href="trade.html?token=${token.address}" class="px-8 py-3 rounded-xl bg-up text-bg text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all flex items-center gap-3">
-                Trade Opportunity <i class="fas fa-arrow-right"></i>
+        <div class="mt-16 flex justify-end">
+            <a href="trade.html?token=${token.address}" class="px-12 py-5 bg-meme-green text-black font-display text-4xl border-4 border-black shadow-brutal hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none transition-all flex items-center gap-6 rotate-[-1deg]">
+                APE IN <i class="fas fa-arrow-right"></i>
             </a>
         </div>
     `;

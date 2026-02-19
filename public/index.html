@@ -4,30 +4,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Canonix - Premium DEX on Paxi Network</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>CANONIX | DEGEN MEME DEX</title>
+
+    <!-- FONTS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
+
+    <!-- ICONS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
+
+    <!-- TAILWIND CONFIG -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        bg: '#0B0C0D',
-                        surface: '#141517',
-                        card: '#1A1B1E',
-                        border: '#222428',
-                        up: '#00f2fe',
-                        down: '#ff0080',
-                        accent: '#764ba2',
+                        'meme-bg': '#000000',
+                        'meme-surface': '#0D0D0D',
+                        'meme-card': '#1A1A1A',
+                        'meme-green': '#39FF14',
+                        'meme-pink': '#FF007F',
+                        'meme-cyan': '#00FFFF',
+                        'meme-yellow': '#FFFF00',
+                        // Map old names to new palette for JS compatibility
+                        up: '#39FF14',
+                        down: '#FF007F',
+                        accent: '#00FFFF',
                     },
-                    backgroundImage: {
-                        'glow-radial': 'radial-gradient(circle at center, var(--tw-gradient-stops))',
+                    fontFamily: {
+                        display: ['Bangers', 'system-ui'],
+                        mono: ['Space Mono', 'monospace'],
+                        sans: ['DM Sans', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'brutal': '8px 8px 0px 0px rgba(0,0,0,1)',
+                        'brutal-green': '8px 8px 0px 0px #39FF14',
+                        'brutal-pink': '8px 8px 0px 0px #FF007F',
+                        'brutal-cyan': '8px 8px 0px 0px #00FFFF',
+                        'glow': '0 0 20px rgba(57, 255, 20, 0.3)',
+                    },
+                    animation: {
+                        'marquee': 'marquee 25s linear infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'glitch': 'glitch 1s linear infinite',
+                        'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
+                    },
+                    keyframes: {
+                        marquee: {
+                            '0%': { transform: 'translateX(0%)' },
+                            '100%': { transform: 'translateX(-50%)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        glitch: {
+                            '0%': { transform: 'translate(0)' },
+                            '20%': { transform: 'translate(-2px, 2px)' },
+                            '40%': { transform: 'translate(-2px, -2px)' },
+                            '60%': { transform: 'translate(2px, 2px)' },
+                            '80%': { transform: 'translate(2px, -2px)' },
+                            '100%': { transform: 'translate(0)' },
+                        },
+                        shake: {
+                            '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
+                            '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
+                            '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
+                            '40%, 60%': { transform: 'translate3d(4px, 0, 0)' },
+                        }
                     }
                 }
             }
         }
     </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
     <link rel="apple-touch-icon" sizes="57x57" href="/assets/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="/assets/apple-icon-60x60.png">
     <link rel="apple-touch-icon" sizes="72x72" href="/assets/apple-icon-72x72.png">
@@ -42,596 +94,324 @@
     <link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon-96x96.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
     <link rel="manifest" href="/manifest.json">
-    <meta name="msapplication-TileColor" content="#0B0C0D">
+    <meta name="msapplication-TileColor" content="#000000">
     <meta name="msapplication-TileImage" content="/assets/ms-icon-144x144.png">
-    <meta name="theme-color" content="#0B0C0D">
-    <style>
-        :root {
-            --glow-color: rgba(0, 242, 254, 0.15);
-        }
-
-        body {
-            background-color: #0B0C0D;
-            color: #e8eaed;
-            font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
-        }
-        
-        /* Grid Pattern */
-        .bg-grid {
-            background-image: linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
-                              linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
-            background-size: 40px 40px;
-        }
-
-        /* Radial Glow */
-        .glow-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 50% -20%, var(--glow-color) 0%, transparent 70%);
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .glass {
-            background: rgba(20, 21, 23, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        
-        .gradient-text {
-            background: linear-gradient(135deg, #00f2fe 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .btn-premium {
-            background: linear-gradient(135deg, #00f2fe 0%, #764ba2 100%);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .btn-premium::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: 0.5s;
-        }
-        
-        .btn-premium:hover::after {
-            left: 100%;
-        }
-
-        .btn-premium:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px -5px rgba(0, 242, 254, 0.4);
-        }
-
-        /* Animations */
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
-        }
-
-        .animate-float {
-            animation: float 6s ease-in-out infinite;
-        }
-
-        .reveal {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-
-        /* Hero Image Layering */
-        .mockup-container {
-            perspective: 1000px;
-        }
-
-        .mockup-main {
-            transform: rotateY(-10deg) rotateX(5deg);
-            box-shadow: -20px 20px 50px rgba(0,0,0,0.5);
-        }
-
-        .floating-card {
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-        }
-    </style>
+    <meta name="theme-color" content="#000000">
 </head>
 
-<body class="min-h-screen relative bg-grid">
-    <div class="glow-overlay"></div>
+<body class="bg-meme-bg text-white font-sans overflow-x-hidden selection:bg-meme-pink selection:text-white">
+    <!-- Marquee Ticker Top -->
+    <div class="bg-meme-yellow border-b-4 border-black py-2 overflow-hidden whitespace-nowrap z-[100] relative">
+        <div class="animate-marquee inline-block">
+            <span class="text-black font-display text-2xl mx-8 italic">$$$ MOON SOON $$$</span>
+            <span class="text-black font-display text-2xl mx-8 italic">DEGENS ONLY</span>
+            <span class="text-black font-display text-2xl mx-8 italic">PRC20 REVOLUTION</span>
+            <span class="text-black font-display text-2xl mx-8 italic">NO RUGS ALLOWED</span>
+            <span class="text-black font-display text-2xl mx-8 italic">PUMP IT HARDER</span>
+            <!-- Duplicate for seamless loop -->
+            <span class="text-black font-display text-2xl mx-8 italic">$$$ MOON SOON $$$</span>
+            <span class="text-black font-display text-2xl mx-8 italic">DEGENS ONLY</span>
+            <span class="text-black font-display text-2xl mx-8 italic">PRC20 REVOLUTION</span>
+            <span class="text-black font-display text-2xl mx-8 italic">NO RUGS ALLOWED</span>
+            <span class="text-black font-display text-2xl mx-8 italic">PUMP IT HARDER</span>
+        </div>
+    </div>
 
-    <nav class="border-b border-white/5 bg-bg/80 backdrop-blur-md sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-20 items-center">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-up/20 rounded-xl flex items-center justify-center border border-up/30">
-                        <i class="fas fa-exchange-alt text-up text-xl"></i>
-                    </div>
-                    <span class="text-2xl font-black tracking-tighter gradient-text">CANONIX</span>
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-[90] bg-meme-bg border-b-4 border-black">
+        <div class="max-w-[1400px] mx-auto px-4 h-24 flex items-center justify-between">
+            <div class="flex items-center gap-4 group cursor-pointer">
+                <div class="w-14 h-14 bg-meme-green border-4 border-black shadow-brutal flex items-center justify-center rotate-[-3deg] group-hover:rotate-0 transition-transform">
+                    <i class="fas fa-exchange-alt text-black text-2xl"></i>
                 </div>
-                <div class="hidden md:flex items-center gap-10">
-                    <a href="#market" class="text-sm font-bold text-gray-400 hover:text-up transition-colors">Markets</a>
-                    <a href="#features" class="text-sm font-bold text-gray-400 hover:text-up transition-colors">Features</a>
-                    <a href="#security" class="text-sm font-bold text-gray-400 hover:text-up transition-colors">Security</a>
-                    <a href="faq.html" class="text-sm font-bold text-gray-400 hover:text-up transition-colors">Resources</a>
-                </div>
-                <div class="flex items-center gap-4">
-                    <a href="trade.html" class="btn-premium px-8 py-2.5 rounded-xl text-sm font-black text-white">LAUNCH APP</a>
-                </div>
+                <span class="text-5xl font-display tracking-widest text-white group-hover:text-meme-green transition-colors">CANONIX</span>
             </div>
+
+            <div class="hidden lg:flex items-center gap-12">
+                <a href="#market" class="font-display text-2xl hover:text-meme-pink hover:translate-y-[-2px] transition-all">MARKETS</a>
+                <a href="#features" class="font-display text-2xl hover:text-meme-cyan hover:translate-y-[-2px] transition-all">DEGEN TECH</a>
+                <a href="faq.html" class="font-display text-2xl hover:text-meme-yellow hover:translate-y-[-2px] transition-all">HACKERS</a>
+            </div>
+
+            <a href="trade.html" class="bg-meme-pink text-white font-display text-2xl px-8 py-3 border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all">
+                LAUNCH APP
+            </a>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <header class="relative min-h-[calc(100vh-80px)] flex items-center pt-20 pb-20 overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="grid lg:grid-cols-2 gap-16 items-center">
-                <!-- Left Side: Copy & Metrics -->
-                <div class="reveal">
-                    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-up/10 border border-up/20 text-up text-[10px] font-black uppercase tracking-[0.2em] mb-8">
-                        <span class="relative flex h-2 w-2">
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-up opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2 w-2 bg-up"></span>
-                        </span>
-                        Next-Gen DeFi Protocol
-                    </div>
-                    <h1 class="text-6xl md:text-8xl font-black mb-8 leading-[0.9] tracking-tighter italic uppercase">
-                        The Future of <br>
-                        <span class="gradient-text">Precision</span> Trading
-                    </h1>
-                    <p class="text-gray-400 text-lg md:text-xl max-w-xl mb-12 leading-relaxed font-medium">
-                        Trade PRC20 tokens with lightning speed, AI-enhanced intelligence, and institutional-grade security on the Paxi Network.
-                    </p>
+    <section class="relative min-h-[90vh] flex items-center justify-center overflow-hidden border-b-4 border-black">
+        <!-- Background elements -->
+        <div class="absolute inset-0 z-0 bg-[url('https://www.transparenttextures.com/patterns/graphy-dark.png')] opacity-20"></div>
+        <div class="absolute top-1/4 -left-20 w-96 h-96 bg-meme-pink/20 rounded-full blur-[120px] animate-float"></div>
+        <div class="absolute bottom-1/4 -right-20 w-96 h-96 bg-meme-green/20 rounded-full blur-[120px] animate-float delay-1000"></div>
 
-                    <div class="flex flex-col sm:flex-row gap-5 mb-16">
-                        <a href="trade.html" class="btn-premium px-12 py-5 rounded-2xl text-lg font-black text-white text-center">Start Trading</a>
-                        <a href="#market" class="bg-surface border border-white/5 px-12 py-5 rounded-2xl text-lg font-black hover:bg-white/5 transition-all text-center">Explore Market</a>
-                    </div>
+        <div class="max-w-[1400px] mx-auto px-4 relative z-10 grid lg:grid-cols-2 gap-20 items-center">
+            <div class="reveal">
+                <div class="inline-block bg-meme-cyan text-black font-mono font-bold text-sm px-4 py-1 border-2 border-black mb-8 rotate-[-2deg]">
+                    BONDING CURVE TERMINAL V2.0
+                </div>
+                <h1 class="text-7xl md:text-[120px] font-display leading-[0.8] mb-12 tracking-tighter">
+                    <span class="text-white">UNLEASH THE</span><br>
+                    <span class="text-meme-green italic">MEME ENERGY</span>
+                </h1>
+                <p class="text-2xl font-mono text-gray-400 mb-12 max-w-xl leading-tight">
+                    DECENTRALIZED PRC20 TRADING FOR TRUE DEGENS. NO CAP, NO RAGRETS, JUST PURE PUMP.
+                </p>
 
-                    <!-- Metrics -->
-                    <div class="grid grid-cols-3 gap-8 border-t border-white/5 pt-12">
-                        <div>
-                            <div class="text-3xl font-black text-white tracking-tighter mb-1">$<span class="counter" data-target="128">0</span>M+</div>
-                            <div class="text-[10px] text-gray-500 font-black uppercase tracking-widest">Total Volume</div>
-                        </div>
-                        <div>
-                            <div class="text-3xl font-black text-white tracking-tighter mb-1"><span class="counter" data-target="45">0</span>K+</div>
-                            <div class="text-[10px] text-gray-500 font-black uppercase tracking-widest">Active Traders</div>
-                        </div>
-                        <div>
-                            <div class="text-3xl font-black text-white tracking-tighter mb-1"><span class="counter" data-target="890">0</span>+</div>
-                            <div class="text-[10px] text-gray-500 font-black uppercase tracking-widest">Tokens Listed</div>
-                        </div>
-                    </div>
+                <div class="flex flex-col sm:flex-row gap-8">
+                    <a href="trade.html" class="bg-meme-green text-black font-display text-4xl px-12 py-6 border-4 border-black shadow-brutal-pink hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all text-center">
+                        TRADE NOW
+                    </a>
+                    <a href="#market" class="bg-white text-black font-display text-4xl px-12 py-6 border-4 border-black shadow-brutal-cyan hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all text-center">
+                        EXPLORE
+                    </a>
                 </div>
 
-                <!-- Right Side: Visual Mockup -->
-                <div class="relative mockup-container hidden lg:block">
-                    <!-- Main Dashboard Image/SVG -->
-                    <div class="mockup-main bg-surface rounded-[2.5rem] border border-white/10 p-4 aspect-[4/3] relative overflow-hidden group">
-                        <div class="absolute inset-0 bg-gradient-to-br from-up/5 to-accent/5 opacity-50"></div>
-                        <!-- Mockup UI Content -->
-                        <div class="relative z-10 space-y-4">
-                            <div class="flex items-center justify-between border-b border-white/5 pb-4">
-                                <div class="flex gap-2">
-                                    <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
-                                    <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
-                                    <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
-                                </div>
-                                <div class="w-32 h-2 bg-white/5 rounded-full"></div>
-                            </div>
-                            <div class="grid grid-cols-4 gap-4">
-                                <div class="col-span-3 h-64 bg-bg rounded-2xl border border-white/5 p-4 overflow-hidden">
-                                    <div class="w-full h-full border-b border-white/5 relative">
-                                        <!-- Mock Chart Lines -->
-                                        <svg viewBox="0 0 100 40" class="absolute bottom-0 w-full h-24 text-up opacity-50">
-                                            <path d="M0,40 Q20,10 40,30 T80,10 T100,20" fill="none" stroke="currentColor" stroke-width="1" />
-                                        </svg>
-                                    </div>
-                                </div>
-                                <div class="space-y-4">
-                                    <div class="h-20 bg-bg rounded-2xl border border-white/5"></div>
-                                    <div class="h-20 bg-bg rounded-2xl border border-white/5"></div>
-                                    <div class="h-20 bg-bg rounded-2xl border border-white/5"></div>
-                                </div>
-                            </div>
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-3 gap-8 mt-20 pt-12 border-t-4 border-black">
+                    <div>
+                        <div class="text-5xl font-display text-meme-yellow italic mb-2 tracking-tighter">
+                            $<span class="counter" data-target="128">0</span>M+
                         </div>
+                        <div class="text-xs font-mono font-bold text-gray-500 uppercase">GIGA VOLUME</div>
                     </div>
-
-                    <!-- Floating UI Cards -->
-                    <div class="absolute -top-10 -right-10 w-64 floating-card animate-float delay-150 glass p-5 rounded-3xl reveal">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="w-10 h-10 rounded-xl bg-up/20 flex items-center justify-center text-up">
-                                <i class="fas fa-bolt"></i>
-                            </div>
-                            <div>
-                                <div class="text-[10px] text-gray-500 font-black uppercase">Execution</div>
-                                <div class="text-xs font-bold text-white">0.02s Latency</div>
-                            </div>
+                    <div>
+                        <div class="text-5xl font-display text-meme-pink italic mb-2 tracking-tighter">
+                            <span class="counter" data-target="45">0</span>K+
                         </div>
-                        <div class="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
-                            <div class="w-[90%] h-full bg-up"></div>
-                        </div>
+                        <div class="text-xs font-mono font-bold text-gray-500 uppercase">ACTIVE APES</div>
                     </div>
-
-                    <div class="absolute -bottom-12 -left-12 w-72 floating-card animate-float glass p-6 rounded-3xl reveal">
-                        <div class="flex items-center justify-between mb-6">
-                            <div class="text-[10px] text-gray-500 font-black uppercase">Market Sentiment</div>
-                            <div class="text-[10px] text-up font-black italic">BULLISH</div>
+                    <div>
+                        <div class="text-5xl font-display text-meme-cyan italic mb-2 tracking-tighter">
+                            <span class="counter" data-target="890">0</span>+
                         </div>
-                        <div class="flex items-end gap-1 h-12">
-                            <div class="flex-1 bg-white/5 h-[40%] rounded-t"></div>
-                            <div class="flex-1 bg-white/5 h-[60%] rounded-t"></div>
-                            <div class="flex-1 bg-up h-[90%] rounded-t"></div>
-                            <div class="flex-1 bg-white/5 h-[50%] rounded-t"></div>
-                            <div class="flex-1 bg-white/5 h-[70%] rounded-t"></div>
-                        </div>
+                        <div class="text-xs font-mono font-bold text-gray-500 uppercase">SHITCOINS</div>
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <!-- Background Elements -->
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-up/5 rounded-full blur-[150px] -z-10"></div>
-    </header>
 
-    <!-- What is Canonix Section -->
-    <section class="py-32 relative overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid lg:grid-cols-2 gap-24 items-center">
-                <div class="reveal">
-                    <div class="relative">
-                        <div class="w-full aspect-square bg-surface rounded-[3rem] border border-white/5 overflow-hidden relative">
-                            <div class="absolute inset-0 bg-gradient-to-tr from-accent/20 to-transparent"></div>
-                            <!-- Illustration Placeholder -->
-                            <div class="absolute inset-0 flex items-center justify-center">
-                                <i class="fas fa-network-wired text-white/10 text-[200px]"></i>
-                            </div>
-                            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-up/10 rounded-full blur-3xl animate-pulse"></div>
+            <!-- Right Visual -->
+            <div class="relative hidden lg:block reveal">
+            <div class="relative z-10 bg-meme-surface border-4 border-black p-4 shadow-brutal rotate-[2deg] group">
+                    <div class="bg-black p-2 border-2 border-meme-pink mb-4">
+                        <div class="flex gap-2">
+                            <div class="w-3 h-3 rounded-full bg-meme-pink"></div>
+                            <div class="w-3 h-3 rounded-full bg-meme-yellow"></div>
+                            <div class="w-3 h-3 rounded-full bg-meme-green"></div>
                         </div>
-                        <!-- Decorative tag -->
-                        <div class="absolute -bottom-6 -right-6 glass px-8 py-4 rounded-2xl border border-white/10 animate-float">
-                            <div class="text-[10px] text-gray-500 font-black uppercase mb-1">Ecosystem</div>
-                            <div class="text-sm font-bold text-white tracking-tight">Multi-Chain Ready</div>
-                        </div>
+                    </div>
+                <div class="aspect-video bg-meme-bg border-2 border-black relative overflow-hidden">
+                        <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_#1A1A1A_1px,_transparent_1px)] bg-[size:20px_20px] opacity-30"></div>
+                        <!-- Mock chart -->
+                        <svg viewBox="0 0 100 40" class="absolute bottom-0 w-full h-full text-meme-green opacity-50 stroke-[2]">
+                            <path d="M0,40 L10,35 L20,38 L30,20 L40,25 L50,5 L60,15 L70,2 L80,10 L90,1 L100,5" fill="none" stroke="currentColor"></path>
+                        </svg>
+                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-meme-green font-display text-6xl animate-glitch">PUMPING...</div>
                     </div>
                 </div>
-                <div class="reveal">
-                    <h2 class="text-5xl font-black mb-8 italic uppercase tracking-tighter">What is <span class="text-up">Canonix</span>?</h2>
-                    <p class="text-gray-400 text-lg leading-relaxed mb-8">
-                        The current DeFi landscape is fragmented and slow. Canonix is a decentralized liquidity protocol built to solve the scalability trilemma on the Paxi Network.
-                    </p>
-                    <div class="space-y-6">
-                        <div class="flex gap-4">
-                            <div class="w-12 h-12 rounded-xl bg-surface border border-white/5 flex items-center justify-center text-up shrink-0"><i class="fas fa-check"></i></div>
-                            <div>
-                                <h4 class="font-bold text-white mb-1 uppercase tracking-tight italic">AI-Driven Intelligence</h4>
-                                <p class="text-sm text-gray-500">Real-time market sentiment analysis powered by Gemini Pro 1.5 scanning every block.</p>
-                            </div>
-                        </div>
-                        <div class="flex gap-4">
-                            <div class="w-12 h-12 rounded-xl bg-surface border border-white/5 flex items-center justify-center text-up shrink-0"><i class="fas fa-check"></i></div>
-                            <div>
-                                <h4 class="font-bold text-white mb-1 uppercase tracking-tight italic">Institutional Liquidity</h4>
-                                <p class="text-sm text-gray-500">Deep order books and efficient AMM curves designed for minimal slippage on large trades.</p>
-                            </div>
-                        </div>
-                        <div class="flex gap-4">
-                            <div class="w-12 h-12 rounded-xl bg-surface border border-white/5 flex items-center justify-center text-up shrink-0"><i class="fas fa-check"></i></div>
-                            <div>
-                                <h4 class="font-bold text-white mb-1 uppercase tracking-tight italic">Low-Latency Settlement</h4>
-                                <p class="text-sm text-gray-500">Built on Paxi's high-throughput architecture for sub-second trade confirmation.</p>
-                            </div>
-                        </div>
-                    </div>
+
+                <!-- Floating decorations -->
+                <div class="absolute -top-10 -right-10 w-48 h-48 bg-meme-pink border-4 border-black shadow-brutal flex items-center justify-center rotate-[-10deg] animate-float">
+                    <i class="fas fa-rocket text-6xl text-white"></i>
+                </div>
+                <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-meme-yellow border-4 border-black shadow-brutal flex flex-col items-center justify-center rotate-[15deg] animate-float delay-500">
+                    <span class="text-black font-display text-4xl leading-none">100X</span>
+                    <span class="text-black font-mono text-[10px] font-bold">GUARANTEED*</span>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- How It Works Section -->
-    <section class="py-32 bg-surface/30">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center max-w-2xl mx-auto mb-24 reveal">
-                <h2 class="text-5xl font-black mb-6 italic uppercase tracking-tighter">Start Trading in <span class="text-up">Seconds</span></h2>
-                <p class="text-gray-500">A seamless onboarding experience designed for both beginners and professional traders.</p>
-            </div>
-            
-            <div class="grid md:grid-cols-4 gap-8">
-                <div class="reveal group">
-                    <div class="relative mb-8">
-                        <div class="text-7xl font-black text-white/5 absolute -top-8 -left-4 group-hover:text-up/10 transition-colors">01</div>
-                        <div class="w-16 h-16 rounded-2xl bg-surface border border-white/5 flex items-center justify-center text-up text-2xl relative z-10 group-hover:border-up/30 transition-all group-hover:-translate-y-2">
-                            <i class="fas fa-wallet"></i>
-                        </div>
-                    </div>
-                    <h4 class="text-xl font-bold text-white mb-4 italic uppercase tracking-tight">Connect Wallet</h4>
-                    <p class="text-sm text-gray-500 leading-relaxed">Securely link your Paxi-compatible wallet. Canonix supports all major wallet providers with AES-GCM encryption.</p>
-                </div>
-                <div class="reveal group delay-100">
-                    <div class="relative mb-8">
-                        <div class="text-7xl font-black text-white/5 absolute -top-8 -left-4 group-hover:text-up/10 transition-colors">02</div>
-                        <div class="w-16 h-16 rounded-2xl bg-surface border border-white/5 flex items-center justify-center text-up text-2xl relative z-10 group-hover:border-up/30 transition-all group-hover:-translate-y-2">
-                            <i class="fas fa-search"></i>
-                        </div>
-                    </div>
-                    <h4 class="text-xl font-bold text-white mb-4 italic uppercase tracking-tight">Pick Asset</h4>
-                    <p class="text-sm text-gray-500 leading-relaxed">Browse through hundreds of PRC20 tokens. Use our AI filters to find high-potential opportunities in real-time.</p>
-                </div>
-                <div class="reveal group delay-200">
-                    <div class="relative mb-8">
-                        <div class="text-7xl font-black text-white/5 absolute -top-8 -left-4 group-hover:text-up/10 transition-colors">03</div>
-                        <div class="w-16 h-16 rounded-2xl bg-surface border border-white/5 flex items-center justify-center text-up text-2xl relative z-10 group-hover:border-up/30 transition-all group-hover:-translate-y-2">
-                            <i class="fas fa-exchange-alt"></i>
-                        </div>
-                    </div>
-                    <h4 class="text-xl font-bold text-white mb-4 italic uppercase tracking-tight">Instant Swap</h4>
-                    <p class="text-sm text-gray-500 leading-relaxed">Execute trades with a single click. Our smart routing engine finds the best price across all liquidity pools.</p>
-                </div>
-                <div class="reveal group delay-300">
-                    <div class="relative mb-8">
-                        <div class="text-7xl font-black text-white/5 absolute -top-8 -left-4 group-hover:text-up/10 transition-colors">04</div>
-                        <div class="w-16 h-16 rounded-2xl bg-surface border border-white/5 flex items-center justify-center text-up text-2xl relative z-10 group-hover:border-up/30 transition-all group-hover:-translate-y-2">
-                            <i class="fas fa-chart-line"></i>
-                        </div>
-                    </div>
-                    <h4 class="text-xl font-bold text-white mb-4 italic uppercase tracking-tight">Earn Yield</h4>
-                    <p class="text-sm text-gray-500 leading-relaxed">Provide liquidity to your favorite pairs and earn a share of trading fees with automated compound interest.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Core Features Section -->
-    <section id="features" class="py-32">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center max-w-2xl mx-auto mb-24 reveal">
-                <h2 class="text-5xl font-black mb-6 italic uppercase tracking-tighter">Engineered for <span class="text-up">Performance</span></h2>
-                <p class="text-gray-500">Canonix combines advanced cryptography with high-speed execution to deliver a superior trading experience.</p>
-            </div>
-
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Feature 1 -->
-                <div class="reveal p-8 bg-surface border border-white/5 rounded-3xl hover:border-up/30 transition-all group">
-                    <div class="w-14 h-14 bg-bg rounded-2xl flex items-center justify-center text-up text-2xl mb-8 group-hover:scale-110 transition-transform"><i class="fas fa-microchip"></i></div>
-                    <h4 class="text-xl font-bold text-white mb-4 italic uppercase tracking-tight">AI Engine v2</h4>
-                    <p class="text-sm text-gray-500 leading-relaxed mb-6">Built-in Gemini Pro 1.5 analysis provides technical indicators and risk assessments directly on the trading interface.</p>
-                    <div class="pt-6 border-t border-white/5 text-[10px] text-gray-600 font-black uppercase tracking-widest">Arch: Neural-L2 Pipeline</div>
-                </div>
-                <!-- Feature 2 -->
-                <div class="reveal p-8 bg-surface border border-white/5 rounded-3xl hover:border-up/30 transition-all group">
-                    <div class="w-14 h-14 bg-bg rounded-2xl flex items-center justify-center text-up text-2xl mb-8 group-hover:scale-110 transition-transform"><i class="fas fa-shield-halved"></i></div>
-                    <h4 class="text-xl font-bold text-white mb-4 italic uppercase tracking-tight">Multi-Sig Guard</h4>
-                    <p class="text-sm text-gray-500 leading-relaxed mb-6">Our non-custodial architecture ensures you maintain 100% control over your private keys at all times.</p>
-                    <div class="pt-6 border-t border-white/5 text-[10px] text-gray-600 font-black uppercase tracking-widest">Arch: AES-256-GCM Vault</div>
-                </div>
-                <!-- Feature 3 -->
-                <div class="reveal p-8 bg-surface border border-white/5 rounded-3xl hover:border-up/30 transition-all group">
-                    <div class="w-14 h-14 bg-bg rounded-2xl flex items-center justify-center text-up text-2xl mb-8 group-hover:scale-110 transition-transform"><i class="fas fa-gas-pump"></i></div>
-                    <h4 class="text-xl font-bold text-white mb-4 italic uppercase tracking-tight">Zero Gas Meta</h4>
-                    <p class="text-sm text-gray-500 leading-relaxed mb-6">Enjoy subsidized transactions on select pairs. Trade without worrying about fluctuating network fees.</p>
-                    <div class="pt-6 border-t border-white/5 text-[10px] text-gray-600 font-black uppercase tracking-widest">Arch: Relayer abstraction</div>
-                </div>
-                <!-- Feature 4 -->
-                <div class="reveal p-8 bg-surface border border-white/5 rounded-3xl hover:border-up/30 transition-all group">
-                    <div class="w-14 h-14 bg-bg rounded-2xl flex items-center justify-center text-up text-2xl mb-8 group-hover:scale-110 transition-transform"><i class="fas fa-cubes"></i></div>
-                    <h4 class="text-xl font-bold text-white mb-4 italic uppercase tracking-tight">Modular Pools</h4>
-                    <p class="text-sm text-gray-500 leading-relaxed mb-6">Dynamic liquidity pools that automatically adjust curves based on volatility and volume metrics.</p>
-                    <div class="pt-6 border-t border-white/5 text-[10px] text-gray-600 font-black uppercase tracking-widest">Arch: V3 Concentrated Liquidity</div>
-                </div>
-                <!-- Feature 5 -->
-                <div class="reveal p-8 bg-surface border border-white/5 rounded-3xl hover:border-up/30 transition-all group">
-                    <div class="w-14 h-14 bg-bg rounded-2xl flex items-center justify-center text-up text-2xl mb-8 group-hover:scale-110 transition-transform"><i class="fas fa-code-branch"></i></div>
-                    <h4 class="text-xl font-bold text-white mb-4 italic uppercase tracking-tight">Smart Routing</h4>
-                    <p class="text-sm text-gray-500 leading-relaxed mb-6">Aggregated liquidity from across the Paxi ecosystem ensures you always get the best execution price.</p>
-                    <div class="pt-6 border-t border-white/5 text-[10px] text-gray-600 font-black uppercase tracking-widest">Arch: Dijkstra Multi-hop</div>
-                </div>
-                <!-- Feature 6 -->
-                <div class="reveal p-8 bg-surface border border-white/5 rounded-3xl hover:border-up/30 transition-all group">
-                    <div class="w-14 h-14 bg-bg rounded-2xl flex items-center justify-center text-up text-2xl mb-8 group-hover:scale-110 transition-transform"><i class="fas fa-layer-group"></i></div>
-                    <h4 class="text-xl font-bold text-white mb-4 italic uppercase tracking-tight">Interoperable</h4>
-                    <p class="text-sm text-gray-500 leading-relaxed mb-6">Cross-chain bridging support allows you to move assets between Paxi and other networks effortlessly.</p>
-                    <div class="pt-6 border-t border-white/5 text-[10px] text-gray-600 font-black uppercase tracking-widest">Arch: IBC / XCMP Ready</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Token Market Section -->
-    <section id="market" class="py-32 relative border-y border-white/5">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col lg:flex-row justify-between items-end gap-8 mb-16 reveal">
+    <!-- Market Section -->
+    <section id="market" class="py-32 bg-meme-bg border-b-4 border-black">
+        <div class="max-w-[1400px] mx-auto px-4">
+            <div class="flex flex-col lg:flex-row justify-between items-end gap-12 mb-20 reveal">
                 <div class="max-w-2xl">
-                    <h2 class="text-5xl font-black mb-6 italic uppercase tracking-tighter">Live <span class="text-up">Markets</span></h2>
-                    <p class="text-gray-500">Discover and trade the highest performing PRC20 tokens on Paxi Network.</p>
+                    <div class="text-meme-pink font-display text-3xl mb-4 italic">REAL-TIME DATA FEED</div>
+                    <h2 class="text-7xl md:text-9xl font-display italic leading-none tracking-tighter">HOT <span class="text-meme-green">MARKETS</span></h2>
                 </div>
+
                 <!-- Filters -->
-                <div class="flex flex-wrap gap-2">
-                    <button onclick="window.setMarketFilter('hot', this)" class="market-filter-btn px-6 py-2 rounded-xl border border-up bg-up text-bg text-[10px] font-black uppercase tracking-widest transition-all">Hot</button>
-                    <button onclick="window.setMarketFilter('new', this)" class="market-filter-btn px-6 py-2 rounded-xl border border-white/10 text-gray-500 text-[10px] font-black uppercase tracking-widest hover:bg-white/5 transition-all">New</button>
-                    <button onclick="window.setMarketFilter('pumping', this)" class="market-filter-btn px-6 py-2 rounded-xl border border-white/10 text-gray-500 text-[10px] font-black uppercase tracking-widest hover:bg-white/5 transition-all">Pumping</button>
-                    <button onclick="window.setMarketFilter('gainers', this)" class="market-filter-btn px-6 py-2 rounded-xl border border-white/10 text-gray-500 text-[10px] font-black uppercase tracking-widest hover:bg-white/5 transition-all">Gainers</button>
+                <div class="flex flex-wrap gap-4">
+                    <button onclick="window.setMarketFilter('hot', this)" class="market-filter-btn px-8 py-3 bg-meme-green text-black font-display text-2xl border-4 border-black shadow-brutal hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all">HOT</button>
+                    <button onclick="window.setMarketFilter('new', this)" class="market-filter-btn px-8 py-3 bg-meme-bg text-white font-display text-2xl border-4 border-black shadow-brutal hover:bg-white hover:text-black transition-all">NEW</button>
+                    <button onclick="window.setMarketFilter('pumping', this)" class="market-filter-btn px-8 py-3 bg-meme-bg text-white font-display text-2xl border-4 border-black shadow-brutal hover:bg-white hover:text-black transition-all">PUMPING</button>
+                    <button onclick="window.setMarketFilter('gainers', this)" class="market-filter-btn px-8 py-3 bg-meme-bg text-white font-display text-2xl border-4 border-black shadow-brutal hover:bg-white hover:text-black transition-all">GAINERS</button>
                 </div>
             </div>
 
             <!-- Search -->
-            <div class="mb-12 reveal">
-                <div class="relative max-w-xl">
-                    <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-gray-600"></i>
-                    <input type="text" id="marketSearch" placeholder="Search by name or address..."
-                           class="w-full pl-14 pr-6 py-5 bg-surface border border-white/5 rounded-2xl text-sm focus:ring-2 focus:ring-up transition-all outline-none text-white font-medium"
+            <div class="mb-20 reveal">
+                <div class="relative max-w-2xl bg-white border-4 border-black shadow-brutal-cyan overflow-hidden">
+                    <i class="fas fa-search absolute left-6 top-1/2 -translate-y-1/2 text-black text-2xl"></i>
+                    <input type="text" id="marketSearch" placeholder="SEARCH SHITCOINS..."
+                           class="w-full pl-20 pr-8 py-6 bg-transparent text-black font-display text-3xl outline-none placeholder:text-gray-400"
                            oninput="window.filterMarket()">
                 </div>
             </div>
 
-            <!-- Grid -->
-            <div id="marketGrid" class="grid grid-cols-2 lg:grid-cols-4 gap-6 reveal">
-                <!-- JS Populated -->
-                <div class="animate-pulse bg-surface rounded-3xl border border-white/5 h-80"></div>
-                <div class="animate-pulse bg-surface rounded-3xl border border-white/5 h-80"></div>
-                <div class="animate-pulse bg-surface rounded-3xl border border-white/5 h-80"></div>
-                <div class="animate-pulse bg-surface rounded-3xl border border-white/5 h-80"></div>
+            <!-- Grid Container -->
+            <div id="marketGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10 reveal">
+                <!-- SKELETON LOADERS -->
+                <div class="bg-meme-surface border-4 border-black h-80 shadow-brutal animate-pulse"></div>
+                <div class="bg-meme-surface border-4 border-black h-80 shadow-brutal animate-pulse"></div>
+                <div class="bg-meme-surface border-4 border-black h-80 shadow-brutal animate-pulse"></div>
+                <div class="bg-meme-surface border-4 border-black h-80 shadow-brutal animate-pulse"></div>
             </div>
 
-            <div class="mt-16 text-center reveal">
-                <button id="loadMoreMarket" onclick="window.loadMoreMarket()" class="px-10 py-4 bg-surface border border-white/10 rounded-2xl text-xs font-black uppercase tracking-[0.2em] hover:bg-white/5 transition-all text-white">
-                    Load More Assets
+            <div class="mt-20 text-center reveal">
+                <button id="loadMoreMarket" onclick="window.loadMoreMarket()" class="px-16 py-6 bg-meme-cyan text-black font-display text-4xl border-4 border-black shadow-brutal hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none transition-all">
+                    LOAD MORE TRASH
                 </button>
             </div>
         </div>
     </section>
 
-    <!-- AI Intelligence Section (Global) -->
-    <section class="py-32 relative overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="bg-surface border border-white/5 rounded-[3rem] p-12 lg:p-20 relative overflow-hidden reveal">
-                <div class="absolute top-0 right-0 p-20 opacity-[0.02] -z-0"><i class="fas fa-brain text-[300px]"></i></div>
+    <!-- NEW SECTION: Trading War (Event) -->
+    <section class="py-32 bg-meme-pink border-b-4 border-black overflow-hidden relative">
+        <div class="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-30"></div>
+        <div class="max-w-[1400px] mx-auto px-4 relative z-10 flex flex-col items-center text-center">
+            <div class="bg-black text-meme-pink font-display text-4xl px-8 py-2 mb-8 rotate-[-1deg] inline-block">LIVE COMPETITION</div>
+            <h2 class="text-7xl md:text-[140px] font-display text-white leading-none tracking-tighter mb-12 italic uppercase">DEGEN TRADING WAR</h2>
+
+            <div class="grid md:grid-cols-3 gap-12 w-full mb-16">
+                <div class="bg-black border-4 border-white p-8 rotate-[-2deg] shadow-brutal">
+                    <div class="text-meme-yellow font-display text-6xl mb-2">50,000 PAXI</div>
+                    <div class="text-white font-mono font-bold text-sm uppercase tracking-widest">PRIZE POOL</div>
+                </div>
+                <div class="bg-white border-4 border-black p-8 rotate-[2deg] shadow-brutal">
+                    <div class="text-black font-display text-6xl mb-2">2,481</div>
+                    <div class="text-black/60 font-mono font-bold text-sm uppercase tracking-widest">WARRIORS JOINED</div>
+                </div>
+                <div class="bg-meme-green border-4 border-black p-8 rotate-[-1deg] shadow-brutal">
+                    <div class="text-black font-display text-6xl mb-2">2D : 14H : 05M</div>
+                    <div class="text-black/60 font-mono font-bold text-sm uppercase tracking-widest">TIME REMAINING</div>
+                </div>
+            </div>
+
+            <button class="bg-white text-black font-display text-5xl px-16 py-8 border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[6px] hover:translate-y-[6px] transition-all">
+                JOIN THE WAR
+            </button>
+        </div>
+    </section>
+
+    <!-- Leaderboard Section (Leaderboard) -->
+    <section class="py-32 bg-bg border-b-4 border-black">
+        <div class="max-w-[1400px] mx-auto px-4">
+            <div class="text-center mb-20 reveal">
+                <h2 class="text-7xl md:text-9xl font-display italic tracking-tighter"><span class="text-meme-cyan">HALL</span> OF FAME</h2>
+                <p class="text-xl font-mono text-gray-500 uppercase font-bold mt-4">TOP APES OF THE WEEK</p>
+            </div>
+
+            <div class="space-y-6 max-w-5xl mx-auto reveal">
+                <!-- Top 1 -->
+                <div class="bg-meme-yellow border-4 border-black p-6 flex items-center gap-8 shadow-brutal hover:scale-[1.02] transition-transform">
+                    <div class="text-6xl font-display text-black italic">#1</div>
+                    <div class="w-16 h-16 bg-black border-4 border-white rounded-full flex items-center justify-center text-white text-2xl font-display">D</div>
+                    <div class="flex-1">
+                        <div class="text-3xl font-display text-black italic">DEGEN_KING_69</div>
+                        <div class="text-black/60 font-mono text-xs font-bold uppercase">WIN RATE: 94%</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-4xl font-display text-black">+42,000 PAXI</div>
+                        <div class="text-black/60 font-mono text-xs font-bold uppercase">PNL WEEKLY</div>
+                    </div>
+                </div>
+                <!-- Top 2 -->
+                <div class="bg-white border-4 border-black p-6 flex items-center gap-8 shadow-brutal hover:scale-[1.02] transition-transform">
+                    <div class="text-5xl font-display text-black italic">#2</div>
+                    <div class="w-14 h-14 bg-meme-pink border-4 border-black rounded-full flex items-center justify-center text-white text-xl font-display">M</div>
+                    <div class="flex-1">
+                        <div class="text-2xl font-display text-black italic">MOON_BOY_99</div>
+                        <div class="text-black/60 font-mono text-xs font-bold uppercase">WIN RATE: 88%</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-3xl font-display text-black">+28,500 PAXI</div>
+                        <div class="text-black/60 font-mono text-xs font-bold uppercase">PNL WEEKLY</div>
+                    </div>
+                </div>
+                <!-- Top 3 -->
+                <div class="bg-white border-4 border-black p-6 flex items-center gap-8 shadow-brutal hover:scale-[1.02] transition-transform">
+                    <div class="text-5xl font-display text-black italic">#3</div>
+                    <div class="w-14 h-14 bg-meme-cyan border-4 border-black rounded-full flex items-center justify-center text-black text-xl font-display">P</div>
+                    <div class="flex-1">
+                        <div class="text-2xl font-display text-black italic">PUMP_GOD</div>
+                        <div class="text-black/60 font-mono text-xs font-bold uppercase">WIN RATE: 82%</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-3xl font-display text-black">+15,200 PAXI</div>
+                        <div class="text-black/60 font-mono text-xs font-bold uppercase">PNL WEEKLY</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Intelligence Section -->
+    <section class="py-32 relative overflow-hidden bg-meme-surface border-b-4 border-black">
+        <div class="max-w-[1400px] mx-auto px-4">
+            <div class="bg-black border-4 border-meme-green p-12 lg:p-24 relative overflow-hidden reveal">
+                <div class="absolute top-0 right-0 p-20 opacity-[0.05] -z-0"><i class="fas fa-brain text-[400px] text-meme-green"></i></div>
                 <div id="index-ai-content" class="relative z-10">
                     <!-- JS Populated -->
-                    <div class="flex items-center gap-6 mb-12">
-                        <div class="w-16 h-16 rounded-2xl bg-up/10 flex items-center justify-center text-up text-3xl"><i class="fas fa-circle-notch fa-spin"></i></div>
+                    <div class="flex items-center gap-12 mb-16">
+                        <div class="w-24 h-24 bg-meme-green border-4 border-black shadow-brutal flex items-center justify-center text-black text-5xl rotate-[-5deg]"><i class="fas fa-circle-notch fa-spin"></i></div>
                         <div>
-                            <h3 class="font-black italic uppercase text-2xl">Scanning Network Intelligence...</h3>
-                            <p class="text-[10px] text-gray-500 font-black uppercase tracking-[0.3em]">GEMINI PRO 1.5 IS ANALYZING LIVE BLOCKS</p>
+                            <h3 class="font-display italic uppercase text-6xl tracking-tighter text-meme-green">BRAIN SCANNING...</h3>
+                            <p class="font-mono text-sm text-gray-500 font-bold uppercase tracking-[0.4em]">GEMINI PRO 1.5 IS CONSUMING BLOCKS</p>
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-                        <div class="h-24 bg-bg/50 rounded-2xl border border-white/5 animate-pulse"></div>
-                        <div class="h-24 bg-bg/50 rounded-2xl border border-white/5 animate-pulse"></div>
-                        <div class="h-24 bg-bg/50 rounded-2xl border border-white/5 animate-pulse"></div>
-                        <div class="h-24 bg-bg/50 rounded-2xl border border-white/5 animate-pulse"></div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-10 mb-16">
+                        <div class="h-32 bg-meme-surface border-4 border-black animate-pulse shadow-brutal"></div>
+                        <div class="h-32 bg-meme-surface border-4 border-black animate-pulse shadow-brutal"></div>
+                        <div class="h-32 bg-meme-surface border-4 border-black animate-pulse shadow-brutal"></div>
+                        <div class="h-32 bg-meme-surface border-4 border-black animate-pulse shadow-brutal"></div>
                     </div>
-                    <div class="bg-bg/50 rounded-3xl border border-white/5 p-8 animate-pulse h-40"></div>
+                    <div class="bg-meme-surface border-4 border-black p-12 animate-pulse h-60 shadow-brutal"></div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Security & Architecture Section -->
-    <section id="security" class="py-32 bg-surface/30 relative">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid lg:grid-cols-2 gap-24 items-center">
-                <div class="reveal">
-                    <h2 class="text-5xl font-black mb-8 italic uppercase tracking-tighter">Security <span class="text-up">Architecture</span></h2>
-                    <p class="text-gray-400 text-lg leading-relaxed mb-12">
-                        Canonix is built with a security-first mindset. Every line of code is optimized for safety and transparency.
-                    </p>
-                    <div class="grid sm:grid-cols-2 gap-6">
-                        <div class="flex gap-3">
-                            <i class="fas fa-shield-check text-up mt-1"></i>
-                            <div>
-                                <div class="text-white font-bold text-sm uppercase italic">Smart Contract Audit</div>
-                                <div class="text-xs text-gray-500">Verified by leading firms</div>
-                            </div>
-                        </div>
-                        <div class="flex gap-3">
-                            <i class="fas fa-shield-check text-up mt-1"></i>
-                            <div>
-                                <div class="text-white font-bold text-sm uppercase italic">Non-Custodial</div>
-                                <div class="text-xs text-gray-500">Full asset ownership</div>
-                            </div>
-                        </div>
-                        <div class="flex gap-3">
-                            <i class="fas fa-shield-check text-up mt-1"></i>
-                            <div>
-                                <div class="text-white font-bold text-sm uppercase italic">Liquidity Lock</div>
-                                <div class="text-xs text-gray-500">Anti-rug mechanisms</div>
-                            </div>
-                        </div>
-                        <div class="flex gap-3">
-                            <i class="fas fa-shield-check text-up mt-1"></i>
-                            <div>
-                                <div class="text-white font-bold text-sm uppercase italic">Real-time monitoring</div>
-                                <div class="text-xs text-gray-500">24/7 threat detection</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-12 p-6 bg-bg border border-white/5 rounded-2xl reveal">
-                        <div class="text-xs font-black text-gray-500 uppercase tracking-widest mb-4">Security Model</div>
-                        <div class="flex items-center gap-4">
-                            <div class="px-3 py-1 bg-up/10 text-up text-[10px] font-black rounded-lg border border-up/20">AES-GCM</div>
-                            <div class="px-3 py-1 bg-up/10 text-up text-[10px] font-black rounded-lg border border-up/20">ED25519</div>
-                            <div class="px-3 py-1 bg-up/10 text-up text-[10px] font-black rounded-lg border border-up/20">ZERO-TRUST</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="reveal">
-                    <div class="bg-surface rounded-[2.5rem] border border-white/10 p-10 relative overflow-hidden group">
-                        <div class="absolute inset-0 bg-gradient-to-br from-up/5 to-transparent"></div>
-                        <!-- Architecture Diagram Placeholder -->
-                        <div class="relative z-10 space-y-8">
-                            <div class="flex justify-between items-center">
-                                <div class="w-32 h-8 bg-white/5 rounded-xl border border-white/10 flex items-center justify-center text-[10px] font-bold text-gray-500">FRONTEND</div>
-                                <i class="fas fa-arrow-right text-gray-700"></i>
-                                <div class="w-32 h-8 bg-up/10 rounded-xl border border-up/20 flex items-center justify-center text-[10px] font-bold text-up">CANONIX CORE</div>
-                            </div>
-                            <div class="flex justify-center">
-                                <div class="w-48 h-24 bg-surface rounded-2xl border-2 border-dashed border-white/10 flex items-center justify-center flex-col gap-2 group-hover:border-up/30 transition-all">
-                                    <i class="fas fa-brain text-accent text-2xl animate-pulse"></i>
-                                    <div class="text-[8px] font-black text-gray-500 tracking-[0.2em]">AI ORACLE</div>
-                                </div>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <div class="w-32 h-8 bg-white/5 rounded-xl border border-white/10 flex items-center justify-center text-[10px] font-bold text-gray-500">LIQUIDITY</div>
-                                <i class="fas fa-arrow-left text-gray-700"></i>
-                                <div class="w-32 h-8 bg-white/5 rounded-xl border border-white/10 flex items-center justify-center text-[10px] font-bold text-gray-500">SETTLEMENT</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Trust & Credibility Section -->
-    <section class="py-32">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="reveal flex flex-wrap justify-center gap-12 lg:gap-24 opacity-30 grayscale hover:grayscale-0 transition-all mb-32">
-                <div class="flex items-center gap-3 text-2xl font-black text-white italic tracking-tighter"><i class="fab fa-ethereum"></i> ETHEREUM</div>
-                <div class="flex items-center gap-3 text-2xl font-black text-white italic tracking-tighter"><i class="fas fa-link"></i> CHAINLINK</div>
-                <div class="flex items-center gap-3 text-2xl font-black text-white italic tracking-tighter"><i class="fas fa-circle-nodes"></i> POLKADOT</div>
-                <div class="flex items-center gap-3 text-2xl font-black text-white italic tracking-tighter"><i class="fas fa-bolt"></i> PAXINET</div>
+    <!-- DEGEN TECH (Features) -->
+    <section id="features" class="py-32 bg-meme-bg">
+        <div class="max-w-[1400px] mx-auto px-4">
+            <div class="text-center mb-24 reveal">
+                <h2 class="text-7xl md:text-9xl font-display italic tracking-tighter uppercase leading-none">DEGEN <span class="text-meme-pink">TECH</span></h2>
+                <p class="text-xl font-mono text-gray-500 font-bold mt-4">BUILT FOR ZERO LATENCY PUMPING</p>
             </div>
 
-            <div class="grid lg:grid-cols-3 gap-8">
-                <div class="reveal p-10 bg-surface rounded-3xl border border-white/5 text-center">
-                    <div class="text-4xl font-black text-white mb-2 italic tracking-tighter uppercase">Audit Passed</div>
-                    <p class="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-6">Security Certification</p>
-                    <div class="w-20 h-20 bg-up/10 rounded-full flex items-center justify-center text-up text-3xl mx-auto border border-up/20">
-                        <i class="fas fa-medal"></i>
-                    </div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-12">
+                <!-- Feature 1 -->
+                <div class="reveal p-12 bg-meme-surface border-4 border-black shadow-brutal-green hover:translate-y-[-10px] transition-all group">
+                    <div class="w-20 h-20 bg-meme-green border-4 border-black flex items-center justify-center text-black text-4xl mb-12 rotate-[-5deg] group-hover:rotate-0 transition-transform"><i class="fas fa-microchip"></i></div>
+                    <h4 class="text-4xl font-display text-white mb-6 italic tracking-tight">AI ORACLE V2</h4>
+                    <p class="font-mono text-gray-400 leading-relaxed mb-8">REAL-TIME SENTIMENT ANALYSIS POWERED BY GEMINI PRO. DON'T BUY RUGS, BUY OPPORTUNITY.</p>
+                    <div class="pt-8 border-t-4 border-black font-mono text-xs text-meme-green font-bold uppercase tracking-widest">STATUS: GIGA-BRAIN</div>
                 </div>
-                <div class="reveal p-10 bg-surface rounded-3xl border border-white/5 text-center delay-100">
-                    <div class="text-4xl font-black text-white mb-2 italic tracking-tighter uppercase">Verified</div>
-                    <p class="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-6">Smart Contracts</p>
-                    <div class="w-20 h-20 bg-accent/10 rounded-full flex items-center justify-center text-accent text-3xl mx-auto border border-accent/20">
-                        <i class="fas fa-file-contract"></i>
-                    </div>
+                <!-- Feature 2 -->
+                <div class="reveal p-12 bg-meme-surface border-4 border-black shadow-brutal-pink hover:translate-y-[-10px] transition-all group">
+                    <div class="w-20 h-20 bg-meme-pink border-4 border-black flex items-center justify-center text-white text-4xl mb-12 rotate-[5deg] group-hover:rotate-0 transition-transform"><i class="fas fa-shield-halved"></i></div>
+                    <h4 class="text-4xl font-display text-white mb-6 italic tracking-tight">ANTI-RUG ARMOR</h4>
+                    <p class="font-mono text-gray-400 leading-relaxed mb-8">NON-CUSTODIAL VAULTING. YOUR KEYS, YOUR SHITCOINS. 100% DECENTRALIZED VIBES.</p>
+                    <div class="pt-8 border-t-4 border-black font-mono text-xs text-meme-pink font-bold uppercase tracking-widest">STATUS: UNRUGGABLE</div>
                 </div>
-                <div class="reveal p-10 bg-surface rounded-3xl border border-white/5 text-center delay-200">
-                    <div class="text-4xl font-black text-white mb-2 italic tracking-tighter uppercase">100% Open</div>
-                    <p class="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-6">Source Protocol</p>
-                    <div class="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center text-white text-3xl mx-auto border border-white/10">
-                        <i class="fab fa-github"></i>
+                <!-- Feature 3 -->
+                <div class="reveal p-12 bg-meme-surface border-4 border-black shadow-brutal-cyan hover:translate-y-[-10px] transition-all group">
+                    <div class="w-20 h-20 bg-meme-cyan border-4 border-black flex items-center justify-center text-black text-4xl mb-12 rotate-[-3deg] group-hover:rotate-0 transition-transform"><i class="fas fa-gas-pump"></i></div>
+                    <h4 class="text-4xl font-display text-white mb-6 italic tracking-tight">ZERO GAS META</h4>
+                    <p class="font-mono text-gray-400 leading-relaxed mb-8">SUBSIDIZED FEES FOR TOP TRADERS. WE PAY FOR YOUR ADDICTION. TRADE TILL YOU DROP.</p>
+                    <div class="pt-8 border-t-4 border-black font-mono text-xs text-meme-cyan font-bold uppercase tracking-widest">STATUS: GAS-FREE</div>
+                </div>
+                <!-- Feature 4 -->
+                <div class="reveal p-12 bg-meme-surface border-4 border-black shadow-brutal-pink hover:translate-y-[-10px] transition-all group lg:col-span-3">
+                    <div class="flex flex-col md:flex-row items-center gap-12">
+                        <div class="w-24 h-24 bg-meme-pink border-4 border-black flex items-center justify-center text-white text-5xl rotate-[2deg] group-hover:rotate-0 transition-transform shrink-0"><i class="fas fa-chart-line"></i></div>
+                        <div>
+                            <h4 class="text-4xl font-display text-white mb-4 italic tracking-tight uppercase">BONDING CURVE V2</h4>
+                            <p class="font-mono text-gray-400 leading-relaxed">OUR IMPROVED BONDING CURVE ENSURES FAIR LAUNCHES AND INSTANT LIQUIDITY. NO PRE-MINES, NO VC ALLOCATIONS. JUST PURE TRADING POWER FOR THE PEOPLE.</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -639,48 +419,45 @@
     </section>
 
     <!-- Final CTA Section -->
-    <section class="py-32 relative">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center reveal">
-            <div class="bg-gradient-to-br from-accent/20 to-up/20 rounded-[4rem] p-16 sm:p-24 border border-white/10 relative overflow-hidden">
-                <div class="absolute inset-0 bg-grid opacity-20"></div>
-                <div class="relative z-10">
-                    <h2 class="text-6xl md:text-8xl font-black mb-8 italic uppercase tracking-tighter leading-none">Ready to <span class="text-up">Transcend</span>?</h2>
-                    <p class="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed">
-                        Join the next evolution of decentralized finance on Paxi Network. Precision trading starts here.
-                    </p>
-                    <div class="flex flex-col sm:flex-row gap-6 justify-center">
-                        <a href="trade.html" class="btn-premium px-16 py-6 rounded-3xl text-xl font-black text-white">LAUNCH APP NOW</a>
-                    </div>
-                    <div class="mt-12 pt-12 border-t border-white/5 grid grid-cols-2 md:grid-cols-4 gap-8">
-                        <div class="text-[10px] text-gray-500 font-black uppercase tracking-widest">Sub-second Tx</div>
-                        <div class="text-[10px] text-gray-500 font-black uppercase tracking-widest">Low Slippage</div>
-                        <div class="text-[10px] text-gray-500 font-black uppercase tracking-widest">AI Intelligence</div>
-                        <div class="text-[10px] text-gray-500 font-black uppercase tracking-widest">Self-Custodial</div>
-                    </div>
-                </div>
+    <section class="py-40 relative bg-meme-yellow border-t-4 border-black">
+        <div class="absolute inset-0 z-0 bg-[url('https://www.transparenttextures.com/patterns/grid-me.png')] opacity-20"></div>
+        <div class="max-w-5xl mx-auto px-4 text-center relative z-10 reveal">
+            <h2 class="text-8xl md:text-[180px] font-display text-black mb-12 italic leading-[0.7] tracking-tighter">TIME TO<br>PUMP IT!</h2>
+            <p class="text-2xl font-mono text-black/60 max-w-2xl mx-auto mb-20 font-bold">
+                JOIN THE LARGEST DEGEN COMMUNITY ON PAXI NETWORK. THE BULL IS WAITING.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-8 justify-center">
+                <a href="trade.html" class="bg-black text-white font-display text-6xl px-20 py-10 border-4 border-white shadow-[16px_16px_0px_0px_#FF007F] hover:shadow-none hover:translate-x-[8px] hover:translate-y-[8px] transition-all">
+                    START TRADING
+                </a>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="py-20 border-t border-white/5">
-        <div class="max-w-7xl mx-auto px-4 text-center">
-            <div class="flex items-center justify-center gap-3 mb-8">
-                <i class="fas fa-exchange-alt text-up text-2xl"></i>
-                <span class="text-2xl font-black tracking-tighter gradient-text">CANONIX</span>
+    <footer class="py-32 bg-black border-t-4 border-meme-pink">
+        <div class="max-w-[1400px] mx-auto px-4 text-center">
+            <div class="flex items-center justify-center gap-6 mb-16">
+                <div class="w-16 h-16 bg-meme-pink border-4 border-white shadow-brutal flex items-center justify-center rotate-[-5deg]">
+                    <i class="fas fa-exchange-alt text-white text-3xl"></i>
+                </div>
+                <span class="text-7xl font-display tracking-tighter text-white">CANONIX</span>
             </div>
-            <div class="flex justify-center gap-10 text-gray-500 font-bold text-sm mb-12">
-                <a href="#" class="hover:text-white transition-colors">Documentation</a>
-                <a href="#" class="hover:text-white transition-colors">Github</a>
-                <a href="#" class="hover:text-white transition-colors">Twitter</a>
-                <a href="#" class="hover:text-white transition-colors">Telegram</a>
+
+            <div class="flex flex-wrap justify-center gap-12 text-2xl font-display mb-20 text-gray-500">
+                <a href="#" class="hover:text-meme-green transition-colors">DOCS</a>
+                <a href="#" class="hover:text-meme-pink transition-colors">GITHUB</a>
+                <a href="#" class="hover:text-meme-cyan transition-colors">TWITTER</a>
+                <a href="#" class="hover:text-meme-yellow transition-colors">TELEGRAM</a>
             </div>
-            <div class="text-[10px] text-gray-600 font-black uppercase tracking-widest">
-                &copy; 2026 Canonix Protocol. All Rights Reserved.
+
+            <div class="font-mono text-xs text-gray-700 font-bold uppercase tracking-[0.5em]">
+                &copy; 2026 CANONIX PROTOCOL | BUILT BY DEGENS FOR DEGENS
             </div>
         </div>
     </footer>
 
+    <!-- Scripts -->
     <script src="./js/core/config.js"></script>
     <script src="./js/core/utils.js"></script>
     <script src="./js/core/api.js"></script>
@@ -688,22 +465,25 @@
     <script src="./js/modules/market/tokens.js"></script>
     <script src="./js/pages/landing.js"></script>
 
+
     <script>
-        // Scroll Reveal Logic
-        const observerOptions = {
-            threshold: 0.1
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('active');
-                }
-            });
-        }, observerOptions);
-
+        // Revised Reveal Logic without <style> tag
         document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+            const reveals = document.querySelectorAll('.reveal');
+            reveals.forEach(el => {
+                el.classList.add('opacity-0', 'translate-y-12', 'transition-all', 'duration-1000', 'ease-out');
+            });
+
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.remove('opacity-0', 'translate-y-12');
+                        entry.target.classList.add('opacity-100', 'translate-y-0');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            reveals.forEach(el => revealObserver.observe(el));
         });
 
         // Counter Animation
@@ -713,14 +493,11 @@
                 if (!startTimestamp) startTimestamp = timestamp;
                 const progress = Math.min((timestamp - startTimestamp) / duration, 1);
                 obj.innerHTML = Math.floor(progress * (end - start) + start).toLocaleString();
-                if (progress < 1) {
-                    window.requestAnimationFrame(step);
-                }
+                if (progress < 1) window.requestAnimationFrame(step);
             };
             window.requestAnimationFrame(step);
         }
 
-        // Trigger counters when visible
         const counterObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting && !entry.target.dataset.animated) {
@@ -729,7 +506,7 @@
                     entry.target.dataset.animated = "true";
                 }
             });
-        }, observerOptions);
+        }, { threshold: 0.1 });
 
         document.querySelectorAll('.counter').forEach(el => counterObserver.observe(el));
     </script>
