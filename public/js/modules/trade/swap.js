@@ -109,9 +109,9 @@ window.setSlippage = function(val) {
 window.updateCustomSlippage = function() {
     let val = parseFloat(document.getElementById('customSlippage')?.value);
     if (!isNaN(val) && val > 0) {
-        if (val > 50) {
-            val = 50;
-            window.setValue('customSlippage', 50);
+        if (val > 30) {
+            val = 30;
+            window.setValue('customSlippage', 30);
         }
         window.slippage = val;
         window.setText('slippageVal', val.toFixed(1) + '%');

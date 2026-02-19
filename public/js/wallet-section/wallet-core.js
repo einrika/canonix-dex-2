@@ -14,7 +14,6 @@ class WalletSecurity {
 
     setupListeners() {
         // Auto-lock disabled as per user request (PIN only for lifecycle events)
-        console.log("🛡️ Wallet security initialized (Session active until refresh)");
     }
 
     resetTimeout() {
@@ -418,8 +417,6 @@ class AssetManager {
 
     async fetchUserAssets(address) {
         try {
-            console.log('🔍 Fetching user assets for:', address);
-            
             // Use smartFetch - will auto-fallback to proxy if CORS error
             const [data, paxiRes] = await Promise.all([
                 window.smartFetch(`https://explorer.paxinet.io/api/prc20/my_contract_accounts?address=${address}`),
@@ -432,8 +429,6 @@ class AssetManager {
             }
 
             if (data && data.accounts) {
-                console.log(`✅ Loaded ${data.accounts.length} token accounts`);
-                
                 this.apiTokens = data.accounts.map(item => ({
                     address: item.contract.contract_address,
                     symbol: item.contract.symbol,
@@ -484,8 +479,6 @@ class AssetManager {
 
     async updateLPAssets(userAddress) {
         try {
-            console.log('🔍 Checking LP positions for:', userAddress);
-            
             // 1. Fetch all pools from LCD (direct on-chain truth)
             // 2. Fetch user's token accounts from explorer
             const [poolData, userData] = await Promise.all([
@@ -508,8 +501,6 @@ class AssetManager {
 
             // Filter tokens that have pools
             const tokensWithPools = userData.accounts.filter(item => poolMap.has(item.contract.contract_address));
-
-            console.log(`📊 Checking ${tokensWithPools.length} pools for positions...`);
 
             const myLPs = [];
 
@@ -539,8 +530,6 @@ class AssetManager {
                             const paxiVal = share * (reservePaxi / 1e6);
                             const prc20Val = share * (reservePrc20 / Math.pow(10, tokenDecimals));
 
-                            console.log(`✅ LP Position found: ${contract.symbol} (${(share * 100).toFixed(2)}%)`);
-
                             return {
                                 prc20: contract.contract_address,
                                 symbol: contract.symbol,
@@ -568,8 +557,6 @@ class AssetManager {
                     await new Promise(r => setTimeout(r, 500));
                 }
             }
-            
-            console.log(`✅ Found ${myLPs.length} LP positions`);
             this.lpAssets = myLPs;
             window.dispatchEvent(new CustomEvent('paxi_assets_updated'));
         } catch (e) {
@@ -791,8 +778,6 @@ window.buildAndSendTx = async function(messages, memo = "", options = {}) {
                 const pkBytes = hexToBytes(decrypted.replace('0x', ''));
                 window.wallet.signer = await DirectWallet.fromKey(pkBytes, "paxi");
             }
-            
-            console.log('✅ Signer created for transaction');
         }
 
         // 2. Fetch Chain ID & Account Info
@@ -808,8 +793,6 @@ window.buildAndSendTx = async function(messages, memo = "", options = {}) {
         
         // Use overridden sequence if provided, otherwise fetch from chain
         const sequence = sequenceOverride !== null ? sequenceOverride : account.sequence;
-
-        console.log('📋 TX Params:', { chainId, accountNumber, sequence, gasEstimate });
 
         // 2. Prepare Fee
         const fee = {
@@ -1018,7 +1001,6 @@ window.executeSwap = async function(contractAddress, offerDenom, offerAmount, mi
     // 3. Platform Fee Removed (Bundled Support Fee logic deleted)
 
     // 4. Send Bundled Transaction (Atomic)
-    console.log(`🔄 Sending Bundled Swap TX (${msgs.length} messages)...`);
     const metadata = {
         type: 'Swap',
         asset: offerDenom === window.APP_CONFIG.DENOM ? `PAXI / ${tokenDetail?.symbol || 'TOKEN'}` : `${tokenDetail?.symbol || 'TOKEN'} / PAXI`,

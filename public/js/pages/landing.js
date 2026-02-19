@@ -7,6 +7,7 @@ window.marketTokens = [];
 window.marketFilter = 'hot';
 window.marketSearchQuery = '';
 window.marketLimit = 12;
+window.searchTimeout = null;
 
 window.addEventListener('load', async () => {
     // Only run on homepage
@@ -58,8 +59,42 @@ window.setMarketFilter = function(type, btn) {
 };
 
 window.filterMarket = function() {
-    window.marketSearchQuery = document.getElementById('marketSearch').value.toLowerCase();
-    renderMarketGrid();
+    const query = document.getElementById('marketSearch').value.trim();
+    window.marketSearchQuery = query.toLowerCase();
+
+    // Clear existing timeout
+    if (window.searchTimeout) clearTimeout(window.searchTimeout);
+
+    // If query is empty, reload initial market data
+    if (!query) {
+        loadMarketData();
+        return;
+    }
+
+    // Debounce search API call
+    window.searchTimeout = setTimeout(async () => {
+        try {
+            const grid = document.getElementById('marketGrid');
+            if (!grid) return;
+
+            // Show loading state
+            grid.innerHTML = '<div class="col-span-full text-center py-20 text-gray-500 font-bold"><i class="fas fa-circle-notch fa-spin mr-2"></i> Searching...</div>';
+
+            const url = `https://explorer.paxinet.io/api/prc20/search?name=${encodeURIComponent(query)}`;
+            const data = await window.smartFetch(url);
+
+            if (data && data.contracts) {
+                window.marketTokens = data.contracts.map(c => window.processTokenDetail(c.contract_address, c));
+                renderMarketGrid();
+            } else {
+                window.marketTokens = [];
+                renderMarketGrid();
+            }
+        } catch (e) {
+            console.error('Search error:', e);
+            grid.innerHTML = '<div class="col-span-full text-center py-20 text-down font-bold">Search failed. Please try again.</div>';
+        }
+    }, 500); // 500ms debounce
 };
 
 window.loadMoreMarket = function() {
@@ -77,6 +112,9 @@ function renderMarketGrid() {
     switch (window.marketFilter) {
         case 'pumping':
             filtered = filtered.filter(t => t.is_pump);
+            break;
+        case 'nonpump':
+            filtered = filtered.filter(t => !t.is_pump);
             break;
         case 'new':
             filtered.sort((a, b) => b.id - a.id);

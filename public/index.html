@@ -134,6 +134,7 @@
             
             <div class="flex flex-wrap justify-center gap-3">
                 <button onclick="window.setMarketFilter('pumping', this)" class="market-filter-btn px-6 py-2 rounded-full border border-border text-xs font-black uppercase tracking-widest hover:bg-card transition-all text-gray-400">Pumping</button>
+                <button onclick="window.setMarketFilter('nonpump', this)" class="market-filter-btn px-6 py-2 rounded-full border border-border text-xs font-black uppercase tracking-widest hover:bg-card transition-all text-gray-400">Non-Pump</button>
                 <button onclick="window.setMarketFilter('hot', this)" class="market-filter-btn px-6 py-2 rounded-full border border-border text-xs font-black uppercase tracking-widest bg-up text-bg border-up transition-all">Hot</button>
                 <button onclick="window.setMarketFilter('new', this)" class="market-filter-btn px-6 py-2 rounded-full border border-border text-xs font-black uppercase tracking-widest hover:bg-card transition-all text-gray-400">New</button>
                 <button onclick="window.setMarketFilter('marketcap', this)" class="market-filter-btn px-6 py-2 rounded-full border border-border text-xs font-black uppercase tracking-widest hover:bg-card transition-all text-gray-400">Market Cap</button>
@@ -142,7 +143,7 @@
         </div>
 
         <!-- Token Grid -->
-        <div id="marketGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div id="marketGrid" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <!-- JS Populated -->
             <div class="animate-pulse bg-card rounded-[2rem] border border-border h-64"></div>
             <div class="animate-pulse bg-card rounded-[2rem] border border-border h-64"></div>
