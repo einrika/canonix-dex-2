@@ -401,9 +401,9 @@ window.showTxResult = function(data) {
     const typeEl = document.getElementById('txResultType');
 
     statusEl.textContent = isSuccess ? 'Success' : 'Failed';
-    statusEl.className = `text-xl font-black uppercase italic tracking-widest mb-1 ${isSuccess ? 'text-up' : 'text-down'}`;
+    statusEl.className = `text-xl md:text-2xl font-black uppercase italic tracking-widest mb-1 ${isSuccess ? 'text-meme-green' : 'text-meme-pink'}`;
 
-    iconEl.className = `w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3 ${isSuccess ? 'bg-up/10 text-up' : 'bg-down/10 text-down'}`;
+    iconEl.className = `w-12 h-12 md:w-16 md:h-16 rounded-full border-2 border-black flex items-center justify-center mx-auto mb-3 ${isSuccess ? 'bg-meme-green text-black' : 'bg-meme-pink text-white'} shadow-brutal-sm`;
     iconEl.innerHTML = `<i class="fas ${isSuccess ? 'fa-check-circle' : 'fa-times-circle'} text-2xl"></i>`;
 
     typeEl.textContent = `${type} Details`;
@@ -413,7 +413,7 @@ window.showTxResult = function(data) {
     document.getElementById('logType').textContent = type || '--';
     document.getElementById('logAsset').textContent = asset || '--';
     document.getElementById('logAmount').textContent = amount || '0.00';
-    document.getElementById('logAmount').className = `text-[10px] font-mono font-bold ${isSuccess ? 'text-up' : 'text-gray-400'}`;
+    document.getElementById('logAmount').className = `text-[10px] font-mono font-bold ${isSuccess ? 'text-meme-green' : 'text-gray-400'}`;
 
     const activeNet = window.NetworkManager?.getActiveNetwork();
     document.getElementById('logNetwork').textContent = network || (activeNet?.name || 'Paxi Mainnet');
@@ -476,8 +476,6 @@ window.showNotif = function(msg, type = 'info') {
 
   if (!finalMsg) return; // Block all other notifications (Address copied, etc. per strict requirements)
 
-  const safeMsg = finalMsg;
-
   const icons = { success: 'check-circle', error: 'exclamation-circle', info: 'info-circle' };
   const typeColors = {
       success: 'border-meme-green text-meme-green bg-black/90',
@@ -513,15 +511,15 @@ window.showNotif = function(msg, type = 'info') {
     const progress = notif.querySelector('.progress-bar');
     if (progress) {
         requestAnimationFrame(() => {
-            progress.classList.remove('w-full');
-            progress.classList.add('w-0');
+            progress.style.width = '0%';
         });
     }
   });
 
   // Remove
   setTimeout(() => {
-    notif.classList.remove('show');
+    notif.classList.remove('translate-x-0');
+    notif.classList.add('translate-x-[120%]');
     setTimeout(() => {
       notif.remove();
       window.activeNotifs = window.activeNotifs.filter(n => n !== notif);

@@ -2,37 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LAUNCHPAD - CANONIX DEX</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Launchpad – Canonix DEX</title>
 
     <!-- FONTS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
 
-    <link rel="apple-touch-icon" sizes="57x57" href="/assets/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="/assets/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/assets/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/assets/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/assets/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/assets/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/assets/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/assets/apple-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="/assets/android-icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
-    <link rel="manifest" href="/manifest.json">
-    <meta name="msapplication-TileColor" content="#000000">
-    <meta name="msapplication-TileImage" content="/assets/ms-icon-144x144.png">
-    <meta name="theme-color" content="#000000">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <!-- TAILWIND -->
     <script>
-        tailwind = {
-            config: {
+        tailwind.config = {
+
                 theme: {
                     extend: {
                         colors: {
@@ -50,10 +33,25 @@
                             sans: ['DM Sans', 'sans-serif'],
                         },
                         boxShadow: {
-                            'brutal': '8px 8px 0px 0px rgba(0,0,0,1)',
-                            'brutal-green': '8px 8px 0px 0px #39FF14',
-                            'brutal-pink': '8px 8px 0px 0px #FF007F',
-                            'brutal-cyan': '8px 8px 0px 0px #00FFFF',
+                            'brutal-sm': '2px 2px 0px 0px rgba(0,0,0,1)',
+                            'brutal': '4px 4px 0px 0px rgba(0,0,0,1)',
+                            'brutal-lg': '6px 6px 0px 0px rgba(0,0,0,1)',
+                            'brutal-green': '4px 4px 0px 0px #39FF14',
+                            'brutal-pink': '4px 4px 0px 0px #FF007F',
+                        },
+                        animation: {
+                            'float': 'float 6s ease-in-out infinite',
+                            'marquee': 'marquee 20s linear infinite',
+                        },
+                        keyframes: {
+                            float: {
+                                '0%, 100%': { transform: 'translateY(0)' },
+                                '50%': { transform: 'translateY(-15px)' },
+                            },
+                            marquee: {
+                                '0%': { transform: 'translateX(0%)' },
+                                '100%': { transform: 'translateX(-50%)' },
+                            }
                         }
                     }
                 }
@@ -62,79 +60,234 @@
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-black text-white font-sans min-h-screen flex flex-col selection:bg-meme-pink selection:text-white">
-    <!-- Navigation -->
-    <nav class="sticky top-0 z-[90] bg-black border-b-4 border-black px-6">
-        <div class="max-w-[1400px] mx-auto h-20 md:h-24 flex items-center justify-between">
-            <a href="index.html" class="flex items-center gap-4 group">
-                <div class="w-10 h-10 md:w-14 md:h-14 bg-meme-green border-4 border-black shadow-brutal flex items-center justify-center rotate-[-3deg] group-hover:rotate-0 transition-transform">
-                    <i class="fas fa-exchange-alt text-black text-xl md:text-2xl"></i>
-                </div>
-                <span class="text-3xl md:text-5xl font-display tracking-widest text-white group-hover:text-meme-green transition-colors uppercase italic">CANONIX</span>
-            </a>
+<body class="bg-meme-black text-white font-sans selection:bg-meme-green selection:text-black">
 
-            <div class="hidden lg:flex items-center gap-12">
-                <a href="index.html" class="font-display text-2xl hover:text-meme-pink hover:translate-y-[-2px] transition-all uppercase italic">MARKETS</a>
-                <a href="trade.html" class="font-display text-2xl hover:text-meme-cyan hover:translate-y-[-2px] transition-all uppercase italic">TRADE</a>
-                <a href="faq.html" class="font-display text-2xl hover:text-meme-yellow hover:translate-y-[-2px] transition-all uppercase italic">HACKERS</a>
+    <!-- HEADER -->
+    <nav class="sticky top-0 z-50 bg-black border-b-2 border-black h-16 flex items-center px-4 md:px-8 justify-between">
+        <a href="index.html" class="flex items-center group">
+            <div class="w-8 h-8 bg-meme-green border-2 border-black shadow-brutal-sm flex items-center justify-center rotate-[-3deg] group-hover:rotate-0 transition-transform mr-3">
+                <i class="fas fa-rocket text-black text-xs"></i>
             </div>
-
-            <a href="trade.html" class="bg-meme-pink text-white font-display text-lg md:text-2xl px-6 md:px-8 py-2 md:py-3 border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">
-                LAUNCH APP
-            </a>
+            <h1 class="text-xl md:text-2xl font-display tracking-widest text-white italic">CANONIX</h1>
+        </a>
+        <div class="hidden md:flex items-center gap-6">
+            <a href="trade.html" class="font-display text-lg hover:text-meme-green transition-colors uppercase italic tracking-tighter">Trade</a>
+            <a href="launchpad.html" class="font-display text-lg text-meme-green uppercase italic tracking-tighter">Launchpad</a>
+            <a href="reward.html" class="font-display text-lg hover:text-meme-green transition-colors uppercase italic tracking-tighter">Rewards</a>
+            <button id="connectBtn" onclick="window.location.href='trade.html'" class="bg-meme-pink text-white font-display text-lg px-6 py-1 border-2 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic tracking-tighter">Connect</button>
         </div>
+        <button onclick="toggleMobileMenu()" class="md:hidden text-2xl text-meme-green"><i class="fas fa-bars"></i></button>
     </nav>
 
-    <main class="flex-1 max-w-[1400px] mx-auto px-6 py-12 md:py-24 w-full">
-        <div class="mb-16 md:mb-32 text-center lg:text-left">
-            <div class="inline-block bg-meme-cyan text-black font-mono font-bold text-xs px-4 py-1 border-2 border-black mb-6 rotate-[-2deg]">BONDING CURVE V3.0</div>
-            <h1 class="text-6xl md:text-[120px] font-display italic leading-[0.8] mb-4 tracking-tighter uppercase drop-shadow-[8px_8px_0_rgba(255,0,127,0.3)]">
-                TOKEN <span class="text-meme-green">LAUNCHPAD</span>
-            </h1>
-            <p class="font-mono text-gray-500 font-bold uppercase tracking-[0.3em] text-sm md:text-xl italic">THE ULTIMATE PUMP MACHINE IS UNDER CONSTRUCTION</p>
-        </div>
+    <!-- HERO SECTION -->
+    <section class="relative py-12 md:py-12 px-4 overflow-hidden border-b-2 border-black bg-meme-surface">
+        <div class="absolute top-1/4 left-1/4 w-64 h-64 bg-meme-pink/10 rounded-full blur-[100px] animate-pulse"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-64 h-64 bg-meme-green/10 rounded-full blur-[100px] animate-pulse"></div>
 
-        <div class="bg-meme-surface border-8 border-black shadow-brutal-pink p-12 md:p-32 text-center relative overflow-hidden">
-            <div class="absolute top-0 right-0 p-20 opacity-[0.03] rotate-12"><i class="fas fa-rocket text-[300px]"></i></div>
-
-            <div class="relative z-10">
-                <div class="w-24 h-24 md:w-40 md:h-40 bg-meme-pink border-4 border-black shadow-brutal flex items-center justify-center mx-auto mb-12 rotate-[-10deg] animate-bounce">
-                    <i class="fas fa-tools text-5xl md:text-7xl text-white"></i>
-                </div>
-                <h2 class="text-5xl md:text-9xl font-display text-white mb-6 italic uppercase tracking-tighter">COMING SOON</h2>
-                <p class="font-display text-2xl md:text-4xl text-gray-500 max-w-2xl mx-auto uppercase italic leading-tight">Our engineers are currently overclocking the bonding curve algorithms. Prepare for warp speed.</p>
-
-                <div class="mt-16 flex flex-col sm:flex-row justify-center gap-6">
-                    <a href="index.html" class="px-12 py-5 bg-meme-green text-black font-display text-3xl border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">BACK TO MARKET</a>
-                    <a href="trade.html" class="px-12 py-5 bg-white text-black font-display text-3xl border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">GO TO TERMINAL</a>
-                </div>
+        <div class="max-w-6xl mx-auto text-center relative z-10">
+            <div class="inline-block px-4 py-1.5 bg-meme-yellow text-black font-display text-base border-2 border-black shadow-brutal-sm rotate-[-2deg] mb-6 uppercase italic tracking-widest">NEXT MOON MISSION</div>
+            <h2 class="text-4xl md:text-6xl font-display italic leading-none mb-6 uppercase tracking-tighter">
+                CANONIX <span class="text-meme-green drop-shadow-[4px_4px_0_rgba(0,0,0,1)]">LAUNCHPAD</span>
+            </h2>
+            <p class="max-w-2xl mx-auto font-mono text-xs md:text-sm text-gray-500 mb-8 uppercase font-bold tracking-widest italic leading-relaxed">
+                The most degenerate fair launch platform on Paxi Network. No VCs, no team allocation, 100% community driven bonding curves.
+            </p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <button class="bg-meme-green text-black font-display text-xl md:text-2xl px-8 md:px-10 py-3 md:py-4 border-2 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic tracking-tighter">Create Token</button>
+                <button class="bg-white text-black font-display text-xl md:text-2xl px-8 md:px-10 py-3 md:py-4 border-2 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic tracking-tighter">Documentation</button>
             </div>
         </div>
-    </main>
+    </section>
 
-    <footer class="py-20 bg-black border-t-8 border-black px-6">
-        <div class="max-w-[1400px] mx-auto text-center">
-            <div class="flex items-center justify-center gap-4 mb-8">
-                <div class="w-12 h-12 bg-meme-pink border-4 border-black shadow-brutal flex items-center justify-center rotate-[-5deg]">
-                    <i class="fas fa-exchange-alt text-white text-2xl"></i>
+    <!-- TICKER -->
+    <div class="bg-meme-pink border-b-2 border-black py-2 overflow-hidden whitespace-nowrap">
+        <div class="animate-marquee inline-block">
+            <span class="text-white font-display text-lg mx-8 italic uppercase tracking-tighter">$$$ NEW GEM LISTED $$$</span>
+            <span class="text-white font-display text-lg mx-8 italic uppercase tracking-tighter">LAIKA COIN RAISING 40%</span>
+            <span class="text-white font-display text-lg mx-8 italic uppercase tracking-tighter">$$$ BECOME THE NEXT WHALE $$$</span>
+            <span class="text-white font-display text-lg mx-8 italic uppercase tracking-tighter">PAXI ECOSYSTEM PUMPING</span>
+        </div>
+        <div class="animate-marquee inline-block">
+            <span class="text-white font-display text-lg mx-8 italic uppercase tracking-tighter">$$$ NEW GEM LISTED $$$</span>
+            <span class="text-white font-display text-lg mx-8 italic uppercase tracking-tighter">LAIKA COIN RAISING 40%</span>
+            <span class="text-white font-display text-lg mx-8 italic uppercase tracking-tighter">$$$ BECOME THE NEXT WHALE $$$</span>
+            <span class="text-white font-display text-lg mx-8 italic uppercase tracking-tighter">PAXI ECOSYSTEM PUMPING</span>
+        </div>
+    </div>
+
+    <!-- STATS -->
+    <section class="py-12 border-b-2 border-black px-4">
+        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-meme-surface border-2 border-black p-6 shadow-brutal text-center rotate-[-1deg]">
+                <div class="text-[10px] font-mono font-bold text-meme-cyan uppercase tracking-widest italic mb-2">Total Launched</div>
+                <div class="text-4xl md:text-3xl font-display text-white italic tracking-tighter">1,248</div>
+            </div>
+            <div class="bg-meme-surface border-2 border-black p-6 shadow-brutal text-center rotate-[1deg]">
+                <div class="text-[10px] font-mono font-bold text-meme-pink uppercase tracking-widest italic mb-2">Paxi Raised</div>
+                <div class="text-4xl md:text-3xl font-display text-white italic tracking-tighter">4.2M</div>
+            </div>
+            <div class="bg-meme-surface border-2 border-black p-6 shadow-brutal text-center rotate-[-0.5deg]">
+                <div class="text-[10px] font-mono font-bold text-meme-green uppercase tracking-widest italic mb-2">Moon Success</div>
+                <div class="text-4xl md:text-3xl font-display text-white italic tracking-tighter">84.2%</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ACTIVE MISSIONS -->
+    <section class="py-16 md:py-24 px-4 bg-black">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+                <div>
+                    <h3 class="text-3xl md:text-3xl font-display italic uppercase tracking-tighter leading-none mb-4">ACTIVE <span class="text-meme-cyan">MISSIONS</span></h3>
+                    <p class="font-mono text-[10px] md:text-xs text-gray-500 font-bold uppercase tracking-widest italic">Join the bonding curve early for max gains</p>
                 </div>
-                <span class="text-4xl md:text-6xl font-display tracking-tighter text-white uppercase italic">CANONIX</span>
-            </div>
-            <p class="font-mono text-gray-600 text-xs md:text-sm mb-12 uppercase font-bold tracking-widest italic">Built for the next generation of degens on Paxi Network.</p>
-
-            <div class="flex justify-center gap-8 mb-16">
-                <a href="#" class="w-14 h-14 bg-meme-card border-4 border-black shadow-brutal flex items-center justify-center text-white hover:text-meme-cyan hover:shadow-none transition-all rotate-[-10deg] hover:rotate-0"><i class="fab fa-twitter text-2xl"></i></a>
-                <a href="#" class="w-14 h-14 bg-meme-card border-4 border-black shadow-brutal flex items-center justify-center text-white hover:text-meme-green hover:shadow-none transition-all rotate-[10deg] hover:rotate-0"><i class="fab fa-telegram text-2xl"></i></a>
-                <a href="#" class="w-14 h-14 bg-meme-card border-4 border-black shadow-brutal flex items-center justify-center text-white hover:text-meme-pink hover:shadow-none transition-all rotate-[-5deg] hover:rotate-0"><i class="fab fa-github text-2xl"></i></a>
+                <div class="flex gap-3">
+                    <button class="px-6 py-2 bg-meme-surface border-2 border-black font-display text-base text-meme-green shadow-brutal-sm italic uppercase tracking-tighter">LIVE</button>
+                    <button class="px-6 py-2 bg-black border-2 border-black font-display text-base text-gray-500 shadow-brutal-sm italic uppercase tracking-tighter">UPCOMING</button>
+                </div>
             </div>
 
-            <div class="pt-8 border-t-2 border-meme-surface font-mono text-[10px] text-gray-700 font-black uppercase tracking-[0.5em]">
-                &copy; 2026 CANONIX PROTOCOL | NO RAGRETS
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div class="bg-meme-surface border-2 border-black shadow-brutal flex flex-col group hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all">
+                    <div class="h-48 bg-meme-card border-b-2 border-black relative overflow-hidden">
+                        <img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=moon" alt="token" class="w-full h-full object-cover opacity-50 group-hover:scale-110 transition-transform duration-500">
+                        <div class="absolute top-4 left-4 px-3 py-1 bg-meme-green text-black font-display text-xs border border-black shadow-brutal-sm italic uppercase tracking-tighter">78% FILLED</div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h4 class="text-2xl font-display text-white uppercase italic tracking-tighter">MOON PEPE</h4>
+                                <span class="font-mono text-[8px] text-gray-500 font-bold tracking-widest">$MPEPE</span>
+                            </div>
+                            <div class="w-10 h-10 bg-white border-2 border-black rotate-[10deg] flex items-center justify-center"><i class="fas fa-frog text-black"></i></div>
+                        </div>
+                        <p class="font-sans text-[10px] text-gray-400 mb-6 leading-relaxed uppercase font-bold italic">The first Pepe on Paxi. 100% fair launch, zero tax, and eternal memes for the community.</p>
+                        <div class="space-y-4">
+                            <div class="w-full h-3 bg-black border border-black p-0.5 shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)]">
+                                <div class="h-full bg-meme-cyan w-[78%]"></div>
+                            </div>
+                            <div class="flex justify-between font-mono text-[9px] font-black italic uppercase">
+                                <span class="text-gray-500">Raised: 780 PAXI</span>
+                                <span class="text-meme-cyan">Goal: 1000 PAXI</span>
+                            </div>
+                        </div>
+                        <button onclick="window.location.href='trade.html'" class="w-full mt-6 py-3 bg-meme-pink text-white font-display text-xl border-2 border-black shadow-brutal hover:shadow-none transition-all uppercase italic tracking-tighter">APES TOGETHER</button>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="bg-meme-surface border-2 border-black shadow-brutal flex flex-col group hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all">
+                    <div class="h-48 bg-meme-card border-b-2 border-black relative overflow-hidden">
+                        <img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=doge" alt="token" class="w-full h-full object-cover opacity-50 group-hover:scale-110 transition-transform duration-500">
+                        <div class="absolute top-4 left-4 px-3 py-1 bg-meme-yellow text-black font-display text-xs border border-black shadow-brutal-sm italic uppercase tracking-tighter">42% FILLED</div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h4 class="text-2xl font-display text-white uppercase italic tracking-tighter">PAXI INU</h4>
+                                <span class="font-mono text-[8px] text-gray-500 font-bold tracking-widest">$PINU</span>
+                            </div>
+                            <div class="w-10 h-10 bg-white border-2 border-black rotate-[-10deg] flex items-center justify-center"><i class="fas fa-dog text-black"></i></div>
+                        </div>
+                        <p class="font-sans text-[10px] text-gray-400 mb-6 leading-relaxed uppercase font-bold italic">Man's best friend on Paxi blockchain. Building the biggest barking community ever.</p>
+                        <div class="space-y-4">
+                            <div class="w-full h-3 bg-black border border-black p-0.5 shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)]">
+                                <div class="h-full bg-meme-yellow w-[42%]"></div>
+                            </div>
+                            <div class="flex justify-between font-mono text-[9px] font-black italic uppercase">
+                                <span class="text-gray-500">Raised: 420 PAXI</span>
+                                <span class="text-meme-yellow">Goal: 1000 PAXI</span>
+                            </div>
+                        </div>
+                        <button onclick="window.location.href='trade.html'" class="w-full mt-6 py-3 bg-meme-green text-black font-display text-xl border-2 border-black shadow-brutal hover:shadow-none transition-all uppercase italic tracking-tighter">GATHER PACK</button>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="bg-meme-surface border-2 border-black shadow-brutal flex flex-col group hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all">
+                    <div class="h-48 bg-meme-card border-b-2 border-black relative overflow-hidden">
+                        <img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=galaxy" alt="token" class="w-full h-full object-cover opacity-50 group-hover:scale-110 transition-transform duration-500">
+                        <div class="absolute top-4 left-4 px-3 py-1 bg-meme-pink text-white font-display text-xs border border-black shadow-brutal-sm italic uppercase tracking-tighter">15% FILLED</div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h4 class="text-2xl font-display text-white uppercase italic tracking-tighter">PAXI CAT</h4>
+                                <span class="font-mono text-[8px] text-gray-500 font-bold tracking-widest">$PCAT</span>
+                            </div>
+                            <div class="w-10 h-10 bg-white border-2 border-black rotate-[5deg] flex items-center justify-center"><i class="fas fa-cat text-black"></i></div>
+                        </div>
+                        <p class="font-sans text-[10px] text-gray-400 mb-6 leading-relaxed uppercase font-bold italic">The only cat that doesn't sleep. 24/7 pump action for the diamond paws only.</p>
+                        <div class="space-y-4">
+                            <div class="w-full h-3 bg-black border border-black p-0.5 shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)]">
+                                <div class="h-full bg-meme-pink w-[15%]"></div>
+                            </div>
+                            <div class="flex justify-between font-mono text-[9px] font-black italic uppercase">
+                                <span class="text-gray-500">Raised: 150 PAXI</span>
+                                <span class="text-meme-pink">Goal: 1000 PAXI</span>
+                            </div>
+                        </div>
+                        <button onclick="window.location.href='trade.html'" class="w-full mt-6 py-3 bg-meme-cyan text-black font-display text-xl border-2 border-black shadow-brutal hover:shadow-none transition-all uppercase italic tracking-tighter">MEOW PUMP</button>
+                    </div>
+                </div>
             </div>
+
+            <div class="mt-16 text-center">
+                <button class="font-display text-2xl text-gray-600 hover:text-white transition-colors uppercase italic border-b-2 border-black hover:border-meme-green tracking-tighter">View All Missions <i class="fas fa-arrow-right ml-2"></i></button>
+            </div>
+        </div>
+    </section>
+
+    <!-- CALL TO ACTION -->
+    <section class="py-16 px-4 bg-meme-green border-y-4 border-black text-black">
+        <div class="max-w-4xl mx-auto text-center">
+            <h3 class="text-4xl md:text-3xl font-display italic uppercase tracking-tighter leading-none mb-6">READY TO <span class="bg-black text-meme-green px-4">IGNITE?</span></h3>
+            <p class="font-mono text-xs md:text-sm font-black uppercase tracking-widest mb-10 italic">Launch your own token in 30 seconds with zero coding.</p>
+            <button class="bg-black text-white font-display text-2xl px-10 py-4 border-4 border-black shadow-[6px_6px_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1.5 hover:translate-y-1.5 transition-all uppercase italic tracking-tighter">LAUNCH NOW</button>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="py-12 px-4 bg-black border-t-2 border-black">
+        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
+            <div class="col-span-1 md:col-span-2">
+                <h1 class="text-3xl font-display text-meme-green mb-6 italic uppercase tracking-tighter">CANONIX</h1>
+                <p class="font-mono text-[10px] text-gray-500 mb-8 max-w-sm uppercase font-bold italic tracking-widest leading-relaxed">The ultimate decentralized meme playground on Paxi Network. Built by degens, for degens. No VCs, no gatekeepers, just pure moon fuel.</p>
+                <div class="flex gap-4">
+                    <a href="#" class="w-10 h-10 border-2 border-black bg-meme-surface flex items-center justify-center text-white hover:bg-meme-cyan hover:text-black transition-all shadow-brutal-sm hover:shadow-none"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="w-10 h-10 border-2 border-black bg-meme-surface flex items-center justify-center text-white hover:bg-meme-pink hover:text-black transition-all shadow-brutal-sm hover:shadow-none"><i class="fab fa-telegram"></i></a>
+                    <a href="#" class="w-10 h-10 border-2 border-black bg-meme-surface flex items-center justify-center text-white hover:bg-meme-green hover:text-black transition-all shadow-brutal-sm hover:shadow-none"><i class="fab fa-discord"></i></a>
+                </div>
+            </div>
+            <div>
+                <h4 class="font-display text-xl text-meme-yellow mb-6 uppercase italic tracking-tighter">QUICK LINKS</h4>
+                <ul class="space-y-3 font-mono text-[10px] text-gray-400 font-black uppercase italic tracking-widest">
+                    <li><a href="trade.html" class="hover:text-white transition-colors">DEX Terminal</a></li>
+                    <li><a href="launchpad.html" class="hover:text-white transition-colors">Launchpad</a></li>
+                    <li><a href="reward.html" class="hover:text-white transition-colors">Yield Farming</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Audit Report</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-display text-xl text-meme-pink mb-6 uppercase italic tracking-tighter">GOVERNANCE</h4>
+                <ul class="space-y-3 font-mono text-[10px] text-gray-400 font-black uppercase italic tracking-widest">
+                    <li><a href="#" class="hover:text-white transition-colors">DAO Voting</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Proposals</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Treasury</a></li>
+                    <li><a href="faq.html" class="hover:text-white transition-colors">Support</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="max-w-6xl mx-auto mt-12 pt-8 border-t border-gray-900 text-center">
+            <p class="font-mono text-[8px] text-gray-700 font-bold uppercase tracking-[0.2em] italic">© 2024 CANONIX PROTOCOL | BEYOND THE MOON</p>
         </div>
     </footer>
 
-    <script src="./js/core/config.js"></script>
-    <script src="./js/core/utils.js"></script>
+    <script>
+        function toggleMobileMenu() {
+            // Implementation if needed
+        }
+    </script>
 </body>
 </html>

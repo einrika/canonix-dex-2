@@ -202,7 +202,7 @@ function renderMarketGrid() {
                     </div>
                     <div class="min-w-0">
                         <div class="flex items-center gap-1 md:gap-2">
-                            <span class="font-display text-xs md:text-3xl text-white tracking-tight uppercase italic truncate">${t.symbol}</span>
+                            <span class="font-display text-xs md:text-2xl text-white tracking-tight uppercase italic truncate">${t.symbol}</span>
                             ${t.verified ? `<i class="fas fa-check-circle text-meme-cyan text-[8px] md:text-sm"></i>` : ''}
                         </div>
                         <div class="hidden md:block text-[10px] text-meme-cyan font-mono font-bold uppercase tracking-[0.2em]">PRC-20 ASSET</div>
@@ -211,8 +211,8 @@ function renderMarketGrid() {
 
                 <div class="space-y-2 md:space-y-6 relative z-10">
                     <div>
-                        <div class="hidden md:block text-xs text-gray-500 font-mono font-bold uppercase tracking-widest mb-2">CURRENT PRICE</div>
-                        <div class="text-[10px] md:text-3xl font-display text-white italic tracking-tight truncate">${t.price_paxi.toFixed(6)} <span class="text-meme-yellow text-[8px] md:text-base">PAXI</span></div>
+                        <div class="hidden md:block text-xs text-gray-500 font-mono font-bold uppercase tracking-widest mb-1">CURRENT PRICE</div>
+                        <div class="text-[10px] md:text-2xl font-display text-white italic tracking-tight truncate">${t.price_paxi.toFixed(6)} <span class="text-meme-yellow text-[8px] md:text-base">PAXI</span></div>
                     </div>
 
                     <div class="flex justify-between items-center pt-2 md:pt-6 border-t-2 md:border-t-4 border-black">
@@ -288,39 +288,39 @@ function renderIndexAI(container, token, aiText) {
     const bgClass = sentiment === 'BULLISH' ? 'bg-meme-green' : sentiment === 'BEARISH' ? 'bg-meme-pink' : 'bg-meme-cyan';
 
     container.innerHTML = `
-        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 md:gap-12 mb-8 md:mb-16">
-            <div class="flex items-center gap-4 md:gap-8">
-                <div class="w-12 h-12 md:w-24 md:h-24 bg-meme-surface border-2 md:border-4 border-black flex items-center justify-center ${colorClass} text-xl md:text-5xl shadow-[4px_4px_0_0_#000] md:shadow-brutal rotate-[-5deg]">
+        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 md:gap-12 mb-6 md:mb-12">
+            <div class="flex items-center gap-4 md:gap-6">
+                <div class="w-12 h-12 md:w-20 md:h-20 bg-meme-surface border-2 md:border-4 border-black flex items-center justify-center ${colorClass} text-xl md:text-4xl shadow-[4px_4px_0_0_#000] md:shadow-brutal rotate-[-5deg]">
                     <i class="fas fa-brain"></i>
                 </div>
                 <div>
-                    <h3 class="font-display italic uppercase text-3xl md:text-6xl tracking-tighter">AI <span class="${colorClass}">SCAN</span></h3>
-                    <p class="font-mono text-[8px] md:text-sm text-gray-600 font-bold uppercase tracking-[0.4em]">GEMINI PRO 1.5 VERIFIED</p>
+                    <h3 class="font-display italic uppercase text-2xl md:text-4xl tracking-tighter">AI <span class="${colorClass}">SCAN</span></h3>
+                    <p class="font-mono text-[8px] md:text-xs text-gray-600 font-bold uppercase tracking-[0.4em]">GEMINI PRO 1.5 VERIFIED</p>
                 </div>
             </div>
-            <div class="px-6 md:px-10 py-2 md:py-4 bg-black border-2 md:border-4 border-current ${colorClass} font-display text-xl md:text-4xl shadow-[4px_4px_0_0_#000] md:shadow-brutal rotate-[2deg]">
+            <div class="px-4 md:px-8 py-1.5 md:py-3 bg-black border-2 md:border-4 border-current ${colorClass} font-display text-lg md:text-2xl shadow-[4px_4px_0_0_#000] md:shadow-brutal rotate-[2deg]">
                 ${sentiment} VIBES
             </div>
         </div>
 
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-10 mb-8 md:mb-16">
-            <div class="p-4 md:p-8 bg-meme-surface border-2 md:border-4 border-black shadow-[4px_4px_0_0_#000] md:shadow-brutal">
-                <div class="text-[8px] md:text-[10px] text-gray-500 font-mono font-bold uppercase tracking-widest mb-1 md:mb-3">TARGET</div>
-                <div class="text-xl md:text-4xl font-display text-white italic tracking-tight">${token.symbol}</div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-12">
+            <div class="p-4 md:p-6 bg-meme-surface border-2 md:border-4 border-black shadow-[4px_4px_0_0_#000] md:shadow-brutal">
+                <div class="text-[8px] md:text-[10px] text-gray-500 font-mono font-bold uppercase tracking-widest mb-1 md:mb-2">TARGET</div>
+                <div class="text-lg md:text-2xl font-display text-white italic tracking-tight">${token.symbol}</div>
             </div>
-            <div class="p-4 md:p-8 bg-meme-surface border-2 md:border-4 border-black shadow-[4px_4px_0_0_#000] md:shadow-brutal">
-                <div class="text-[8px] md:text-[10px] text-gray-500 font-mono font-bold uppercase tracking-widest mb-1 md:mb-3">RISK LVL</div>
-                <div class="text-xl md:text-4xl font-display ${token.liquidity > 10000 ? 'text-meme-green' : 'text-meme-yellow'} italic tracking-tight">
+            <div class="p-4 md:p-6 bg-meme-surface border-2 md:border-4 border-black shadow-[4px_4px_0_0_#000] md:shadow-brutal">
+                <div class="text-[8px] md:text-[10px] text-gray-500 font-mono font-bold uppercase tracking-widest mb-1 md:mb-2">RISK LVL</div>
+                <div class="text-lg md:text-2xl font-display ${token.liquidity > 10000 ? 'text-meme-green' : 'text-meme-yellow'} italic tracking-tight">
                     ${token.liquidity > 20000 ? 'GIGA' : token.liquidity > 5000 ? 'MID' : 'REKT'}
                 </div>
             </div>
-            <div class="p-4 md:p-8 bg-meme-surface border-2 md:border-4 border-black shadow-[4px_4px_0_0_#000] md:shadow-brutal">
-                <div class="text-[8px] md:text-[10px] text-gray-500 font-mono font-bold uppercase tracking-widest mb-1 md:mb-3">TREND</div>
-                <div class="text-xl md:text-4xl font-display text-meme-cyan italic tracking-tight">${token.price_change_24h > 0 ? 'MOON' : 'BLEED'}</div>
+            <div class="p-4 md:p-6 bg-meme-surface border-2 md:border-4 border-black shadow-[4px_4px_0_0_#000] md:shadow-brutal">
+                <div class="text-[8px] md:text-[10px] text-gray-500 font-mono font-bold uppercase tracking-widest mb-1 md:mb-2">TREND</div>
+                <div class="text-lg md:text-2xl font-display text-meme-cyan italic tracking-tight">${token.price_change_24h > 0 ? 'MOON' : 'BLEED'}</div>
             </div>
-            <div class="p-4 md:p-8 bg-meme-surface border-2 md:border-4 border-black shadow-[4px_4px_0_0_#000] md:shadow-brutal">
-                <div class="text-[8px] md:text-[10px] text-gray-500 font-mono font-bold uppercase tracking-widest mb-1 md:mb-3">BRAIN</div>
-                <div class="text-xl md:text-4xl font-display text-white italic tracking-tight">9.8/10</div>
+            <div class="p-4 md:p-6 bg-meme-surface border-2 md:border-4 border-black shadow-[4px_4px_0_0_#000] md:shadow-brutal">
+                <div class="text-[8px] md:text-[10px] text-gray-500 font-mono font-bold uppercase tracking-widest mb-1 md:mb-2">BRAIN</div>
+                <div class="text-lg md:text-2xl font-display text-white italic tracking-tight">9.8/10</div>
             </div>
         </div>
 
@@ -337,8 +337,8 @@ function renderIndexAI(container, token, aiText) {
             </div>
         </div>
 
-        <div class="mt-8 md:mt-16 flex justify-end">
-            <a href="trade.html?token=${token.address}" class="px-8 md:px-12 py-3 md:py-5 bg-meme-green text-black font-display text-xl md:text-4xl border-2 md:border-4 border-black shadow-[4px_4px_0_0_#000] md:shadow-brutal hover:translate-x-[2px] md:hover:translate-x-[4px] hover:translate-y-[2px] md:hover:translate-y-[4px] hover:shadow-none transition-all flex items-center gap-3 md:gap-6 rotate-[-1deg]">
+        <div class="mt-8 md:mt-10 flex justify-end">
+            <a href="trade.html?token=${token.address}" class="px-8 md:px-10 py-3 md:py-4 bg-meme-green text-black font-display text-xl md:text-3xl border-2 md:border-4 border-black shadow-[4px_4px_0_0_#000] md:shadow-brutal hover:translate-x-[2px] md:hover:translate-x-[4px] hover:translate-y-[2px] md:hover:translate-y-[4px] hover:shadow-none transition-all flex items-center gap-3 md:gap-5 rotate-[-1deg]">
                 APE IN <i class="fas fa-arrow-right"></i>
             </a>
         </div>

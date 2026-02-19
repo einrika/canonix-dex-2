@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HACKERS HUB - CANONIX DEX</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FAQ – Canonix DEX</title>
 
     <!-- FONTS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,9 +12,10 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <!-- TAILWIND -->
     <script>
-        tailwind = {
-            config: {
+        tailwind.config = {
+
                 theme: {
                     extend: {
                         colors: {
@@ -32,22 +33,18 @@
                             sans: ['DM Sans', 'sans-serif'],
                         },
                         boxShadow: {
-                            'brutal': '8px 8px 0px 0px rgba(0,0,0,1)',
-                            'brutal-green': '8px 8px 0px 0px #39FF14',
-                            'brutal-pink': '8px 8px 0px 0px #FF007F',
-                            'brutal-cyan': '8px 8px 0px 0px #00FFFF',
+                            'brutal-sm': '2px 2px 0px 0px rgba(0,0,0,1)',
+                            'brutal': '4px 4px 0px 0px rgba(0,0,0,1)',
+                            'brutal-lg': '6px 6px 0px 0px rgba(0,0,0,1)',
+                            'brutal-cyan': '4px 4px 0px 0px #00FFFF',
                         },
                         animation: {
-                            'glitch': 'glitch 1s linear infinite',
+                            'float': 'float 6s ease-in-out infinite',
                         },
                         keyframes: {
-                            glitch: {
-                                '0%': { transform: 'translate(0)' },
-                                '20%': { transform: 'translate(-2px, 2px)' },
-                                '40%': { transform: 'translate(-2px, -2px)' },
-                                '60%': { transform: 'translate(2px, 2px)' },
-                                '80%': { transform: 'translate(2px, -2px)' },
-                                '100%': { transform: 'translate(0)' },
+                            float: {
+                                '0%, 100%': { transform: 'translateY(0)' },
+                                '50%': { transform: 'translateY(-15px)' },
                             }
                         }
                     }
@@ -57,104 +54,127 @@
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-black text-white font-sans min-h-screen flex flex-col selection:bg-meme-cyan selection:text-black">
-    <!-- Navigation -->
-    <nav class="bg-black border-b-4 border-black px-6 sticky top-0 z-[100]">
-        <div class="max-w-[1200px] mx-auto h-20 md:h-24 flex items-center justify-between">
-            <a href="index.html" class="flex items-center gap-4 group">
-                <div class="w-10 h-10 md:w-14 md:h-14 bg-meme-green border-4 border-black shadow-brutal flex items-center justify-center rotate-[-3deg] group-hover:rotate-0 transition-transform">
-                    <i class="fas fa-exchange-alt text-black text-xl md:text-2xl"></i>
-                </div>
-                <span class="text-3xl md:text-5xl font-display tracking-widest text-white group-hover:text-meme-green transition-colors uppercase italic">CANONIX</span>
-            </a>
+<body class="bg-meme-black text-white font-sans selection:bg-meme-cyan selection:text-black">
 
-            <a href="trade.html" class="bg-white text-black font-display text-lg md:text-2xl px-6 md:px-8 py-2 md:py-3 border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">
-                GET BACK
-            </a>
+    <!-- HEADER -->
+    <nav class="sticky top-0 z-50 bg-black border-b-2 border-black h-16 flex items-center px-4 md:px-8 justify-between">
+        <a href="index.html" class="flex items-center group">
+            <div class="w-8 h-8 bg-meme-cyan border-2 border-black shadow-brutal-sm flex items-center justify-center rotate-[-3deg] group-hover:rotate-0 transition-transform mr-3">
+                <i class="fas fa-question text-black text-xs"></i>
+            </div>
+            <h1 class="text-xl md:text-2xl font-display tracking-widest text-white italic">CANONIX</h1>
+        </a>
+        <div class="flex items-center gap-6">
+            <a href="trade.html" class="font-display text-lg hover:text-meme-cyan transition-colors uppercase italic tracking-tighter">Exit FAQ</a>
         </div>
     </nav>
 
-    <main class="flex-1 max-w-[1000px] mx-auto px-6 py-12 md:py-24 w-full">
-        <div class="mb-20 md:mb-32 text-center relative">
-            <div class="absolute inset-0 bg-meme-cyan opacity-5 blur-3xl animate-pulse rounded-full"></div>
-            <div class="relative z-10">
-                <div class="inline-block bg-meme-cyan text-black font-mono font-bold text-xs px-4 py-1 border-2 border-black mb-8 animate-glitch">ENCRYPTED INTEL v1.0.4</div>
-                <h1 class="text-7xl md:text-[140px] font-display italic leading-[0.85] mb-6 tracking-tighter uppercase text-white drop-shadow-[8px_8px_0_rgba(0,255,255,1)]">
-                    HACKERS <span class="text-meme-pink">GUIDE</span>
-                </h1>
-                <p class="font-mono text-gray-500 font-bold uppercase tracking-[0.4em] text-sm md:text-xl italic">Answers for the curious and the degen.</p>
+    <!-- HERO SECTION -->
+    <section class="relative py-12 md:py-12 px-4 overflow-hidden border-b-2 border-black bg-meme-surface">
+        <div class="max-w-4xl mx-auto text-center relative z-10">
+            <div class="inline-block px-4 py-1.5 bg-meme-yellow text-black font-display text-sm border-2 border-black shadow-brutal-sm rotate-[-2deg] mb-6 uppercase italic tracking-widest">HELP TERMINAL</div>
+            <h2 class="text-4xl md:text-6xl font-display italic leading-none mb-6 uppercase tracking-tighter">
+                KNOWLEDGE <span class="text-meme-cyan drop-shadow-[4px_4px_0_rgba(0,0,0,1)]">BASE</span>
+            </h2>
+            <p class="max-w-xl mx-auto font-mono text-xs md:text-sm text-gray-500 mb-8 uppercase font-bold tracking-widest italic leading-relaxed">
+                Everything you need to know about trading, launching, and surviving the moon missions on Canonix.
+            </p>
+        </div>
+    </section>
+
+    <!-- FAQ ACCORDION -->
+    <section class="py-16 md:py-24 px-4 bg-black min-h-screen">
+        <div class="max-w-3xl mx-auto space-y-6">
+
+            <!-- Question 1 -->
+            <div class="bg-meme-surface border-2 border-black shadow-brutal rotate-[-0.5deg]">
+                <button onclick="toggleFaq(1)" class="w-full flex items-center justify-between p-6 text-left group">
+                    <span class="text-2xl font-display text-white uppercase italic tracking-tighter leading-none group-hover:text-meme-cyan transition-colors">WHAT IS CANONIX?</span>
+                    <i id="icon-1" class="fas fa-plus text-meme-cyan transition-transform"></i>
+                </button>
+                <div id="ans-1" class="hidden px-6 pb-6 border-t border-black pt-4 bg-black/30">
+                    <p class="font-sans text-sm text-gray-400 leading-relaxed uppercase font-bold italic">
+                        Canonix is the ultimate decentralized playground for PRC20 meme tokens on the Paxi Network. It features a bonding curve launchpad and a high-speed DEX terminal for traders who want to ape into the next big thing early.
+                    </p>
+                </div>
             </div>
+
+            <!-- Question 2 -->
+            <div class="bg-meme-surface border-2 border-black shadow-brutal rotate-[0.5deg]">
+                <button onclick="toggleFaq(2)" class="w-full flex items-center justify-between p-6 text-left group">
+                    <span class="text-2xl font-display text-white uppercase italic tracking-tighter leading-none group-hover:text-meme-cyan transition-colors">HOW DO I TRADE?</span>
+                    <i id="icon-2" class="fas fa-plus text-meme-cyan transition-transform"></i>
+                </button>
+                <div id="ans-2" class="hidden px-6 pb-6 border-t border-black pt-4 bg-black/30">
+                    <p class="font-sans text-sm text-gray-400 leading-relaxed uppercase font-bold italic">
+                        Connect your wallet (Internal, PaxiHub, or Keplr), select a token from the market list, enter the amount of PAXI you want to swap, and hit the PUMP button. Ensure you have enough PAXI for gas fees.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Question 3 -->
+            <div class="bg-meme-surface border-2 border-black shadow-brutal rotate-[-0.3deg]">
+                <button onclick="toggleFaq(3)" class="w-full flex items-center justify-between p-6 text-left group">
+                    <span class="text-2xl font-display text-white uppercase italic tracking-tighter leading-none group-hover:text-meme-cyan transition-colors">IS MY WALLET SAFE?</span>
+                    <i id="icon-3" class="fas fa-plus text-meme-cyan transition-transform"></i>
+                </button>
+                <div id="ans-3" class="hidden px-6 pb-6 border-t border-black pt-4 bg-black/30">
+                    <p class="font-sans text-sm text-gray-400 leading-relaxed uppercase font-bold italic">
+                        Yes. Our internal wallet uses industry-standard AES-256 encryption. Your seed phrase never leaves your device and is only accessible with your 6-digit PIN. Always backup your seed phrase in a safe place.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Question 4 -->
+            <div class="bg-meme-surface border-2 border-black shadow-brutal rotate-[0.2deg]">
+                <button onclick="toggleFaq(4)" class="w-full flex items-center justify-between p-6 text-left group">
+                    <span class="text-2xl font-display text-white uppercase italic tracking-tighter leading-none group-hover:text-meme-cyan transition-colors">WHAT ARE THE FEES?</span>
+                    <i id="icon-4" class="fas fa-plus text-meme-cyan transition-transform"></i>
+                </button>
+                <div id="ans-4" class="hidden px-6 pb-6 border-t border-black pt-4 bg-black/30">
+                    <p class="font-sans text-sm text-gray-400 leading-relaxed uppercase font-bold italic">
+                        Canonix charges ZERO platform fees. You only pay the network gas fees in PAXI, which are dynamically calculated to ensure your transaction lands as fast as possible.
+                    </p>
+                </div>
+            </div>
+
         </div>
 
-        <div class="space-y-8">
-            <!-- FAQ 1 -->
-            <div class="group">
-                <div onclick="window.toggleFAQ(this)" class="faq-question cursor-pointer bg-meme-surface border-4 border-black shadow-brutal p-8 md:p-10 flex justify-between items-center group-hover:bg-meme-card transition-all">
-                    <h3 class="text-3xl font-display text-white uppercase italic tracking-tighter">What is the Paxi Network?</h3>
-                    <i class="fas fa-chevron-down text-meme-cyan text-2xl transition-transform duration-300"></i>
-                </div>
-                <div class="faq-answer overflow-hidden transition-all duration-300 max-h-0 bg-black border-x-4 border-black border-b-4">
-                    <div class="p-8 md:p-10 font-display text-2xl text-gray-400 italic leading-tight uppercase">
-                        The Paxi Network is a lightning-fast blockchain built for high-frequency trading and meme energy. Sub-second block times and near-zero fees make it the ultimate playground for degen activities.
-                    </div>
-                </div>
-            </div>
-
-            <!-- FAQ 2 -->
-            <div class="group">
-                <div onclick="window.toggleFAQ(this)" class="faq-question cursor-pointer bg-meme-surface border-4 border-black shadow-brutal p-8 md:p-10 flex justify-between items-center group-hover:bg-meme-card transition-all">
-                    <h3 class="text-3xl font-display text-white uppercase italic tracking-tighter">How does the Bonding Curve work?</h3>
-                    <i class="fas fa-chevron-down text-meme-cyan text-2xl transition-transform duration-300"></i>
-                </div>
-                <div class="faq-answer overflow-hidden transition-all duration-300 max-h-0 bg-black border-x-4 border-black border-b-4">
-                    <div class="p-8 md:p-10 font-display text-2xl text-gray-400 italic leading-tight uppercase">
-                        Every token on Canonix starts its life on a mathematical bonding curve. As more people buy, the price increases. Once the market cap hits the target, liquidity is migrated to a permanent pool and locked forever. Pure code, no rugs.
-                    </div>
-                </div>
-            </div>
-
-            <!-- FAQ 3 -->
-            <div class="group">
-                <div onclick="window.toggleFAQ(this)" class="faq-question cursor-pointer bg-meme-surface border-4 border-black shadow-brutal p-8 md:p-10 flex justify-between items-center group-hover:bg-meme-card transition-all">
-                    <h3 class="text-3xl font-display text-white uppercase italic tracking-tighter">Is Canonix safe to use?</h3>
-                    <i class="fas fa-chevron-down text-meme-cyan text-2xl transition-transform duration-300"></i>
-                </div>
-                <div class="faq-answer overflow-hidden transition-all duration-300 max-h-0 bg-black border-x-4 border-black border-b-4">
-                    <div class="p-8 md:p-10 font-display text-2xl text-gray-400 italic leading-tight uppercase">
-                        Canonix is a fully decentralized, non-custodial DEX. You own your keys. While our smart contracts are built for security, meme coins are high-risk. Don't invest more than you can afford to lose.
-                    </div>
-                </div>
-            </div>
-
-            <!-- FAQ 4 -->
-            <div class="group">
-                <div onclick="window.toggleFAQ(this)" class="faq-question cursor-pointer bg-meme-surface border-4 border-black shadow-brutal p-8 md:p-10 flex justify-between items-center group-hover:bg-meme-card transition-all">
-                    <h3 class="text-3xl font-display text-white uppercase italic tracking-tighter">What are PRC20 tokens?</h3>
-                    <i class="fas fa-chevron-down text-meme-cyan text-2xl transition-transform duration-300"></i>
-                </div>
-                <div class="faq-answer overflow-hidden transition-all duration-300 max-h-0 bg-black border-x-4 border-black border-b-4">
-                    <div class="p-8 md:p-10 font-display text-2xl text-gray-400 italic leading-tight uppercase">
-                        PRC20 is the native token standard of the Paxi Network, similar to ERC20 on Ethereum or SPL on Solana. It enables seamless asset management and interoperability within the ecosystem.
-                    </div>
+        <div class="mt-20 text-center">
+            <div class="inline-block p-8 bg-meme-surface border-2 border-black shadow-brutal relative">
+                <div class="absolute -top-6 -right-6 w-12 h-12 bg-meme-pink border-2 border-black shadow-brutal-sm flex items-center justify-center rotate-12 animate-bounce"><i class="fas fa-heart"></i></div>
+                <h4 class="text-3xl font-display text-white uppercase italic tracking-tighter mb-4 leading-none">STILL CONFUSED?</h4>
+                <p class="font-mono text-[10px] text-gray-500 font-bold uppercase tracking-widest italic mb-6">Our community of degens is always ready to help.</p>
+                <div class="flex gap-4 justify-center">
+                    <a href="#" class="px-6 py-2 bg-meme-cyan text-black font-display text-lg border-2 border-black shadow-brutal-sm hover:shadow-none transition-all uppercase italic">TELEGRAM</a>
+                    <a href="#" class="px-6 py-2 bg-meme-pink text-white font-display text-lg border-2 border-black shadow-brutal-sm hover:shadow-none transition-all uppercase italic">DISCORD</a>
                 </div>
             </div>
         </div>
+    </section>
 
-        <div class="mt-32 p-12 bg-meme-pink border-8 border-black shadow-brutal text-center rotate-[-1deg]">
-            <h2 class="text-5xl font-display text-white mb-6 italic uppercase tracking-tighter leading-none">STILL CONFUSED?</h2>
-            <p class="font-display text-2xl text-black/70 mb-10 italic uppercase leading-tight">Our dev team is chronically online in the Telegram channel.</p>
-            <a href="#" class="inline-block bg-black text-white font-display text-3xl px-12 py-6 border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">JOIN TELEGRAM</a>
-        </div>
-    </main>
-
-    <footer class="py-20 bg-black border-t-8 border-black px-6 text-center">
-        <div class="font-mono text-[10px] text-gray-800 font-black uppercase tracking-[1em]">
-            END OF ENCRYPTED TRANSMISSION | 2026
+    <!-- FOOTER -->
+    <footer class="py-12 px-4 bg-black border-t-2 border-black">
+        <div class="max-w-6xl mx-auto mt-4 text-center">
+            <p class="font-mono text-[8px] text-gray-700 font-bold uppercase tracking-[0.2em] italic">© 2024 CANONIX PROTOCOL | THE TRUTH IS OUT THERE</p>
         </div>
     </footer>
 
-    <script src="./js/core/config.js"></script>
-    <script src="./js/core/utils.js"></script>
-    <script src="./js/ui/common.js"></script>
+    <script>
+        function toggleFaq(id) {
+            const ans = document.getElementById('ans-' + id);
+            const icon = document.getElementById('icon-' + id);
+
+            if (ans.classList.contains('hidden')) {
+                ans.classList.remove('hidden');
+                icon.classList.replace('fa-plus', 'fa-minus');
+                icon.classList.add('rotate-90');
+            } else {
+                ans.classList.add('hidden');
+                icon.classList.replace('fa-minus', 'fa-plus');
+                icon.classList.remove('rotate-90');
+            }
+        }
+    </script>
 </body>
 </html>
