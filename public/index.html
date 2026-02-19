@@ -20,7 +20,7 @@
             theme: {
                 extend: {
                     colors: {
-                        'meme-bg': '#000000',
+                        'meme-black': '#000000',
                         'meme-surface': '#0D0D0D',
                         'meme-card': '#1A1A1A',
                         'meme-green': '#39FF14',
@@ -99,7 +99,7 @@
     <meta name="theme-color" content="#000000">
 </head>
 
-<body class="bg-meme-bg text-white font-sans overflow-x-hidden selection:bg-meme-pink selection:text-white">
+<body class="bg-meme-black text-white font-sans overflow-x-hidden selection:bg-meme-pink selection:text-white">
     <!-- Marquee Ticker Top -->
     <div class="bg-meme-yellow border-b-4 border-black py-2 overflow-hidden whitespace-nowrap z-[100] relative">
         <div class="animate-marquee inline-block">
@@ -118,13 +118,13 @@
     </div>
 
     <!-- Navigation -->
-    <nav class="sticky top-0 z-[90] bg-meme-bg border-b-4 border-black">
-        <div class="max-w-[1400px] mx-auto px-4 h-24 flex items-center justify-between">
-            <div class="flex items-center gap-4 group cursor-pointer">
-                <div class="w-14 h-14 bg-meme-green border-4 border-black shadow-brutal flex items-center justify-center rotate-[-3deg] group-hover:rotate-0 transition-transform">
-                    <i class="fas fa-exchange-alt text-black text-2xl"></i>
+    <nav class="sticky top-0 z-[90] bg-meme-black border-b-2 md:border-b-4 border-black">
+        <div class="max-w-[1400px] mx-auto px-4 h-16 md:h-24 flex items-center justify-between">
+            <div class="flex items-center gap-2 md:gap-4 group cursor-pointer">
+                <div class="w-8 h-8 md:w-14 md:h-14 bg-meme-green border-2 md:border-4 border-black shadow-[4px_4px_0_0_#000] md:shadow-brutal flex items-center justify-center rotate-[-3deg] group-hover:rotate-0 transition-transform">
+                    <i class="fas fa-exchange-alt text-black text-sm md:text-2xl"></i>
                 </div>
-                <span class="text-5xl font-display tracking-widest text-white group-hover:text-meme-green transition-colors">CANONIX</span>
+                <span class="text-2xl md:text-5xl font-display tracking-widest text-white group-hover:text-meme-green transition-colors">CANONIX</span>
             </div>
 
             <div class="hidden lg:flex items-center gap-12">
@@ -133,60 +133,60 @@
                 <a href="faq.html" class="font-display text-2xl hover:text-meme-yellow hover:translate-y-[-2px] transition-all">HACKERS</a>
             </div>
 
-            <a href="trade.html" class="bg-meme-pink text-white font-display text-2xl px-8 py-3 border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all">
+            <a href="trade.html" class="bg-meme-pink text-white font-display text-sm md:text-2xl px-4 md:px-8 py-2 md:py-3 border-2 md:border-4 border-black shadow-[4px_4px_0_0_#000] md:shadow-brutal hover:shadow-none hover:translate-x-[2px] md:hover:translate-x-[4px] hover:translate-y-[2px] md:hover:translate-y-[4px] transition-all">
                 LAUNCH APP
             </a>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section class="relative min-h-[90vh] flex items-center justify-center overflow-hidden border-b-4 border-black">
+    <section class="relative min-h-[70vh] md:min-h-[90vh] flex items-center justify-center overflow-hidden border-b-2 md:border-b-4 border-black">
         <!-- Background elements -->
         <div class="absolute inset-0 z-0 bg-[url('https://www.transparenttextures.com/patterns/graphy-dark.png')] opacity-20"></div>
         <div class="absolute top-1/4 -left-20 w-96 h-96 bg-meme-pink/20 rounded-full blur-[120px] animate-float"></div>
         <div class="absolute bottom-1/4 -right-20 w-96 h-96 bg-meme-green/20 rounded-full blur-[120px] animate-float delay-1000"></div>
 
-        <div class="max-w-[1400px] mx-auto px-4 relative z-10 grid lg:grid-cols-2 gap-20 items-center">
+        <div class="max-w-[1400px] mx-auto px-4 py-12 relative z-10 grid lg:grid-cols-2 gap-10 md:gap-20 items-center">
             <div class="reveal">
-                <div class="inline-block bg-meme-cyan text-black font-mono font-bold text-sm px-4 py-1 border-2 border-black mb-8 rotate-[-2deg]">
+                <div class="inline-block bg-meme-cyan text-black font-mono font-bold text-[10px] md:text-sm px-4 py-1 border-2 border-black mb-4 md:mb-8 rotate-[-2deg]">
                     BONDING CURVE TERMINAL V2.0
                 </div>
-                <h1 class="text-7xl md:text-[120px] font-display leading-[0.8] mb-12 tracking-tighter">
+                <h1 class="text-4xl md:text-[120px] font-display leading-[0.8] mb-6 md:mb-12 tracking-tighter">
                     <span class="text-white">UNLEASH THE</span><br>
                     <span class="text-meme-green italic">MEME ENERGY</span>
                 </h1>
-                <p class="text-2xl font-mono text-gray-400 mb-12 max-w-xl leading-tight">
+                <p class="text-sm md:text-2xl font-mono text-gray-400 mb-6 md:mb-12 max-w-xl leading-tight">
                     DECENTRALIZED PRC20 TRADING FOR TRUE DEGENS. NO CAP, NO RAGRETS, JUST PURE PUMP.
                 </p>
 
-                <div class="flex flex-col sm:flex-row gap-8">
-                    <a href="trade.html" class="bg-meme-green text-black font-display text-4xl px-12 py-6 border-4 border-black shadow-brutal-pink hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all text-center">
+                <div class="flex flex-col sm:flex-row gap-4 md:gap-8">
+                    <a href="trade.html" class="bg-meme-green text-black font-display text-2xl md:text-4xl px-8 md:px-12 py-4 md:py-6 border-2 md:border-4 border-black shadow-[4px_4px_0_0_#FF007F] md:shadow-brutal-pink hover:shadow-none hover:translate-x-[2px] md:hover:translate-x-[4px] hover:translate-y-[2px] md:hover:translate-y-[4px] transition-all text-center">
                         TRADE NOW
                     </a>
-                    <a href="#market" class="bg-white text-black font-display text-4xl px-12 py-6 border-4 border-black shadow-brutal-cyan hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all text-center">
+                    <a href="#market" class="bg-white text-black font-display text-2xl md:text-4xl px-8 md:px-12 py-4 md:py-6 border-2 md:border-4 border-black shadow-[4px_4px_0_0_#00FFFF] md:shadow-brutal-cyan hover:shadow-none hover:translate-x-[2px] md:hover:translate-x-[4px] hover:translate-y-[2px] md:hover:translate-y-[4px] transition-all text-center">
                         EXPLORE
                     </a>
                 </div>
 
                 <!-- Stats Grid -->
-                <div class="grid grid-cols-3 gap-8 mt-20 pt-12 border-t-4 border-black">
+                <div class="grid grid-cols-3 gap-2 md:gap-8 mt-12 md:mt-20 pt-8 md:pt-12 border-t-2 md:border-t-4 border-black">
                     <div>
-                        <div class="text-5xl font-display text-meme-yellow italic mb-2 tracking-tighter">
+                        <div class="text-xl md:text-5xl font-display text-meme-yellow italic mb-1 md:mb-2 tracking-tighter">
                             $<span class="counter" data-target="128">0</span>M+
                         </div>
-                        <div class="text-xs font-mono font-bold text-gray-500 uppercase">GIGA VOLUME</div>
+                        <div class="text-[8px] md:text-xs font-mono font-bold text-gray-500 uppercase">GIGA VOLUME</div>
                     </div>
                     <div>
-                        <div class="text-5xl font-display text-meme-pink italic mb-2 tracking-tighter">
+                        <div class="text-xl md:text-5xl font-display text-meme-pink italic mb-1 md:mb-2 tracking-tighter">
                             <span class="counter" data-target="45">0</span>K+
                         </div>
-                        <div class="text-xs font-mono font-bold text-gray-500 uppercase">ACTIVE APES</div>
+                        <div class="text-[8px] md:text-xs font-mono font-bold text-gray-500 uppercase">ACTIVE APES</div>
                     </div>
                     <div>
-                        <div class="text-5xl font-display text-meme-cyan italic mb-2 tracking-tighter">
+                        <div class="text-xl md:text-5xl font-display text-meme-cyan italic mb-1 md:mb-2 tracking-tighter">
                             <span class="counter" data-target="890">0</span>+
                         </div>
-                        <div class="text-xs font-mono font-bold text-gray-500 uppercase">SHITCOINS</div>
+                        <div class="text-[8px] md:text-xs font-mono font-bold text-gray-500 uppercase">SHITCOINS</div>
                     </div>
                 </div>
             </div>
@@ -201,7 +201,7 @@
                             <div class="w-3 h-3 rounded-full bg-meme-green"></div>
                         </div>
                     </div>
-                <div class="aspect-video bg-meme-bg border-2 border-black relative overflow-hidden">
+                <div class="aspect-video bg-meme-black border-2 border-black relative overflow-hidden">
                         <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_#1A1A1A_1px,_transparent_1px)] bg-[size:20px_20px] opacity-30"></div>
                         <!-- Mock chart -->
                         <svg viewBox="0 0 100 40" class="absolute bottom-0 w-full h-full text-meme-green opacity-50 stroke-[2]">
@@ -224,44 +224,43 @@
     </section>
 
     <!-- Market Section -->
-    <section id="market" class="py-32 bg-meme-bg border-b-4 border-black">
+    <section id="market" class="py-12 md:py-32 bg-meme-black border-b-2 md:border-b-4 border-black">
         <div class="max-w-[1400px] mx-auto px-4">
-            <div class="flex flex-col lg:flex-row justify-between items-end gap-12 mb-20 reveal">
-                <div class="max-w-2xl">
-                    <div class="text-meme-pink font-display text-3xl mb-4 italic">REAL-TIME DATA FEED</div>
-                    <h2 class="text-7xl md:text-9xl font-display italic leading-none tracking-tighter">HOT <span class="text-meme-green">MARKETS</span></h2>
+            <div class="flex flex-col lg:flex-row justify-between items-center lg:items-end gap-6 md:gap-12 mb-10 md:mb-20 reveal">
+                <div class="max-w-2xl text-center lg:text-left">
+                    <div class="text-meme-pink font-display text-lg md:text-3xl mb-2 md:mb-4 italic">REAL-TIME DATA FEED</div>
+                    <h2 class="text-4xl md:text-9xl font-display italic leading-none tracking-tighter">HOT <span class="text-meme-green">MARKETS</span></h2>
                 </div>
 
                 <!-- Filters -->
-                <div class="flex flex-wrap gap-4">
-                    <button onclick="window.setMarketFilter('hot', this)" class="market-filter-btn px-8 py-3 bg-meme-green text-black font-display text-2xl border-4 border-black shadow-brutal hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all">HOT</button>
-                    <button onclick="window.setMarketFilter('new', this)" class="market-filter-btn px-8 py-3 bg-meme-bg text-white font-display text-2xl border-4 border-black shadow-brutal hover:bg-white hover:text-black transition-all">NEW</button>
-                    <button onclick="window.setMarketFilter('pumping', this)" class="market-filter-btn px-8 py-3 bg-meme-bg text-white font-display text-2xl border-4 border-black shadow-brutal hover:bg-white hover:text-black transition-all">PUMPING</button>
-                    <button onclick="window.setMarketFilter('gainers', this)" class="market-filter-btn px-8 py-3 bg-meme-bg text-white font-display text-2xl border-4 border-black shadow-brutal hover:bg-white hover:text-black transition-all">GAINERS</button>
+                <div class="flex flex-wrap justify-center gap-2 md:gap-4">
+                    <button onclick="window.setMarketFilter('hot', this)" class="market-filter-btn px-4 md:px-8 py-2 md:py-3 bg-meme-green text-black font-display text-sm md:text-2xl border-2 md:border-4 border-black shadow-[2px_2px_0_0_#000] md:shadow-brutal hover:translate-x-[1px] md:hover:translate-x-[2px] hover:translate-y-[1px] md:hover:translate-y-[2px] hover:shadow-none transition-all">HOT</button>
+                    <button onclick="window.setMarketFilter('new', this)" class="market-filter-btn px-4 md:px-8 py-2 md:py-3 bg-meme-black text-white font-display text-sm md:text-2xl border-2 md:border-4 border-black shadow-[2px_2px_0_0_#000] md:shadow-brutal hover:bg-white hover:text-black transition-all">NEW</button>
+                    <button onclick="window.setMarketFilter('pumping', this)" class="market-filter-btn px-4 md:px-8 py-2 md:py-3 bg-meme-black text-white font-display text-sm md:text-2xl border-2 md:border-4 border-black shadow-[2px_2px_0_0_#000] md:shadow-brutal hover:bg-white hover:text-black transition-all">PUMPING</button>
+                    <button onclick="window.setMarketFilter('gainers', this)" class="market-filter-btn px-4 md:px-8 py-2 md:py-3 bg-meme-black text-white font-display text-sm md:text-2xl border-2 md:border-4 border-black shadow-[2px_2px_0_0_#000] md:shadow-brutal hover:bg-white hover:text-black transition-all">GAINERS</button>
                 </div>
             </div>
 
             <!-- Search -->
-            <div class="mb-20 reveal">
-                <div class="relative max-w-2xl bg-white border-4 border-black shadow-brutal-cyan overflow-hidden">
-                    <i class="fas fa-search absolute left-6 top-1/2 -translate-y-1/2 text-black text-2xl"></i>
+            <div class="mb-10 md:mb-20 reveal">
+                <div class="relative max-w-2xl mx-auto md:mx-0 bg-white border-2 md:border-4 border-black shadow-[4px_4px_0_0_#00FFFF] md:shadow-brutal-cyan overflow-hidden">
+                    <i class="fas fa-search absolute left-4 md:left-6 top-1/2 -translate-y-1/2 text-black text-lg md:text-2xl"></i>
                     <input type="text" id="marketSearch" placeholder="SEARCH SHITCOINS..."
-                           class="w-full pl-20 pr-8 py-6 bg-transparent text-black font-display text-3xl outline-none placeholder:text-gray-400"
+                           class="w-full pl-12 md:pl-20 pr-4 md:pr-8 py-3 md:py-6 bg-transparent text-black font-display text-lg md:text-3xl outline-none placeholder:text-gray-400"
                            oninput="window.filterMarket()">
                 </div>
             </div>
 
             <!-- Grid Container -->
-            <div id="marketGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10 reveal">
+            <div id="marketGrid" class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-10 reveal">
                 <!-- SKELETON LOADERS -->
-                <div class="bg-meme-surface border-4 border-black h-80 shadow-brutal animate-pulse"></div>
-                <div class="bg-meme-surface border-4 border-black h-80 shadow-brutal animate-pulse"></div>
-                <div class="bg-meme-surface border-4 border-black h-80 shadow-brutal animate-pulse"></div>
-                <div class="bg-meme-surface border-4 border-black h-80 shadow-brutal animate-pulse"></div>
+                <div class="bg-meme-surface border-2 md:border-4 border-black h-40 md:h-80 shadow-[4px_4px_0_0_#000] md:shadow-brutal animate-pulse"></div>
+                <div class="bg-meme-surface border-2 md:border-4 border-black h-40 md:h-80 shadow-[4px_4px_0_0_#000] md:shadow-brutal animate-pulse"></div>
+                <div class="bg-meme-surface border-2 md:border-4 border-black h-40 md:h-80 shadow-[4px_4px_0_0_#000] md:shadow-brutal animate-pulse"></div>
             </div>
 
-            <div class="mt-20 text-center reveal">
-                <button id="loadMoreMarket" onclick="window.loadMoreMarket()" class="px-16 py-6 bg-meme-cyan text-black font-display text-4xl border-4 border-black shadow-brutal hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none transition-all">
+            <div class="mt-10 md:mt-20 text-center reveal">
+                <button id="loadMoreMarket" onclick="window.loadMoreMarket()" class="px-8 md:px-16 py-3 md:py-6 bg-meme-cyan text-black font-display text-xl md:text-4xl border-2 md:border-4 border-black shadow-[4px_4px_0_0_#000] md:shadow-brutal hover:translate-x-[2px] md:hover:translate-x-[4px] hover:translate-y-[2px] md:hover:translate-y-[4px] hover:shadow-none transition-all">
                     LOAD MORE TRASH
                 </button>
             </div>
@@ -269,79 +268,79 @@
     </section>
 
     <!-- NEW SECTION: Trading War (Event) -->
-    <section class="py-32 bg-meme-pink border-b-4 border-black overflow-hidden relative">
+    <section class="py-12 md:py-32 bg-meme-pink border-b-2 md:border-b-4 border-black overflow-hidden relative">
         <div class="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-30"></div>
         <div class="max-w-[1400px] mx-auto px-4 relative z-10 flex flex-col items-center text-center">
-            <div class="bg-black text-meme-pink font-display text-4xl px-8 py-2 mb-8 rotate-[-1deg] inline-block">LIVE COMPETITION</div>
-            <h2 class="text-7xl md:text-[140px] font-display text-white leading-none tracking-tighter mb-12 italic uppercase">DEGEN TRADING WAR</h2>
+            <div class="bg-black text-meme-pink font-display text-xl md:text-4xl px-6 md:px-8 py-1 md:py-2 mb-4 md:mb-8 rotate-[-1deg] inline-block">LIVE COMPETITION</div>
+            <h2 class="text-4xl md:text-[140px] font-display text-white leading-none tracking-tighter mb-8 md:mb-12 italic uppercase">DEGEN TRADING WAR</h2>
 
-            <div class="grid md:grid-cols-3 gap-12 w-full mb-16">
-                <div class="bg-black border-4 border-white p-8 rotate-[-2deg] shadow-brutal">
-                    <div class="text-meme-yellow font-display text-6xl mb-2">50,000 PAXI</div>
-                    <div class="text-white font-mono font-bold text-sm uppercase tracking-widest">PRIZE POOL</div>
+            <div class="grid md:grid-cols-3 gap-4 md:gap-12 w-full mb-8 md:mb-16">
+                <div class="bg-black border-2 md:border-4 border-white p-4 md:p-8 rotate-[-2deg] shadow-[4px_4px_0_0_#fff] md:shadow-brutal">
+                    <div class="text-meme-yellow font-display text-2xl md:text-6xl mb-1 md:mb-2">50,000 PAXI</div>
+                    <div class="text-[8px] md:text-sm text-white font-mono font-bold uppercase tracking-widest">PRIZE POOL</div>
                 </div>
-                <div class="bg-white border-4 border-black p-8 rotate-[2deg] shadow-brutal">
-                    <div class="text-black font-display text-6xl mb-2">2,481</div>
-                    <div class="text-black/60 font-mono font-bold text-sm uppercase tracking-widest">WARRIORS JOINED</div>
+                <div class="bg-white border-2 md:border-4 border-black p-4 md:p-8 rotate-[2deg] shadow-[4px_4px_0_0_#000] md:shadow-brutal">
+                    <div class="text-black font-display text-2xl md:text-6xl mb-1 md:mb-2">2,481</div>
+                    <div class="text-[8px] md:text-sm text-black/60 font-mono font-bold uppercase tracking-widest">WARRIORS JOINED</div>
                 </div>
-                <div class="bg-meme-green border-4 border-black p-8 rotate-[-1deg] shadow-brutal">
-                    <div class="text-black font-display text-6xl mb-2">2D : 14H : 05M</div>
-                    <div class="text-black/60 font-mono font-bold text-sm uppercase tracking-widest">TIME REMAINING</div>
+                <div class="bg-meme-green border-2 md:border-4 border-black p-4 md:p-8 rotate-[-1deg] shadow-[4px_4px_0_0_#000] md:shadow-brutal">
+                    <div class="text-black font-display text-2xl md:text-6xl mb-1 md:mb-2">2D : 14H : 05M</div>
+                    <div class="text-[8px] md:text-sm text-black/60 font-mono font-bold uppercase tracking-widest">TIME REMAINING</div>
                 </div>
             </div>
 
-            <button class="bg-white text-black font-display text-5xl px-16 py-8 border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[6px] hover:translate-y-[6px] transition-all">
+            <button class="bg-white text-black font-display text-2xl md:text-5xl px-8 md:px-16 py-4 md:py-8 border-2 md:border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[3px] md:hover:translate-x-[6px] hover:translate-y-[3px] md:hover:translate-y-[6px] transition-all">
                 JOIN THE WAR
             </button>
         </div>
     </section>
 
     <!-- Leaderboard Section (Leaderboard) -->
-    <section class="py-32 bg-bg border-b-4 border-black">
+    <section class="py-12 md:py-32 bg-meme-black border-b-2 md:border-b-4 border-black">
         <div class="max-w-[1400px] mx-auto px-4">
-            <div class="text-center mb-20 reveal">
-                <h2 class="text-7xl md:text-9xl font-display italic tracking-tighter"><span class="text-meme-cyan">HALL</span> OF FAME</h2>
-                <p class="text-xl font-mono text-gray-500 uppercase font-bold mt-4">TOP APES OF THE WEEK</p>
+            <div class="text-center mb-10 md:mb-20 reveal">
+                <h2 class="text-4xl md:text-9xl font-display italic tracking-tighter"><span class="text-meme-cyan">HALL</span> OF FAME</h2>
+                <p class="text-xs md:text-xl font-mono text-gray-500 uppercase font-bold mt-2 md:mt-4">TOP APES OF THE WEEK</p>
             </div>
 
-            <div class="space-y-6 max-w-5xl mx-auto reveal">
+            <div class="space-y-4 md:space-y-6 max-w-5xl mx-auto reveal">
                 <!-- Top 1 -->
-                <div class="bg-meme-yellow border-4 border-black p-6 flex items-center gap-8 shadow-brutal hover:scale-[1.02] transition-transform">
-                    <div class="text-6xl font-display text-black italic">#1</div>
-                    <div class="w-16 h-16 bg-black border-4 border-white rounded-full flex items-center justify-center text-white text-2xl font-display">D</div>
+                <div class="bg-meme-yellow border-2 md:border-4 border-black p-3 md:p-6 flex items-center gap-3 md:gap-8 shadow-[4px_4px_0_0_#000] md:shadow-brutal hover:scale-[1.02] transition-transform">
+                    <div class="text-2xl md:text-6xl font-display text-black italic">#1</div>
+                    <div class="w-10 h-10 md:w-16 md:h-16 bg-black border-2 md:border-4 border-white rounded-full flex items-center justify-center text-white text-lg md:text-2xl font-display">D</div>
                     <div class="flex-1">
-                        <div class="text-3xl font-display text-black italic">DEGEN_KING_69</div>
-                        <div class="text-black/60 font-mono text-xs font-bold uppercase">WIN RATE: 94%</div>
+                        <div class="text-lg md:text-3xl font-display text-black italic">DEGEN_KING_69</div>
+                        <div class="text-black/60 font-mono text-[8px] md:text-xs font-bold uppercase">WIN RATE: 94%</div>
                     </div>
                     <div class="text-right">
-                        <div class="text-4xl font-display text-black">+42,000 PAXI</div>
-                        <div class="text-black/60 font-mono text-xs font-bold uppercase">PNL WEEKLY</div>
+                        <div class="text-xl md:text-4xl font-display text-black">+42K</div>
+                        <div class="text-black/60 font-mono text-[8px] md:text-xs font-bold uppercase">PNL WEEK</div>
                     </div>
                 </div>
                 <!-- Top 2 -->
-                <div class="bg-white border-4 border-black p-6 flex items-center gap-8 shadow-brutal hover:scale-[1.02] transition-transform">
-                    <div class="text-5xl font-display text-black italic">#2</div>
-                    <div class="w-14 h-14 bg-meme-pink border-4 border-black rounded-full flex items-center justify-center text-white text-xl font-display">M</div>
+                <div class="bg-white border-2 md:border-4 border-black p-3 md:p-6 flex items-center gap-3 md:gap-8 shadow-[4px_4px_0_0_#000] md:shadow-brutal hover:scale-[1.02] transition-transform">
+                    <div class="text-xl md:text-5xl font-display text-black italic">#2</div>
+                    <div class="w-8 h-8 md:w-14 md:h-14 bg-meme-pink border-2 md:border-4 border-black rounded-full flex items-center justify-center text-white text-md md:text-xl font-display">M</div>
                     <div class="flex-1">
-                        <div class="text-2xl font-display text-black italic">MOON_BOY_99</div>
-                        <div class="text-black/60 font-mono text-xs font-bold uppercase">WIN RATE: 88%</div>
+                        <div class="text-md md:text-2xl font-display text-black italic">MOON_BOY_99</div>
+                        <div class="text-black/60 font-mono text-[8px] md:text-xs font-bold uppercase">WIN RATE: 88%</div>
                     </div>
                     <div class="text-right">
-                        <div class="text-3xl font-display text-black">+28,500 PAXI</div>
-                        <div class="text-black/60 font-mono text-xs font-bold uppercase">PNL WEEKLY</div>
+                        <div class="text-lg md:text-3xl font-display text-black">+28K</div>
+                        <div class="text-black/60 font-mono text-[8px] md:text-xs font-bold uppercase">PNL WEEK</div>
                     </div>
                 </div>
                 <!-- Top 3 -->
-                <div class="bg-white border-4 border-black p-6 flex items-center gap-8 shadow-brutal hover:scale-[1.02] transition-transform">
-                    <div class="text-5xl font-display text-black italic">#3</div>
-                    <div class="w-14 h-14 bg-meme-cyan border-4 border-black rounded-full flex items-center justify-center text-black text-xl font-display">P</div>
+                <div class="bg-white border-2 md:border-4 border-black p-3 md:p-6 flex items-center gap-3 md:gap-8 shadow-[4px_4px_0_0_#000] md:shadow-brutal hover:scale-[1.02] transition-transform">
+                    <div class="text-xl md:text-5xl font-display text-black italic">#3</div>
+                    <div class="w-8 h-8 md:w-14 md:h-14 bg-meme-cyan border-2 md:border-4 border-black rounded-full flex items-center justify-center text-black text-md md:text-xl font-display">P</div>
                     <div class="flex-1">
-                        <div class="text-2xl font-display text-black italic">PUMP_GOD</div>
-                        <div class="text-black/60 font-mono text-xs font-bold uppercase">WIN RATE: 82%</div>
+                        <div class="text-md md:text-2xl font-display text-black italic">PUMP_GOD</div>
+                        <div class="text-black/60 font-mono text-[8px] md:text-xs font-bold uppercase">WIN RATE: 82%</div>
                     </div>
                     <div class="text-right">
-                        <div class="text-3xl font-display text-black">+15,200 PAXI</div>
-                        <div class="text-black/60 font-mono text-xs font-bold uppercase">PNL WEEKLY</div>
+                        <div class="text-lg md:text-3xl font-display text-black">+15K</div>
+                        <div class="text-black/60 font-mono text-[8px] md:text-xs font-bold uppercase">PNL WEEK</div>
                     </div>
                 </div>
             </div>
@@ -349,68 +348,68 @@
     </section>
 
     <!-- AI Intelligence Section -->
-    <section class="py-32 relative overflow-hidden bg-meme-surface border-b-4 border-black">
+    <section class="py-12 md:py-32 relative overflow-hidden bg-meme-surface border-b-2 md:border-b-4 border-black">
         <div class="max-w-[1400px] mx-auto px-4">
-            <div class="bg-black border-4 border-meme-green p-12 lg:p-24 relative overflow-hidden reveal">
-                <div class="absolute top-0 right-0 p-20 opacity-[0.05] -z-0"><i class="fas fa-brain text-[400px] text-meme-green"></i></div>
+            <div class="bg-black border-2 md:border-4 border-meme-green p-6 md:p-24 relative overflow-hidden reveal">
+                <div class="absolute top-0 right-0 p-20 opacity-[0.05] -z-0"><i class="fas fa-brain text-[200px] md:text-[400px] text-meme-green"></i></div>
                 <div id="index-ai-content" class="relative z-10">
                     <!-- JS Populated -->
-                    <div class="flex items-center gap-12 mb-16">
-                        <div class="w-24 h-24 bg-meme-green border-4 border-black shadow-brutal flex items-center justify-center text-black text-5xl rotate-[-5deg]"><i class="fas fa-circle-notch fa-spin"></i></div>
+                    <div class="flex items-center gap-4 md:gap-12 mb-8 md:mb-16">
+                        <div class="w-12 h-12 md:w-24 md:h-24 bg-meme-green border-2 md:border-4 border-black shadow-[4px_4px_0_0_#000] md:shadow-brutal flex items-center justify-center text-black text-xl md:text-5xl rotate-[-5deg]"><i class="fas fa-circle-notch fa-spin"></i></div>
                         <div>
-                            <h3 class="font-display italic uppercase text-6xl tracking-tighter text-meme-green">BRAIN SCANNING...</h3>
-                            <p class="font-mono text-sm text-gray-500 font-bold uppercase tracking-[0.4em]">GEMINI PRO 1.5 IS CONSUMING BLOCKS</p>
+                            <h3 class="font-display italic uppercase text-3xl md:text-6xl tracking-tighter text-meme-green">BRAIN SCANNING...</h3>
+                            <p class="font-mono text-[8px] md:text-sm text-gray-500 font-bold uppercase tracking-[0.4em]">GEMINI PRO 1.5 IS CONSUMING BLOCKS</p>
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-10 mb-16">
-                        <div class="h-32 bg-meme-surface border-4 border-black animate-pulse shadow-brutal"></div>
-                        <div class="h-32 bg-meme-surface border-4 border-black animate-pulse shadow-brutal"></div>
-                        <div class="h-32 bg-meme-surface border-4 border-black animate-pulse shadow-brutal"></div>
-                        <div class="h-32 bg-meme-surface border-4 border-black animate-pulse shadow-brutal"></div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-10 mb-8 md:mb-16">
+                        <div class="h-16 md:h-32 bg-meme-surface border-2 md:border-4 border-black animate-pulse shadow-[4px_4px_0_0_#000] md:shadow-brutal"></div>
+                        <div class="h-16 md:h-32 bg-meme-surface border-2 md:border-4 border-black animate-pulse shadow-[4px_4px_0_0_#000] md:shadow-brutal"></div>
+                        <div class="h-16 md:h-32 bg-meme-surface border-2 md:border-4 border-black animate-pulse shadow-[4px_4px_0_0_#000] md:shadow-brutal"></div>
+                        <div class="h-16 md:h-32 bg-meme-surface border-2 md:border-4 border-black animate-pulse shadow-[4px_4px_0_0_#000] md:shadow-brutal"></div>
                     </div>
-                    <div class="bg-meme-surface border-4 border-black p-12 animate-pulse h-60 shadow-brutal"></div>
+                    <div class="bg-meme-surface border-2 md:border-4 border-black p-6 md:p-12 animate-pulse h-32 md:h-60 shadow-[4px_4px_0_0_#000] md:shadow-brutal"></div>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- DEGEN TECH (Features) -->
-    <section id="features" class="py-32 bg-meme-bg">
+    <section id="features" class="py-12 md:py-32 bg-meme-black">
         <div class="max-w-[1400px] mx-auto px-4">
-            <div class="text-center mb-24 reveal">
-                <h2 class="text-7xl md:text-9xl font-display italic tracking-tighter uppercase leading-none">DEGEN <span class="text-meme-pink">TECH</span></h2>
-                <p class="text-xl font-mono text-gray-500 font-bold mt-4">BUILT FOR ZERO LATENCY PUMPING</p>
+            <div class="text-center mb-12 md:mb-24 reveal">
+                <h2 class="text-4xl md:text-9xl font-display italic tracking-tighter uppercase leading-none">DEGEN <span class="text-meme-pink">TECH</span></h2>
+                <p class="text-xs md:text-xl font-mono text-gray-500 font-bold mt-2 md:mt-4">BUILT FOR ZERO LATENCY PUMPING</p>
             </div>
 
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-12">
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-12">
                 <!-- Feature 1 -->
-                <div class="reveal p-12 bg-meme-surface border-4 border-black shadow-brutal-green hover:translate-y-[-10px] transition-all group">
-                    <div class="w-20 h-20 bg-meme-green border-4 border-black flex items-center justify-center text-black text-4xl mb-12 rotate-[-5deg] group-hover:rotate-0 transition-transform"><i class="fas fa-microchip"></i></div>
-                    <h4 class="text-4xl font-display text-white mb-6 italic tracking-tight">AI ORACLE V2</h4>
-                    <p class="font-mono text-gray-400 leading-relaxed mb-8">REAL-TIME SENTIMENT ANALYSIS POWERED BY GEMINI PRO. DON'T BUY RUGS, BUY OPPORTUNITY.</p>
-                    <div class="pt-8 border-t-4 border-black font-mono text-xs text-meme-green font-bold uppercase tracking-widest">STATUS: GIGA-BRAIN</div>
+                <div class="reveal p-6 md:p-12 bg-meme-surface border-2 md:border-4 border-black shadow-[4px_4px_0_0_#39FF14] md:shadow-brutal-green hover:translate-y-[-5px] md:hover:translate-y-[-10px] transition-all group">
+                    <div class="w-12 h-12 md:w-20 md:h-20 bg-meme-green border-2 md:border-4 border-black flex items-center justify-center text-black text-xl md:text-4xl mb-6 md:mb-12 rotate-[-5deg] group-hover:rotate-0 transition-transform"><i class="fas fa-microchip"></i></div>
+                    <h4 class="text-2xl md:text-4xl font-display text-white mb-4 md:mb-6 italic tracking-tight">AI ORACLE V2</h4>
+                    <p class="text-xs md:text-base font-mono text-gray-400 leading-relaxed mb-6 md:mb-8">REAL-TIME SENTIMENT ANALYSIS POWERED BY GEMINI PRO. DON'T BUY RUGS, BUY OPPORTUNITY.</p>
+                    <div class="pt-4 md:pt-8 border-t-2 md:border-t-4 border-black font-mono text-[10px] md:text-xs text-meme-green font-bold uppercase tracking-widest">STATUS: GIGA-BRAIN</div>
                 </div>
                 <!-- Feature 2 -->
-                <div class="reveal p-12 bg-meme-surface border-4 border-black shadow-brutal-pink hover:translate-y-[-10px] transition-all group">
-                    <div class="w-20 h-20 bg-meme-pink border-4 border-black flex items-center justify-center text-white text-4xl mb-12 rotate-[5deg] group-hover:rotate-0 transition-transform"><i class="fas fa-shield-halved"></i></div>
-                    <h4 class="text-4xl font-display text-white mb-6 italic tracking-tight">ANTI-RUG ARMOR</h4>
-                    <p class="font-mono text-gray-400 leading-relaxed mb-8">NON-CUSTODIAL VAULTING. YOUR KEYS, YOUR SHITCOINS. 100% DECENTRALIZED VIBES.</p>
-                    <div class="pt-8 border-t-4 border-black font-mono text-xs text-meme-pink font-bold uppercase tracking-widest">STATUS: UNRUGGABLE</div>
+                <div class="reveal p-6 md:p-12 bg-meme-surface border-2 md:border-4 border-black shadow-[4px_4px_0_0_#FF007F] md:shadow-brutal-pink hover:translate-y-[-5px] md:hover:translate-y-[-10px] transition-all group">
+                    <div class="w-12 h-12 md:w-20 md:h-20 bg-meme-pink border-2 md:border-4 border-black flex items-center justify-center text-white text-xl md:text-4xl mb-6 md:mb-12 rotate-[5deg] group-hover:rotate-0 transition-transform"><i class="fas fa-shield-halved"></i></div>
+                    <h4 class="text-2xl md:text-4xl font-display text-white mb-4 md:mb-6 italic tracking-tight">ANTI-RUG ARMOR</h4>
+                    <p class="text-xs md:text-base font-mono text-gray-400 leading-relaxed mb-6 md:mb-8">NON-CUSTODIAL VAULTING. YOUR KEYS, YOUR SHITCOINS. 100% DECENTRALIZED VIBES.</p>
+                    <div class="pt-4 md:pt-8 border-t-2 md:border-t-4 border-black font-mono text-[10px] md:text-xs text-meme-pink font-bold uppercase tracking-widest">STATUS: UNRUGGABLE</div>
                 </div>
                 <!-- Feature 3 -->
-                <div class="reveal p-12 bg-meme-surface border-4 border-black shadow-brutal-cyan hover:translate-y-[-10px] transition-all group">
-                    <div class="w-20 h-20 bg-meme-cyan border-4 border-black flex items-center justify-center text-black text-4xl mb-12 rotate-[-3deg] group-hover:rotate-0 transition-transform"><i class="fas fa-gas-pump"></i></div>
-                    <h4 class="text-4xl font-display text-white mb-6 italic tracking-tight">ZERO GAS META</h4>
-                    <p class="font-mono text-gray-400 leading-relaxed mb-8">SUBSIDIZED FEES FOR TOP TRADERS. WE PAY FOR YOUR ADDICTION. TRADE TILL YOU DROP.</p>
-                    <div class="pt-8 border-t-4 border-black font-mono text-xs text-meme-cyan font-bold uppercase tracking-widest">STATUS: GAS-FREE</div>
+                <div class="reveal p-6 md:p-12 bg-meme-surface border-2 md:border-4 border-black shadow-[4px_4px_0_0_#00FFFF] md:shadow-brutal-cyan hover:translate-y-[-5px] md:hover:translate-y-[-10px] transition-all group">
+                    <div class="w-12 h-12 md:w-20 md:h-20 bg-meme-cyan border-2 md:border-4 border-black flex items-center justify-center text-black text-xl md:text-4xl mb-6 md:mb-12 rotate-[-3deg] group-hover:rotate-0 transition-transform"><i class="fas fa-gas-pump"></i></div>
+                    <h4 class="text-2xl md:text-4xl font-display text-white mb-4 md:mb-6 italic tracking-tight">ZERO GAS META</h4>
+                    <p class="text-xs md:text-base font-mono text-gray-400 leading-relaxed mb-6 md:mb-8">SUBSIDIZED FEES FOR TOP TRADERS. WE PAY FOR YOUR ADDICTION. TRADE TILL YOU DROP.</p>
+                    <div class="pt-4 md:pt-8 border-t-2 md:border-t-4 border-black font-mono text-[10px] md:text-xs text-meme-cyan font-bold uppercase tracking-widest">STATUS: GAS-FREE</div>
                 </div>
                 <!-- Feature 4 -->
-                <div class="reveal p-12 bg-meme-surface border-4 border-black shadow-brutal-pink hover:translate-y-[-10px] transition-all group lg:col-span-3">
-                    <div class="flex flex-col md:flex-row items-center gap-12">
-                        <div class="w-24 h-24 bg-meme-pink border-4 border-black flex items-center justify-center text-white text-5xl rotate-[2deg] group-hover:rotate-0 transition-transform shrink-0"><i class="fas fa-chart-line"></i></div>
+                <div class="reveal p-6 md:p-12 bg-meme-surface border-2 md:border-4 border-black shadow-[4px_4px_0_0_#FF007F] md:shadow-brutal-pink hover:translate-y-[-5px] md:hover:translate-y-[-10px] transition-all group lg:col-span-3">
+                    <div class="flex flex-col md:flex-row items-center gap-6 md:gap-12">
+                        <div class="w-16 h-16 md:w-24 md:h-24 bg-meme-pink border-2 md:border-4 border-black flex items-center justify-center text-white text-3xl md:text-5xl rotate-[2deg] group-hover:rotate-0 transition-transform shrink-0"><i class="fas fa-chart-line"></i></div>
                         <div>
-                            <h4 class="text-4xl font-display text-white mb-4 italic tracking-tight uppercase">BONDING CURVE V2</h4>
-                            <p class="font-mono text-gray-400 leading-relaxed">OUR IMPROVED BONDING CURVE ENSURES FAIR LAUNCHES AND INSTANT LIQUIDITY. NO PRE-MINES, NO VC ALLOCATIONS. JUST PURE TRADING POWER FOR THE PEOPLE.</p>
+                            <h4 class="text-2xl md:text-4xl font-display text-white mb-2 md:mb-4 italic tracking-tight uppercase">BONDING CURVE V2</h4>
+                            <p class="text-xs md:text-base font-mono text-gray-400 leading-relaxed">OUR IMPROVED BONDING CURVE ENSURES FAIR LAUNCHES AND INSTANT LIQUIDITY. NO PRE-MINES, NO VC ALLOCATIONS. JUST PURE TRADING POWER FOR THE PEOPLE.</p>
                         </div>
                     </div>
                 </div>
@@ -419,15 +418,15 @@
     </section>
 
     <!-- Final CTA Section -->
-    <section class="py-40 relative bg-meme-yellow border-t-4 border-black">
+    <section class="py-20 md:py-40 relative bg-meme-yellow border-t-2 md:border-t-4 border-black">
         <div class="absolute inset-0 z-0 bg-[url('https://www.transparenttextures.com/patterns/grid-me.png')] opacity-20"></div>
         <div class="max-w-5xl mx-auto px-4 text-center relative z-10 reveal">
-            <h2 class="text-8xl md:text-[180px] font-display text-black mb-12 italic leading-[0.7] tracking-tighter">TIME TO<br>PUMP IT!</h2>
-            <p class="text-2xl font-mono text-black/60 max-w-2xl mx-auto mb-20 font-bold">
+            <h2 class="text-5xl md:text-[180px] font-display text-black mb-6 md:mb-12 italic leading-[0.7] tracking-tighter">TIME TO<br>PUMP IT!</h2>
+            <p class="text-sm md:text-2xl font-mono text-black/60 max-w-2xl mx-auto mb-10 md:mb-20 font-bold">
                 JOIN THE LARGEST DEGEN COMMUNITY ON PAXI NETWORK. THE BULL IS WAITING.
             </p>
-            <div class="flex flex-col sm:flex-row gap-8 justify-center">
-                <a href="trade.html" class="bg-black text-white font-display text-6xl px-20 py-10 border-4 border-white shadow-[16px_16px_0px_0px_#FF007F] hover:shadow-none hover:translate-x-[8px] hover:translate-y-[8px] transition-all">
+            <div class="flex flex-col sm:flex-row gap-4 md:gap-8 justify-center">
+                <a href="trade.html" class="bg-black text-white font-display text-3xl md:text-6xl px-10 md:px-20 py-5 md:py-10 border-2 md:border-4 border-white shadow-[8px_8px_0px_0px_#FF007F] md:shadow-[16px_16px_0px_0px_#FF007F] hover:shadow-none hover:translate-x-[4px] md:hover:translate-x-[8px] hover:translate-y-[4px] md:hover:translate-y-[8px] transition-all">
                     START TRADING
                 </a>
             </div>
@@ -435,23 +434,23 @@
     </section>
 
     <!-- Footer -->
-    <footer class="py-32 bg-black border-t-4 border-meme-pink">
+    <footer class="py-12 md:py-32 bg-black border-t-2 md:border-t-4 border-meme-pink">
         <div class="max-w-[1400px] mx-auto px-4 text-center">
-            <div class="flex items-center justify-center gap-6 mb-16">
-                <div class="w-16 h-16 bg-meme-pink border-4 border-white shadow-brutal flex items-center justify-center rotate-[-5deg]">
-                    <i class="fas fa-exchange-alt text-white text-3xl"></i>
+            <div class="flex items-center justify-center gap-3 md:gap-6 mb-8 md:mb-16">
+                <div class="w-10 h-10 md:w-16 md:h-16 bg-meme-pink border-2 md:border-4 border-white shadow-[4px_4px_0_0_#fff] md:shadow-brutal flex items-center justify-center rotate-[-5deg]">
+                    <i class="fas fa-exchange-alt text-white text-xl md:text-3xl"></i>
                 </div>
-                <span class="text-7xl font-display tracking-tighter text-white">CANONIX</span>
+                <span class="text-4xl md:text-7xl font-display tracking-tighter text-white">CANONIX</span>
             </div>
 
-            <div class="flex flex-wrap justify-center gap-12 text-2xl font-display mb-20 text-gray-500">
+            <div class="flex flex-wrap justify-center gap-6 md:gap-12 text-lg md:text-2xl font-display mb-10 md:mb-20 text-gray-500">
                 <a href="#" class="hover:text-meme-green transition-colors">DOCS</a>
                 <a href="#" class="hover:text-meme-pink transition-colors">GITHUB</a>
                 <a href="#" class="hover:text-meme-cyan transition-colors">TWITTER</a>
                 <a href="#" class="hover:text-meme-yellow transition-colors">TELEGRAM</a>
             </div>
 
-            <div class="font-mono text-xs text-gray-700 font-bold uppercase tracking-[0.5em]">
+            <div class="font-mono text-[8px] md:text-xs text-gray-700 font-bold uppercase tracking-[0.5em]">
                 &copy; 2026 CANONIX PROTOCOL | BUILT BY DEGENS FOR DEGENS
             </div>
         </div>
