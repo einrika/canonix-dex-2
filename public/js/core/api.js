@@ -3,35 +3,39 @@
 // ============================================
 
 // ===== PAXI PRICE ORACLE =====
-window.paxiPriceUSD = 0.00; // cache 15 menit
+window.paxiPriceUSD = 0.00;
+window.lastPaxiFetch = 0;
+
 window.fetchPaxiPrice = async function() {
+  // Throttle to once per 30 seconds
+  if (Date.now() - window.lastPaxiFetch < 30000 && window.paxiPriceUSD > 0) {
+    return window.paxiPriceUSD;
+  }
+
   try {
     const response = await fetch(
       "https://api.coingecko.com/api/v3/simple/price?ids=paxi-network&vs_currencies=usd"
     );
     
-    if (!response.ok) {
-      throw new Error("Failed to fetch price");
-    }
+    if (!response.ok) throw new Error("Failed to fetch price");
     
     const data = await response.json();
-    
-    // response:
-    // {"paxi-network":{"usd":0.01299487}}
     const price = data["paxi-network"]?.usd;
     
-    if (typeof price !== "number") {
-      throw new Error("Invalid price data");
-    }
-    
+    if (typeof price !== "number") throw new Error("Invalid price data");
+
     window.paxiPriceUSD = price;
+    window.lastPaxiFetch = Date.now();
+
+    // Dispatch event to notify UI of price change
+    window.dispatchEvent(new CustomEvent('paxi_price_updated', { detail: price }));
+
     return price;
     
   } catch (e) {
     console.error("CoinGecko fetch error:", e);
-    
-    window.paxiPriceUSD = 0.00;
-    return 0.00;
+    // If we have a cached price, return it even if old
+    return window.paxiPriceUSD || 0.00;
   }
 };
 

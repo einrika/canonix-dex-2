@@ -275,11 +275,11 @@ Object.assign(window.WalletUI, {
 
                 <!-- Action Bar -->
                 <div class="grid grid-cols-2 gap-3">
-                    <button onclick="window.WalletUI.showSendBottomSheet()" class="flex flex-col items-center gap-2 p-3 bg-up/5 border border-up/10 rounded-2xl hover:bg-up/10 transition-all group">
+                    <button onclick="if(window.WalletUI && window.WalletUI.showSendBottomSheet) window.WalletUI.showSendBottomSheet(); else console.warn('Send feature not ready');" class="flex flex-col items-center gap-2 p-3 bg-up/5 border border-up/10 rounded-2xl hover:bg-up/10 transition-all group">
                         <div class="w-10 h-10 rounded-full bg-up/20 flex items-center justify-center text-up group-hover:scale-110 transition-transform"><i class="fas fa-paper-plane"></i></div>
                         <span class="text-[9px] font-black uppercase tracking-widest text-up">Send</span>
                     </button>
-                    <button onclick="window.WalletUI.showReceiveModal()" class="flex flex-col items-center gap-2 p-3 bg-blue-500/5 border border-blue-500/10 rounded-2xl hover:bg-blue-500/10 transition-all group">
+                    <button onclick="if(window.WalletUI && window.WalletUI.showReceiveModal) window.WalletUI.showReceiveModal(); else console.warn('Receive feature not ready');" class="flex flex-col items-center gap-2 p-3 bg-blue-500/5 border border-blue-500/10 rounded-2xl hover:bg-blue-500/10 transition-all group">
                         <div class="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform"><i class="fas fa-qrcode"></i></div>
                         <span class="text-[9px] font-black uppercase tracking-widest text-blue-400">Receive</span>
                     </button>
@@ -1162,15 +1162,18 @@ Object.assign(window.WalletUI, {
                 const valEl = document.getElementById(`val-${token.address}`);
                 if (valEl) {
                     const meta = window.AssetManager.getAssetMeta(token.address);
+                    const currentPaxiPrice = window.paxiPriceUSD || 0.05;
+
                     if (token.address === 'PAXI') {
-                        // For PAXI, show USD value
-                        const currentPaxiPrice = window.paxiPriceUSD || 0.05;
+                        // For PAXI, show USD value directly
                         const usdValue = amount * currentPaxiPrice;
                         window.setText(valEl, `$${usdValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
                     } else {
-                        // For PRC20, show PAXI value (single source of truth)
+                        // For PRC20, show USD value derived from PAXI (Sinkron)
+                        // Formula: Amount * Price_In_PAXI * PAXI_Price_In_USD
                         const paxiValue = amount * meta.price;
-                        window.setText(valEl, `${paxiValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })} PAXI`);
+                        const usdValue = paxiValue * currentPaxiPrice;
+                        window.setText(valEl, `$${usdValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
                     }
                 }
 
@@ -1184,22 +1187,6 @@ Object.assign(window.WalletUI, {
         }
     },
 
-    selectAssetForTrade: function(address) {
-        if (address === 'PAXI') return;
-        if (window.selectPRC20) window.selectPRC20(address);
-
-        // Phase 4 Revision: Swap is now under Chart on main page
-        // Close sidebar if on mobile
-        if (window.innerWidth < 1024) {
-            if (window.closeAllSidebars) window.closeAllSidebars();
-        }
-
-        // Scroll to swap container
-        const swapContainer = document.getElementById('mainSwapContainer');
-        if (swapContainer) {
-            swapContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-    },
 
     showReceiveModal: function() {
         const wallet = window.WalletManager.getActiveWallet();

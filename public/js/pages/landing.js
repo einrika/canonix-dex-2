@@ -47,13 +47,13 @@ window.setMarketFilter = function(type, btn) {
 
     // Update UI buttons
     document.querySelectorAll('.market-filter-btn').forEach(b => {
-        b.classList.remove('bg-up', 'text-bg', 'border-up');
-        b.classList.add('text-gray-400', 'border-border');
+        b.classList.remove('border-up', 'bg-up', 'text-bg');
+        b.classList.add('text-gray-500', 'border-white/10');
     });
 
     if (btn) {
-        btn.classList.add('bg-up', 'text-bg', 'border-up');
-        btn.classList.remove('text-gray-400', 'border-border');
+        btn.classList.add('border-up', 'bg-up', 'text-bg');
+        btn.classList.remove('text-gray-500', 'border-white/10');
     }
 
     renderMarketGrid();
@@ -79,7 +79,7 @@ window.filterMarket = function() {
             if (!grid) return;
 
             // Show loading state
-            grid.innerHTML = '<div class="col-span-full text-center py-20 text-gray-500 font-bold"><i class="fas fa-circle-notch fa-spin mr-2"></i> Searching...</div>';
+            grid.innerHTML = '<div class="col-span-full text-center py-20 text-gray-600 font-bold uppercase tracking-widest"><i class="fas fa-circle-notch fa-spin mr-2"></i> Searching...</div>';
 
             const url = `https://explorer.paxinet.io/api/prc20/search?name=${encodeURIComponent(query)}`;
             const data = await window.smartFetch(url);
@@ -93,7 +93,7 @@ window.filterMarket = function() {
             }
         } catch (e) {
             console.error('Search error:', e);
-            grid.innerHTML = '<div class="col-span-full text-center py-20 text-down font-bold">Search failed. Please try again.</div>';
+            grid.innerHTML = '<div class="col-span-full text-center py-20 text-down font-bold uppercase tracking-widest">Search failed</div>';
         }
     }, 500); // 500ms debounce
 };
@@ -131,7 +131,7 @@ window.loadMoreMarket = async function() {
     } finally {
         if (btn && !btn.classList.contains('hidden')) {
             btn.disabled = false;
-            btn.innerHTML = 'Load More Tokens';
+            btn.innerHTML = 'Load More Assets';
         }
     }
 };
@@ -177,7 +177,7 @@ function renderMarketGrid() {
     const display = filtered.slice(0, window.marketLimit);
 
     if (display.length === 0) {
-        grid.innerHTML = '<div class="col-span-full text-center py-20 text-gray-500 font-bold">No tokens match your criteria</div>';
+        grid.innerHTML = '<div class="col-span-full text-center py-20 text-gray-600 font-bold uppercase tracking-widest">No assets found</div>';
         return;
     }
 
@@ -187,34 +187,38 @@ function renderMarketGrid() {
         const vol = window.formatAmount(t.volume_24h);
 
         return `
-            <a href="trade.html?token=${t.address}" class="bg-card border border-border p-3 sm:p-6 rounded-2xl sm:rounded-[2rem] hover:border-up/50 transition-all group block">
-                <div class="flex items-center gap-2 sm:gap-4 mb-3 sm:mb-6">
+            <a href="trade.html?token=${t.address}" class="bg-surface border border-white/5 p-6 rounded-3xl hover:border-up/30 transition-all group block relative overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent pointer-events-none"></div>
+                <div class="flex items-center gap-4 mb-8">
                     <div class="relative flex-shrink-0">
                         ${t.logo ?
-                            `<img src="${t.logo}" class="w-8 h-8 sm:w-12 sm:h-12 rounded-full border border-border group-hover:scale-110 transition-transform">` :
-                            `<div class="w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-surface border border-border flex items-center justify-center text-[10px] sm:text-sm font-black text-gray-500">${t.symbol.charAt(0)}</div>`
+                            `<img src="${t.logo}" class="w-12 h-12 rounded-2xl border border-white/10 group-hover:scale-110 transition-transform">` :
+                            `<div class="w-12 h-12 rounded-2xl bg-bg border border-white/10 flex items-center justify-center text-xs font-black text-gray-500">${t.symbol.charAt(0)}</div>`
                         }
                     </div>
                     <div class="min-w-0">
-                        <div class="flex items-center gap-1">
-                            <span class="font-black text-white text-xs sm:text-lg tracking-tighter uppercase italic truncate">${t.symbol}</span>
-                            ${t.verified ? `<i class="fas fa-check-circle text-blue-400 text-[8px] sm:text-[10px]"></i>` : ''}
+                        <div class="flex items-center gap-1.5">
+                            <span class="font-black text-white text-lg tracking-tighter uppercase italic truncate">${t.symbol}</span>
+                            ${t.verified ? `<i class="fas fa-check-circle text-up text-[10px]"></i>` : ''}
                         </div>
-                        <div class="text-[8px] sm:text-[10px] text-gray-500 font-bold uppercase tracking-widest">PRC-20</div>
+                        <div class="text-[10px] text-gray-600 font-black uppercase tracking-widest">PRC-20 TOKEN</div>
                     </div>
                 </div>
 
-                <div class="space-y-2 sm:space-y-4">
+                <div class="space-y-4 relative z-10">
                     <div>
-                        <div class="text-sm sm:text-xl font-mono font-black text-white truncate">${t.price_paxi.toFixed(8)} PAXI</div>
-                        <div class="mt-1 sm:mt-2 inline-block px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[8px] sm:text-[10px] font-black ${colorClass}">
-                            ${t.price_change_24h >= 0 ? '+' : ''}${change}%
-                        </div>
+                        <div class="text-xs text-gray-500 font-black uppercase tracking-widest mb-1">Price</div>
+                        <div class="text-xl font-black text-white italic tracking-tight truncate">${t.price_paxi.toFixed(8)} PAXI</div>
                     </div>
 
-                    <div class="pt-2 sm:pt-4 border-t border-white/5 flex justify-between items-center">
-                        <span class="text-[8px] sm:text-[10px] text-gray-500 font-black uppercase">Vol</span>
-                        <span class="text-[8px] sm:text-[10px] text-gray-300 font-mono font-bold">${vol} PAXI</span>
+                    <div class="flex justify-between items-center pt-4 border-t border-white/5">
+                        <div class="px-3 py-1 rounded-lg text-[10px] font-black ${colorClass}">
+                            ${t.price_change_24h >= 0 ? '+' : ''}${change}%
+                        </div>
+                        <div class="text-right">
+                            <div class="text-[8px] text-gray-600 font-black uppercase tracking-widest">Volume</div>
+                            <div class="text-[10px] text-gray-300 font-bold tracking-tight">${vol} PAXI</div>
+                        </div>
                     </div>
                 </div>
             </a>
@@ -242,7 +246,7 @@ async function initGlobalMarketAI() {
         const data = await window.fetchDirect(url);
 
         if (!data || !data.contracts || data.contracts.length === 0) {
-            container.innerHTML = '<p class="text-gray-500">Market data temporarily unavailable</p>';
+            container.innerHTML = '<p class="text-gray-600 font-black uppercase tracking-widest text-sm">Market scan currently restricted</p>';
             return;
         }
 
@@ -264,12 +268,12 @@ async function initGlobalMarketAI() {
         if (serverResult) {
             renderIndexAI(container, topToken, serverResult);
         } else {
-            container.innerHTML = '<p class="text-gray-500">AI analysis failed to load</p>';
+            container.innerHTML = '<p class="text-gray-600 font-black uppercase tracking-widest text-sm">AI pipeline offline</p>';
         }
 
     } catch (e) {
         console.error('Landing AI error:', e);
-        container.innerHTML = '<p class="text-gray-500">Market scan failed</p>';
+        container.innerHTML = '<p class="text-gray-600 font-black uppercase tracking-widest text-sm">Scan failed</p>';
     }
 }
 
@@ -280,52 +284,58 @@ function renderIndexAI(container, token, aiText) {
     const bgClass = sentiment === 'BULLISH' ? 'bg-up/10' : sentiment === 'BEARISH' ? 'bg-down/10' : 'bg-gray-500/10';
 
     container.innerHTML = `
-        <div class="flex items-center justify-between mb-8">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-2xl ${bgClass} flex items-center justify-center ${colorClass} text-xl">
+        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-12">
+            <div class="flex items-center gap-6">
+                <div class="w-16 h-16 rounded-3xl ${bgClass} flex items-center justify-center ${colorClass} text-3xl shadow-lg border border-current opacity-50">
                     <i class="fas fa-brain"></i>
                 </div>
                 <div>
-                    <h3 class="font-black italic uppercase text-xl">Market <span class="${colorClass}">Verified</span></h3>
-                    <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">GEMINI PRO 1.5 REAL-TIME SCAN</p>
+                    <h3 class="font-black italic uppercase text-2xl tracking-tighter">Market <span class="${colorClass}">Verified</span></h3>
+                    <p class="text-[10px] text-gray-600 font-black uppercase tracking-[0.3em]">GEMINI PRO 1.5 REAL-TIME SCAN</p>
                 </div>
             </div>
-            <div class="px-4 py-1 rounded-full ${bgClass} ${colorClass} text-[10px] font-black uppercase tracking-widest border border-current opacity-80">
-                ${sentiment}
+            <div class="px-8 py-2 rounded-full ${bgClass} ${colorClass} text-xs font-black uppercase tracking-widest border border-current shadow-glow">
+                ${sentiment} SENTIMENT
             </div>
         </div>
 
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div class="p-4 bg-surface rounded-2xl border border-border">
-                <div class="text-[8px] text-gray-500 font-bold uppercase mb-1">Target Token</div>
-                <div class="text-sm font-black text-white">${token.symbol}</div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+            <div class="p-6 bg-bg/50 rounded-3xl border border-white/5">
+                <div class="text-[10px] text-gray-600 font-black uppercase tracking-widest mb-2">Target Asset</div>
+                <div class="text-lg font-black text-white italic tracking-tight">${token.symbol}</div>
             </div>
-            <div class="p-4 bg-surface rounded-2xl border border-border">
-                <div class="text-[8px] text-gray-500 font-bold uppercase mb-1">Risk Level</div>
-                <div class="text-sm font-black ${token.liquidity > 10000 ? 'text-up' : 'text-yellow-400'}">
-                    ${token.liquidity > 20000 ? 'LOW' : token.liquidity > 5000 ? 'MEDIUM' : 'HIGH'}
+            <div class="p-6 bg-bg/50 rounded-3xl border border-white/5">
+                <div class="text-[10px] text-gray-600 font-black uppercase tracking-widest mb-2">Risk Level</div>
+                <div class="text-lg font-black ${token.liquidity > 10000 ? 'text-up' : 'text-yellow-400'} italic tracking-tight">
+                    ${token.liquidity > 20000 ? 'LOW-SEC' : token.liquidity > 5000 ? 'MED-VOL' : 'HIGH-RISK'}
                 </div>
             </div>
-            <div class="p-4 bg-surface rounded-2xl border border-border">
-                <div class="text-[8px] text-gray-500 font-bold uppercase mb-1">Market Trend</div>
-                <div class="text-sm font-black text-blue-400">${token.price_change_24h > 0 ? 'UPWARD' : 'DOWNWARD'}</div>
+            <div class="p-6 bg-bg/50 rounded-3xl border border-white/5">
+                <div class="text-[10px] text-gray-600 font-black uppercase tracking-widest mb-2">Trend Cycle</div>
+                <div class="text-lg font-black text-accent italic tracking-tight">${token.price_change_24h > 0 ? 'ACCUMULATION' : 'DISTRIBUTION'}</div>
             </div>
-            <div class="p-4 bg-surface rounded-2xl border border-border">
-                <div class="text-[8px] text-gray-500 font-bold uppercase mb-1">Liq Score</div>
-                <div class="text-sm font-black text-purple-400">9.4/10</div>
-            </div>
-        </div>
-
-        <div class="bg-surface/50 rounded-2xl border border-border p-6 relative">
-            <div class="absolute -top-2 left-6 px-2 bg-card text-[8px] font-black text-gray-500 uppercase">AI Interpretation</div>
-            <div class="text-xs text-gray-300 leading-relaxed italic font-medium">
-                ${aiText}
+            <div class="p-6 bg-bg/50 rounded-3xl border border-white/5">
+                <div class="text-[10px] text-gray-600 font-black uppercase tracking-widest mb-2">Liq Score</div>
+                <div class="text-lg font-black text-white italic tracking-tight">9.8/10</div>
             </div>
         </div>
 
-        <div class="mt-6 flex justify-end">
-            <a href="trade.html?token=${token.address}" class="text-[10px] font-black text-up uppercase tracking-widest hover:underline flex items-center gap-2">
-                Trade this Opportunity <i class="fas fa-arrow-right"></i>
+        <div class="bg-bg/40 rounded-[2rem] border border-white/5 p-8 relative overflow-hidden group">
+            <div class="absolute inset-0 bg-grid opacity-5"></div>
+            <div class="relative z-10">
+                <div class="flex items-center gap-2 mb-4">
+                    <div class="w-2 h-2 rounded-full bg-up animate-pulse"></div>
+                    <div class="text-[10px] font-black text-gray-500 uppercase tracking-widest">AI Interpretation Engine</div>
+                </div>
+                <div class="text-sm text-gray-300 leading-relaxed italic font-medium">
+                    "${aiText}"
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-10 flex justify-end">
+            <a href="trade.html?token=${token.address}" class="px-8 py-3 rounded-xl bg-up text-bg text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all flex items-center gap-3">
+                Trade Opportunity <i class="fas fa-arrow-right"></i>
             </a>
         </div>
     `;

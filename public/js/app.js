@@ -95,8 +95,11 @@ window.checkWalletLock = function() {
 
         // Auto-show PIN sheet if not already shown
         if (document.getElementById('pinSheet')?.classList.contains('hidden')) {
-            if (window.WalletUI && window.WalletUI.unlockActiveWallet) {
+            // Safety check: ensure WalletUI module is ready
+            if (window.WalletUI && typeof window.WalletUI.unlockActiveWallet === 'function') {
                 window.WalletUI.unlockActiveWallet();
+            } else {
+                console.warn('⚠️ WalletUI.unlockActiveWallet not ready yet');
             }
         }
     } else {

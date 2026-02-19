@@ -309,9 +309,11 @@ window.loadPriceHistory = async function(contractAddress, timeframe) {
     } catch (e) { window.setText(statusEl, 'Error'); }
 };
 
+window.chartUpdateInterval = null;
+
 window.startRealtimeUpdates = function() {
     if (window.countdownInterval) clearInterval(window.countdownInterval);
-    if (window.updateInterval) clearInterval(window.updateInterval);
+    if (window.chartUpdateInterval) clearInterval(window.chartUpdateInterval);
 
     if (window.currentTimeframe === 'realtime') {
         window.refreshCountdown = 10;
@@ -329,7 +331,7 @@ window.startRealtimeUpdates = function() {
         }, 1000);
     } else {
         // Regular update for other timeframes (e.g., every 30s)
-        window.updateInterval = setInterval(() => {
+        window.chartUpdateInterval = setInterval(() => {
             if (window.currentPRC20) window.loadPriceHistory(window.currentPRC20, window.currentTimeframe);
         }, 30000);
     }

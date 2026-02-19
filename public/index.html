@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Canonix - Modern DEX on Paxi Network</title>
+    <title>Canonix - Premium DEX on Paxi Network</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
@@ -13,12 +13,16 @@
             theme: {
                 extend: {
                     colors: {
-                        bg: '#08060f',
-                        surface: '#0f0a1e',
-                        card: '#16102b',
-                        border: '#251b45',
+                        bg: '#0B0C0D',
+                        surface: '#141517',
+                        card: '#1A1B1E',
+                        border: '#222428',
                         up: '#00f2fe',
                         down: '#ff0080',
+                        accent: '#764ba2',
+                    },
+                    backgroundImage: {
+                        'glow-radial': 'radial-gradient(circle at center, var(--tw-gradient-stops))',
                     }
                 }
             }
@@ -38,218 +42,696 @@
     <link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon-96x96.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
     <link rel="manifest" href="/manifest.json">
-    <meta name="msapplication-TileColor" content="#222222">
+    <meta name="msapplication-TileColor" content="#0B0C0D">
     <meta name="msapplication-TileImage" content="/assets/ms-icon-144x144.png">
-    <meta name="theme-color" content="#222222">
+    <meta name="theme-color" content="#0B0C0D">
     <style>
+        :root {
+            --glow-color: rgba(0, 242, 254, 0.15);
+        }
+
         body {
-            background-color: #08060f;
+            background-color: #0B0C0D;
             color: #e8eaed;
             font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
         }
         
+        /* Grid Pattern */
+        .bg-grid {
+            background-image: linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        /* Radial Glow */
+        .glow-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% -20%, var(--glow-color) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
         .glass {
-            background: rgba(22, 16, 43, 0.6);
-            backdrop-filter: blur(10px);
-            border: 1px solid #251b45;
+            background: rgba(20, 21, 23, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
         
         .gradient-text {
-            background: linear-gradient(135deg, #00f2fe 0%, #ff0080 100%);
+            background: linear-gradient(135deg, #00f2fe 0%, #764ba2 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
         
-        .btn-primary {
+        .btn-premium {
             background: linear-gradient(135deg, #00f2fe 0%, #764ba2 100%);
-            transition: 0.3s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
         }
         
-        .btn-primary:hover {
+        .btn-premium::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .btn-premium:hover::after {
+            left: 100%;
+        }
+
+        .btn-premium:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.4);
+            box-shadow: 0 10px 20px -5px rgba(0, 242, 254, 0.4);
         }
-        
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
         .no-scrollbar::-webkit-scrollbar {
             display: none;
+        }
+
+        /* Hero Image Layering */
+        .mockup-container {
+            perspective: 1000px;
+        }
+
+        .mockup-main {
+            transform: rotateY(-10deg) rotateX(5deg);
+            box-shadow: -20px 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .floating-card {
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
     </style>
 </head>
 
-<body class="min-h-screen">
-    <nav class="border-b border-border bg-surface/80 backdrop-blur-md sticky top-0 z-50">
+<body class="min-h-screen relative bg-grid">
+    <div class="glow-overlay"></div>
+
+    <nav class="border-b border-white/5 bg-bg/80 backdrop-blur-md sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
-                <div class="flex items-center gap-2">
-                    <i class="fas fa-exchange-alt text-up text-2xl"></i>
-                    <span class="text-xl font-black gradient-text">CANONIX</span>
+            <div class="flex justify-between h-20 items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-up/20 rounded-xl flex items-center justify-center border border-up/30">
+                        <i class="fas fa-exchange-alt text-up text-xl"></i>
+                    </div>
+                    <span class="text-2xl font-black tracking-tighter gradient-text">CANONIX</span>
                 </div>
-                <div class="hidden md:flex items-center gap-8">
-                    <a href="#trending" class="text-sm font-bold text-gray-400 hover:text-white transition-colors">Trending</a>
-                    <a href="#new" class="text-sm font-bold text-gray-400 hover:text-white transition-colors">New Tokens</a>
-                    <a href="faq.html" class="text-sm font-bold text-gray-400 hover:text-white transition-colors">FAQ</a>
+                <div class="hidden md:flex items-center gap-10">
+                    <a href="#market" class="text-sm font-bold text-gray-400 hover:text-up transition-colors">Markets</a>
+                    <a href="#features" class="text-sm font-bold text-gray-400 hover:text-up transition-colors">Features</a>
+                    <a href="#security" class="text-sm font-bold text-gray-400 hover:text-up transition-colors">Security</a>
+                    <a href="faq.html" class="text-sm font-bold text-gray-400 hover:text-up transition-colors">Resources</a>
                 </div>
                 <div class="flex items-center gap-4">
-                    <a href="trade.html" class="btn-primary px-6 py-2 rounded-xl text-sm font-black text-white shadow-glow-up">LAUNCH APP</a>
+                    <a href="trade.html" class="btn-premium px-8 py-2.5 rounded-xl text-sm font-black text-white">LAUNCH APP</a>
                 </div>
             </div>
         </div>
     </nav>
-    
+
     <!-- Hero Section -->
-    <section class="relative pt-20 pb-32 overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-            <h1 class="text-5xl md:text-7xl font-black mb-6 leading-tight">
-                Canonix market Trading on <br>
-                <span class="gradient-text">Paxi Network</span>
-            </h1>
-            <p class="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
-                Trade PRC20 tokens instantly with AI-driven analysis, and lightning-fast execution. The most advanced DEX on Paxinet.
-            </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="trade.html" class="btn-primary px-10 py-4 rounded-2xl text-lg font-black text-white">Start Trading Now</a>
-                <a href="#trending" class="bg-card border border-border px-10 py-4 rounded-2xl text-lg font-black hover:bg-surface transition-all">View Markets</a>
+    <header class="relative min-h-[calc(100vh-80px)] flex items-center pt-20 pb-20 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <!-- Left Side: Copy & Metrics -->
+                <div class="reveal">
+                    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-up/10 border border-up/20 text-up text-[10px] font-black uppercase tracking-[0.2em] mb-8">
+                        <span class="relative flex h-2 w-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-up opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-up"></span>
+                        </span>
+                        Next-Gen DeFi Protocol
+                    </div>
+                    <h1 class="text-6xl md:text-8xl font-black mb-8 leading-[0.9] tracking-tighter italic uppercase">
+                        The Future of <br>
+                        <span class="gradient-text">Precision</span> Trading
+                    </h1>
+                    <p class="text-gray-400 text-lg md:text-xl max-w-xl mb-12 leading-relaxed font-medium">
+                        Trade PRC20 tokens with lightning speed, AI-enhanced intelligence, and institutional-grade security on the Paxi Network.
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row gap-5 mb-16">
+                        <a href="trade.html" class="btn-premium px-12 py-5 rounded-2xl text-lg font-black text-white text-center">Start Trading</a>
+                        <a href="#market" class="bg-surface border border-white/5 px-12 py-5 rounded-2xl text-lg font-black hover:bg-white/5 transition-all text-center">Explore Market</a>
+                    </div>
+
+                    <!-- Metrics -->
+                    <div class="grid grid-cols-3 gap-8 border-t border-white/5 pt-12">
+                        <div>
+                            <div class="text-3xl font-black text-white tracking-tighter mb-1">$<span class="counter" data-target="128">0</span>M+</div>
+                            <div class="text-[10px] text-gray-500 font-black uppercase tracking-widest">Total Volume</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-black text-white tracking-tighter mb-1"><span class="counter" data-target="45">0</span>K+</div>
+                            <div class="text-[10px] text-gray-500 font-black uppercase tracking-widest">Active Traders</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-black text-white tracking-tighter mb-1"><span class="counter" data-target="890">0</span>+</div>
+                            <div class="text-[10px] text-gray-500 font-black uppercase tracking-widest">Tokens Listed</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Side: Visual Mockup -->
+                <div class="relative mockup-container hidden lg:block">
+                    <!-- Main Dashboard Image/SVG -->
+                    <div class="mockup-main bg-surface rounded-[2.5rem] border border-white/10 p-4 aspect-[4/3] relative overflow-hidden group">
+                        <div class="absolute inset-0 bg-gradient-to-br from-up/5 to-accent/5 opacity-50"></div>
+                        <!-- Mockup UI Content -->
+                        <div class="relative z-10 space-y-4">
+                            <div class="flex items-center justify-between border-b border-white/5 pb-4">
+                                <div class="flex gap-2">
+                                    <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
+                                    <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+                                    <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
+                                </div>
+                                <div class="w-32 h-2 bg-white/5 rounded-full"></div>
+                            </div>
+                            <div class="grid grid-cols-4 gap-4">
+                                <div class="col-span-3 h-64 bg-bg rounded-2xl border border-white/5 p-4 overflow-hidden">
+                                    <div class="w-full h-full border-b border-white/5 relative">
+                                        <!-- Mock Chart Lines -->
+                                        <svg viewBox="0 0 100 40" class="absolute bottom-0 w-full h-24 text-up opacity-50">
+                                            <path d="M0,40 Q20,10 40,30 T80,10 T100,20" fill="none" stroke="currentColor" stroke-width="1" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="space-y-4">
+                                    <div class="h-20 bg-bg rounded-2xl border border-white/5"></div>
+                                    <div class="h-20 bg-bg rounded-2xl border border-white/5"></div>
+                                    <div class="h-20 bg-bg rounded-2xl border border-white/5"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Floating UI Cards -->
+                    <div class="absolute -top-10 -right-10 w-64 floating-card animate-float delay-150 glass p-5 rounded-3xl reveal">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 rounded-xl bg-up/20 flex items-center justify-center text-up">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <div>
+                                <div class="text-[10px] text-gray-500 font-black uppercase">Execution</div>
+                                <div class="text-xs font-bold text-white">0.02s Latency</div>
+                            </div>
+                        </div>
+                        <div class="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+                            <div class="w-[90%] h-full bg-up"></div>
+                        </div>
+                    </div>
+
+                    <div class="absolute -bottom-12 -left-12 w-72 floating-card animate-float glass p-6 rounded-3xl reveal">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="text-[10px] text-gray-500 font-black uppercase">Market Sentiment</div>
+                            <div class="text-[10px] text-up font-black italic">BULLISH</div>
+                        </div>
+                        <div class="flex items-end gap-1 h-12">
+                            <div class="flex-1 bg-white/5 h-[40%] rounded-t"></div>
+                            <div class="flex-1 bg-white/5 h-[60%] rounded-t"></div>
+                            <div class="flex-1 bg-up h-[90%] rounded-t"></div>
+                            <div class="flex-1 bg-white/5 h-[50%] rounded-t"></div>
+                            <div class="flex-1 bg-white/5 h-[70%] rounded-t"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         
-        <!-- Decorative blobs -->
-        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-up/10 rounded-full blur-[120px] -z-10"></div>
-        <div class="absolute bottom-0 right-0 w-[400px] h-[400px] bg-down/10 rounded-full blur-[100px] -z-10"></div>
-    </section>
-    
-    <!-- Token Market Section -->
-    <section id="trending" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-border">
-        <div class="text-center mb-10">
-            <h2 class="text-4xl font-black mb-4 italic uppercase tracking-tighter text-white">Token Market</h2>
-        </div>
+        <!-- Background Elements -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-up/5 rounded-full blur-[150px] -z-10"></div>
+    </header>
 
-        <!-- Search and Filters -->
-        <div class="mb-10 space-y-6">
-            <div class="relative max-w-2xl mx-auto">
-                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
-                <input type="text" id="marketSearch" placeholder="Enter the token symbol or address"
-                       class="w-full pl-12 pr-4 py-4 bg-card border border-border rounded-2xl text-sm focus:ring-2 focus:ring-up transition-all outline-none text-white"
-                       oninput="window.filterMarket()">
-            </div>
-            
-            <div class="flex flex-wrap justify-center gap-3">
-                <button onclick="window.setMarketFilter('pumping', this)" class="market-filter-btn px-6 py-2 rounded-full border border-border text-xs font-black uppercase tracking-widest hover:bg-card transition-all text-gray-400">Pumping</button>
-                <button onclick="window.setMarketFilter('nonpump', this)" class="market-filter-btn px-6 py-2 rounded-full border border-border text-xs font-black uppercase tracking-widest hover:bg-card transition-all text-gray-400">Non-Pump</button>
-                <button onclick="window.setMarketFilter('hot', this)" class="market-filter-btn px-6 py-2 rounded-full border border-border text-xs font-black uppercase tracking-widest bg-up text-bg border-up transition-all">Hot</button>
-                <button onclick="window.setMarketFilter('new', this)" class="market-filter-btn px-6 py-2 rounded-full border border-border text-xs font-black uppercase tracking-widest hover:bg-card transition-all text-gray-400">New</button>
-                <button onclick="window.setMarketFilter('marketcap', this)" class="market-filter-btn px-6 py-2 rounded-full border border-border text-xs font-black uppercase tracking-widest hover:bg-card transition-all text-gray-400">Market Cap</button>
-                <button onclick="window.setMarketFilter('gainers', this)" class="market-filter-btn px-6 py-2 rounded-full border border-border text-xs font-black uppercase tracking-widest hover:bg-card transition-all text-gray-400">Gainers</button>
-            </div>
-        </div>
-
-        <!-- Token Grid -->
-        <div id="marketGrid" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6 px-2 sm:px-0">
-            <!-- JS Populated -->
-            <div class="animate-pulse bg-card rounded-[2rem] border border-border h-64"></div>
-            <div class="animate-pulse bg-card rounded-[2rem] border border-border h-64"></div>
-            <div class="animate-pulse bg-card rounded-[2rem] border border-border h-64"></div>
-            <div class="animate-pulse bg-card rounded-[2rem] border border-border h-64"></div>
-        </div>
-
-        <!-- Load More -->
-        <div class="mt-12 text-center">
-            <button id="loadMoreMarket" onclick="window.loadMoreMarket()" class="px-10 py-4 bg-card border border-border rounded-2xl text-sm font-black uppercase tracking-widest hover:bg-surface transition-all text-white">
-                Load More Tokens
-            </button>
-        </div>
-    </section>
-    
-    <!-- AI Market Intelligence Section -->
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-border">
-        <div class="flex flex-col lg:flex-row gap-12 items-center">
-            <div class="lg:w-1/3">
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-[10px] font-black uppercase tracking-widest mb-6">
-                    <i class="fas fa-robot animate-pulse"></i> AI Intelligence
-                </div>
-                <h2 class="text-4xl font-black mb-6 italic tracking-tighter uppercase leading-none">Global Market <br> <span class="text-up">Analysis</span></h2>
-                <p class="text-gray-400 text-sm leading-relaxed mb-8">Our advanced AI scans the entire Paxi Network in real-time to identify trends, analyze liquidity depth, and assess risk levels for top performing meme coins.</p>
-                <div class="space-y-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-card border border-border flex items-center justify-center text-up"><i class="fas fa-bolt"></i></div>
-                        <div><div class="text-xs font-bold">Real-time Data</div><div class="text-[10px] text-gray-500 uppercase">Direct Chain Feed</div></div>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-card border border-border flex items-center justify-center text-purple-400"><i class="fas fa-shield-alt"></i></div>
-                        <div><div class="text-xs font-bold">Risk Assessment</div><div class="text-[10px] text-gray-500 uppercase">Liquidity & Volatility Audit</div></div>
+    <!-- What is Canonix Section -->
+    <section class="py-32 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-24 items-center">
+                <div class="reveal">
+                    <div class="relative">
+                        <div class="w-full aspect-square bg-surface rounded-[3rem] border border-white/5 overflow-hidden relative">
+                            <div class="absolute inset-0 bg-gradient-to-tr from-accent/20 to-transparent"></div>
+                            <!-- Illustration Placeholder -->
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <i class="fas fa-network-wired text-white/10 text-[200px]"></i>
+                            </div>
+                            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-up/10 rounded-full blur-3xl animate-pulse"></div>
+                        </div>
+                        <!-- Decorative tag -->
+                        <div class="absolute -bottom-6 -right-6 glass px-8 py-4 rounded-2xl border border-white/10 animate-float">
+                            <div class="text-[10px] text-gray-500 font-black uppercase mb-1">Ecosystem</div>
+                            <div class="text-sm font-bold text-white tracking-tight">Multi-Chain Ready</div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="lg:w-2/3 w-full">
-                <div class="bg-card border border-border rounded-[2.5rem] p-8 relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 p-10 opacity-5 group-hover:opacity-10 transition-opacity"><i class="fas fa-brain text-[120px]"></i></div>
-                    <div id="index-ai-content" class="relative z-10">
-                        <div class="flex items-center gap-4 mb-8">
-                            <div class="w-12 h-12 rounded-2xl bg-up/10 flex items-center justify-center text-up text-xl"><i class="fas fa-circle-notch fa-spin"></i></div>
+                <div class="reveal">
+                    <h2 class="text-5xl font-black mb-8 italic uppercase tracking-tighter">What is <span class="text-up">Canonix</span>?</h2>
+                    <p class="text-gray-400 text-lg leading-relaxed mb-8">
+                        The current DeFi landscape is fragmented and slow. Canonix is a decentralized liquidity protocol built to solve the scalability trilemma on the Paxi Network.
+                    </p>
+                    <div class="space-y-6">
+                        <div class="flex gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-surface border border-white/5 flex items-center justify-center text-up shrink-0"><i class="fas fa-check"></i></div>
                             <div>
-                                <h3 class="font-black italic uppercase text-xl">Analyzing Markets...</h3>
-                                <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">GEMINI PRO 1.5 IS SCANNING THE NETWORK</p>
+                                <h4 class="font-bold text-white mb-1 uppercase tracking-tight italic">AI-Driven Intelligence</h4>
+                                <p class="text-sm text-gray-500">Real-time market sentiment analysis powered by Gemini Pro 1.5 scanning every block.</p>
                             </div>
                         </div>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                            <div class="p-4 bg-surface rounded-2xl border border-border animate-pulse h-20"></div>
-                            <div class="p-4 bg-surface rounded-2xl border border-border animate-pulse h-20"></div>
-                            <div class="p-4 bg-surface rounded-2xl border border-border animate-pulse h-20"></div>
-                            <div class="p-4 bg-surface rounded-2xl border border-border animate-pulse h-20"></div>
+                        <div class="flex gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-surface border border-white/5 flex items-center justify-center text-up shrink-0"><i class="fas fa-check"></i></div>
+                            <div>
+                                <h4 class="font-bold text-white mb-1 uppercase tracking-tight italic">Institutional Liquidity</h4>
+                                <p class="text-sm text-gray-500">Deep order books and efficient AMM curves designed for minimal slippage on large trades.</p>
+                            </div>
                         </div>
-                        <div class="bg-surface rounded-2xl border border-border p-6 animate-pulse h-32"></div>
+                        <div class="flex gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-surface border border-white/5 flex items-center justify-center text-up shrink-0"><i class="fas fa-check"></i></div>
+                            <div>
+                                <h4 class="font-bold text-white mb-1 uppercase tracking-tight italic">Low-Latency Settlement</h4>
+                                <p class="text-sm text-gray-500">Built on Paxi's high-throughput architecture for sub-second trade confirmation.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Details Section -->
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 border-t border-border/50">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="glass p-8 rounded-[2rem]">
-                <div class="w-14 h-14 bg-up/20 rounded-2xl flex items-center justify-center text-up text-2xl mb-6"><i class="fas fa-bolt"></i></div>
-                <h3 class="text-xl font-black mb-4 italic">Instant Execution</h3>
-                <p class="text-gray-400 text-sm leading-relaxed">Experience zero-latency swaps on the high-performance Paxi Network. Trade in seconds, not minutes.</p>
+    <!-- How It Works Section -->
+    <section class="py-32 bg-surface/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-24 reveal">
+                <h2 class="text-5xl font-black mb-6 italic uppercase tracking-tighter">Start Trading in <span class="text-up">Seconds</span></h2>
+                <p class="text-gray-500">A seamless onboarding experience designed for both beginners and professional traders.</p>
             </div>
-            <div class="glass p-8 rounded-[2rem]">
-                <div class="w-14 h-14 bg-purple-500/20 rounded-2xl flex items-center justify-center text-purple-400 text-2xl mb-6"><i class="fas fa-brain"></i></div>
-                <h3 class="text-xl font-black mb-4 italic">AI Analytics</h3>
-                <p class="text-gray-400 text-sm leading-relaxed">Integrated Gemini-powered market analysis gives you the edge with real-time sentiment and technical data.</p>
-            </div>
-            <div class="glass p-8 rounded-[2rem]">
-                <div class="w-14 h-14 bg-down/20 rounded-2xl flex items-center justify-center text-down text-2xl mb-6"><i class="fas fa-shield-alt"></i></div>
-                <h3 class="text-xl font-black mb-4 italic">Non-Custodial</h3>
-                <p class="text-gray-400 text-sm leading-relaxed">Your keys, your tokens. Secure internal wallet with AES-GCM encryption ensures full ownership of your assets.</p>
+            
+            <div class="grid md:grid-cols-4 gap-8">
+                <div class="reveal group">
+                    <div class="relative mb-8">
+                        <div class="text-7xl font-black text-white/5 absolute -top-8 -left-4 group-hover:text-up/10 transition-colors">01</div>
+                        <div class="w-16 h-16 rounded-2xl bg-surface border border-white/5 flex items-center justify-center text-up text-2xl relative z-10 group-hover:border-up/30 transition-all group-hover:-translate-y-2">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                    </div>
+                    <h4 class="text-xl font-bold text-white mb-4 italic uppercase tracking-tight">Connect Wallet</h4>
+                    <p class="text-sm text-gray-500 leading-relaxed">Securely link your Paxi-compatible wallet. Canonix supports all major wallet providers with AES-GCM encryption.</p>
+                </div>
+                <div class="reveal group delay-100">
+                    <div class="relative mb-8">
+                        <div class="text-7xl font-black text-white/5 absolute -top-8 -left-4 group-hover:text-up/10 transition-colors">02</div>
+                        <div class="w-16 h-16 rounded-2xl bg-surface border border-white/5 flex items-center justify-center text-up text-2xl relative z-10 group-hover:border-up/30 transition-all group-hover:-translate-y-2">
+                            <i class="fas fa-search"></i>
+                        </div>
+                    </div>
+                    <h4 class="text-xl font-bold text-white mb-4 italic uppercase tracking-tight">Pick Asset</h4>
+                    <p class="text-sm text-gray-500 leading-relaxed">Browse through hundreds of PRC20 tokens. Use our AI filters to find high-potential opportunities in real-time.</p>
+                </div>
+                <div class="reveal group delay-200">
+                    <div class="relative mb-8">
+                        <div class="text-7xl font-black text-white/5 absolute -top-8 -left-4 group-hover:text-up/10 transition-colors">03</div>
+                        <div class="w-16 h-16 rounded-2xl bg-surface border border-white/5 flex items-center justify-center text-up text-2xl relative z-10 group-hover:border-up/30 transition-all group-hover:-translate-y-2">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                    </div>
+                    <h4 class="text-xl font-bold text-white mb-4 italic uppercase tracking-tight">Instant Swap</h4>
+                    <p class="text-sm text-gray-500 leading-relaxed">Execute trades with a single click. Our smart routing engine finds the best price across all liquidity pools.</p>
+                </div>
+                <div class="reveal group delay-300">
+                    <div class="relative mb-8">
+                        <div class="text-7xl font-black text-white/5 absolute -top-8 -left-4 group-hover:text-up/10 transition-colors">04</div>
+                        <div class="w-16 h-16 rounded-2xl bg-surface border border-white/5 flex items-center justify-center text-up text-2xl relative z-10 group-hover:border-up/30 transition-all group-hover:-translate-y-2">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                    </div>
+                    <h4 class="text-xl font-bold text-white mb-4 italic uppercase tracking-tight">Earn Yield</h4>
+                    <p class="text-sm text-gray-500 leading-relaxed">Provide liquidity to your favorite pairs and earn a share of trading fees with automated compound interest.</p>
+                </div>
             </div>
         </div>
     </section>
-    
+
+    <!-- Core Features Section -->
+    <section id="features" class="py-32">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-24 reveal">
+                <h2 class="text-5xl font-black mb-6 italic uppercase tracking-tighter">Engineered for <span class="text-up">Performance</span></h2>
+                <p class="text-gray-500">Canonix combines advanced cryptography with high-speed execution to deliver a superior trading experience.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="reveal p-8 bg-surface border border-white/5 rounded-3xl hover:border-up/30 transition-all group">
+                    <div class="w-14 h-14 bg-bg rounded-2xl flex items-center justify-center text-up text-2xl mb-8 group-hover:scale-110 transition-transform"><i class="fas fa-microchip"></i></div>
+                    <h4 class="text-xl font-bold text-white mb-4 italic uppercase tracking-tight">AI Engine v2</h4>
+                    <p class="text-sm text-gray-500 leading-relaxed mb-6">Built-in Gemini Pro 1.5 analysis provides technical indicators and risk assessments directly on the trading interface.</p>
+                    <div class="pt-6 border-t border-white/5 text-[10px] text-gray-600 font-black uppercase tracking-widest">Arch: Neural-L2 Pipeline</div>
+                </div>
+                <!-- Feature 2 -->
+                <div class="reveal p-8 bg-surface border border-white/5 rounded-3xl hover:border-up/30 transition-all group">
+                    <div class="w-14 h-14 bg-bg rounded-2xl flex items-center justify-center text-up text-2xl mb-8 group-hover:scale-110 transition-transform"><i class="fas fa-shield-halved"></i></div>
+                    <h4 class="text-xl font-bold text-white mb-4 italic uppercase tracking-tight">Multi-Sig Guard</h4>
+                    <p class="text-sm text-gray-500 leading-relaxed mb-6">Our non-custodial architecture ensures you maintain 100% control over your private keys at all times.</p>
+                    <div class="pt-6 border-t border-white/5 text-[10px] text-gray-600 font-black uppercase tracking-widest">Arch: AES-256-GCM Vault</div>
+                </div>
+                <!-- Feature 3 -->
+                <div class="reveal p-8 bg-surface border border-white/5 rounded-3xl hover:border-up/30 transition-all group">
+                    <div class="w-14 h-14 bg-bg rounded-2xl flex items-center justify-center text-up text-2xl mb-8 group-hover:scale-110 transition-transform"><i class="fas fa-gas-pump"></i></div>
+                    <h4 class="text-xl font-bold text-white mb-4 italic uppercase tracking-tight">Zero Gas Meta</h4>
+                    <p class="text-sm text-gray-500 leading-relaxed mb-6">Enjoy subsidized transactions on select pairs. Trade without worrying about fluctuating network fees.</p>
+                    <div class="pt-6 border-t border-white/5 text-[10px] text-gray-600 font-black uppercase tracking-widest">Arch: Relayer abstraction</div>
+                </div>
+                <!-- Feature 4 -->
+                <div class="reveal p-8 bg-surface border border-white/5 rounded-3xl hover:border-up/30 transition-all group">
+                    <div class="w-14 h-14 bg-bg rounded-2xl flex items-center justify-center text-up text-2xl mb-8 group-hover:scale-110 transition-transform"><i class="fas fa-cubes"></i></div>
+                    <h4 class="text-xl font-bold text-white mb-4 italic uppercase tracking-tight">Modular Pools</h4>
+                    <p class="text-sm text-gray-500 leading-relaxed mb-6">Dynamic liquidity pools that automatically adjust curves based on volatility and volume metrics.</p>
+                    <div class="pt-6 border-t border-white/5 text-[10px] text-gray-600 font-black uppercase tracking-widest">Arch: V3 Concentrated Liquidity</div>
+                </div>
+                <!-- Feature 5 -->
+                <div class="reveal p-8 bg-surface border border-white/5 rounded-3xl hover:border-up/30 transition-all group">
+                    <div class="w-14 h-14 bg-bg rounded-2xl flex items-center justify-center text-up text-2xl mb-8 group-hover:scale-110 transition-transform"><i class="fas fa-code-branch"></i></div>
+                    <h4 class="text-xl font-bold text-white mb-4 italic uppercase tracking-tight">Smart Routing</h4>
+                    <p class="text-sm text-gray-500 leading-relaxed mb-6">Aggregated liquidity from across the Paxi ecosystem ensures you always get the best execution price.</p>
+                    <div class="pt-6 border-t border-white/5 text-[10px] text-gray-600 font-black uppercase tracking-widest">Arch: Dijkstra Multi-hop</div>
+                </div>
+                <!-- Feature 6 -->
+                <div class="reveal p-8 bg-surface border border-white/5 rounded-3xl hover:border-up/30 transition-all group">
+                    <div class="w-14 h-14 bg-bg rounded-2xl flex items-center justify-center text-up text-2xl mb-8 group-hover:scale-110 transition-transform"><i class="fas fa-layer-group"></i></div>
+                    <h4 class="text-xl font-bold text-white mb-4 italic uppercase tracking-tight">Interoperable</h4>
+                    <p class="text-sm text-gray-500 leading-relaxed mb-6">Cross-chain bridging support allows you to move assets between Paxi and other networks effortlessly.</p>
+                    <div class="pt-6 border-t border-white/5 text-[10px] text-gray-600 font-black uppercase tracking-widest">Arch: IBC / XCMP Ready</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Token Market Section -->
+    <section id="market" class="py-32 relative border-y border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col lg:flex-row justify-between items-end gap-8 mb-16 reveal">
+                <div class="max-w-2xl">
+                    <h2 class="text-5xl font-black mb-6 italic uppercase tracking-tighter">Live <span class="text-up">Markets</span></h2>
+                    <p class="text-gray-500">Discover and trade the highest performing PRC20 tokens on Paxi Network.</p>
+                </div>
+                <!-- Filters -->
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="window.setMarketFilter('hot', this)" class="market-filter-btn px-6 py-2 rounded-xl border border-up bg-up text-bg text-[10px] font-black uppercase tracking-widest transition-all">Hot</button>
+                    <button onclick="window.setMarketFilter('new', this)" class="market-filter-btn px-6 py-2 rounded-xl border border-white/10 text-gray-500 text-[10px] font-black uppercase tracking-widest hover:bg-white/5 transition-all">New</button>
+                    <button onclick="window.setMarketFilter('pumping', this)" class="market-filter-btn px-6 py-2 rounded-xl border border-white/10 text-gray-500 text-[10px] font-black uppercase tracking-widest hover:bg-white/5 transition-all">Pumping</button>
+                    <button onclick="window.setMarketFilter('gainers', this)" class="market-filter-btn px-6 py-2 rounded-xl border border-white/10 text-gray-500 text-[10px] font-black uppercase tracking-widest hover:bg-white/5 transition-all">Gainers</button>
+                </div>
+            </div>
+
+            <!-- Search -->
+            <div class="mb-12 reveal">
+                <div class="relative max-w-xl">
+                    <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-gray-600"></i>
+                    <input type="text" id="marketSearch" placeholder="Search by name or address..."
+                           class="w-full pl-14 pr-6 py-5 bg-surface border border-white/5 rounded-2xl text-sm focus:ring-2 focus:ring-up transition-all outline-none text-white font-medium"
+                           oninput="window.filterMarket()">
+                </div>
+            </div>
+
+            <!-- Grid -->
+            <div id="marketGrid" class="grid grid-cols-2 lg:grid-cols-4 gap-6 reveal">
+                <!-- JS Populated -->
+                <div class="animate-pulse bg-surface rounded-3xl border border-white/5 h-80"></div>
+                <div class="animate-pulse bg-surface rounded-3xl border border-white/5 h-80"></div>
+                <div class="animate-pulse bg-surface rounded-3xl border border-white/5 h-80"></div>
+                <div class="animate-pulse bg-surface rounded-3xl border border-white/5 h-80"></div>
+            </div>
+
+            <div class="mt-16 text-center reveal">
+                <button id="loadMoreMarket" onclick="window.loadMoreMarket()" class="px-10 py-4 bg-surface border border-white/10 rounded-2xl text-xs font-black uppercase tracking-[0.2em] hover:bg-white/5 transition-all text-white">
+                    Load More Assets
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Intelligence Section (Global) -->
+    <section class="py-32 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-surface border border-white/5 rounded-[3rem] p-12 lg:p-20 relative overflow-hidden reveal">
+                <div class="absolute top-0 right-0 p-20 opacity-[0.02] -z-0"><i class="fas fa-brain text-[300px]"></i></div>
+                <div id="index-ai-content" class="relative z-10">
+                    <!-- JS Populated -->
+                    <div class="flex items-center gap-6 mb-12">
+                        <div class="w-16 h-16 rounded-2xl bg-up/10 flex items-center justify-center text-up text-3xl"><i class="fas fa-circle-notch fa-spin"></i></div>
+                        <div>
+                            <h3 class="font-black italic uppercase text-2xl">Scanning Network Intelligence...</h3>
+                            <p class="text-[10px] text-gray-500 font-black uppercase tracking-[0.3em]">GEMINI PRO 1.5 IS ANALYZING LIVE BLOCKS</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+                        <div class="h-24 bg-bg/50 rounded-2xl border border-white/5 animate-pulse"></div>
+                        <div class="h-24 bg-bg/50 rounded-2xl border border-white/5 animate-pulse"></div>
+                        <div class="h-24 bg-bg/50 rounded-2xl border border-white/5 animate-pulse"></div>
+                        <div class="h-24 bg-bg/50 rounded-2xl border border-white/5 animate-pulse"></div>
+                    </div>
+                    <div class="bg-bg/50 rounded-3xl border border-white/5 p-8 animate-pulse h-40"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Security & Architecture Section -->
+    <section id="security" class="py-32 bg-surface/30 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-24 items-center">
+                <div class="reveal">
+                    <h2 class="text-5xl font-black mb-8 italic uppercase tracking-tighter">Security <span class="text-up">Architecture</span></h2>
+                    <p class="text-gray-400 text-lg leading-relaxed mb-12">
+                        Canonix is built with a security-first mindset. Every line of code is optimized for safety and transparency.
+                    </p>
+                    <div class="grid sm:grid-cols-2 gap-6">
+                        <div class="flex gap-3">
+                            <i class="fas fa-shield-check text-up mt-1"></i>
+                            <div>
+                                <div class="text-white font-bold text-sm uppercase italic">Smart Contract Audit</div>
+                                <div class="text-xs text-gray-500">Verified by leading firms</div>
+                            </div>
+                        </div>
+                        <div class="flex gap-3">
+                            <i class="fas fa-shield-check text-up mt-1"></i>
+                            <div>
+                                <div class="text-white font-bold text-sm uppercase italic">Non-Custodial</div>
+                                <div class="text-xs text-gray-500">Full asset ownership</div>
+                            </div>
+                        </div>
+                        <div class="flex gap-3">
+                            <i class="fas fa-shield-check text-up mt-1"></i>
+                            <div>
+                                <div class="text-white font-bold text-sm uppercase italic">Liquidity Lock</div>
+                                <div class="text-xs text-gray-500">Anti-rug mechanisms</div>
+                            </div>
+                        </div>
+                        <div class="flex gap-3">
+                            <i class="fas fa-shield-check text-up mt-1"></i>
+                            <div>
+                                <div class="text-white font-bold text-sm uppercase italic">Real-time monitoring</div>
+                                <div class="text-xs text-gray-500">24/7 threat detection</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-12 p-6 bg-bg border border-white/5 rounded-2xl reveal">
+                        <div class="text-xs font-black text-gray-500 uppercase tracking-widest mb-4">Security Model</div>
+                        <div class="flex items-center gap-4">
+                            <div class="px-3 py-1 bg-up/10 text-up text-[10px] font-black rounded-lg border border-up/20">AES-GCM</div>
+                            <div class="px-3 py-1 bg-up/10 text-up text-[10px] font-black rounded-lg border border-up/20">ED25519</div>
+                            <div class="px-3 py-1 bg-up/10 text-up text-[10px] font-black rounded-lg border border-up/20">ZERO-TRUST</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="reveal">
+                    <div class="bg-surface rounded-[2.5rem] border border-white/10 p-10 relative overflow-hidden group">
+                        <div class="absolute inset-0 bg-gradient-to-br from-up/5 to-transparent"></div>
+                        <!-- Architecture Diagram Placeholder -->
+                        <div class="relative z-10 space-y-8">
+                            <div class="flex justify-between items-center">
+                                <div class="w-32 h-8 bg-white/5 rounded-xl border border-white/10 flex items-center justify-center text-[10px] font-bold text-gray-500">FRONTEND</div>
+                                <i class="fas fa-arrow-right text-gray-700"></i>
+                                <div class="w-32 h-8 bg-up/10 rounded-xl border border-up/20 flex items-center justify-center text-[10px] font-bold text-up">CANONIX CORE</div>
+                            </div>
+                            <div class="flex justify-center">
+                                <div class="w-48 h-24 bg-surface rounded-2xl border-2 border-dashed border-white/10 flex items-center justify-center flex-col gap-2 group-hover:border-up/30 transition-all">
+                                    <i class="fas fa-brain text-accent text-2xl animate-pulse"></i>
+                                    <div class="text-[8px] font-black text-gray-500 tracking-[0.2em]">AI ORACLE</div>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div class="w-32 h-8 bg-white/5 rounded-xl border border-white/10 flex items-center justify-center text-[10px] font-bold text-gray-500">LIQUIDITY</div>
+                                <i class="fas fa-arrow-left text-gray-700"></i>
+                                <div class="w-32 h-8 bg-white/5 rounded-xl border border-white/10 flex items-center justify-center text-[10px] font-bold text-gray-500">SETTLEMENT</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust & Credibility Section -->
+    <section class="py-32">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="reveal flex flex-wrap justify-center gap-12 lg:gap-24 opacity-30 grayscale hover:grayscale-0 transition-all mb-32">
+                <div class="flex items-center gap-3 text-2xl font-black text-white italic tracking-tighter"><i class="fab fa-ethereum"></i> ETHEREUM</div>
+                <div class="flex items-center gap-3 text-2xl font-black text-white italic tracking-tighter"><i class="fas fa-link"></i> CHAINLINK</div>
+                <div class="flex items-center gap-3 text-2xl font-black text-white italic tracking-tighter"><i class="fas fa-circle-nodes"></i> POLKADOT</div>
+                <div class="flex items-center gap-3 text-2xl font-black text-white italic tracking-tighter"><i class="fas fa-bolt"></i> PAXINET</div>
+            </div>
+
+            <div class="grid lg:grid-cols-3 gap-8">
+                <div class="reveal p-10 bg-surface rounded-3xl border border-white/5 text-center">
+                    <div class="text-4xl font-black text-white mb-2 italic tracking-tighter uppercase">Audit Passed</div>
+                    <p class="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-6">Security Certification</p>
+                    <div class="w-20 h-20 bg-up/10 rounded-full flex items-center justify-center text-up text-3xl mx-auto border border-up/20">
+                        <i class="fas fa-medal"></i>
+                    </div>
+                </div>
+                <div class="reveal p-10 bg-surface rounded-3xl border border-white/5 text-center delay-100">
+                    <div class="text-4xl font-black text-white mb-2 italic tracking-tighter uppercase">Verified</div>
+                    <p class="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-6">Smart Contracts</p>
+                    <div class="w-20 h-20 bg-accent/10 rounded-full flex items-center justify-center text-accent text-3xl mx-auto border border-accent/20">
+                        <i class="fas fa-file-contract"></i>
+                    </div>
+                </div>
+                <div class="reveal p-10 bg-surface rounded-3xl border border-white/5 text-center delay-200">
+                    <div class="text-4xl font-black text-white mb-2 italic tracking-tighter uppercase">100% Open</div>
+                    <p class="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-6">Source Protocol</p>
+                    <div class="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center text-white text-3xl mx-auto border border-white/10">
+                        <i class="fab fa-github"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA Section -->
+    <section class="py-32 relative">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center reveal">
+            <div class="bg-gradient-to-br from-accent/20 to-up/20 rounded-[4rem] p-16 sm:p-24 border border-white/10 relative overflow-hidden">
+                <div class="absolute inset-0 bg-grid opacity-20"></div>
+                <div class="relative z-10">
+                    <h2 class="text-6xl md:text-8xl font-black mb-8 italic uppercase tracking-tighter leading-none">Ready to <span class="text-up">Transcend</span>?</h2>
+                    <p class="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed">
+                        Join the next evolution of decentralized finance on Paxi Network. Precision trading starts here.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-6 justify-center">
+                        <a href="trade.html" class="btn-premium px-16 py-6 rounded-3xl text-xl font-black text-white">LAUNCH APP NOW</a>
+                    </div>
+                    <div class="mt-12 pt-12 border-t border-white/5 grid grid-cols-2 md:grid-cols-4 gap-8">
+                        <div class="text-[10px] text-gray-500 font-black uppercase tracking-widest">Sub-second Tx</div>
+                        <div class="text-[10px] text-gray-500 font-black uppercase tracking-widest">Low Slippage</div>
+                        <div class="text-[10px] text-gray-500 font-black uppercase tracking-widest">AI Intelligence</div>
+                        <div class="text-[10px] text-gray-500 font-black uppercase tracking-widest">Self-Custodial</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Footer -->
-    <footer class="border-t border-border py-12 bg-surface">
+    <footer class="py-20 border-t border-white/5">
         <div class="max-w-7xl mx-auto px-4 text-center">
-            <div class="flex items-center justify-center gap-2 mb-6">
-                <i class="fas fa-exchange-alt text-up text-xl"></i>
-                <span class="text-lg font-black gradient-text">CANONIX</span>
+            <div class="flex items-center justify-center gap-3 mb-8">
+                <i class="fas fa-exchange-alt text-up text-2xl"></i>
+                <span class="text-2xl font-black tracking-tighter gradient-text">CANONIX</span>
             </div>
-            <p class="text-gray-500 text-sm mb-8">Built for the next generation of DeFi on Paxi Network.</p>
-            <div class="flex justify-center gap-6 text-gray-400">
-                <a href="#" class="hover:text-white transition-colors"><i class="fab fa-twitter text-xl"></i></a>
-                <a href="#" class="hover:text-white transition-colors"><i class="fab fa-telegram text-xl"></i></a>
-                <a href="#" class="hover:text-white transition-colors"><i class="fab fa-github text-xl"></i></a>
+            <div class="flex justify-center gap-10 text-gray-500 font-bold text-sm mb-12">
+                <a href="#" class="hover:text-white transition-colors">Documentation</a>
+                <a href="#" class="hover:text-white transition-colors">Github</a>
+                <a href="#" class="hover:text-white transition-colors">Twitter</a>
+                <a href="#" class="hover:text-white transition-colors">Telegram</a>
             </div>
-            <div class="mt-8 pt-8 border-t border-white/5 text-[10px] text-gray-600 font-bold uppercase tracking-widest">
-                &copy; 2026 Canonix Team. All Rights Reserved.
+            <div class="text-[10px] text-gray-600 font-black uppercase tracking-widest">
+                &copy; 2026 Canonix Protocol. All Rights Reserved.
             </div>
         </div>
     </footer>
-    
-    <!-- Scripts -->
+
     <script src="./js/core/config.js"></script>
     <script src="./js/core/utils.js"></script>
     <script src="./js/core/api.js"></script>
     <script src="./js/modules/market/ai.js"></script>
     <script src="./js/modules/market/tokens.js"></script>
     <script src="./js/pages/landing.js"></script>
-</body>
 
+    <script>
+        // Scroll Reveal Logic
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        });
+
+        // Counter Animation
+        function animateValue(obj, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start).toLocaleString();
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // Trigger counters when visible
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !entry.target.dataset.animated) {
+                    const target = parseInt(entry.target.dataset.target);
+                    animateValue(entry.target, 0, target, 2000);
+                    entry.target.dataset.animated = "true";
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.counter').forEach(el => counterObserver.observe(el));
+    </script>
+</body>
 </html>
