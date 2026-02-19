@@ -138,8 +138,17 @@ window.initChart = function() {
             </div>
         `;
         tooltip.classList.remove('hidden');
-        tooltip.style.left = Math.min(param.point.x + 15, container.clientWidth - 190) + 'px';
-        tooltip.style.top = Math.min(param.point.y + 15, container.clientHeight - 180) + 'px';
+        const x = Math.min(param.point.x + 15, container.clientWidth - 190);
+        const y = Math.min(param.point.y + 15, container.clientHeight - 180);
+
+        // Remove existing positional classes
+        tooltip.classList.forEach(cls => {
+            if (cls.startsWith('left-[') || cls.startsWith('top-[')) {
+                tooltip.classList.remove(cls);
+            }
+        });
+        tooltip.classList.add(`left-[${x}px]`);
+        tooltip.classList.add(`top-[${y}px]`);
     });
 
     window.addEventListener('resize', () => {

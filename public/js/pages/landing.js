@@ -23,14 +23,17 @@ window.addEventListener('load', async () => {
     initGlobalMarketAI();
 });
 
-async function loadMarketData() {
+async function loadMarketData(type = 'all') {
     try {
         const grid = document.getElementById('marketGrid');
         if (!grid) return;
 
+        // Show loading state
+        grid.innerHTML = '<div class="col-span-full text-center py-20 text-gray-600 font-bold uppercase tracking-widest"><div class="w-10 h-10 border-4 border-meme-green border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>SYNCING...</div>';
+
         window.marketPage = 0;
         // Fetch tokens using BACKEND_API (via fetchDirect routing)
-        const url = `${window.APP_CONFIG.EXPLORER_API}/prc20/contracts?page=${window.marketPage}&_t=${Date.now()}`;
+        const url = `${window.APP_CONFIG.EXPLORER_API}/prc20/contracts?page=${window.marketPage}&type=${type}&_t=${Date.now()}`;
         const data = await window.fetchDirect(url);
 
         if (data && data.contracts) {
@@ -56,7 +59,14 @@ window.setMarketFilter = function(type, btn) {
         btn.classList.remove('bg-black', 'text-white');
     }
 
-    renderMarketGrid();
+    // If it's one of the non-pump filters or pumping, we might need a fresh fetch
+    // But for now let's just use the current tokens if they are already nonpump?
+    // Actually, backend 'nonpump' type returns different tokens.
+    if (type === 'hot' || type === 'new' || type === 'marketcap' || type === 'gainers') {
+        loadMarketData('nonpump');
+    } else {
+        loadMarketData('all');
+    }
 };
 
 window.filterMarket = function() {
@@ -102,16 +112,18 @@ window.loadMoreMarket = async function() {
     const btn = document.getElementById('loadMoreMarket');
     if (btn) {
         btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-circle-notch fa-spin mr-2"></i> Loading...';
+        btn.innerHTML = '<i class="fas fa-circle-notch fa-spin mr-2"></i> LOADING...';
     }
 
     try {
         window.marketPage++;
-        const url = `${window.APP_CONFIG.EXPLORER_API}/prc20/contracts?page=${window.marketPage}&_t=${Date.now()}`;
+        const type = (window.marketFilter === 'pumping') ? 'all' : 'nonpump';
+        const url = `${window.APP_CONFIG.EXPLORER_API}/prc20/contracts?page=${window.marketPage}&type=${type}&_t=${Date.now()}`;
         const data = await window.fetchDirect(url);
 
         if (data && data.contracts && data.contracts.length > 0) {
             const newTokens = data.contracts.map(c => window.processTokenDetail(c.contract_address, c));
+
             // Append unique tokens only
             newTokens.forEach(t => {
                 if (!window.marketTokens.find(mt => mt.address === t.address)) {
@@ -185,18 +197,20 @@ function renderMarketGrid() {
         const change = (t.price_change_24h * 100).toFixed(2);
         const colorClass = t.price_change_24h >= 0 ? 'bg-meme-green text-black' : 'bg-meme-pink text-white';
         const shadowClass = t.price_change_24h >= 0
-            ? 'shadow-[3px_3px_0_0_#00FF9F] md:shadow-brutal-green'
-            : 'shadow-[3px_3px_0_0_#FF0055] md:shadow-brutal-pink';
+            ? 'shadow-[3px_3px_0_0_#00D685] md:shadow-brutal-green'
+            : 'shadow-[3px_3px_0_0_#D60047] md:shadow-brutal-pink';
         const vol = window.formatAmount(t.volume_24h);
+        const logoUrl = window.normalizeLogoUrl(t.logo);
 
         return `
-            <a href="trade.html?token=${t.address}" class="bg-meme-surface border-2 md:border-4 border-black p-2 md:p-8 ${shadowClass} hover:shadow-none hover:translate-x-[2px] md:hover:translate-x-[4px] hover:translate-y-[2px] md:hover:translate-y-[4px] transition-all group block relative overflow-hidden">
+            <a href="trade.html?token=${t.address}" class="bg-meme-surface border-2 md:border-4 border-black p-4 md:p-8 ${shadowClass} hover:shadow-none hover:translate-x-[2px] md:hover:translate-x-[4px] hover:translate-y-[2px] md:hover:translate-y-[4px] transition-all group block relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-16 md:w-32 h-16 md:h-32 bg-white/5 -rotate-45 translate-x-8 md:translate-x-16 -translate-y-8 md:-translate-y-16 group-hover:bg-white/10 transition-colors"></div>
 
-                <div class="flex items-center gap-2 md:gap-6 mb-4 md:mb-10">
+                <div class="flex items-center gap-3 md:gap-6 mb-4 md:mb-10">
                     <div class="relative flex-shrink-0">
-                        ${t.logo ?
-                            `<img src="${t.logo}" class="w-8 h-8 md:w-16 md:h-16 rounded-none border-2 md:border-4 border-black group-hover:scale-110 group-hover:rotate-6 transition-transform shadow-[2px_2px_0_0_#000] md:shadow-brutal">` :
+                        ${logoUrl ?
+                            `<img src="${logoUrl}" class="w-8 h-8 md:w-16 md:h-16 rounded-none border-2 md:border-4 border-black group-hover:scale-110 group-hover:rotate-6 transition-transform shadow-[2px_2px_0_0_#000] md:shadow-brutal object-cover" onerror=\"this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden'); this.nextElementSibling.classList.add('flex');\">
+                             <div class="hidden" class="w-8 h-8 md:w-16 md:h-16 bg-meme-yellow border-2 md:border-4 border-black items-center justify-center text-sm md:text-xl font-display text-black group-hover:rotate-6 transition-transform shadow-[2px_2px_0_0_#000] md:shadow-brutal">${t.symbol.charAt(0)}</div>` :
                             `<div class="w-8 h-8 md:w-16 md:h-16 bg-meme-yellow border-2 md:border-4 border-black flex items-center justify-center text-sm md:text-xl font-display text-black group-hover:rotate-6 transition-transform shadow-[2px_2px_0_0_#000] md:shadow-brutal">${t.symbol.charAt(0)}</div>`
                         }
                     </div>

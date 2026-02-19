@@ -82,21 +82,21 @@ window.renderHoldersTable = function(list, page) {
     }
     const startRank = (page - 1) * limit;
     const headers = 
-        `<tr class="font-display text-lg text-gray-500 uppercase italic border-b-4 border-black">
-            <th class="p-6">RANK</th>
-            <th class="p-6">APE ADDRESS</th>
-            <th class="p-6 text-right">BAG SIZE</th>
-            <th class="p-6 text-right">SHARE</th>
+        `<tr class="font-display text-base text-gray-500 uppercase italic border-b-2 border-black">
+            <th class="p-4">RANK</th>
+            <th class="p-4">ADDRESS</th>
+            <th class="p-4 text-right">BAG</th>
+            <th class="p-4 text-right">SHARE</th>
         </tr>`;
     let html = `<div class="overflow-x-auto no-scrollbar"><table class="w-full text-left border-collapse">
         <thead class="bg-black sticky top-0 z-10">${headers}</thead>
-        <tbody class="divide-y-2 divide-black">`;
+        <tbody class="divide-y divide-black/50">`;
     for (let idx = 0; idx < list.length; idx++) {
         const item = list[idx]; const rank = startRank + idx + 1;
         const addr = item.address || item.account_address || item;
         const bal = item.balance !== undefined ? item.balance : '-';
         const pct = item.percentage !== undefined ? item.percentage : 0;
-        const shortAddr = typeof addr === 'string' ? window.shortenAddress(addr, 12) : 'Unknown';
+        const shortAddr = typeof addr === 'string' ? window.shortenAddress(addr, 10) : 'Unknown';
         const fullAddr = typeof addr === 'string' ? addr : '';
         let balanceDisplay = bal; if (typeof bal === 'number') balanceDisplay = window.formatBalance(bal, 6);
         else if (typeof bal === 'string' && bal !== '-' && bal !== 'Loading...') {
@@ -104,23 +104,23 @@ window.renderHoldersTable = function(list, page) {
         }
         const isMe = window.wallet && window.wallet.address === fullAddr;
         const isPool = fullAddr === 'paxi1mfru9azs5nua2wxcd4sq64g5nt7nn4n80r745t';
-        const rowClass = isMe ? "bg-meme-green/10" : (isPool ? "bg-meme-cyan/10" : "hover:bg-meme-card");
+        const rowClass = isMe ? "bg-meme-green/5" : (isPool ? "bg-meme-cyan/5" : "hover:bg-meme-card");
         html += `<tr class="${rowClass} transition-colors group">
-            <td class="p-6 font-display text-3xl italic text-gray-700">#${rank}</td>
-            <td class="p-6 font-mono text-sm text-gray-400">
-                <div class="flex items-center gap-4">
-                    <span class="truncate max-w-[150px] uppercase font-bold text-white">${shortAddr}</span>
-                    ${isMe ? '<span class="px-2 py-0.5 bg-meme-green text-black border-2 border-black text-[8px] font-black italic">YOU</span>' : ''}
-                    ${isPool ? '<span class="px-2 py-0.5 bg-meme-cyan text-black border-2 border-black text-[8px] font-black italic">[POOL]</span>' : ''}
-                    <a href="https://winscan.winsnip.xyz/paxi-mainnet/accounts/${fullAddr}" target="_blank" class="text-meme-yellow hover:scale-125 transition-transform"><i class="fas fa-external-link-alt text-xs"></i></a>
+            <td class="p-4 font-display text-xl italic text-gray-700">#${rank}</td>
+            <td class="p-4 font-mono text-[10px] text-gray-400">
+                <div class="flex items-center gap-2">
+                    <span class="truncate max-w-[100px] uppercase font-bold text-white">${shortAddr}</span>
+                    ${isMe ? '<span class="px-1.5 py-0.5 bg-meme-green text-black border border-black text-[7px] font-black italic">YOU</span>' : ''}
+                    ${isPool ? '<span class="px-1.5 py-0.5 bg-meme-cyan text-black border border-black text-[7px] font-black italic">[POOL]</span>' : ''}
+                    <a href="https://winscan.winsnip.xyz/paxi-mainnet/accounts/${fullAddr}" target="_blank" class="text-meme-yellow hover:scale-110 transition-transform"><i class="fas fa-external-link-alt text-[10px]"></i></a>
                 </div>
             </td>
-            <td class="p-6 text-right font-mono text-sm font-black text-white">${balanceDisplay}</td>
-            <td class="p-6 text-right min-w-[150px]">
-                <div class="flex flex-col items-end gap-2">
-                    <span class="font-display text-xl text-meme-cyan italic">${pct.toFixed(2)}%</span>
-                    <div class="w-full h-3 bg-black border-2 border-meme-surface overflow-hidden shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)]">
-                        <div class="h-full bg-meme-cyan" style="width: ${Math.min(100, pct)}%"></div>
+            <td class="p-4 text-right font-mono text-[10px] font-black text-white">${balanceDisplay}</td>
+            <td class="p-4 text-right min-w-[100px]">
+                <div class="flex flex-col items-end gap-1">
+                    <span class="font-display text-sm text-meme-cyan italic">${pct.toFixed(2)}%</span>
+                    <div class="w-20 h-1.5 bg-black border border-meme-surface overflow-hidden shadow-inner">
+                        <div class="h-full bg-meme-cyan" class="w-[${Math.min(100, pct)}%]"></div>
                     </div>
                 </div>
             </td>

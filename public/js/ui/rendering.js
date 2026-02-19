@@ -97,12 +97,12 @@ window.renderTokenSidebar = function(filter = '', isAppend = false) {
           container.prepend(subTabs);
       }
       const subTabsHtml = `
-            <button onclick="window.setSubSort('all')" class="px-3 py-1 text-[9px] font-black uppercase tracking-tighter rounded-full transition-all ${window.currentSubSort === 'all' ? 'bg-up text-bg shadow-glow-up' : 'text-gray-500 hover:text-gray-300'}">ALL NON-PUMP</button>
-            <button onclick="window.setSubSort('new')" class="px-3 py-1 text-[9px] font-black uppercase tracking-tighter rounded-full transition-all ${window.currentSubSort === 'new' ? 'bg-up text-bg shadow-glow-up' : 'text-gray-500 hover:text-gray-300'}">NEW</button>
-            <button onclick="window.setSubSort('gainer')" class="px-3 py-1 text-[9px] font-black uppercase tracking-tighter rounded-full transition-all ${window.currentSubSort === 'gainer' ? 'bg-up text-bg shadow-glow-up' : 'text-gray-500 hover:text-gray-300'}">GAINER</button>
-            <button onclick="window.setSubSort('hot')" class="px-3 py-1 text-[9px] font-black uppercase tracking-tighter rounded-full transition-all ${window.currentSubSort === 'hot' ? 'bg-up text-bg shadow-glow-up' : 'text-gray-500 hover:text-gray-300'}">HOT</button>
-            <button onclick="window.setSubSort('marketcap')" class="px-3 py-1 text-[9px] font-black uppercase tracking-tighter rounded-full transition-all ${window.currentSubSort === 'marketcap' ? 'bg-up text-bg shadow-glow-up' : 'text-gray-500 hover:text-gray-300'}">MARKET CAP</button>
-            <button onclick="window.setSubSort('verified')" class="px-3 py-1 text-[9px] font-black uppercase tracking-tighter rounded-full transition-all ${window.currentSubSort === 'verified' ? 'bg-up text-bg shadow-glow-up' : 'text-gray-500 hover:text-gray-300'}">VERIFIED</button>
+            <button onclick="window.setSubSort('all')" class="px-3 py-1 text-[9px] font-black uppercase tracking-tighter rounded-full transition-all ${window.currentSubSort === 'all' ? 'bg-up text-bg shadow-brutal-sm' : 'text-gray-500 hover:text-gray-300'}">ALL NON-PUMP</button>
+            <button onclick="window.setSubSort('new')" class="px-3 py-1 text-[9px] font-black uppercase tracking-tighter rounded-full transition-all ${window.currentSubSort === 'new' ? 'bg-up text-bg shadow-brutal-sm' : 'text-gray-500 hover:text-gray-300'}">NEW</button>
+            <button onclick="window.setSubSort('gainer')" class="px-3 py-1 text-[9px] font-black uppercase tracking-tighter rounded-full transition-all ${window.currentSubSort === 'gainer' ? 'bg-up text-bg shadow-brutal-sm' : 'text-gray-500 hover:text-gray-300'}">GAINER</button>
+            <button onclick="window.setSubSort('hot')" class="px-3 py-1 text-[9px] font-black uppercase tracking-tighter rounded-full transition-all ${window.currentSubSort === 'hot' ? 'bg-up text-bg shadow-brutal-sm' : 'text-gray-500 hover:text-gray-300'}">HOT</button>
+            <button onclick="window.setSubSort('marketcap')" class="px-3 py-1 text-[9px] font-black uppercase tracking-tighter rounded-full transition-all ${window.currentSubSort === 'marketcap' ? 'bg-up text-bg shadow-brutal-sm' : 'text-gray-500 hover:text-gray-300'}">MARKET CAP</button>
+            <button onclick="window.setSubSort('verified')" class="px-3 py-1 text-[9px] font-black uppercase tracking-tighter rounded-full transition-all ${window.currentSubSort === 'verified' ? 'bg-up text-bg shadow-brutal-sm' : 'text-gray-500 hover:text-gray-300'}">VERIFIED</button>
       `;
       if (subTabs.innerHTML !== subTabsHtml) subTabs.innerHTML = subTabsHtml;
   } else if (subTabs) {
@@ -291,21 +291,22 @@ window.patchTokenElement = function(el, addr) {
 
     // Update Logo
     const logoContainer = el.querySelector('.token-logo-container');
-    if (detail.logo) {
+    const logoUrl = window.normalizeLogoUrl(detail.logo);
+    if (logoUrl) {
         let img = logoContainer.querySelector('img');
         if (!img) {
             logoContainer.innerHTML = '';
             img = document.createElement('img');
-            img.className = 'w-8 h-8 md:w-10 md:h-10 border-2 border-black group-hover:rotate-6 transition-transform';
+            img.className = 'w-8 h-8 md:w-10 md:h-10 border-2 border-black group-hover:rotate-6 transition-transform object-cover';
             img.loading = 'lazy';
             img.onerror = () => {
-                img.style.display = 'none';
+                img.classList.add('hidden');
                 logoContainer.textContent = safeSymbol.charAt(0);
             };
             logoContainer.appendChild(img);
         }
-        if (img.src !== detail.logo) img.src = detail.logo;
-        img.style.display = 'block';
+        if (img.src !== logoUrl) img.src = logoUrl;
+        img.classList.remove('hidden');
     } else {
         logoContainer.innerHTML = safeSymbol.charAt(0);
     }
@@ -332,12 +333,25 @@ window.updateTicker = function() {
     if (!tickerContainer) return;
     const tokens = [...window.tokenDetails.values()];
     if (tokens.length === 0) return;
+
     const gainers = [...tokens].sort((a, b) => b.price_change_24h - a.price_change_24h).slice(0, 5);
     const hot = [...tokens].sort((a, b) => b.volume_24h - a.volume_24h).slice(0, 5);
+
+    const itemClass = "inline-block text-black font-display text-[10px] md:text-sm mx-4 md:mx-8 italic uppercase tracking-tighter";
+    const spanClass = "text-meme-surface bg-black/10 px-1 ml-1 font-mono font-bold";
+
     let html = '';
-    gainers.forEach(t => { html += `<div class="ticker-item">GAINER: ${t.symbol} <span>+${(t.price_change_24h * 100).toFixed(2)}%</span></div>`; });
-    hot.forEach(t => { html += `<div class="ticker-item">HOT: ${t.symbol} <span>Vol ${window.formatAmount(t.volume_24h)}</span></div>`; });
-    window.setHtml(tickerContainer, html);
+    // Double content to ensure marquee loop is smooth
+    const items = [];
+    gainers.forEach(t => {
+        items.push(`<div class="${itemClass}">GAINER: ${t.symbol} <span class="${spanClass}">+${(t.price_change_24h * 100).toFixed(2)}%</span></div>`);
+    });
+    hot.forEach(t => {
+        items.push(`<div class="${itemClass}">HOT: ${t.symbol} <span class="${spanClass}">Vol ${window.formatAmount(t.volume_24h)}</span></div>`);
+    });
+
+    const finalItems = [...items, ...items]; // Repeat for marquee
+    window.setHtml(tickerContainer, finalItems.join(''));
 };
 
 // ===== RENDER SWAP TERMINAL (MAIN CONTENT or SIDEBAR) =====
@@ -446,7 +460,7 @@ window.renderTransactionHistorySidebar = async function() {
     if (!container || !window.wallet) return;
     container.innerHTML = `<div class="space-y-4">
         <h4 class="text-[10px] font-black text-gray-500 uppercase tracking-widest border-b border-border pb-2 flex justify-between items-center">RECENT TRANSACTIONS<button onclick="window.renderTransactionHistorySidebar()" class="hover:text-up"><i class="fas fa-sync-alt scale-75"></i></button></h4>
-        <div id="sidebar-tx-list" class="divide-y divide-border/20"><div class="text-center py-20"><div class="spinner mx-auto scale-50"></div></div></div>
+        <div id="sidebar-tx-list" class="divide-y divide-border/20"><div class="text-center py-20"><div class="w-8 h-8 border-4 border-meme-green border-t-transparent rounded-full animate-spin mx-auto"></div></div></div>
         <div id="tx-load-more" class="h-10 w-full flex items-center justify-center"></div>
     </div>`;
     window.historyPage = 1; window.historyIsEnd = false; await window.renderTxHistoryItems(true);
@@ -518,7 +532,7 @@ window.renderLPTerminal = async function() {
                     <input type="range" id="lpTokenSlider" min="0" max="100" step="1" value="0" class="w-full mt-3 h-1.5 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-up" oninput="window.updateLPFromSlider('token', this.value)">
                 </div>
                 <div id="estimatedLP" class="text-[10px] text-up font-black text-center h-4"></div>
-                <button onclick="window.executeAddLP()" class="w-full py-4 btn-trade rounded-xl font-black text-xs uppercase tracking-widest shadow-glow-up">Add Liquidity</button>
+                <button onclick="window.executeAddLP()" class="w-full py-4 btn-trade rounded-xl font-black text-xs uppercase tracking-widest shadow-brutal-sm">Add Liquidity</button>
             </div>
             <div class="bg-surface border border-border p-4 rounded-2xl space-y-2.5">
                 <h5 class="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Your Position</h5>
@@ -651,7 +665,7 @@ window.renderDonateTerminal = function() {
                     <div class="flex justify-between text-[9px] text-gray-500 mb-1">Amount (PAXI)</div>
                     <input type="number" id="donationAmount" value="10" class="bg-transparent w-full text-white font-bold outline-none">
                 </div>
-                <button onclick="window.executeDonation()" class="w-full py-4 btn-trade rounded-xl font-black text-xs uppercase tracking-widest shadow-glow-up">Donate PAXI</button>
+                <button onclick="window.executeDonation()" class="w-full py-4 btn-trade rounded-xl font-black text-xs uppercase tracking-widest shadow-brutal-sm">Donate PAXI</button>
             </div>
         </div>`;
 };
@@ -787,7 +801,7 @@ window.showTokenDetail = function(event, address) {
                     <h4 class="text-xs font-bold text-gray-500 uppercase mb-2">Contract Address</h4>
                     <div class="flex items-center gap-2"><code class="text-xs text-gray-400 font-mono flex-1">${window.shortenAddress(address, 12)}</code><button onclick="window.copyAddress(event, '${address}')" class="px-3 py-1 bg-card border border-border rounded text-[10px] font-bold hover:text-up transition-all">COPY</button></div>
                 </div>
-                <button onclick="window.selectPRC20('${address}'); this.closest('.fixed').remove();" class="w-full py-4 btn-trade rounded-xl font-black text-sm uppercase tracking-widest shadow-glow-up">Swap This Token</button>
+                <button onclick="window.selectPRC20('${address}'); this.closest('.fixed').remove();" class="w-full py-4 btn-trade rounded-xl font-black text-sm uppercase tracking-widest shadow-brutal-sm">Swap This Token</button>
             </div>
         </div>`;
     document.body.appendChild(modal);

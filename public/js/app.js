@@ -131,7 +131,7 @@ window.addEventListener('beforeunload', () => {
 //     setTimeout(function() {
 //         const loadingScreen = document.getElementById('loadingScreen');
 //         if (loadingScreen) {
-//             loadingScreen.style.display = 'none';
+//             loadingScreen.classList.add('hidden');
 //         }
 //     }, 3000);
 // });

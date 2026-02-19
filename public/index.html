@@ -3,26 +3,27 @@
 
 <head>
     <meta charset="UTF-8">
-    <script src="https://cdn.tailwindcss.com"></script>
+
     <script>
-        tailwind.config = {
+        tailwind = {
+            config: {
             theme: {
                 extend: {
                     colors: {
                         'meme-black': '#000000',
-                        'meme-surface': '#0A0A0A',
-                        'meme-card': '#141414',
-                        'meme-green': '#00FF9F',
-                        'meme-pink': '#FF0055',
-                        'meme-cyan': '#00D4FF',
-                        'meme-yellow': '#FFD700',
+                        'meme-surface': '#050505',
+                        'meme-card': '#0D0D0D',
+                        'meme-green': '#00D685',
+                        'meme-pink': '#D60047',
+                        'meme-cyan': '#00B2D6',
+                        'meme-yellow': '#D6B500',
                         // Compatibility colors
-                        up: '#00FF9F',
-                        down: '#FF0055',
-                        accent: '#00D4FF',
+                        up: '#00D685',
+                        down: '#D60047',
+                        accent: '#00B2D6',
                         bg: '#000000',
-                        surface: '#0A0A0A',
-                        card: '#141414',
+                        surface: '#050505',
+                        card: '#0D0D0D',
                         border: '#000000',
                     },
                     fontFamily: {
@@ -34,10 +35,10 @@
                         'brutal-sm': '2px 2px 0px 0px rgba(0,0,0,1)',
                         'brutal': '4px 4px 0px 0px rgba(0,0,0,1)',
                         'brutal-lg': '6px 6px 0px 0px rgba(0,0,0,1)',
-                        'brutal-green': '4px 4px 0px 0px #00FF9F',
-                        'brutal-pink': '4px 4px 0px 0px #FF0055',
-                        'brutal-cyan': '4px 4px 0px 0px #00D4FF',
-                        'brutal-yellow': '4px 4px 0px 0px #FFD700',
+                        'brutal-green': '4px 4px 0px 0px #00D685',
+                        'brutal-pink': '4px 4px 0px 0px #D60047',
+                        'brutal-cyan': '4px 4px 0px 0px #00B2D6',
+                        'brutal-yellow': '4px 4px 0px 0px #D6B500',
                     },
                     animation: {
                         'marquee': 'marquee 25s linear infinite',
@@ -56,7 +57,10 @@
                 }
             }
         }
+        }
     </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Canonix - Premium DEX on Paxi Network</title>
 
@@ -66,7 +70,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
 
     <!-- TAILWIND -->
-
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -226,10 +229,11 @@
                 </div>
                 <!-- Filters -->
                 <div class="flex flex-wrap gap-2">
-                    <button onclick="window.setMarketFilter('hot', this)" class="px-4 py-2 bg-meme-green border-2 border-black text-black font-display text-lg italic uppercase shadow-brutal hover:shadow-none transition-all">Hot</button>
-                    <button onclick="window.setMarketFilter('new', this)" class="px-4 py-2 bg-black border-2 border-black text-white font-display text-lg italic uppercase shadow-brutal hover:shadow-none transition-all">New</button>
-                    <button onclick="window.setMarketFilter('pumping', this)" class="px-4 py-2 bg-black border-2 border-black text-white font-display text-lg italic uppercase shadow-brutal hover:shadow-none transition-all">Pumping</button>
-                    <button onclick="window.setMarketFilter('gainers', this)" class="px-4 py-2 bg-black border-2 border-black text-white font-display text-lg italic uppercase shadow-brutal hover:shadow-none transition-all">Win</button>
+                    <button onclick="window.setMarketFilter('pumping', this)" class="market-filter-btn px-4 py-2 bg-meme-green border-2 border-black text-black font-display text-lg italic uppercase shadow-brutal hover:shadow-none transition-all">Pumping</button>
+                    <button onclick="window.setMarketFilter('hot', this)" class="market-filter-btn px-4 py-2 bg-black border-2 border-black text-white font-display text-lg italic uppercase shadow-brutal hover:shadow-none transition-all">Hot</button>
+                    <button onclick="window.setMarketFilter('new', this)" class="market-filter-btn px-4 py-2 bg-black border-2 border-black text-white font-display text-lg italic uppercase shadow-brutal hover:shadow-none transition-all">New</button>
+                    <button onclick="window.setMarketFilter('marketcap', this)" class="market-filter-btn px-4 py-2 bg-black border-2 border-black text-white font-display text-lg italic uppercase shadow-brutal hover:shadow-none transition-all">Mcap</button>
+                    <button onclick="window.setMarketFilter('gainers', this)" class="market-filter-btn px-4 py-2 bg-black border-2 border-black text-white font-display text-lg italic uppercase shadow-brutal hover:shadow-none transition-all">Gainers</button>
                 </div>
             </div>
 
@@ -244,9 +248,8 @@
             </div>
 
             <!-- Grid -->
-            <div id="marketGrid" class="grid grid-cols-3 gap-3 md:gap-6 reveal">
+            <div id="marketGrid" class="grid grid-cols-2 gap-3 md:gap-6 reveal">
                 <!-- JS Populated -->
-                <div class="animate-pulse bg-meme-card border-4 border-black h-64"></div>
                 <div class="animate-pulse bg-meme-card border-4 border-black h-64"></div>
                 <div class="animate-pulse bg-meme-card border-4 border-black h-64"></div>
             </div>

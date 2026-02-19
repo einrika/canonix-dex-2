@@ -109,7 +109,7 @@ Object.assign(window.WalletUI, {
             return;
         }
 
-        container.innerHTML = '<div class="text-center py-8"><div class="spinner mx-auto scale-50"></div><div class="text-[10px] text-gray-500 mt-3 uppercase font-black tracking-widest">Loading History...</div></div>';
+        container.innerHTML = '<div class="text-center py-8"><div class="w-8 h-8 border-4 border-meme-green border-t-transparent rounded-full animate-spin mx-auto"></div><div class="text-[10px] text-gray-500 mt-3 uppercase font-black tracking-widest">Loading History...</div></div>';
         
         // Fetch transactions using existing function
         if (window.fetchUserTransactions) {
@@ -200,7 +200,7 @@ Object.assign(window.WalletUI, {
         const activeWallet = window.WalletManager.getActiveWallet();
         if (!activeWallet) return;
 
-        container.innerHTML = '<div class="text-center py-4"><div class="spinner mx-auto scale-50"></div></div>';
+        container.innerHTML = '<div class="text-center py-4"><div class="w-8 h-8 border-4 border-meme-green border-t-transparent rounded-full animate-spin mx-auto"></div></div>';
 
         const lps = await window.fetchUserLPPositions(activeWallet.address);
 
@@ -436,44 +436,49 @@ Object.assign(window.WalletUI, {
             }
         });
 
-        const resolveImageUrl = (url) => {
-            if (!url) return '';
-            if (url.startsWith('ipfs://')) return `https://ipfs.io/ipfs/${url.replace('ipfs://', '')}`;
-            return url;
-        };
-
         container.innerHTML = tokens.map(token => {
             if (!window.AssetManager.isTokenVisible(token.address)) return '';
             const meta = window.AssetManager.getAssetMeta(token.address);
-            const logoUrl = resolveImageUrl(token.logo);
+            const logoUrl = window.normalizeLogoUrl(token.logo);
             const canHide = token.address !== 'PAXI';
 
             return `
                 <div class="p-4 bg-meme-surface border-4 border-black shadow-brutal-sm hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all group cursor-pointer relative"
                      id="asset-item-${token.address}" onclick="window.WalletUI.showAssetActions('${token.address}')">
-                    <div class="absolute top-2 right-2 flex gap-1 z-10">
-                        ${canHide ? `
-                            <button onclick="event.stopPropagation(); window.WalletUI.confirmHideToken('${token.address}')" 
-                                    class="w-6 h-6 bg-meme-yellow border-2 border-black flex items-center justify-center text-[10px] text-black hover:bg-meme-pink transition-all">
-                                <i class="fas fa-eye-slash"></i>
-                            </button>
-                        ` : ''}
-                    </div>
+
                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-black border-2 border-black flex items-center justify-center text-sm font-black overflow-hidden relative shadow-brutal-sm group-hover:rotate-6 transition-transform">
-                            ${logoUrl ? `<img src="${logoUrl}" class="w-full h-full object-cover">` : `<span>${token.symbol.charAt(0)}</span>`}
+                        <div class="w-12 h-12 bg-black border-2 border-black flex items-center justify-center text-sm font-black overflow-hidden relative shadow-brutal-sm group-hover:rotate-6 transition-transform flex-shrink-0">
+                            ${logoUrl ? `<img src="${logoUrl}" class="w-full h-full object-cover" onerror=\"this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden'); this.nextElementSibling.classList.add('flex');\">
+                                        <span class="hidden absolute inset-0 flex items-center justify-center font-black">${token.symbol.charAt(0)}</span>`
+                                     : `<span class="font-black">${token.symbol.charAt(0)}</span>`}
                         </div>
                         <div class="flex-1 min-w-0">
-                            <div class="flex justify-between items-start mb-1">
-                                <span class="text-base font-display italic text-white uppercase truncate pr-8 tracking-tighter">${token.name}</span>
-                                <span id="bal-${token.address}" class="text-sm font-mono font-black text-meme-cyan">...</span>
+                            <div class="flex justify-between items-start mb-1 gap-2">
+                                <span class="text-base font-display italic text-white uppercase truncate tracking-tighter">${token.name}</span>
+                                <div class="flex flex-col items-end flex-shrink-0">
+                                    <span id="bal-${token.address}" class="text-sm font-mono font-black text-meme-cyan">...</span>
+                                    <div class="flex gap-1 mt-1">
+                                        <button onclick="event.stopPropagation(); window.WalletUI.showAssetDetailModal('${token.address}')"
+                                                class="w-5 h-5 bg-meme-cyan border border-black flex items-center justify-center text-[8px] text-black hover:bg-white transition-all shadow-brutal-sm hover:shadow-none"
+                                                title="Details">
+                                            <i class="fas fa-info"></i>
+                                        </button>
+                                        ${canHide ? `
+                                            <button onclick="event.stopPropagation(); window.WalletUI.confirmHideToken('${token.address}')"
+                                                    class="w-5 h-5 bg-meme-yellow border border-black flex items-center justify-center text-[8px] text-black hover:bg-meme-pink transition-all shadow-brutal-sm hover:shadow-none"
+                                                    title="Hide">
+                                                <i class="fas fa-eye-slash"></i>
+                                            </button>
+                                        ` : ''}
+                                    </div>
+                                </div>
                             </div>
                             <div class="flex justify-between items-center">
                                 <div class="flex items-center gap-2">
                                     <span class="text-[9px] font-black text-gray-600 uppercase tracking-widest italic">${token.symbol}</span>
                                     <span class="text-[8px] font-mono font-bold ${meta.change24h >= 0 ? 'text-meme-green' : 'text-meme-pink'}">${meta.change24h >= 0 ? '+' : ''}${meta.change24h.toFixed(2)}%</span>
                                 </div>
-                                <span id="val-${token.address}" class="text-[10px] font-display text-white italic tracking-tighter">...</span>
+                                <span id="val-${token.address}" class="text-[10px] font-display text-white/50 italic tracking-tighter">...</span>
                             </div>
                         </div>
                     </div>
@@ -535,8 +540,8 @@ Object.assign(window.WalletUI, {
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-3">
                                 <div class="w-12 h-12 rounded-full bg-card border border-border flex items-center justify-center overflow-hidden relative">
-                                    ${logoUrl ? `<img src="${logoUrl}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                                <span style="display:none; position:absolute; inset:0; align-items:center; justify-content:center; font-weight:900;">${c.symbol.charAt(0)}</span>`
+                                    ${logoUrl ? `<img src="${logoUrl}" class="w-full h-full object-cover" onerror=\"this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden'); this.nextElementSibling.classList.add('flex');\">
+                                                <span class="hidden absolute inset-0 flex items-center justify-center font-black">${c.symbol.charAt(0)}</span>`
                                              : `<span class="font-black">${c.symbol.charAt(0)}</span>`}
                                 </div>
                                 <div>
@@ -1473,7 +1478,7 @@ Object.assign(window.WalletUI, {
                             <textarea id="importValue" class="w-full bg-surface border border-border rounded-xl p-4 text-xs font-mono outline-none focus:border-up h-24" placeholder="word1 word2 ..."></textarea>
                         </div>
 
-                        <button onclick="window.WalletUI.processImport()" class="w-full py-4 bg-up text-bg font-black rounded-2xl shadow-glow-up text-xs uppercase italic mt-4">Import Wallet</button>
+                        <button onclick="window.WalletUI.processImport()" class="w-full py-4 bg-up text-bg font-black rounded-2xl shadow-brutal-sm text-xs uppercase italic mt-4">Import Wallet</button>
                     </div>
                 </div>
             </div>

@@ -3,26 +3,27 @@
 
 <head>
     <meta charset="UTF-8">
-    <script src="https://cdn.tailwindcss.com"></script>
+
     <script>
-        tailwind.config = {
+        tailwind = {
+            config: {
             theme: {
                 extend: {
                     colors: {
                         'meme-black': '#000000',
-                        'meme-surface': '#0A0A0A',
-                        'meme-card': '#141414',
-                        'meme-green': '#00FF9F',
-                        'meme-pink': '#FF0055',
-                        'meme-cyan': '#00D4FF',
-                        'meme-yellow': '#FFD700',
+                        'meme-surface': '#050505',
+                        'meme-card': '#0D0D0D',
+                        'meme-green': '#00D685',
+                        'meme-pink': '#D60047',
+                        'meme-cyan': '#00B2D6',
+                        'meme-yellow': '#D6B500',
                         // Map old names to new palette for JS compatibility
-                        up: '#00FF9F',
-                        down: '#FF0055',
-                        accent: '#00D4FF',
+                        up: '#00D685',
+                        down: '#D60047',
+                        accent: '#00B2D6',
                         bg: '#000000',
-                        surface: '#0A0A0A',
-                        card: '#141414',
+                        surface: '#050505',
+                        card: '#0D0D0D',
                         border: '#000000',
                     },
                     fontFamily: {
@@ -34,10 +35,10 @@
                         'brutal-sm': '2px 2px 0px 0px rgba(0,0,0,1)',
                         'brutal': '4px 4px 0px 0px rgba(0,0,0,1)',
                         'brutal-lg': '6px 6px 0px 0px rgba(0,0,0,1)',
-                        'brutal-green': '4px 4px 0px 0px #00FF9F',
-                        'brutal-pink': '4px 4px 0px 0px #FF0055',
-                        'brutal-cyan': '4px 4px 0px 0px #00D4FF',
-                        'brutal-yellow': '4px 4px 0px 0px #FFD700',
+                        'brutal-green': '4px 4px 0px 0px #00D685',
+                        'brutal-pink': '4px 4px 0px 0px #D60047',
+                        'brutal-cyan': '4px 4px 0px 0px #00B2D6',
+                        'brutal-yellow': '4px 4px 0px 0px #D6B500',
                         'glow': '0 0 10px rgba(0, 255, 159, 0.2)',
                     },
                     animation: {
@@ -83,7 +84,10 @@
                 }
             }
         }
+        }
     </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     <!-- ===== PRIMARY META TAGS ===== -->
@@ -122,8 +126,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- TAILWIND -->
-
-
 
     <script src="https://mainnet-api.paxinet.io/resources/js/paxi-cosmjs.umd.js"></script>
     <script type="module">
@@ -179,11 +181,11 @@
     </header>
 
     <!-- Ticker News -->
-    <div class="bg-meme-yellow border-b-2 border-black py-0.5 overflow-hidden whitespace-nowrap z-[60] relative">
+    <div class="bg-meme-yellow border-b-2 border-black py-1 overflow-hidden whitespace-nowrap z-[60] relative flex items-center min-h-[28px] md:min-h-[36px]">
         <div id="tickerContent" class="animate-marquee inline-block">
-            <span class="text-black font-display text-sm mx-6 italic uppercase tracking-tighter">LOADING MARKET DATA...</span>
-            <span class="text-black font-display text-sm mx-6 italic uppercase tracking-tighter">$$$ MOON SOON $$$</span>
-            <span class="text-black font-display text-sm mx-6 italic uppercase tracking-tighter">PUMP IT HARDER</span>
+            <span class="inline-block text-black font-display text-[10px] md:text-sm mx-4 md:mx-8 italic uppercase tracking-tighter">LOADING MARKET DATA...</span>
+            <span class="inline-block text-black font-display text-[10px] md:text-sm mx-4 md:mx-8 italic uppercase tracking-tighter">$$$ MOON SOON $$$</span>
+            <span class="inline-block text-black font-display text-[10px] md:text-sm mx-4 md:mx-8 italic uppercase tracking-tighter">PUMP IT HARDER</span>
         </div>
     </div>
 
@@ -430,7 +432,6 @@
             </button>
         </div>
     </div>
-
 
     <!-- ===== MODALS & BOTTOM SHEETS ===== -->
 

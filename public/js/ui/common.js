@@ -39,20 +39,21 @@ window.toggleFAQ = function(element) {
 
     document.querySelectorAll('.faq-answer').forEach(el => {
         if (el !== answer) {
-            el.style.maxHeight = null;
+            el.classList.add('hidden');
             window.removeClass(el, 'open');
             if (el.previousElementSibling) {
                 window.removeClass(el.previousElementSibling, 'active');
             }
         }
     });
-    if (answer.style.maxHeight) {
-        answer.style.maxHeight = null;
+
+    if (!answer.classList.contains('hidden')) {
+        answer.classList.add('hidden');
         window.removeClass(answer, 'open');
         window.removeClass(element, 'active');
     } else {
+        answer.classList.remove('hidden');
         window.addClass(answer, 'open');
-        answer.style.maxHeight = answer.scrollHeight + "px";
         window.addClass(element, 'active');
     }
 };
@@ -252,7 +253,9 @@ window.updateDashboard = function(detail) {
     const totalTrade = detail.buys + detail.sells;
     const buyRatio = totalTrade > 0 ? (detail.buys / totalTrade) * 100 : 50;
     const bar = document.getElementById('buyRatioBar');
-    if (bar) bar.style.width = buyRatio + '%';
+    if (bar) {
+        bar.className = `h-full bg-meme-green transition-all duration-500 w-[${buyRatio}%]`;
+    }
 
     window.setText('resPaxi', window.formatAmount(detail.reserve_paxi / 1000000, 2));
     window.setText('resToken', window.formatAmount(detail.reserve_prc20 / Math.pow(10, detail.decimals), 2));

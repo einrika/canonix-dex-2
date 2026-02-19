@@ -107,8 +107,10 @@ window.fetchDirect = async function(url, options = {}) {
             params.append('query', query);
         } else if (url.includes('prc20/contracts')) {
             const page = parsedUrl.searchParams.get('page') || 0;
+            const type = parsedUrl.searchParams.get('type') || 'all';
             apiEndpoint = `${BACKEND_API}/api/token-list`;
             params.append('page', page);
+            params.append('type', type);
         } else if (url.includes('prc20/contract')) {
             const addr = parsedUrl.searchParams.get('address');
             apiEndpoint = `${BACKEND_API}/api/token-detail`;
@@ -498,7 +500,9 @@ window.showNotif = function(msg, type = 'info') {
   const updatePositions = () => {
     let currentTop = 16;
     window.activeNotifs.forEach((el) => {
-      el.style.top = `${currentTop}px`;
+      // Remove any existing top-[...] classes
+      el.classList.forEach(cls => { if (cls.startsWith('top-[')) el.classList.remove(cls); });
+      el.classList.add(`top-[${currentTop}px]`);
       currentTop += el.offsetHeight + 12;
     });
   };
@@ -511,7 +515,7 @@ window.showNotif = function(msg, type = 'info') {
     const progress = notif.querySelector('.progress-bar');
     if (progress) {
         requestAnimationFrame(() => {
-            progress.style.width = '0%';
+            progress.classList.add('w-0');
         });
     }
   });
@@ -546,13 +550,30 @@ window.log = function(msg, type = 'info') {
 };
 
 // ===== URL HELPERS =====
-window.normalizeLogoUrl = function(rawUrl) {
-  if (!rawUrl || typeof rawUrl !== 'string') return '';
-  rawUrl = rawUrl.trim();
-  if (rawUrl.startsWith('https://ipfs//')) rawUrl = rawUrl.replace('https://ipfs//', 'ipfs://');
-  if (rawUrl.startsWith('ipfs://')) return 'https://ipfs.io/ipfs/' + rawUrl.slice(7);
-  if (/^https?:\/\//i.test(rawUrl)) return rawUrl;
-  return 'https://' + rawUrl;
+window.normalizeLogoUrl = function(url) {
+    if (!url || typeof url !== 'string') return '';
+    url = url.trim();
+
+    // IPFS Handling
+    if (url.startsWith('ipfs://')) return `https://ipfs.io/ipfs/${url.replace('ipfs://', '')}`;
+    if (url.startsWith('https://ipfs//')) return `https://ipfs.io/ipfs/${url.replace('https://ipfs//', '')}`;
+    if (url.includes('pinata.cloud/ipfs/')) return url;
+    if (url.includes('/ipfs/')) {
+        if (url.startsWith('/ipfs/')) return `https://ipfs.io${url}`;
+        return url;
+    }
+
+    // Arweave Handling
+    if (url.startsWith('ar://')) return `https://arweave.net/${url.replace('ar://', '')}`;
+
+    // CID only (Experimental)
+    if (url.match(/^[a-zA-Z0-9]{46,}$/)) return `https://ipfs.io/ipfs/${url}`;
+
+    // HTTP/S
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+
+    // Default fallback to https
+    return 'https://' + url;
 };
 
 // ===== COPY TO CLIPBOARD =====

@@ -2,25 +2,26 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <script src="https://cdn.tailwindcss.com"></script>
+
     <script>
-        tailwind.config = {
+        tailwind = {
+            config: {
             theme: {
                 extend: {
                     colors: {
                         'meme-black': '#000000',
-                        'meme-surface': '#0A0A0A',
-                        'meme-card': '#141414',
-                        'meme-green': '#00FF9F',
-                        'meme-pink': '#FF0055',
-                        'meme-cyan': '#00D4FF',
-                        'meme-yellow': '#FFD700',
-                        up: '#00FF9F',
-                        down: '#FF0055',
-                        accent: '#00D4FF',
+                        'meme-surface': '#050505',
+                        'meme-card': '#0D0D0D',
+                        'meme-green': '#00D685',
+                        'meme-pink': '#D60047',
+                        'meme-cyan': '#00B2D6',
+                        'meme-yellow': '#D6B500',
+                        up: '#00D685',
+                        down: '#D60047',
+                        accent: '#00B2D6',
                         bg: '#000000',
-                        surface: '#0A0A0A',
-                        card: '#141414',
+                        surface: '#050505',
+                        card: '#0D0D0D',
                         border: '#000000',
                     },
                     fontFamily: {
@@ -32,10 +33,10 @@
                         'brutal-sm': '2px 2px 0px 0px rgba(0,0,0,1)',
                         'brutal': '4px 4px 0px 0px rgba(0,0,0,1)',
                         'brutal-lg': '6px 6px 0px 0px rgba(0,0,0,1)',
-                        'brutal-green': '4px 4px 0px 0px #00FF9F',
-                        'brutal-pink': '4px 4px 0px 0px #FF0055',
-                        'brutal-cyan': '4px 4px 0px 0px #00D4FF',
-                        'brutal-yellow': '4px 4px 0px 0px #FFD700',
+                        'brutal-green': '4px 4px 0px 0px #00D685',
+                        'brutal-pink': '4px 4px 0px 0px #D60047',
+                        'brutal-cyan': '4px 4px 0px 0px #00B2D6',
+                        'brutal-yellow': '4px 4px 0px 0px #D6B500',
                     },
                     animation: {
                         'float': 'float 6s ease-in-out infinite',
@@ -48,7 +49,10 @@
                 }
             }
         }
+        }
     </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DAILY CLAIM - CANONIX DEX</title>
 
@@ -75,10 +79,7 @@
     <meta name="msapplication-TileImage" content="/assets/ms-icon-144x144.png">
     <meta name="theme-color" content="#000000">
 
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-
 
 </head>
 <body class="bg-black text-white font-sans min-h-screen flex flex-col selection:bg-meme-pink selection:text-white">

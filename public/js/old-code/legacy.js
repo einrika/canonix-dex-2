@@ -14,7 +14,7 @@ window.renderWalletDetails = async function() {
         </div>
         <div class="space-y-4">
             <h4 class="text-[10px] font-black text-gray-500 uppercase tracking-widest border-b border-border pb-2 flex justify-between items-center">MY ASSETS<button onclick="window.renderWalletDetails()" class="hover:text-up"><i class="fas fa-sync-alt scale-75"></i></button></h4>
-            <div id="sidebar-assets-list" class="space-y-2"><div class="text-center py-8"><div class="spinner mx-auto scale-50"></div></div></div>
+            <div id="sidebar-assets-list" class="space-y-2"><div class="text-center py-8"><div class="w-8 h-8 border-4 border-meme-green border-t-transparent rounded-full animate-spin mx-auto"></div></div></div>
         </div>
     </div>`;
     window.updateBalances();
@@ -29,8 +29,8 @@ window.renderWalletDetails = async function() {
             const value = balance * detail.price_paxi;
             return `<div class="p-3 bg-card rounded-xl border border-border flex items-center justify-between hover:border-up transition-all cursor-pointer" onclick="window.selectPRC20('${t.address}')">
                 <div class="flex items-center gap-3">
-                    <img src="${detail.logo}" class="w-8 h-8 rounded-full border border-border" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                    <div class="w-8 h-8 rounded-full bg-up/10 items-center justify-center text-up font-bold text-xs" style="display:none;">${detail.symbol.charAt(0)}</div>
+                    <img src="${detail.logo}" class="w-8 h-8 rounded-full border border-border" onerror=\"this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden'); this.nextElementSibling.classList.add('flex');\">
+                    <div class="w-8 h-8 rounded-full bg-up/10 items-center justify-center text-up font-bold text-xs" class="hidden">${detail.symbol.charAt(0)}</div>
                     <div><div class="text-xs font-bold">${detail.symbol}</div><div class="text-[9px] text-gray-500">${balance.toFixed(2)}</div></div>
                 </div>
                 <div class="text-right">
