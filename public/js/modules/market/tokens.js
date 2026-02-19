@@ -260,11 +260,13 @@ window.updateMyTokens = async function() {
 window.setSort = async function(sortType, event) {
     window.currentSort = sortType;
     document.querySelectorAll('.sort-btn').forEach(btn => {
-        window.removeClass(btn, 'active');
+        btn.classList.remove('bg-meme-green', 'text-black', 'shadow-brutal');
+        btn.classList.add('bg-meme-black', 'text-white');
     });
 
     if (event && event.currentTarget) {
-        window.addClass(event.currentTarget, 'active');
+        event.currentTarget.classList.add('bg-meme-green', 'text-black', 'shadow-brutal');
+        event.currentTarget.classList.remove('bg-meme-black', 'text-white');
     }
 
     if (sortType === 'nonpump') {

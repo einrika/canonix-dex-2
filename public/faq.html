@@ -1,123 +1,160 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FAQ - Canonix DEX</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>HACKERS HUB - CANONIX DEX</title>
+
+    <!-- FONTS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
+
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        bg: '#08060f',
-                        surface: '#0f0a1e',
-                        card: '#16102b',
-                        border: '#251b45',
-                        up: '#00f2fe',
-                        down: '#ff0080',
+        tailwind = {
+            config: {
+                theme: {
+                    extend: {
+                        colors: {
+                            'meme-black': '#000000',
+                            'meme-surface': '#0D0D0D',
+                            'meme-card': '#1A1A1A',
+                            'meme-green': '#39FF14',
+                            'meme-pink': '#FF007F',
+                            'meme-cyan': '#00FFFF',
+                            'meme-yellow': '#FFFF00',
+                        },
+                        fontFamily: {
+                            display: ['Bangers', 'system-ui'],
+                            mono: ['Space Mono', 'monospace'],
+                            sans: ['DM Sans', 'sans-serif'],
+                        },
+                        boxShadow: {
+                            'brutal': '8px 8px 0px 0px rgba(0,0,0,1)',
+                            'brutal-green': '8px 8px 0px 0px #39FF14',
+                            'brutal-pink': '8px 8px 0px 0px #FF007F',
+                            'brutal-cyan': '8px 8px 0px 0px #00FFFF',
+                        },
+                        animation: {
+                            'glitch': 'glitch 1s linear infinite',
+                        },
+                        keyframes: {
+                            glitch: {
+                                '0%': { transform: 'translate(0)' },
+                                '20%': { transform: 'translate(-2px, 2px)' },
+                                '40%': { transform: 'translate(-2px, -2px)' },
+                                '60%': { transform: 'translate(2px, 2px)' },
+                                '80%': { transform: 'translate(2px, -2px)' },
+                                '100%': { transform: 'translate(0)' },
+                            }
+                        }
                     }
                 }
             }
         }
     </script>
-    <style>
-        body {
-            background-color: #08060f;
-            color: #e8eaed;
-            font-family: 'Inter', sans-serif;
-        }
-
-        .gradient-text {
-            background: linear-gradient(135deg, #00f2fe 0%, #ff0080 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .faq-item {
-            border: 1px solid #251b45;
-            background: #16102b;
-            border-radius: 1rem;
-            overflow: hidden;
-            transition: 0.3s;
-        }
-
-        .faq-item:hover {
-            border-color: #00f2fe;
-        }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-
-<body class="min-h-screen flex flex-col">
-    <!-- Navbar -->
-    <nav class="border-b border-border bg-surface/80 backdrop-blur-md sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
-                <a href="index.html" class="flex items-center gap-2">
-                    <i class="fas fa-exchange-alt text-up text-2xl"></i>
-                    <span class="text-xl font-black gradient-text">CANONIX</span>
-                </a>
-                <div class="flex items-center gap-4">
-                    <a href="index.html" class="text-sm font-bold text-gray-400 hover:text-white transition-colors">Home</a>
-                    <a href="trade.html" class="bg-gradient-to-r from-up to-purple-600 px-6 py-2 rounded-xl text-sm font-black text-white">TRADE</a>
+<body class="bg-black text-white font-sans min-h-screen flex flex-col selection:bg-meme-cyan selection:text-black">
+    <!-- Navigation -->
+    <nav class="bg-black border-b-4 border-black px-6 sticky top-0 z-[100]">
+        <div class="max-w-[1200px] mx-auto h-20 md:h-24 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-4 group">
+                <div class="w-10 h-10 md:w-14 md:h-14 bg-meme-green border-4 border-black shadow-brutal flex items-center justify-center rotate-[-3deg] group-hover:rotate-0 transition-transform">
+                    <i class="fas fa-exchange-alt text-black text-xl md:text-2xl"></i>
                 </div>
-            </div>
+                <span class="text-3xl md:text-5xl font-display tracking-widest text-white group-hover:text-meme-green transition-colors uppercase italic">CANONIX</span>
+            </a>
+
+            <a href="trade.html" class="bg-white text-black font-display text-lg md:text-2xl px-6 md:px-8 py-2 md:py-3 border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">
+                GET BACK
+            </a>
         </div>
     </nav>
 
-    <main class="flex-1 max-w-3xl mx-auto px-4 py-20 w-full">
-        <h1 class="text-4xl font-black mb-4 italic tracking-tight">FREQUENTLY ASKED <span class="text-up">QUESTIONS</span></h1>
-        <p class="text-gray-500 mb-12 uppercase font-bold tracking-widest text-xs">Everything you need to know about Canonix DEX</p>
-
-        <div class="space-y-4">
-            <div class="faq-item p-6">
-                <h3 class="text-lg font-bold mb-3 text-white">What is Canonix?</h3>
-                <p class="text-gray-400 text-sm leading-relaxed">Canonix is a next-generation decentralized exchange (DEX) built on the Paxi Network. It allows users to swap PRC20 tokens instantly, provide liquidity, and analyze markets using AI-powered tools.</p>
-            </div>
-
-            <div class="faq-item p-6">
-                <h3 class="text-lg font-bold mb-3 text-white">Is Canonix non-custodial?</h3>
-                <p class="text-gray-400 text-sm leading-relaxed">Yes. Canonix never takes control of your funds. You trade directly from your own wallet (Keplr, PaxiHub, or our secure Internal Wallet). Your private keys or mnemonics remain encrypted on your device.</p>
-            </div>
-
-            <div class="faq-item p-6">
-                <h3 class="text-lg font-bold mb-3 text-white">What are the trading fees?</h3>
-                <p class="text-gray-400 text-sm leading-relaxed">Standard swap fees on Canonix are highly competitive. Most of the fee goes to liquidity providers, with a small portion dedicated to protocol maintenance and development.</p>
-            </div>
-
-            <div class="faq-item p-6">
-                <h3 class="text-lg font-bold mb-3 text-white">How does the AI Analysis work?</h3>
-                <p class="text-gray-400 text-sm leading-relaxed">Our AI module uses Google's Gemini Pro to interpret real-time market data, including price trends, volume spikes, and RSI levels, providing you with technical summaries and sentiment analysis.</p>
-            </div>
-
-            <div class="faq-item p-6">
-                <h3 class="text-lg font-bold mb-3 text-white">What is the "Internal Wallet"?</h3>
-                <p class="text-gray-400 text-sm leading-relaxed">The Internal Wallet is a browser-based wallet that doesn't require extensions. It uses industry-standard AES-GCM encryption to store your mnemonic locally. It's protected by a 6-digit PIN you create.</p>
-            </div>
-
-            <div class="faq-item p-6">
-                <h3 class="text-lg font-bold mb-3 text-white">Where can I see my transaction history?</h3>
-                <p class="text-gray-400 text-sm leading-relaxed">You can view your recent transactions directly within the Trade terminal under the "History" tab, or by looking up your address on Winscan Explorer.</p>
+    <main class="flex-1 max-w-[1000px] mx-auto px-6 py-12 md:py-24 w-full">
+        <div class="mb-20 md:mb-32 text-center relative">
+            <div class="absolute inset-0 bg-meme-cyan opacity-5 blur-3xl animate-pulse rounded-full"></div>
+            <div class="relative z-10">
+                <div class="inline-block bg-meme-cyan text-black font-mono font-bold text-xs px-4 py-1 border-2 border-black mb-8 animate-glitch">ENCRYPTED INTEL v1.0.4</div>
+                <h1 class="text-7xl md:text-[140px] font-display italic leading-[0.85] mb-6 tracking-tighter uppercase text-white drop-shadow-[8px_8px_0_rgba(0,255,255,1)]">
+                    HACKERS <span class="text-meme-pink">GUIDE</span>
+                </h1>
+                <p class="font-mono text-gray-500 font-bold uppercase tracking-[0.4em] text-sm md:text-xl italic">Answers for the curious and the degen.</p>
             </div>
         </div>
 
-        <div class="mt-20 p-8 rounded-[2rem] bg-up/5 border border-up/20 text-center">
-            <h4 class="font-black text-xl mb-2">Still have questions?</h4>
-            <p class="text-gray-400 text-sm mb-6">Join our community on Telegram or follow us on Twitter for real-time support.</p>
-            <div class="flex justify-center gap-4">
-                <a href="#" class="px-6 py-2 bg-up text-bg rounded-xl font-bold">TELEGRAM</a>
-                <a href="#" class="px-6 py-2 bg-white/5 text-white rounded-xl font-bold border border-white/10">TWITTER</a>
+        <div class="space-y-8">
+            <!-- FAQ 1 -->
+            <div class="group">
+                <div onclick="window.toggleFAQ(this)" class="faq-question cursor-pointer bg-meme-surface border-4 border-black shadow-brutal p-8 md:p-10 flex justify-between items-center group-hover:bg-meme-card transition-all">
+                    <h3 class="text-3xl font-display text-white uppercase italic tracking-tighter">What is the Paxi Network?</h3>
+                    <i class="fas fa-chevron-down text-meme-cyan text-2xl transition-transform duration-300"></i>
+                </div>
+                <div class="faq-answer overflow-hidden transition-all duration-300 max-h-0 bg-black border-x-4 border-black border-b-4">
+                    <div class="p-8 md:p-10 font-display text-2xl text-gray-400 italic leading-tight uppercase">
+                        The Paxi Network is a lightning-fast blockchain built for high-frequency trading and meme energy. Sub-second block times and near-zero fees make it the ultimate playground for degen activities.
+                    </div>
+                </div>
             </div>
+
+            <!-- FAQ 2 -->
+            <div class="group">
+                <div onclick="window.toggleFAQ(this)" class="faq-question cursor-pointer bg-meme-surface border-4 border-black shadow-brutal p-8 md:p-10 flex justify-between items-center group-hover:bg-meme-card transition-all">
+                    <h3 class="text-3xl font-display text-white uppercase italic tracking-tighter">How does the Bonding Curve work?</h3>
+                    <i class="fas fa-chevron-down text-meme-cyan text-2xl transition-transform duration-300"></i>
+                </div>
+                <div class="faq-answer overflow-hidden transition-all duration-300 max-h-0 bg-black border-x-4 border-black border-b-4">
+                    <div class="p-8 md:p-10 font-display text-2xl text-gray-400 italic leading-tight uppercase">
+                        Every token on Canonix starts its life on a mathematical bonding curve. As more people buy, the price increases. Once the market cap hits the target, liquidity is migrated to a permanent pool and locked forever. Pure code, no rugs.
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAQ 3 -->
+            <div class="group">
+                <div onclick="window.toggleFAQ(this)" class="faq-question cursor-pointer bg-meme-surface border-4 border-black shadow-brutal p-8 md:p-10 flex justify-between items-center group-hover:bg-meme-card transition-all">
+                    <h3 class="text-3xl font-display text-white uppercase italic tracking-tighter">Is Canonix safe to use?</h3>
+                    <i class="fas fa-chevron-down text-meme-cyan text-2xl transition-transform duration-300"></i>
+                </div>
+                <div class="faq-answer overflow-hidden transition-all duration-300 max-h-0 bg-black border-x-4 border-black border-b-4">
+                    <div class="p-8 md:p-10 font-display text-2xl text-gray-400 italic leading-tight uppercase">
+                        Canonix is a fully decentralized, non-custodial DEX. You own your keys. While our smart contracts are built for security, meme coins are high-risk. Don't invest more than you can afford to lose.
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAQ 4 -->
+            <div class="group">
+                <div onclick="window.toggleFAQ(this)" class="faq-question cursor-pointer bg-meme-surface border-4 border-black shadow-brutal p-8 md:p-10 flex justify-between items-center group-hover:bg-meme-card transition-all">
+                    <h3 class="text-3xl font-display text-white uppercase italic tracking-tighter">What are PRC20 tokens?</h3>
+                    <i class="fas fa-chevron-down text-meme-cyan text-2xl transition-transform duration-300"></i>
+                </div>
+                <div class="faq-answer overflow-hidden transition-all duration-300 max-h-0 bg-black border-x-4 border-black border-b-4">
+                    <div class="p-8 md:p-10 font-display text-2xl text-gray-400 italic leading-tight uppercase">
+                        PRC20 is the native token standard of the Paxi Network, similar to ERC20 on Ethereum or SPL on Solana. It enables seamless asset management and interoperability within the ecosystem.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-32 p-12 bg-meme-pink border-8 border-black shadow-brutal text-center rotate-[-1deg]">
+            <h2 class="text-5xl font-display text-white mb-6 italic uppercase tracking-tighter leading-none">STILL CONFUSED?</h2>
+            <p class="font-display text-2xl text-black/70 mb-10 italic uppercase leading-tight">Our dev team is chronically online in the Telegram channel.</p>
+            <a href="#" class="inline-block bg-black text-white font-display text-3xl px-12 py-6 border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">JOIN TELEGRAM</a>
         </div>
     </main>
 
-    <footer class="border-t border-border py-8 text-center text-xs text-gray-600 font-bold uppercase tracking-widest">
-        &copy; 2026 Canonix Team.
+    <footer class="py-20 bg-black border-t-8 border-black px-6 text-center">
+        <div class="font-mono text-[10px] text-gray-800 font-black uppercase tracking-[1em]">
+            END OF ENCRYPTED TRANSMISSION | 2026
+        </div>
     </footer>
-    <script src="./js/core/config.js"></script>
-</body>
 
+    <script src="./js/core/config.js"></script>
+    <script src="./js/core/utils.js"></script>
+    <script src="./js/ui/common.js"></script>
+</body>
 </html>

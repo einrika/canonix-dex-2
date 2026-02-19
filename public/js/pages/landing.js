@@ -48,12 +48,12 @@ window.setMarketFilter = function(type, btn) {
     // Update UI buttons - Brutal Style
     document.querySelectorAll('.market-filter-btn').forEach(b => {
         b.classList.remove('bg-meme-green', 'text-black');
-        b.classList.add('bg-meme-black', 'text-white');
+        b.classList.add('bg-black', 'text-white');
     });
 
     if (btn) {
         btn.classList.add('bg-meme-green', 'text-black');
-        btn.classList.remove('bg-meme-black', 'text-white');
+        btn.classList.remove('bg-black', 'text-white');
     }
 
     renderMarketGrid();

@@ -7,6 +7,12 @@
 
     <!-- ===== PRIMARY META TAGS ===== -->
     <title>Canonix – Paxi Pumpfun Trade</title>
+
+    <!-- FONTS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
+
     <link rel="apple-touch-icon" sizes="57x57" href="/assets/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="/assets/apple-icon-60x60.png">
     <link rel="apple-touch-icon" sizes="72x72" href="/assets/apple-icon-72x72.png">
@@ -21,9 +27,9 @@
     <link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon-96x96.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
     <link rel="manifest" href="/manifest.json">
-    <meta name="msapplication-TileColor" content="#222222">
+    <meta name="msapplication-TileColor" content="#000000">
     <meta name="msapplication-TileImage" content="/assets/ms-icon-144x144.png">
-    <meta name="theme-color" content="#222222">
+    <meta name="theme-color" content="#000000">
     <meta name="title" content="Canonix – Paxi Pumpfun Trade">
     <meta name="description" content="Trade PRC20 tokens instantly on Paxinet blockchain with AI market analysis, real-time charts, and lightning-fast swaps. Zero KYC, full decentralization.">
     <meta name="keywords" content="Canonix, PRC20 tokens, Paxinet, decentralized exchange, crypto trading, AI analysis, DeFi, blockchain, instant swap, liquidity pool, meme coins">
@@ -31,65 +37,93 @@
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <meta name="language" content="English">
 
-    <!-- ===== STYLE SETTINGS ===== -->
-    <style>
-        :root {
-            --color-bg: #08060f;
-            --color-surface: #0f0a1e;
-            --color-card: #16102b;
-            --color-border: #251b45;
-            --color-accent: #00f2fe;
-            --color-accent-alt: #ff0080;
-            --gradient-primary: linear-gradient(135deg, #00f2fe 0%, #764ba2 50%, #ff0080 100%);
-            --gradient-action: linear-gradient(135deg, #00f2fe 0%, #764ba2 100%);
-        }
-
-        .loading-screen {
-            position: fixed;
-            inset: 0;
-            background: var(--color-bg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-        }
-
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(102, 126, 234, 0.3);
-            border-top-color: #667eea;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin { to { transform: rotate(360deg); } }
-    </style>
-
     <!-- ===== EXTERNAL CSS ===== -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- TAILWIND -->
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        bg: '#08060f',
-                        surface: '#0f0a1e',
-                        card: '#16102b',
-                        border: '#251b45',
-                        up: '#00f2fe',
-                        down: '#ff0080',
-                    },
-                    boxShadow: {
-                        'glow-up': '0 0 15px rgba(0, 242, 254, 0.3)',
-                        'glow-down': '0 0 15px rgba(255, 0, 128, 0.3)',
+        tailwind = {
+            config: {
+                theme: {
+                    extend: {
+                        colors: {
+                            'meme-black': '#000000',
+                            'meme-surface': '#0D0D0D',
+                            'meme-card': '#1A1A1A',
+                            'meme-green': '#39FF14',
+                            'meme-pink': '#FF007F',
+                            'meme-cyan': '#00FFFF',
+                            'meme-yellow': '#FFFF00',
+                            // Map old names to new palette for JS compatibility
+                            up: '#39FF14',
+                            down: '#FF007F',
+                            accent: '#00FFFF',
+                            bg: '#000000',
+                            surface: '#0D0D0D',
+                            card: '#1A1A1A',
+                            border: '#000000',
+                        },
+                        fontFamily: {
+                            display: ['Bangers', 'system-ui'],
+                            mono: ['Space Mono', 'monospace'],
+                            sans: ['DM Sans', 'sans-serif'],
+                        },
+                        boxShadow: {
+                            'brutal': '4px 4px 0px 0px rgba(0,0,0,1)',
+                            'brutal-lg': '8px 8px 0px 0px rgba(0,0,0,1)',
+                            'brutal-green': '4px 4px 0px 0px #39FF14',
+                            'brutal-pink': '4px 4px 0px 0px #FF007F',
+                            'brutal-cyan': '4px 4px 0px 0px #00FFFF',
+                            'brutal-yellow': '4px 4px 0px 0px #FFFF00',
+                            'glow': '0 0 20px rgba(57, 255, 20, 0.3)',
+                        },
+                        animation: {
+                            'marquee': 'marquee 25s linear infinite',
+                            'float': 'float 6s ease-in-out infinite',
+                            'glitch': 'glitch 1s linear infinite',
+                            'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
+                            'slide-up': 'slideUp 0.3s ease-out',
+                            'fade-in': 'fadeIn 0.2s ease-out',
+                        },
+                        keyframes: {
+                            marquee: {
+                                '0%': { transform: 'translateX(0%)' },
+                                '100%': { transform: 'translateX(-50%)' },
+                            },
+                            float: {
+                                '0%, 100%': { transform: 'translateY(0)' },
+                                '50%': { transform: 'translateY(-20px)' },
+                            },
+                            glitch: {
+                                '0%': { transform: 'translate(0)' },
+                                '20%': { transform: 'translate(-2px, 2px)' },
+                                '40%': { transform: 'translate(-2px, -2px)' },
+                                '60%': { transform: 'translate(2px, 2px)' },
+                                '80%': { transform: 'translate(2px, -2px)' },
+                                '100%': { transform: 'translate(0)' },
+                            },
+                            shake: {
+                                '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
+                                '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
+                                '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
+                                '40%, 60%': { transform: 'translate3d(4px, 0, 0)' },
+                            },
+                            slideUp: {
+                                '0%': { transform: 'translateY(100%)' },
+                                '100%': { transform: 'translateY(0)' },
+                            },
+                            fadeIn: {
+                                '0%': { opacity: '0' },
+                                '100%': { opacity: '1' },
+                            }
+                        }
                     }
                 }
             }
         }
     </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
     <script src="https://mainnet-api.paxinet.io/resources/js/paxi-cosmjs.umd.js"></script>
     <script type="module">
         import { DirectSecp256k1HdWallet, DirectSecp256k1Wallet } from 'https://esm.sh/@cosmjs/proto-signing@0.32.3';
@@ -102,303 +136,228 @@
         }
     </script>
     <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
-
-    <style>
-        body { background: var(--color-bg); color: #e8eaed; overflow: hidden; }
-        * { font-family: 'Inter', sans-serif; }
-
-        /* Ticker Animation */
-        @keyframes ticker {
-            0% { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
-        }
-        .ticker-wrap { width: 100%; overflow: hidden; background: rgba(0, 242, 254, 0.05); border-bottom: 1px solid rgba(0, 242, 254, 0.1); height: 28px; display: flex; align-items: center; }
-        .ticker-content { display: inline-block; white-space: nowrap; padding-right: 100%; animation: ticker 40s linear infinite; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--color-accent); }
-        .ticker-item { display: inline-block; padding: 0 30px; }
-        .ticker-item span { color: #fff; margin-left: 8px; }
-
-        .btn-trade {
-            background: var(--gradient-primary);
-            transition: 0.3s;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
-        }
-        .btn-trade:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 4px 15px rgba(118, 75, 162, 0.4); }
-
-        .token-sidebar-item { transition: 0.2s; border-bottom: 1px solid var(--color-border); cursor: pointer; }
-        .token-sidebar-item:hover { background: rgba(0, 242, 254, 0.05); }
-        .token-sidebar-item.active { background: rgba(0, 242, 254, 0.1); border-left: 4px solid var(--color-accent); }
-
-        .glass-panel { background: rgba(22, 16, 43, 0.6); backdrop-filter: blur(10px); border: 1px solid var(--color-border); }
-
-        .chart-container { position: relative; height: 440px; width: 100%; }
-
-        /* Hide scrollbars but allow scrolling */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-        .loading-dots span { animation: blink 1.4s infinite both; }
-        .loading-dots span:nth-child(2) { animation-delay: .2s; }
-        .loading-dots span:nth-child(3) { animation-delay: .4s; }
-        @keyframes blink { 0% { opacity: .2; } 20% { opacity: 1; } 100% { opacity: .2; } }
-
-        @media (max-width: 1024px) {
-            .desktop-only { display: none !important; }
-            body { overflow-y: auto; }
-
-            /* Mobile UI Scaling Fixes */
-            .chart-container { height: 300px; }
-            header { height: 50px; padding: 0 8px; }
-            header h1 { font-size: 14px; }
-            .btn-trade { padding: 6px 12px; font-size: 11px; }
-
-            #tokenSidebar { width: 280px; top: 50px; bottom: 80px; height: auto; }
-            #unifiedSidebar { width: 100%; top: 50px; bottom: 80px; height: auto; }
-
-            main { padding-bottom: 80px; } /* Space for mobile nav */
-            .sticky.top-0 { top: 0; }
-
-            .stat-card { padding: 12px; }
-            .stat-card h4 { font-size: 10px; }
-
-            /* Smaller text on mobile to avoid overlap */
-            .text-xl { font-size: 1.1rem; }
-            .text-lg { font-size: 1rem; }
-
-            #aiBtn { padding: 4px 8px; font-size: 10px; }
-            #notificationContainer { top: 60px; right: 8px; left: 8px; }
-        }
-
-        .tab-btn { border-bottom: 2px solid transparent; transition: 0.2s; }
-        .tab-btn.active { border-color: var(--color-accent); color: var(--color-accent); }
-
-        .stat-card { background: rgba(15, 10, 30, 0.5); border: 1px solid var(--color-border); padding: 16px; border-radius: 16px; transition: 0.3s; }
-        .stat-card:hover { border-color: rgba(0, 242, 254, 0.3); background: rgba(15, 10, 30, 0.7); }
-
-        .sort-btn { padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; color: #6b7280; border: 1px solid transparent; transition: 0.2s; white-space: nowrap; }
-        .sort-btn.active { background: rgba(0, 242, 254, 0.1); color: var(--color-accent); border-color: var(--color-accent); }
-        .sort-btn:hover:not(.active) { color: #fff; }
-
-        /* Floating swap for mobile */
-        #mobileSwapBtn { display: none; }
-        @media (max-width: 1024px) { #mobileSwapBtn { display: flex; } }
-    </style>
 </head>
 
-<body class="h-screen flex flex-col">
+<body class="bg-black text-white font-sans h-screen flex flex-col overflow-hidden selection:bg-meme-pink selection:text-white">
     <!-- ===== HEADER ===== -->
-    <header class="h-14 border-b border-border hidden lg:flex items-center justify-between px-4 bg-surface z-50 shadow-lg shadow-black/20">
-        <div class="flex items-center gap-3">
-            <button onclick="toggleMobileSidebar()" class="lg:hidden text-gray-400 p-2"><i class="fas fa-bars"></i></button>
+    <header class="h-14 md:h-20 border-b-4 border-black hidden lg:flex items-center justify-between px-6 bg-black z-50">
+        <div class="flex items-center gap-4">
+            <button onclick="toggleMobileSidebar()" class="lg:hidden text-white p-2 border-2 border-black bg-meme-card"><i class="fas fa-bars"></i></button>
             <a href="index.html" class="flex items-center group">
-                <h1 class="text-lg font-black bg-gradient-to-r from-up via-purple-400 to-down bg-clip-text text-transparent flex items-center group-hover:opacity-80 transition-opacity">
-                    <i class="fas fa-exchange-alt mr-2"></i>Canonix
-                    <span class="ml-2 text-[10px] px-1.5 py-0.5 rounded bg-green-500/20 text-green-400 border border-green-500/30 font-bold uppercase tracking-tighter hidden sm:inline">Mainnet</span>
+                <div class="w-10 h-10 bg-meme-green border-4 border-black shadow-brutal flex items-center justify-center rotate-[-3deg] group-hover:rotate-0 transition-transform mr-4">
+                    <i class="fas fa-exchange-alt text-black"></i>
+                </div>
+                <h1 class="text-3xl font-display tracking-widest text-white group-hover:text-meme-green transition-colors italic">
+                    CANONIX
+                    <span class="ml-2 text-[10px] px-2 py-0.5 bg-meme-yellow text-black border-2 border-black font-mono font-bold uppercase tracking-tighter">MAINNET</span>
                 </h1>
             </a>
         </div>
 
-        <div class="flex items-center gap-2 sm:gap-4">
+        <div class="flex items-center gap-4">
             <!-- Functional Icons -->
-            <div class="hidden md:flex items-center gap-1 border-r border-border pr-2 sm:pr-4 mr-2">
-                <button onclick="window.setSidebarTab('send')" title="Send Assets" class="w-8 h-8 flex items-center justify-center rounded-lg text-blue-400 hover:bg-card hover:text-white transition-all"><i class="fas fa-paper-plane text-xs"></i></button>
-                <button onclick="window.setSidebarTab('lp')" title="Liquidity" class="w-8 h-8 flex items-center justify-center rounded-lg text-green-400 hover:bg-card hover:text-white transition-all"><i class="fas fa-layer-group text-xs"></i></button>
-                <button onclick="window.setSidebarTab('donate')" title="Donate" class="w-8 h-8 flex items-center justify-center rounded-lg text-down hover:bg-card hover:text-white transition-all"><i class="fas fa-heart text-xs"></i></button>
-                <a href="faq.html" title="FAQ" class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-card hover:text-white transition-all"><i class="fas fa-question text-xs"></i></a>
-                <button onclick="toggleConsoleModal()" title="System Console" class="w-8 h-8 flex items-center justify-center rounded-lg text-up hover:bg-card hover:text-white transition-all"><i class="fas fa-terminal text-xs"></i></button>
-                <button onclick="window.location.href='setting.html'" title="Settings" class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-card hover:text-white transition-all"><i class="fas fa-cog text-xs"></i></button>
+            <div class="hidden xl:flex items-center gap-2 border-r-4 border-black pr-4 mr-2 h-full">
+                <button onclick="window.setSidebarTab('send')" title="Send Assets" class="w-10 h-10 flex items-center justify-center border-2 border-black bg-meme-cyan text-black hover:bg-white transition-all shadow-brutal"><i class="fas fa-paper-plane text-sm"></i></button>
+                <button onclick="window.setSidebarTab('lp')" title="Liquidity" class="w-10 h-10 flex items-center justify-center border-2 border-black bg-meme-green text-black hover:bg-white transition-all shadow-brutal"><i class="fas fa-layer-group text-sm"></i></button>
+                <button onclick="window.setSidebarTab('donate')" title="Donate" class="w-10 h-10 flex items-center justify-center border-2 border-black bg-meme-pink text-white hover:bg-white hover:text-black transition-all shadow-brutal"><i class="fas fa-heart text-sm"></i></button>
+                <a href="faq.html" title="FAQ" class="w-10 h-10 flex items-center justify-center border-2 border-black bg-white text-black hover:bg-meme-yellow transition-all shadow-brutal"><i class="fas fa-question text-sm"></i></a>
+                <button onclick="toggleConsoleModal()" title="System Console" class="w-10 h-10 flex items-center justify-center border-2 border-black bg-black text-meme-green hover:bg-meme-green hover:text-black transition-all shadow-brutal"><i class="fas fa-terminal text-sm"></i></button>
+                <button onclick="window.location.href='setting.html'" title="Settings" class="w-10 h-10 flex items-center justify-center border-2 border-black bg-meme-surface text-white hover:bg-white hover:text-black transition-all shadow-brutal"><i class="fas fa-cog text-sm"></i></button>
             </div>
 
-            <div id="walletInfo" class="hidden sm:flex items-center gap-3 px-3 py-1.5 bg-card rounded-lg border border-border">
+            <div id="walletInfo" class="hidden sm:flex items-center gap-4 px-4 py-2 bg-meme-card border-4 border-black shadow-brutal">
                 <div class="text-right">
-                    <div id="walletAddrShort" class="text-[10px] font-mono text-gray-400">...</div>
-                    <div id="walletBalance" class="text-xs font-bold text-up">0.00 PAXI</div>
+                    <div id="walletAddrShort" class="text-[10px] font-mono text-gray-500 font-bold uppercase">...</div>
+                    <div id="walletBalance" class="text-sm font-display text-meme-green italic">0.00 PAXI</div>
                 </div>
-                <i class="fas fa-wallet text-gray-500"></i>
+                <div class="w-8 h-8 bg-meme-pink border-2 border-black flex items-center justify-center text-white rotate-[5deg]"><i class="fas fa-wallet text-xs"></i></div>
             </div>
-            <button id="connectBtn" onclick="showConnectModal()" class="btn-trade px-3 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-bold shadow-lg flex items-center gap-2">
-                <i class="fas fa-plug"></i><span class="hidden xs:inline">Connect</span>
+            <button id="connectBtn" onclick="showConnectModal()" class="bg-meme-pink text-white font-display text-xl px-6 py-2 border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all flex items-center gap-2">
+                <i class="fas fa-plug"></i><span class="hidden xs:inline uppercase">Connect</span>
             </button>
         </div>
     </header>
 
     <!-- Ticker News -->
-    <div class="ticker-wrap z-[60]">
-        <div id="tickerContent" class="ticker-content">
-            <div class="ticker-item">LOADING MARKET DATA...</div>
+    <div class="bg-meme-yellow border-b-4 border-black py-1 overflow-hidden whitespace-nowrap z-[60] relative">
+        <div id="tickerContent" class="animate-marquee inline-block">
+            <span class="text-black font-display text-lg mx-8 italic uppercase">LOADING MARKET DATA...</span>
+            <span class="text-black font-display text-lg mx-8 italic uppercase">$$$ MOON SOON $$$</span>
+            <span class="text-black font-display text-lg mx-8 italic uppercase">PUMP IT HARDER</span>
+            <!-- Duplicate for seamless loop -->
+            <span class="text-black font-display text-lg mx-8 italic uppercase">LOADING MARKET DATA...</span>
+            <span class="text-black font-display text-lg mx-8 italic uppercase">$$$ MOON SOON $$$</span>
+            <span class="text-black font-display text-lg mx-8 italic uppercase">PUMP IT HARDER</span>
         </div>
     </div>
 
     <div class="flex-1 flex overflow-hidden">
         <!-- ===== LEFT SIDEBAR: TOKEN LIST ===== -->
-        <aside id="tokenSidebar" class="w-[320px] border-r border-border bg-surface flex flex-col lg:static fixed left-0 top-14 bottom-0 z-40 transition-transform duration-300 -translate-x-full lg:translate-x-0">
-            <div class="p-3">
-                <div class="relative mb-3">
-                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
-                    <input type="text" id="tokenSidebarSearch" placeholder="Search Symbol or Address..."
-                        class="w-full pl-9 pr-4 py-2 bg-bg border border-border rounded-xl text-sm focus:ring-1 focus:ring-up transition-all outline-none"
+        <aside id="tokenSidebar" class="w-[320px] border-r-4 border-black bg-black flex flex-col lg:static fixed left-0 top-14 bottom-0 z-40 transition-transform duration-300 -translate-x-full lg:translate-x-0 overflow-hidden">
+            <div class="p-4 bg-meme-surface border-b-4 border-black">
+                <div class="relative mb-4">
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-meme-cyan"></i>
+                    <input type="text" id="tokenSidebarSearch" placeholder="SEARCH SHITCOINS..."
+                        class="w-full pl-10 pr-4 py-3 bg-black border-2 border-black text-sm font-display outline-none focus:border-meme-cyan transition-all text-white placeholder:text-gray-600 italic uppercase"
                         oninput="filterTokenSidebar()">
                 </div>
-                <div class="flex gap-1 overflow-x-auto no-scrollbar pb-1">
-            <button onclick="setSort('hot', event)" class="sort-btn active">HOT</button>
-            <button onclick="setSort('new', event)" class="sort-btn">NEW</button>
-            <button onclick="setSort('gainer', event)" class="sort-btn">GAINER</button>
-            <button onclick="setSort('marketcap', event)" class="sort-btn">MCAP</button>
-            <button onclick="setSort('nonpump', event)" class="sort-btn">NON-PUMP</button>
-            <button onclick="setSort('verified', event)" class="sort-btn">VERIFIED</button>
+                <div class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+                    <button onclick="setSort('hot', event)" class="sort-btn active px-4 py-1.5 border-2 border-black bg-meme-green text-black font-display text-xs shadow-brutal hover:shadow-none transition-all uppercase italic">HOT</button>
+                    <button onclick="setSort('new', event)" class="sort-btn px-4 py-1.5 border-2 border-black bg-black text-white font-display text-xs shadow-brutal hover:shadow-none transition-all uppercase italic">NEW</button>
+                    <button onclick="setSort('gainer', event)" class="sort-btn px-4 py-1.5 border-2 border-black bg-black text-white font-display text-xs shadow-brutal hover:shadow-none transition-all uppercase italic">WIN</button>
+                    <button onclick="setSort('marketcap', event)" class="sort-btn px-4 py-1.5 border-2 border-black bg-black text-white font-display text-xs shadow-brutal hover:shadow-none transition-all uppercase italic">MCAP</button>
                 </div>
             </div>
-            <div id="tokenSidebarList" class="flex-1 overflow-y-auto no-scrollbar border-t border-border">
-                <div class="p-8 text-center text-gray-500">
-                    <div class="spinner mx-auto mb-4 scale-75"></div>
-                    <p class="text-xs">Initializing tokens...</p>
+            <div id="tokenSidebarList" class="flex-1 overflow-y-auto no-scrollbar bg-black">
+                <div class="p-10 text-center text-gray-500">
+                    <div class="w-12 h-12 border-4 border-meme-green border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <p class="font-mono text-[10px] font-bold uppercase tracking-widest italic">Scanning Blocks...</p>
                 </div>
             </div>
         </aside>
 
         <!-- ===== MAIN CONTENT ===== -->
-        <main class="flex-1 overflow-y-auto bg-bg relative">
-            <!-- Chart -->
-            <div class="p-4">
-                <div class="glass-panel rounded-2xl overflow-hidden">
-                    <div class="p-3 border-b border-border flex items-center justify-between">
-                        <div class="flex items-center gap-3 overflow-x-auto no-scrollbar">
-                            <div class="flex gap-1 pr-3 border-r border-border">
-                                <button onclick="setTimeframe('realtime', this)" class="tf-btn px-2.5 py-1 text-[9px] font-black rounded bg-up text-bg transition-all uppercase">REALTIME</button>
-                                <button onclick="setTimeframe('1h', this)" class="tf-btn px-2.5 py-1 text-[9px] font-black rounded bg-card hover:bg-border transition-all uppercase">1H</button>
-                                <button onclick="setTimeframe('24h', this)" class="tf-btn px-2.5 py-1 text-[9px] font-black rounded bg-card hover:bg-border transition-all uppercase">24H</button>
-                                <button onclick="setTimeframe('7d', this)" class="tf-btn px-2.5 py-1 text-[9px] font-black rounded bg-card hover:bg-border transition-all uppercase">7D</button>
-                                <button onclick="setTimeframe('30d', this)" class="tf-btn px-2.5 py-1 text-[9px] font-black rounded bg-card hover:bg-border transition-all uppercase">30D</button>
+        <main class="flex-1 overflow-y-auto bg-black relative no-scrollbar">
+            <!-- Chart Container -->
+            <div class="p-4 md:p-6">
+                <div class="bg-meme-surface border-4 border-black shadow-brutal-lg overflow-hidden">
+                    <div class="p-4 border-b-4 border-black flex items-center justify-between bg-meme-card">
+                        <div class="flex items-center gap-4 overflow-x-auto no-scrollbar">
+                            <div class="flex gap-2 pr-4 border-r-2 border-black">
+                                <button onclick="setTimeframe('realtime', this)" class="tf-btn px-3 py-1 bg-meme-green text-black font-display text-xs border-2 border-black shadow-brutal hover:shadow-none transition-all uppercase italic">REALTIME</button>
+                                <button onclick="setTimeframe('1h', this)" class="tf-btn px-3 py-1 bg-black text-white font-display text-xs border-2 border-black shadow-brutal hover:shadow-none transition-all uppercase italic">1H</button>
+                                <button onclick="setTimeframe('24h', this)" class="tf-btn px-3 py-1 bg-black text-white font-display text-xs border-2 border-black shadow-brutal hover:shadow-none transition-all uppercase italic">24H</button>
                             </div>
-                            <div class="flex gap-1">
-                                <button id="toggleMA7" onclick="toggleMA(7)" class="px-2.5 py-1 text-[9px] font-black rounded bg-card text-gray-500 hover:text-white transition-all uppercase">MA7</button>
-                                <button id="toggleMA25" onclick="toggleMA(25)" class="px-2.5 py-1 text-[9px] font-black rounded bg-card text-gray-500 hover:text-white transition-all uppercase">MA25</button>
+                            <div class="flex gap-2">
+                                <button id="toggleMA7" onclick="toggleMA(7)" class="px-3 py-1 bg-black text-gray-500 font-display text-xs border-2 border-black shadow-brutal hover:text-meme-yellow transition-all uppercase italic">MA7</button>
+                                <button id="toggleMA25" onclick="toggleMA(25)" class="px-3 py-1 bg-black text-gray-500 font-display text-xs border-2 border-black shadow-brutal hover:text-meme-pink transition-all uppercase italic">MA25</button>
                             </div>
                         </div>
-                        <div id="chartStatus" class="text-[10px] font-mono text-gray-500">Live Updates</div>
+                        <div id="chartStatus" class="font-mono text-[10px] text-meme-green font-bold uppercase tracking-widest animate-pulse">LIVE FEED</div>
                     </div>
-                    <div class="chart-container" id="chartWrapper">
+                    <div class="h-[300px] md:h-[450px] w-full relative bg-black" id="chartWrapper">
                         <div id="priceChart" class="w-full h-full"></div>
                     </div>
                 </div>
             </div>
 
             <!-- Swap Section (Visible only when connected) -->
-            <div id="mainSwapContainer" class="px-4 pb-4 hidden">
-                <div class="glass-panel rounded-2xl overflow-hidden p-4" id="mainSwapTerminal">
+            <div id="mainSwapContainer" class="px-4 md:px-6 pb-6 hidden">
+                <div class="bg-meme-surface border-4 border-black shadow-brutal-lg p-6" id="mainSwapTerminal">
                     <!-- Swap Content Injected by JS -->
                 </div>
             </div>
 
-            <!-- Token Header / Stats (Simplified & Non-sticky) -->
-            <div class="bg-card/30 border-y border-border px-4 py-2 mb-5 z-30">
-                <div class="flex flex-wrap items-center justify-between gap-4">
-                    <div class="flex items-center gap-3">
-                        <div id="tokenLogo" class="w-8 h-8 rounded-full bg-card flex items-center justify-center text-xs font-bold border border-border overflow-hidden">
-                            <i class="fas fa-coins text-gray-600"></i>
+            <!-- Token Header / Stats -->
+            <div class="bg-meme-pink border-y-4 border-black px-6 py-4 mb-8 z-30">
+                <div class="flex flex-col lg:flex-row items-center justify-between gap-6">
+                    <div class="flex items-center gap-6">
+                        <div id="tokenLogo" class="w-16 h-16 bg-white border-4 border-black shadow-brutal flex items-center justify-center rotate-[-5deg]">
+                            <i class="fas fa-coins text-black text-3xl"></i>
                         </div>
                         <div>
-                            <h2 id="selectedPair" class="text-sm font-black tracking-tighter">SELECT TOKEN</h2>
-                            <div class="flex items-center gap-2">
-                                <span id="currentPrice" class="text-[11px] text-up font-mono font-bold">0.00000000 PAXI</span>
-                                <span id="priceChange" class="text-[10px] font-bold text-up">-0.00%</span>
+                            <h2 id="selectedPair" class="text-4xl font-display text-black italic leading-none mb-1 uppercase tracking-tighter">SELECT TOKEN</h2>
+                            <div class="flex items-center gap-4">
+                                <span id="currentPrice" class="text-xl font-mono font-bold text-white drop-shadow-[2px_2px_0_rgba(0,0,0,1)]">0.000000 PAXI</span>
+                                <span id="priceChange" class="text-lg font-display text-meme-green bg-black px-2 border-2 border-black italic">-0.00%</span>
                             </div>
                         </div>
-                        <button id="aiBtn" onclick="showAIAnalysis()" class="px-2 py-1 bg-purple-600/20 text-purple-400 rounded border border-purple-500/20 hover:bg-purple-600/30 transition-all text-[9px] font-bold uppercase">
-                            <i class="fas fa-brain"></i> AI
+                        <button id="aiBtn" onclick="showAIAnalysis()" class="bg-meme-cyan text-black font-display text-xl px-4 py-2 border-4 border-black shadow-brutal hover:shadow-none transition-all animate-bounce uppercase italic">
+                            <i class="fas fa-brain"></i> AI BRAIN
                         </button>
                     </div>
 
-                    <div class="grid grid-cols-3 sm:grid-cols-6 gap-x-6 sm:gap-x-10 gap-y-1">
-                        <div>
-                            <div class="text-[8px] text-gray-500 uppercase font-black">MCap</div>
-                            <div id="mcapVal" class="text-[10px] font-mono font-bold">0 PAXI</div>
+                    <div class="grid grid-cols-3 sm:grid-cols-6 gap-4 md:gap-8 w-full lg:w-auto">
+                        <div class="bg-black/20 p-2 border-2 border-black">
+                            <div class="text-[8px] text-black uppercase font-black tracking-widest font-mono">Market Cap</div>
+                            <div id="mcapVal" class="text-xs font-mono font-bold text-white">0 PAXI</div>
                         </div>
-                        <div>
-                            <div class="text-[8px] text-gray-500 uppercase font-black">Liq</div>
-                            <div id="liqVal" class="text-[10px] font-mono font-bold text-blue-400">0 PAXI</div>
+                        <div class="bg-black/20 p-2 border-2 border-black">
+                            <div class="text-[8px] text-black uppercase font-black tracking-widest font-mono">Liquidity</div>
+                            <div id="liqVal" class="text-xs font-mono font-bold text-meme-cyan">0 PAXI</div>
                         </div>
-                        <div>
-                            <div class="text-[8px] text-gray-500 uppercase font-black">24h High</div>
-                            <div id="high24h" class="text-[10px] font-mono font-bold text-up">0.00</div>
+                        <div class="bg-black/20 p-2 border-2 border-black">
+                            <div class="text-[8px] text-black uppercase font-black tracking-widest font-mono">24h High</div>
+                            <div id="high24h" class="text-xs font-mono font-bold text-meme-green">0.00</div>
                         </div>
-                        <div>
-                            <div class="text-[8px] text-gray-500 uppercase font-black">24h Low</div>
-                            <div id="low24h" class="text-[10px] font-mono font-bold text-down">0.00</div>
+                        <div class="bg-black/20 p-2 border-2 border-black">
+                            <div class="text-[8px] text-black uppercase font-black tracking-widest font-mono">24h Low</div>
+                            <div id="low24h" class="text-xs font-mono font-bold text-meme-pink">0.00</div>
                         </div>
-                        <div>
-                            <div class="text-[8px] text-gray-500 uppercase font-black">24h Vol</div>
-                            <div id="volVal" class="text-[10px] font-mono font-bold text-purple-400">0 PAXI</div>
+                        <div class="bg-black/20 p-2 border-2 border-black">
+                            <div class="text-[8px] text-black uppercase font-black tracking-widest font-mono">24h Volume</div>
+                            <div id="volVal" class="text-xs font-mono font-bold text-meme-yellow">0 PAXI</div>
                         </div>
-                        <div>
-                            <div class="text-[8px] text-gray-500 uppercase font-black">Signal</div>
-                            <div id="tradeSignal" class="text-[10px] font-black uppercase tracking-tighter text-gray-400">Neutral</div>
+                        <div class="bg-black/20 p-2 border-2 border-black">
+                            <div class="text-[8px] text-black uppercase font-black tracking-widest font-mono">Alpha Signal</div>
+                            <div id="tradeSignal" class="text-[10px] font-display uppercase italic text-white tracking-tighter">Neutral</div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Detailed Stats Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 px-4 pb-4">
-                <div class="stat-card">
-                    <h4 class="text-xs font-bold text-gray-500 mb-3 flex items-center gap-2">
-                        <i class="fas fa-chart-pie text-up"></i> TRADING STATS
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 px-4 md:px-6 pb-6">
+                <div class="bg-meme-surface border-4 border-black p-6 shadow-brutal rotate-[-1deg]">
+                    <h4 class="text-2xl font-display text-meme-green mb-6 flex items-center gap-3 italic uppercase tracking-tighter">
+                        <i class="fas fa-chart-pie"></i> BATTLE STATS
                     </h4>
-                    <div class="space-y-3">
+                    <div class="space-y-4">
                         <div class="flex justify-between items-center">
-                            <span class="text-xs text-gray-400">Total Buys</span>
-                            <span id="buyCount" class="text-sm font-bold text-up">0</span>
+                            <span class="font-mono text-xs text-gray-400 font-bold uppercase tracking-widest">BULL PRESSURE</span>
+                            <span id="buyCount" class="font-display text-2xl text-meme-green italic">0</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span class="text-xs text-gray-400">Total Sells</span>
-                            <span id="sellCount" class="text-sm font-bold text-down">0</span>
+                            <span class="font-mono text-xs text-gray-400 font-bold uppercase tracking-widest">BEAR ATTACKS</span>
+                            <span id="sellCount" class="font-display text-2xl text-meme-pink italic">0</span>
                         </div>
-                        <div class="h-1.5 w-full bg-down/20 rounded-full overflow-hidden flex">
-                            <div id="buyRatioBar" class="h-full bg-up" style="width: 50%"></div>
+                        <div class="h-4 w-full bg-black border-2 border-black overflow-hidden flex shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)]">
+                            <div id="buyRatioBar" class="h-full bg-meme-green w-1/2"></div>
                         </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs text-gray-400">Transactions</span>
-                            <span id="txCount" class="text-sm font-bold">0</span>
+                        <div class="flex justify-between items-center pt-2">
+                            <span class="font-mono text-xs text-gray-400 font-bold uppercase tracking-widest">TOTAL CLASHES</span>
+                            <span id="txCount" class="font-display text-2xl text-white italic">0</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="stat-card">
-                    <h4 class="text-xs font-bold text-gray-500 mb-3 flex items-center gap-2">
-                        <i class="fas fa-droplet text-blue-400"></i> LIQUIDITY POOL
+                <div class="bg-meme-surface border-4 border-black p-6 shadow-brutal rotate-[1deg]">
+                    <h4 class="text-2xl font-display text-meme-cyan mb-6 flex items-center gap-3 italic uppercase tracking-tighter">
+                        <i class="fas fa-droplet"></i> POOL DEPTH
                     </h4>
-                    <div class="space-y-3">
+                    <div class="space-y-4">
                         <div class="flex justify-between items-center">
-                            <span class="text-xs text-gray-400">Native PAXI</span>
-                            <span id="resPaxi" class="text-sm font-bold">0.00</span>
+                            <span class="font-mono text-xs text-gray-400 font-bold uppercase tracking-widest">NATIVE PAXI</span>
+                            <span id="resPaxi" class="font-display text-2xl text-white italic">0.00</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span id="resTokenLabel" class="text-xs text-gray-400">PRC20 Tokens</span>
-                            <span id="resToken" class="text-sm font-bold">0.00</span>
+                            <span id="resTokenLabel" class="font-mono text-xs text-gray-400 font-bold uppercase tracking-widest">PRC20 RESERVE</span>
+                            <span id="resToken" class="font-display text-2xl text-white italic">0.00</span>
                         </div>
-                        <div class="flex justify-between items-center border-t border-border pt-2">
-                            <span class="text-xs text-gray-400">Holders</span>
-                            <span id="holderCount" class="text-sm font-bold">0</span>
+                        <div class="flex justify-between items-center border-t-2 border-black pt-4">
+                            <span class="font-mono text-xs text-gray-400 font-bold uppercase tracking-widest">ACTIVE APES</span>
+                            <span id="holderCount" class="font-display text-2xl text-meme-cyan italic">0</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="stat-card">
-                    <h4 class="text-xs font-bold text-gray-500 mb-3 flex items-center gap-2">
-                        <i class="fas fa-info-circle text-purple-400"></i> TOKEN INFO
+                <div class="bg-meme-surface border-4 border-black p-6 shadow-brutal rotate-[-0.5deg]">
+                    <h4 class="text-2xl font-display text-meme-yellow mb-6 flex items-center gap-3 italic uppercase tracking-tighter">
+                        <i class="fas fa-info-circle"></i> INTEL
                     </h4>
-                    <div class="space-y-2">
-                        <div class="flex flex-col gap-1">
-                            <span class="text-[10px] text-gray-500">Contract Address</span>
-                            <div class="flex items-center gap-2 bg-bg p-1.5 rounded border border-border">
-                                <code id="caAddr" class="text-[10px] font-mono text-gray-300 truncate">paxi...</code>
-                                <button onclick="copyAddrText()" class="text-xs hover:text-up"><i class="fas fa-copy"></i></button>
+                    <div class="space-y-4">
+                        <div class="flex flex-col gap-2">
+                            <span class="font-mono text-[10px] text-gray-500 font-bold uppercase tracking-widest">CONTRACT CA</span>
+                            <div class="flex items-center gap-3 bg-black p-3 border-2 border-black shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)]">
+                                <code id="caAddr" class="text-[10px] font-mono text-meme-green truncate flex-1 uppercase">paxi...</code>
+                                <button onclick="copyAddrText()" class="text-meme-yellow hover:scale-110 transition-transform"><i class="fas fa-copy"></i></button>
                             </div>
                         </div>
-                        <div class="flex justify-between text-xs mt-2">
-                            <span class="text-gray-400">Minter</span>
-                            <span id="minterStatus" class="text-green-400 font-bold">Disabled</span>
+                        <div class="flex justify-between items-center">
+                            <span class="font-mono text-xs text-gray-400 font-bold uppercase tracking-widest">MINT STATUS</span>
+                            <span id="minterStatus" class="font-display text-xl text-meme-green uppercase italic tracking-tighter">RENOUNCED</span>
                         </div>
-                        <div id="socialLinks" class="flex gap-2 mt-1">
+                        <div id="socialLinks" class="flex gap-4 pt-2">
                             <!-- Populated JS -->
                         </div>
                     </div>
@@ -406,21 +365,21 @@
             </div>
 
             <!-- Tabs Section (Holders) -->
-            <div class="px-4 pb-20">
-                <div class="border-b border-border flex gap-6 mb-4">
-                    <button onclick="window.loadTokenHolders()" id="tab-holders" class="tab-btn active pb-2 text-sm font-bold uppercase tracking-widest">Top Holders</button>
+            <div class="px-4 md:px-6 pb-24">
+                <div class="border-b-4 border-black flex gap-8 mb-6">
+                    <button onclick="window.loadTokenHolders()" id="tab-holders" class="font-display text-3xl text-white pb-2 hover:text-meme-cyan transition-colors uppercase italic border-b-4 border-transparent active:border-meme-cyan active:text-meme-cyan tracking-tighter">Top Holders</button>
                 </div>
-                <div id="tabContent" class="glass-panel rounded-xl min-h-[300px]">
+                <div id="tabContent" class="bg-meme-surface border-4 border-black shadow-brutal-lg min-h-[300px] overflow-hidden">
                     <!-- Table goes here -->
                 </div>
             </div>
         </main>
 
         <!-- ===== RIGHT SIDEBAR: UNIFIED WALLET TERMINAL ===== -->
-        <aside id="unifiedSidebar" class="w-[380px] border-l border-border bg-surface flex flex-col lg:static fixed right-0 top-14 bottom-0 z-40 transition-transform duration-300 translate-x-full lg:translate-x-0 overflow-hidden">
-            <!-- Sidebar Navigation Tabs - Dedicated Wallet -->
-            <div class="flex bg-bg/50 p-1 border-b border-border">
-                <button onclick="setSidebarTab('wallet')" id="side-tab-wallet" class="flex-1 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-up border-b-2 border-up transition-all">My Wallet</button>
+        <aside id="unifiedSidebar" class="w-[380px] border-l-4 border-black bg-black flex flex-col lg:static fixed right-0 top-14 bottom-0 z-40 transition-transform duration-300 translate-x-full lg:translate-x-0 overflow-hidden">
+            <!-- Sidebar Navigation Tabs -->
+            <div class="flex bg-meme-surface border-b-4 border-black p-2 gap-2">
+                <button onclick="setSidebarTab('wallet')" id="side-tab-wallet" class="flex-1 py-3 bg-black border-2 border-black text-meme-green font-display text-lg shadow-brutal hover:shadow-none transition-all uppercase italic tracking-tighter">Wallet</button>
                 <!-- Hidden tabs - accessible via actions -->
                 <button onclick="setSidebarTab('swap')" id="side-tab-swap" class="hidden"></button>
                 <button onclick="setSidebarTab('history')" id="side-tab-history" class="hidden"></button>
@@ -430,46 +389,49 @@
                 <button onclick="setSidebarTab('donate')" id="side-tab-donate" class="hidden"></button>
             </div>
 
-            <div id="sidebarContent" class="flex-1 overflow-y-auto p-4 no-scrollbar">
+            <div id="sidebarContent" class="flex-1 overflow-y-auto p-6 no-scrollbar bg-black">
                 <!-- Content will be injected by JS based on tab -->
-                <div class="text-center py-20 text-gray-600">
-                    <i class="fas fa-wallet text-4xl mb-4 opacity-20"></i>
-                    <p class="text-xs font-bold uppercase tracking-widest">Connect wallet to unlock terminal</p>
+                <div class="text-center py-32 flex flex-col items-center">
+                    <div class="w-20 h-20 bg-meme-card border-4 border-black shadow-brutal flex items-center justify-center text-gray-700 text-4xl mb-8 rotate-[-10deg]">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <p class="font-display text-2xl text-gray-600 uppercase italic tracking-tighter">Terminal Locked</p>
+                    <p class="font-mono text-[10px] text-gray-700 mt-2 font-bold uppercase tracking-[0.2em] italic">Connect wallet to access degen tools</p>
                 </div>
             </div>
         </aside>
     </div>
 
     <!-- Mobile Navigation Bar -->
-    <div class="lg:hidden fixed bottom-0 left-0 right-0 h-20 bg-surface/90 backdrop-blur-lg border-t border-border z-[100] flex flex-col justify-between px-4 py-2">
-        <div class="flex items-center justify-between w-full mb-1 px-2">
-            <div class="flex items-center gap-2">
-                <h1 class="text-sm font-black bg-gradient-to-r from-up via-purple-400 to-down bg-clip-text text-transparent italic">CANONIX</h1>
-                <div id="mobileWalletInfo" class="hidden flex items-center gap-2 px-2 py-0.5 bg-card rounded-full border border-border">
-                    <div id="mobileWalletBalance" class="text-[9px] font-bold text-up">0.00 PAXI</div>
+    <div class="lg:hidden fixed bottom-0 left-0 right-0 h-24 bg-black border-t-4 border-black z-[100] flex flex-col justify-between p-2">
+        <div class="flex items-center justify-between w-full mb-2 px-4">
+            <div class="flex items-center gap-3">
+                <h1 class="text-2xl font-display text-meme-green italic tracking-tighter uppercase">CANONIX</h1>
+                <div id="mobileWalletInfo" class="hidden flex items-center px-3 py-1 bg-meme-card border-2 border-black">
+                    <div id="mobileWalletBalance" class="text-[10px] font-mono font-bold text-meme-pink uppercase">0.00 PAXI</div>
                 </div>
             </div>
-            <button id="mobileConnectBtn" onclick="showConnectModal()" class="px-3 py-1 bg-up text-bg rounded-full text-[10px] font-black uppercase tracking-tighter">Connect</button>
+            <button id="mobileConnectBtn" onclick="showConnectModal()" class="px-4 py-1 bg-meme-pink text-white border-2 border-black font-display text-sm uppercase italic tracking-tighter">Connect</button>
         </div>
-        <div class="flex items-center justify-between w-full px-2">
-            <button onclick="toggleMobileSidebar()" class="flex flex-col items-center gap-1 text-gray-400">
-                <i class="fas fa-th-list text-lg"></i>
-                <span class="text-[8px] font-black uppercase tracking-tighter">Market</span>
+        <div class="flex items-center justify-around w-full">
+            <button onclick="toggleMobileSidebar()" class="flex flex-col items-center gap-1 text-gray-500">
+                <i class="fas fa-th-list text-xl"></i>
+                <span class="text-[8px] font-black uppercase font-mono italic">Market</span>
             </button>
-            <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="flex flex-col items-center gap-1 text-up">
-                <i class="fas fa-chart-line text-lg"></i>
-                <span class="text-[8px] font-black uppercase tracking-tighter">Chart</span>
+            <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="flex flex-col items-center gap-1 text-meme-cyan">
+                <i class="fas fa-chart-line text-xl"></i>
+                <span class="text-[8px] font-black uppercase font-mono italic">Chart</span>
             </button>
-            <button onclick="toggleUnifiedSidebar()" class="w-12 h-12 -mt-10 rounded-full btn-trade shadow-glow-up flex items-center justify-center text-white border-4 border-bg relative">
-                <i class="fas fa-wallet text-xl"></i>
+            <button onclick="toggleUnifiedSidebar()" class="w-16 h-16 -mt-12 bg-meme-green border-4 border-black shadow-brutal-green flex items-center justify-center text-black rotate-45">
+                <i class="fas fa-wallet text-2xl -rotate-45"></i>
             </button>
-            <button onclick="showAIAnalysis()" class="flex flex-col items-center gap-1 text-purple-400">
-                <i class="fas fa-brain text-lg"></i>
-                <span class="text-[8px] font-black uppercase tracking-tighter">AI Analysis</span>
+            <button onclick="showAIAnalysis()" class="flex flex-col items-center gap-1 text-meme-yellow">
+                <i class="fas fa-brain text-xl"></i>
+                <span class="text-[8px] font-black uppercase font-mono italic">AI Brain</span>
             </button>
-            <button onclick="toggleMoreMenu()" class="flex flex-col items-center gap-1 text-gray-400">
-                <i class="fas fa-ellipsis-h text-lg"></i>
-                <span class="text-[8px] font-black uppercase tracking-tighter">More</span>
+            <button onclick="toggleMoreMenu()" class="flex flex-col items-center gap-1 text-meme-pink">
+                <i class="fas fa-ellipsis-h text-xl"></i>
+                <span class="text-[8px] font-black uppercase font-mono italic">Apps</span>
             </button>
         </div>
     </div>
@@ -478,271 +440,273 @@
     <!-- ===== MODALS & BOTTOM SHEETS ===== -->
 
     <!-- More Menu Modal -->
-    <div id="moreMenuModal" class="hidden fixed inset-0 bg-bg/95 z-[200] flex flex-col animate-fade-in">
-        <div class="flex justify-between items-center p-6 border-b border-border">
-            <h2 class="text-xl font-black italic tracking-tighter bg-gradient-to-r from-up to-purple-400 bg-clip-text text-transparent uppercase">Explorer</h2>
-            <button onclick="toggleMoreMenu()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-card border border-border text-gray-400 hover:text-white transition-all">
-                <i class="fas fa-times"></i>
+    <div id="moreMenuModal" class="hidden fixed inset-0 bg-black/95 z-[200] flex flex-col animate-fade-in p-6">
+        <div class="flex justify-between items-center mb-10">
+            <h2 class="text-5xl font-display text-meme-cyan italic tracking-tighter uppercase">EXPLORER</h2>
+            <button onclick="toggleMoreMenu()" class="w-12 h-12 flex items-center justify-center border-4 border-black bg-meme-pink text-white shadow-brutal hover:rotate-90 transition-transform">
+                <i class="fas fa-times text-xl"></i>
             </button>
         </div>
-        <div class="flex-1 overflow-y-auto p-6">
-            <div class="grid grid-cols-2 gap-4">
-                <a href="launchpad.html" class="flex flex-col items-center gap-3 p-6 rounded-2xl bg-card border border-border hover:border-up/50 transition-all group">
-                    <div class="w-12 h-12 rounded-xl bg-up/10 flex items-center justify-center text-up group-hover:scale-110 transition-transform"><i class="fas fa-rocket text-xl"></i></div>
-                    <span class="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-white">Launchpad</span>
+        <div class="flex-1 overflow-y-auto no-scrollbar">
+            <div class="grid grid-cols-2 gap-6">
+                <a href="launchpad.html" class="flex flex-col items-center gap-4 p-8 bg-meme-surface border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all group">
+                    <div class="w-16 h-16 bg-meme-green border-4 border-black flex items-center justify-center text-black group-hover:rotate-12 transition-transform"><i class="fas fa-rocket text-2xl"></i></div>
+                    <span class="font-display text-2xl text-white group-hover:text-meme-green transition-colors uppercase italic tracking-tighter">Launchpad</span>
                 </a>
-                <a href="pre-market.html" class="flex flex-col items-center gap-3 p-6 rounded-2xl bg-card border border-border hover:border-up/50 transition-all group">
-                    <div class="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform"><i class="fas fa-clock text-xl"></i></div>
-                    <span class="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-white">Pre-Market</span>
+                <a href="pre-market.html" class="flex flex-col items-center gap-4 p-8 bg-meme-surface border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all group">
+                    <div class="w-16 h-16 bg-meme-pink border-4 border-black flex items-center justify-center text-white group-hover:rotate-12 transition-transform"><i class="fas fa-clock text-2xl"></i></div>
+                    <span class="font-display text-2xl text-white group-hover:text-meme-pink transition-colors uppercase italic tracking-tighter">Pre-Market</span>
                 </a>
-                <a href="vesting.html" class="flex flex-col items-center gap-3 p-6 rounded-2xl bg-card border border-border hover:border-up/50 transition-all group">
-                    <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform"><i class="fas fa-layer-group text-xl"></i></div>
-                    <span class="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-white">Vesting</span>
+                <a href="vesting.html" class="flex flex-col items-center gap-4 p-8 bg-meme-surface border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all group">
+                    <div class="w-16 h-16 bg-meme-cyan border-4 border-black flex items-center justify-center text-black group-hover:rotate-12 transition-transform"><i class="fas fa-layer-group text-2xl"></i></div>
+                    <span class="font-display text-2xl text-white group-hover:text-meme-cyan transition-colors uppercase italic tracking-tighter">Vesting</span>
                 </a>
-                <a href="locked-liquidity-pool.html" class="flex flex-col items-center gap-3 p-6 rounded-2xl bg-card border border-border hover:border-up/50 transition-all group">
-                    <div class="w-12 h-12 rounded-xl bg-down/10 flex items-center justify-center text-down group-hover:scale-110 transition-transform"><i class="fas fa-lock text-xl"></i></div>
-                    <span class="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-white">Liquidity Lock</span>
+                <a href="locked-liquidity-pool.html" class="flex flex-col items-center gap-4 p-8 bg-meme-surface border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all group">
+                    <div class="w-16 h-16 bg-meme-yellow border-4 border-black flex items-center justify-center text-black group-hover:rotate-12 transition-transform"><i class="fas fa-lock text-2xl"></i></div>
+                    <span class="font-display text-2xl text-white group-hover:text-meme-yellow transition-colors uppercase italic tracking-tighter">Liquidity Lock</span>
                 </a>
-                <a href="reward.html" class="flex flex-col items-center gap-3 p-6 rounded-2xl bg-card border border-border hover:border-up/50 transition-all group">
-                    <div class="w-12 h-12 rounded-xl bg-yellow-500/10 flex items-center justify-center text-yellow-500 group-hover:scale-110 transition-transform"><i class="fas fa-gift text-xl"></i></div>
-                    <span class="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-white">Rewards</span>
+                <a href="reward.html" class="flex flex-col items-center gap-4 p-8 bg-meme-surface border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all group">
+                    <div class="w-16 h-16 bg-meme-green border-4 border-black flex items-center justify-center text-black group-hover:rotate-12 transition-transform"><i class="fas fa-gift text-2xl"></i></div>
+                    <span class="font-display text-2xl text-white group-hover:text-meme-green transition-colors uppercase italic tracking-tighter">Rewards</span>
                 </a>
-                <a href="daily.html" class="flex flex-col items-center gap-3 p-6 rounded-2xl bg-card border border-border hover:border-up/50 transition-all group">
-                    <div class="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center text-green-400 group-hover:scale-110 transition-transform"><i class="fas fa-calendar-check text-xl"></i></div>
-                    <span class="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-white">Daily Claim</span>
+                <a href="daily.html" class="flex flex-col items-center gap-4 p-8 bg-meme-surface border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all group">
+                    <div class="w-16 h-16 bg-meme-cyan border-4 border-black flex items-center justify-center text-black group-hover:rotate-12 transition-transform"><i class="fas fa-calendar-check text-2xl"></i></div>
+                    <span class="font-display text-2xl text-white group-hover:text-meme-cyan transition-colors uppercase italic tracking-tighter">Daily Claim</span>
                 </a>
-                <a href="lottery.html" class="flex flex-col items-center gap-3 p-6 rounded-2xl bg-card border border-border hover:border-up/50 transition-all group">
-                    <div class="w-12 h-12 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-400 group-hover:scale-110 transition-transform"><i class="fas fa-ticket-alt text-xl"></i></div>
-                    <span class="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-white">Lottery</span>
+                <a href="lottery.html" class="flex flex-col items-center gap-4 p-8 bg-meme-surface border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all group">
+                    <div class="w-16 h-16 bg-meme-pink border-4 border-black flex items-center justify-center text-white group-hover:rotate-12 transition-transform"><i class="fas fa-ticket-alt text-2xl"></i></div>
+                    <span class="font-display text-2xl text-white group-hover:text-meme-pink transition-colors uppercase italic tracking-tighter">Lottery</span>
                 </a>
-                <a href="setting.html" class="flex flex-col items-center gap-3 p-6 rounded-2xl bg-card border border-border hover:border-up/50 transition-all group">
-                    <div class="w-12 h-12 rounded-xl bg-gray-500/10 flex items-center justify-center text-gray-400 group-hover:scale-110 transition-transform"><i class="fas fa-cog text-xl"></i></div>
-                    <span class="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-white">Settings</span>
+                <a href="setting.html" class="flex flex-col items-center gap-4 p-8 bg-meme-surface border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all group">
+                    <div class="w-16 h-16 bg-white border-4 border-black flex items-center justify-center text-black group-hover:rotate-12 transition-transform"><i class="fas fa-cog text-2xl"></i></div>
+                    <span class="font-display text-2xl text-white group-hover:text-white transition-colors uppercase italic tracking-tighter">Settings</span>
                 </a>
-                <a href="faq.html" class="flex flex-col items-center gap-3 p-6 rounded-2xl bg-card border border-border hover:border-up/50 transition-all group col-span-2">
-                    <div class="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-white group-hover:scale-110 transition-transform"><i class="fas fa-question-circle text-xl"></i></div>
-                    <span class="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-white">Help Center / FAQ</span>
+                <a href="faq.html" class="flex flex-col items-center gap-4 p-8 bg-meme-surface border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all group col-span-2">
+                    <div class="w-16 h-16 bg-meme-yellow border-4 border-black flex items-center justify-center text-black group-hover:rotate-12 transition-transform"><i class="fas fa-question-circle text-2xl"></i></div>
+                    <span class="font-display text-2xl text-white group-hover:text-meme-yellow transition-colors uppercase italic tracking-tighter">Help Center / FAQ</span>
                 </a>
             </div>
         </div>
-        <div class="p-6 border-t border-border">
-            <button onclick="showConnectModal()" class="w-full py-4 bg-up text-bg font-black rounded-2xl shadow-glow-up uppercase italic">Connect Wallet</button>
+        <div class="mt-10">
+            <button onclick="showConnectModal()" class="w-full py-6 bg-meme-pink text-white font-display text-4xl border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-2 hover:translate-y-2 transition-all uppercase italic tracking-tighter">Connect Wallet</button>
         </div>
     </div>
 
     <!-- Token Selection Modal -->
-    <div id="tokenModal" class="hidden fixed inset-0 bg-black bg-opacity-90 z-[333] flex items-center justify-center p-4 mb-[35%]">
-        <div class="bg-card rounded-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col">
-            <div class="p-4 border-b border-border flex justify-between items-center">
-                <h3 class="text-lg font-bold">Select Token</h3>
-                <button onclick="hideTokenSelector()" class="text-gray-400 hover:text-white">
-                    <i class="fas fa-times text-xl"></i>
+    <div id="tokenModal" class="hidden fixed inset-0 bg-black/90 z-[333] flex items-center justify-center p-6">
+        <div class="bg-meme-surface border-4 border-black shadow-brutal-lg w-full max-w-xl max-h-[85vh] overflow-hidden flex flex-col">
+            <div class="p-6 border-b-4 border-black flex justify-between items-center bg-meme-pink">
+                <h3 class="text-3xl font-display text-white italic uppercase tracking-widest">Select Token</h3>
+                <button onclick="hideTokenSelector()" class="text-white hover:rotate-90 transition-transform">
+                    <i class="fas fa-times text-2xl"></i>
                 </button>
             </div>
-            <div class="p-4 border-b border-border">
-                <input type="text" id="tokenSearch" placeholder="Search by name, symbol, or address..." class="w-full px-4 py-3 rounded-lg text-sm bg-bg border border-border outline-none focus:border-up" oninput="filterTokens()">
+            <div class="p-6 bg-meme-card border-b-4 border-black">
+                <input type="text" id="tokenSearch" placeholder="SEARCH BY NAME OR ADDRESS..."
+                    class="w-full px-4 py-4 bg-black border-4 border-black text-white font-display text-xl outline-none focus:border-meme-green placeholder:text-gray-700 uppercase italic tracking-tighter"
+                    oninput="filterTokens()">
             </div>
-            <div id="tokenList" class="flex-1 overflow-y-auto mb-[35%]"></div>
+            <div id="tokenList" class="flex-1 overflow-y-auto no-scrollbar bg-black"></div>
         </div>
     </div>
 
     <!-- Connect Wallet Modal -->
-    <div id="connectModal" class="hidden fixed inset-0 bg-black/80 z-[100] items-center justify-center p-4 mb-[35%]">
-        <div class="bg-surface border border-border w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl">
-            <div class="p-4 border-b border-border flex justify-between items-center">
-                <h3 class="font-bold">Connect Wallet</h3>
-                <button onclick="hideConnectModal()" class="text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
+    <div id="connectModal" class="hidden fixed inset-0 bg-black/95 z-[100] flex items-center justify-center p-6">
+        <div class="bg-meme-surface border-4 border-black shadow-brutal-lg w-full max-w-md overflow-hidden">
+            <div class="p-6 border-b-4 border-black flex justify-between items-center bg-meme-cyan">
+                <h3 class="text-3xl font-display text-black italic uppercase tracking-tighter">Connect Wallet</h3>
+                <button onclick="hideConnectModal()" class="text-black hover:scale-125 transition-transform"><i class="fas fa-times text-xl"></i></button>
             </div>
-            <div class="p-4 space-y-3">
-                <button onclick="connectWallet('internal')" class="w-full flex items-center justify-between p-4 bg-card rounded-xl hover:border-up border border-border transition-all">
-                    <div class="flex items-center gap-3 text-left">
-                        <div class="w-10 h-10 rounded-full bg-up/10 flex items-center justify-center text-up"><i class="fas fa-shield-alt"></i></div>
-                        <div><div class="font-bold">Internal Wallet</div><div class="text-[10px] text-gray-500">Secure, encrypted, no extensions</div></div>
+            <div class="p-6 space-y-4 bg-black">
+                <button onclick="connectWallet('internal')" class="w-full flex items-center justify-between p-6 bg-meme-surface border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all group">
+                    <div class="flex items-center gap-4 text-left">
+                        <div class="w-14 h-14 bg-meme-green border-4 border-black flex items-center justify-center text-black text-xl group-hover:rotate-12 transition-transform"><i class="fas fa-shield-alt"></i></div>
+                        <div><div class="text-2xl font-display text-white uppercase italic tracking-tighter">Internal</div><div class="font-mono text-[8px] text-gray-500 font-bold uppercase tracking-widest italic">Secure & Encrypted</div></div>
                     </div>
-                    <i class="fas fa-chevron-right text-gray-600"></i>
+                    <i class="fas fa-chevron-right text-gray-700"></i>
                 </button>
-                <button onclick="connectWallet('paxihub')" class="w-full flex items-center justify-between p-4 bg-card rounded-xl hover:border-purple-400 border border-border transition-all">
-                    <div class="flex items-center gap-3 text-left">
-                        <div class="w-10 h-10 rounded-full bg-purple-400/10 flex items-center justify-center text-purple-400"><i class="fas fa-wallet"></i></div>
-                        <div><div class="font-bold">PaxiHub</div><div class="text-[10px] text-gray-500">Official Mobile App & Extension</div></div>
+                <button onclick="connectWallet('paxihub')" class="w-full flex items-center justify-between p-6 bg-meme-surface border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all group">
+                    <div class="flex items-center gap-4 text-left">
+                        <div class="w-14 h-14 bg-meme-pink border-4 border-black flex items-center justify-center text-white text-xl group-hover:rotate-12 transition-transform"><i class="fas fa-wallet"></i></div>
+                        <div><div class="text-2xl font-display text-white uppercase italic tracking-tighter">PaxiHub</div><div class="font-mono text-[8px] text-gray-500 font-bold uppercase tracking-widest italic">Mobile & Extension</div></div>
                     </div>
-                    <i class="fas fa-chevron-right text-gray-600"></i>
+                    <i class="fas fa-chevron-right text-gray-700"></i>
                 </button>
-                <button onclick="connectWallet('keplr')" class="w-full flex items-center justify-between p-4 bg-card rounded-xl hover:border-orange-400 border border-border transition-all">
-                    <div class="flex items-center gap-3 text-left">
-                        <div class="w-10 h-10 rounded-full bg-orange-400/10 flex items-center justify-center text-orange-400"><i class="fas fa-rocket"></i></div>
-                        <div><div class="font-bold">Keplr</div><div class="text-[10px] text-gray-500">Standard Cosmos extension</div></div>
+                <button onclick="connectWallet('keplr')" class="w-full flex items-center justify-between p-6 bg-meme-surface border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all group">
+                    <div class="flex items-center gap-4 text-left">
+                        <div class="w-14 h-14 bg-meme-cyan border-4 border-black flex items-center justify-center text-black text-xl group-hover:rotate-12 transition-transform"><i class="fas fa-rocket"></i></div>
+                        <div><div class="text-2xl font-display text-white uppercase italic tracking-tighter">Keplr</div><div class="font-mono text-[8px] text-gray-500 font-bold uppercase tracking-widest italic">Cosmos Extension</div></div>
                     </div>
-                    <i class="fas fa-chevron-right text-gray-600"></i>
+                    <i class="fas fa-chevron-right text-gray-700"></i>
                 </button>
             </div>
         </div>
     </div>
 
     <!-- PIN Bottom Sheet -->
-    <div id="pinSheet" class="hidden fixed inset-0 bg-black/90 z-[10000] items-end justify-center">
-        <div class="bg-surface w-full max-w-lg rounded-t-3xl border-t border-border animate-slide-up flex flex-col p-6 pb-12">
-            <div class="w-12 h-1.5 bg-border rounded-full mx-auto mb-6"></div>
-            <h3 id="pinTitle" class="text-xl font-black text-center mb-2 uppercase italic tracking-widest">Unlock Wallet</h3>
-            <p id="pinMsg" class="text-xs text-gray-500 text-center mb-8">Enter your 6-digit access PIN</p>
+    <div id="pinSheet" class="hidden fixed inset-0 bg-black/98 z-[10000] flex items-end justify-center">
+        <div class="bg-meme-surface w-full max-w-xl border-t-8 border-black animate-slide-up flex flex-col p-8 pb-16">
+            <div class="w-20 h-3 bg-black rounded-full mx-auto mb-10"></div>
+            <h3 id="pinTitle" class="text-5xl font-display text-center mb-4 uppercase italic tracking-tighter text-meme-cyan">Unlock Terminal</h3>
+            <p id="pinMsg" class="font-mono text-[10px] text-gray-500 text-center mb-12 font-bold uppercase tracking-widest italic">Enter your 6-digit access code</p>
 
             <!-- Pin Dots -->
-            <div id="pinDots" class="flex justify-center gap-4 mb-10">
-                <div class="pin-dot w-4 h-4 rounded-full border-2 border-border"></div>
-                <div class="pin-dot w-4 h-4 rounded-full border-2 border-border"></div>
-                <div class="pin-dot w-4 h-4 rounded-full border-2 border-border"></div>
-                <div class="pin-dot w-4 h-4 rounded-full border-2 border-border"></div>
-                <div class="pin-dot w-4 h-4 rounded-full border-2 border-border"></div>
-                <div class="pin-dot w-4 h-4 rounded-full border-2 border-border"></div>
+            <div id="pinDots" class="flex justify-center gap-6 mb-16">
+                <div class="pin-dot w-8 h-8 bg-black border-4 border-black shadow-brutal"></div>
+                <div class="pin-dot w-8 h-8 bg-black border-4 border-black shadow-brutal"></div>
+                <div class="pin-dot w-8 h-8 bg-black border-4 border-black shadow-brutal"></div>
+                <div class="pin-dot w-8 h-8 bg-black border-4 border-black shadow-brutal"></div>
+                <div class="pin-dot w-8 h-8 bg-black border-4 border-black shadow-brutal"></div>
+                <div class="pin-dot w-8 h-8 bg-black border-4 border-black shadow-brutal"></div>
             </div>
 
             <!-- Keypad -->
-            <div class="grid grid-cols-3 gap-4 max-w-xs mx-auto">
-                <button onclick="pressPin(1)" class="w-16 h-16 rounded-full bg-card flex items-center justify-center text-xl font-bold hover:bg-border active:bg-up active:text-bg transition-colors">1</button>
-                <button onclick="pressPin(2)" class="w-16 h-16 rounded-full bg-card flex items-center justify-center text-xl font-bold hover:bg-border active:bg-up active:text-bg transition-colors">2</button>
-                <button onclick="pressPin(3)" class="w-16 h-16 rounded-full bg-card flex items-center justify-center text-xl font-bold hover:bg-border active:bg-up active:text-bg transition-colors">3</button>
-                <button onclick="pressPin(4)" class="w-16 h-16 rounded-full bg-card flex items-center justify-center text-xl font-bold hover:bg-border active:bg-up active:text-bg transition-colors">4</button>
-                <button onclick="pressPin(5)" class="w-16 h-16 rounded-full bg-card flex items-center justify-center text-xl font-bold hover:bg-border active:bg-up active:text-bg transition-colors">5</button>
-                <button onclick="pressPin(6)" class="w-16 h-16 rounded-full bg-card flex items-center justify-center text-xl font-bold hover:bg-border active:bg-up active:text-bg transition-colors">6</button>
-                <button onclick="pressPin(7)" class="w-16 h-16 rounded-full bg-card flex items-center justify-center text-xl font-bold hover:bg-border active:bg-up active:text-bg transition-colors">7</button>
-                <button onclick="pressPin(8)" class="w-16 h-16 rounded-full bg-card flex items-center justify-center text-xl font-bold hover:bg-border active:bg-up active:text-bg transition-colors">8</button>
-                <button onclick="pressPin(9)" class="w-16 h-16 rounded-full bg-card flex items-center justify-center text-xl font-bold hover:bg-border active:bg-up active:text-bg transition-colors">9</button>
-                <button onclick="authenticateBiometric()" class="w-16 h-16 flex items-center justify-center text-up hover:scale-110 transition-transform"><i class="fas fa-fingerprint text-3xl"></i></button>
-                <button onclick="pressPin(0)" class="w-16 h-16 rounded-full bg-card flex items-center justify-center text-xl font-bold hover:bg-border active:bg-up active:text-bg transition-colors">0</button>
-                <button onclick="backspacePin()" class="w-16 h-16 flex items-center justify-center text-gray-500 hover:text-white"><i class="fas fa-backspace text-xl"></i></button>
+            <div class="grid grid-cols-3 gap-6 max-w-sm mx-auto">
+                <button onclick="pressPin(1)" class="w-20 h-20 bg-black border-4 border-black shadow-brutal flex items-center justify-center text-3xl font-display hover:bg-meme-green hover:text-black hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all italic tracking-tighter">1</button>
+                <button onclick="pressPin(2)" class="w-20 h-20 bg-black border-4 border-black shadow-brutal flex items-center justify-center text-3xl font-display hover:bg-meme-green hover:text-black hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all italic tracking-tighter">2</button>
+                <button onclick="pressPin(3)" class="w-20 h-20 bg-black border-4 border-black shadow-brutal flex items-center justify-center text-3xl font-display hover:bg-meme-green hover:text-black hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all italic tracking-tighter">3</button>
+                <button onclick="pressPin(4)" class="w-20 h-20 bg-black border-4 border-black shadow-brutal flex items-center justify-center text-3xl font-display hover:bg-meme-green hover:text-black hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all italic tracking-tighter">4</button>
+                <button onclick="pressPin(5)" class="w-20 h-20 bg-black border-4 border-black shadow-brutal flex items-center justify-center text-3xl font-display hover:bg-meme-green hover:text-black hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all italic tracking-tighter">5</button>
+                <button onclick="pressPin(6)" class="w-20 h-20 bg-black border-4 border-black shadow-brutal flex items-center justify-center text-3xl font-display hover:bg-meme-green hover:text-black hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all italic tracking-tighter">6</button>
+                <button onclick="pressPin(7)" class="w-20 h-20 bg-black border-4 border-black shadow-brutal flex items-center justify-center text-3xl font-display hover:bg-meme-green hover:text-black hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all italic tracking-tighter">7</button>
+                <button onclick="pressPin(8)" class="w-20 h-20 bg-black border-4 border-black shadow-brutal flex items-center justify-center text-3xl font-display hover:bg-meme-green hover:text-black hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all italic tracking-tighter">8</button>
+                <button onclick="pressPin(9)" class="w-20 h-20 bg-black border-4 border-black shadow-brutal flex items-center justify-center text-3xl font-display hover:bg-meme-green hover:text-black hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all italic tracking-tighter">9</button>
+                <button onclick="authenticateBiometric()" class="w-20 h-20 flex items-center justify-center text-meme-cyan hover:scale-125 transition-transform"><i class="fas fa-fingerprint text-5xl"></i></button>
+                <button onclick="pressPin(0)" class="w-20 h-20 bg-black border-4 border-black shadow-brutal flex items-center justify-center text-3xl font-display hover:bg-meme-green hover:text-black hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all italic tracking-tighter">0</button>
+                <button onclick="backspacePin()" class="w-20 h-20 flex items-center justify-center text-meme-pink hover:scale-125 transition-transform"><i class="fas fa-backspace text-3xl"></i></button>
             </div>
-            <button onclick="hidePinSheet()" class="mt-8 text-xs text-gray-600 uppercase font-bold tracking-widest hover:text-gray-400">Cancel</button>
+            <button onclick="hidePinSheet()" class="mt-12 font-display text-2xl text-gray-700 uppercase italic hover:text-white transition-colors tracking-widest">Abort</button>
         </div>
     </div>
 
     <!-- Internal Wallet Sheet -->
     <div id="internalWalletSheet" class="fixed inset-0 bg-black/80 z-[190] flex items-end justify-center transition-transform duration-300 translate-y-full">
-        <div class="bg-surface w-full max-w-lg rounded-t-[2.5rem] border-t border-border p-8 flex flex-col items-center">
-            <div class="w-12 h-1.5 bg-border rounded-full mb-8"></div>
+        <div class="bg-meme-surface w-full max-w-xl rounded-t-[4rem] border-t-8 border-black p-10 flex flex-col items-center">
+            <div class="w-24 h-4 bg-black rounded-full mb-10"></div>
             <div id="walletSheetContent" class="w-full">
                 <!-- Dynamically populated -->
             </div>
-            <button onclick="hideInternalWalletSheet()" class="mt-6 text-[10px] text-gray-600 uppercase font-black tracking-widest hover:text-gray-400">Close</button>
+            <button onclick="hideInternalWalletSheet()" class="mt-10 font-display text-3xl text-gray-700 uppercase italic tracking-widest hover:text-meme-pink transition-colors">Close</button>
         </div>
     </div>
 
     <!-- Slippage Settings Modal -->
-    <div id="slippageModal" class="hidden fixed inset-0 bg-black/80 z-[400] flex items-center justify-center p-4">
-        <div class="bg-card border border-border w-full max-w-[280px] rounded-2xl overflow-hidden shadow-2xl animate-fade-in">
-            <div class="p-4 border-b border-border flex justify-between items-center bg-surface">
-                <h3 class="font-bold text-sm">Slippage Settings</h3>
-                <button onclick="window.addClass('slippageModal', 'hidden')" class="text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
+    <div id="slippageModal" class="hidden fixed inset-0 bg-black/95 z-[400] flex items-center justify-center p-6">
+        <div class="bg-meme-surface border-4 border-black shadow-brutal-lg w-full max-w-xs overflow-hidden">
+            <div class="p-4 border-b-4 border-black flex justify-between items-center bg-meme-yellow">
+                <h3 class="font-display text-2xl text-black uppercase italic tracking-tighter">SLIPPAGE</h3>
+                <button onclick="window.addClass('slippageModal', 'hidden')" class="text-black hover:rotate-90 transition-transform"><i class="fas fa-times text-xl"></i></button>
             </div>
-            <div class="p-4 space-y-4">
-                <div class="flex flex-wrap gap-2">
-                    <button onclick="setSlippage(0.1)" class="flex-1 min-w-[60px] py-1.5 bg-bg border border-border rounded-lg text-xs hover:border-up transition-all">0.1%</button>
-                    <button onclick="setSlippage(0.5)" class="flex-1 min-w-[60px] py-1.5 bg-bg border border-border rounded-lg text-xs hover:border-up transition-all">0.5%</button>
-                    <button onclick="setSlippage(1.0)" class="flex-1 min-w-[60px] py-1.5 bg-bg border border-border rounded-lg text-xs hover:border-up transition-all">1.0%</button>
-                    <button onclick="setSlippage(30.0)" class="flex-1 min-w-[60px] py-1.5 bg-bg border border-border rounded-lg text-xs hover:border-up transition-all">30.0%</button>
+            <div class="p-6 space-y-6 bg-black">
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="setSlippage(0.1)" class="py-3 bg-meme-surface border-2 border-black text-white font-display text-lg shadow-brutal hover:shadow-none hover:bg-meme-green hover:text-black transition-all italic tracking-tighter">0.1%</button>
+                    <button onclick="setSlippage(0.5)" class="py-3 bg-meme-surface border-2 border-black text-white font-display text-lg shadow-brutal hover:shadow-none hover:bg-meme-green hover:text-black transition-all italic tracking-tighter">0.5%</button>
+                    <button onclick="setSlippage(1.0)" class="py-3 bg-meme-surface border-2 border-black text-white font-display text-lg shadow-brutal hover:shadow-none hover:bg-meme-green hover:text-black transition-all italic tracking-tighter">1.0%</button>
+                    <button onclick="setSlippage(30.0)" class="py-3 bg-meme-surface border-2 border-black text-white font-display text-lg shadow-brutal hover:shadow-none hover:bg-meme-green hover:text-black transition-all italic tracking-tighter">30.0%</button>
                 </div>
                 <div class="relative">
-                    <input type="number" id="customSlippage" placeholder="Custom %" class="w-full pl-3 pr-8 py-2 bg-bg border border-border rounded-lg text-sm outline-none focus:border-up" oninput="updateCustomSlippage()">
-                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs">%</span>
+                    <input type="number" id="customSlippage" placeholder="CUSTOM %" class="w-full pl-4 pr-10 py-4 bg-black border-4 border-black text-white font-display text-2xl outline-none focus:border-meme-pink placeholder:text-gray-800 italic uppercase" oninput="updateCustomSlippage()">
+                    <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 font-display text-2xl italic">%</span>
                 </div>
-                <button onclick="window.addClass('slippageModal', 'hidden')" class="w-full py-2 bg-up text-bg font-bold rounded-lg text-xs">SAVE SETTINGS</button>
+                <button onclick="window.addClass('slippageModal', 'hidden')" class="w-full py-4 bg-meme-pink text-white font-display text-3xl border-4 border-black shadow-brutal hover:shadow-none transition-all uppercase italic tracking-tighter">Save Settings</button>
             </div>
         </div>
     </div>
 
     <!-- Notification Container -->
-    <div id="notificationContainer" class="fixed top-20 right-4 z-[9999] flex flex-col gap-2"></div>
+    <div id="notificationContainer" class="fixed top-24 right-6 z-[9999] flex flex-col gap-4"></div>
 
     <!-- Transaction Confirmation Modal -->
-    <div id="txConfirmModal" class="hidden fixed inset-0 bg-black/95 z-[40000] items-center justify-center p-4 backdrop-blur-md">
-        <div class="bg-surface border border-border w-full max-w-[340px] rounded-[2rem] p-5 sm:p-7 animate-slide-up shadow-2xl">
-            <div class="text-center mb-6">
-                <div class="w-14 h-14 bg-up/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <i class="fas fa-shield-check text-2xl text-up animate-pulse"></i>
+    <div id="txConfirmModal" class="hidden fixed inset-0 bg-black/98 z-[40000] flex items-center justify-center p-6">
+        <div class="bg-meme-surface border-4 border-black w-full max-w-sm rounded-[3rem] p-8 animate-slide-up shadow-brutal-lg">
+            <div class="text-center mb-8">
+                <div class="w-20 h-20 bg-meme-green border-4 border-black shadow-brutal flex items-center justify-center mx-auto mb-6 rotate-[-10deg]">
+                    <i class="fas fa-shield-check text-4xl text-black"></i>
                 </div>
-                <h3 class="text-xl font-black uppercase italic tracking-widest mb-1">Confirm Tx</h3>
-                <p id="txConfirmMsg" class="text-[9px] text-gray-500 uppercase font-bold tracking-widest">Verify transaction details</p>
+                <h3 class="text-4xl font-display uppercase italic tracking-widest mb-2 text-white">CONFIRM TX</h3>
+                <p id="txConfirmMsg" class="font-mono text-[10px] text-gray-500 uppercase font-bold tracking-[0.2em] italic">VERIFY ACTION DETAILS</p>
             </div>
 
-            <div class="space-y-3 bg-card/30 rounded-2xl p-4 border border-white/5 mb-6">
+            <div class="space-y-4 bg-black border-4 border-black p-6 mb-8 shadow-[inset_0_4px_8px_rgba(0,0,0,0.5)]">
                 <div class="flex justify-between items-center">
-                    <span class="text-[9px] uppercase font-black text-gray-500">Action</span>
-                    <span id="txConfirmAction" class="text-[10px] font-black italic text-white uppercase text-right truncate ml-4">--</span>
+                    <span class="font-mono text-[10px] uppercase font-black text-gray-600 italic">ACTION</span>
+                    <span id="txConfirmAction" class="font-display text-xl italic text-meme-cyan uppercase truncate ml-4 tracking-tighter">--</span>
                 </div>
                 <div class="flex justify-between items-center">
-                    <span class="text-[9px] uppercase font-black text-gray-500">Network</span>
-                    <span id="txConfirmNetwork" class="text-[10px] font-bold text-blue-400">Paxi Mainnet</span>
+                    <span class="font-mono text-[10px] uppercase font-black text-gray-600 italic">NETWORK</span>
+                    <span id="txConfirmNetwork" class="font-display text-xl text-meme-yellow italic tracking-tighter">PAXI NET</span>
                 </div>
-                <div id="txConfirmFeeRow" class="flex justify-between items-center pt-2 border-t border-white/5">
-                    <span class="text-[9px] uppercase font-black text-gray-500">Est. Fee</span>
-                    <span id="txConfirmFee" class="text-[10px] font-mono font-bold text-up">--</span>
+                <div id="txConfirmFeeRow" class="flex justify-between items-center pt-4 border-t-2 border-meme-surface">
+                    <span class="font-mono text-[10px] uppercase font-black text-gray-600 italic">GAS FEE</span>
+                    <span id="txConfirmFee" class="font-mono text-xs font-bold text-meme-green">--</span>
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-3">
-                <button id="txCancelBtn" class="py-3.5 bg-surface border border-border text-gray-500 font-black rounded-xl text-[10px] uppercase italic hover:text-white transition-all">Cancel</button>
-                <button id="txConfirmBtn" class="py-3.5 bg-up text-bg font-black rounded-xl shadow-glow-up text-[10px] uppercase italic">Sign & Send</button>
+            <div class="grid grid-cols-2 gap-4">
+                <button id="txCancelBtn" class="py-4 bg-black border-4 border-black text-gray-600 font-display text-xl uppercase italic hover:text-white transition-all shadow-brutal hover:shadow-none tracking-tighter">Abort</button>
+                <button id="txConfirmBtn" class="py-4 bg-meme-green text-black font-display text-xl uppercase italic border-4 border-black shadow-brutal hover:shadow-none tracking-tighter">SIGN & PUMP</button>
             </div>
         </div>
     </div>
 
     <!-- Transaction Result Modal -->
-    <div id="txResultModal" class="hidden fixed inset-0 bg-black/95 z-[50000] items-center justify-center p-4 backdrop-blur-md">
-        <div class="bg-surface border border-border w-full max-w-[380px] rounded-[2rem] p-5 sm:p-7 animate-slide-up overflow-y-auto max-h-[90vh] shadow-2xl">
-            <div class="text-center mb-6">
-                <div id="txResultIcon" class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3">
+    <div id="txResultModal" class="hidden fixed inset-0 bg-black/98 z-[50000] flex items-center justify-center p-6">
+        <div class="bg-meme-surface border-4 border-black w-full max-w-md rounded-[3rem] p-8 animate-slide-up overflow-y-auto max-h-[95vh] shadow-brutal-lg no-scrollbar">
+            <div class="text-center mb-8">
+                <div id="txResultIcon" class="w-24 h-24 border-4 border-black shadow-brutal flex items-center justify-center mx-auto mb-6 rotate-[8deg]">
                     <!-- Icon injected here -->
                 </div>
-                <h3 id="txResultStatus" class="text-xl font-black uppercase italic tracking-widest mb-1">Status</h3>
-                <div id="txResultType" class="text-[9px] font-bold uppercase tracking-[0.2em] text-gray-500">Transaction Details</div>
+                <h3 id="txResultStatus" class="text-5xl font-display uppercase italic tracking-widest mb-2">STATUS</h3>
+                <div id="txResultType" class="font-mono text-[10px] font-bold uppercase tracking-[0.3em] text-gray-600 italic">MISSION LOG</div>
             </div>
 
-            <div class="space-y-3 bg-card/30 rounded-2xl p-4 border border-white/5 mb-6">
-                <div class="flex justify-between items-center pb-2 border-b border-white/5">
-                    <span class="text-[9px] uppercase font-black text-gray-500">Log Details</span>
-                    <span id="txResultTime" class="text-[8px] font-mono text-gray-600">--:--:--</span>
+            <div class="space-y-4 bg-black border-4 border-black p-6 mb-8 shadow-[inset_0_4px_8px_rgba(0,0,0,0.5)]">
+                <div class="flex justify-between items-center pb-4 border-b-2 border-meme-surface">
+                    <span class="font-mono text-[10px] uppercase font-black text-gray-600 italic">LOG TIME</span>
+                    <span id="txResultTime" class="font-mono text-xs text-meme-cyan">--:--:--</span>
                 </div>
 
-                <div class="grid grid-cols-1 gap-3">
+                <div class="grid grid-cols-1 gap-4">
                     <div class="flex justify-between items-center">
-                        <span class="text-[9px] uppercase font-bold text-gray-500">Type</span>
-                        <span id="logType" class="text-[10px] font-black italic text-white uppercase">--</span>
+                        <span class="font-mono text-[10px] uppercase font-bold text-gray-600 italic">TYPE</span>
+                        <span id="logType" class="font-display text-xl italic text-white uppercase tracking-tighter">--</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="text-[9px] uppercase font-bold text-gray-500">Asset</span>
-                        <span id="logAsset" class="text-[10px] font-black text-white uppercase text-right truncate ml-4">--</span>
+                        <span class="font-mono text-[10px] uppercase font-bold text-gray-600 italic">ASSET</span>
+                        <span id="logAsset" class="font-display text-xl text-meme-yellow uppercase text-right truncate ml-4 tracking-tighter">--</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="text-[9px] uppercase font-bold text-gray-500">Amount</span>
-                        <span id="logAmount" class="text-[10px] font-mono font-bold text-up">0.00</span>
+                        <span class="font-mono text-[10px] uppercase font-bold text-gray-600 italic">AMOUNT</span>
+                        <span id="logAmount" class="font-mono text-sm font-bold text-meme-green">0.00</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="text-[9px] uppercase font-bold text-gray-500">Network</span>
-                        <span id="logNetwork" class="text-[10px] font-bold text-blue-400">Paxi Mainnet</span>
+                        <span class="font-mono text-[10px] uppercase font-bold text-gray-600 italic">NETWORK</span>
+                        <span id="logNetwork" class="font-display text-xl text-meme-cyan italic tracking-tighter">PAXI NET</span>
                     </div>
-                    <div class="flex flex-col gap-1 mt-1">
-                        <span class="text-[9px] uppercase font-bold text-gray-500">Related Address</span>
-                        <div class="flex items-center gap-2 p-2 bg-black/40 rounded-xl border border-white/5">
-                            <code id="logAddress" class="text-[8px] font-mono text-gray-400 flex-1 truncate">paxi1...</code>
-                            <button id="copyAddressBtn" class="text-up hover:scale-110 transition-all"><i class="fas fa-copy text-[9px]"></i></button>
+                    <div class="flex flex-col gap-2 mt-2">
+                        <span class="font-mono text-[10px] uppercase font-bold text-gray-600 text-center italic">RELATED ADDRESS</span>
+                        <div class="flex items-center gap-3 p-3 bg-black border-2 border-black">
+                            <code id="logAddress" class="font-mono text-[10px] text-gray-500 flex-1 truncate uppercase">paxi1...</code>
+                            <button id="copyAddressBtn" class="text-meme-yellow hover:scale-125 transition-all"><i class="fas fa-copy"></i></button>
                         </div>
                     </div>
-                    <div id="logHashContainer" class="flex flex-col gap-1">
-                        <span class="text-[9px] uppercase font-bold text-gray-500">Tx Hash</span>
-                        <div class="flex items-center gap-2 p-2 bg-black/40 rounded-xl border border-white/5">
-                            <code id="logHash" class="text-[8px] font-mono text-gray-400 flex-1 truncate">--</code>
-                            <button id="viewHashBtn" class="text-up hover:scale-110 transition-all"><i class="fas fa-external-link-alt text-[9px]"></i></button>
+                    <div id="logHashContainer" class="flex flex-col gap-2">
+                        <span class="font-mono text-[10px] uppercase font-bold text-gray-600 text-center italic">TX HASH</span>
+                        <div class="flex items-center gap-3 p-3 bg-black border-2 border-black">
+                            <code id="logHash" class="font-mono text-[10px] text-gray-500 flex-1 truncate uppercase">--</code>
+                            <button id="viewHashBtn" class="text-meme-green hover:scale-125 transition-all"><i class="fas fa-external-link-alt"></i></button>
                         </div>
                     </div>
-                    <div id="logErrorContainer" class="hidden flex flex-col gap-1">
-                        <span class="text-[9px] uppercase font-bold text-down">Failure Reason</span>
-                        <div class="p-3 bg-down/5 border border-down/10 rounded-xl">
-                            <p id="logError" class="text-[9px] text-down leading-relaxed font-bold uppercase break-words">--</p>
+                    <div id="logErrorContainer" class="hidden flex flex-col gap-2">
+                        <span class="font-mono text-[10px] uppercase font-bold text-meme-pink text-center italic animate-glitch">SYSTEM ERROR</span>
+                        <div class="p-4 bg-meme-pink/10 border-4 border-meme-pink shadow-brutal-pink">
+                            <p id="logError" class="font-mono text-[10px] text-meme-pink leading-relaxed font-bold uppercase break-words italic">--</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <button onclick="window.closeTxResult()" class="w-full py-3.5 bg-surface border border-border text-white font-black rounded-xl text-[10px] uppercase italic hover:bg-card transition-all">Close Details</button>
+            <button onclick="window.closeTxResult()" class="w-full py-5 bg-black border-4 border-black text-white font-display text-3xl uppercase italic shadow-brutal hover:shadow-none hover:bg-meme-surface transition-all tracking-tighter">CLOSE LOG</button>
         </div>
     </div>
 
@@ -750,58 +714,56 @@
     <div id="featureLockOverlay" class="hidden fixed inset-0 bg-black/60 z-[9999] backdrop-blur-md"></div>
 
     <!-- Transaction Loader -->
-    <div id="txLoader" class="hidden fixed inset-0 bg-black/80 z-[30000] items-center justify-center backdrop-blur-sm">
+    <div id="txLoader" class="hidden fixed inset-0 bg-black/90 z-[30000] flex items-center justify-center">
         <div class="text-center">
-            <div class="spinner w-16 h-16 border-4 border-up/20 border-top-up rounded-full animate-spin mx-auto mb-6"></div>
-            <h3 class="text-xl font-black uppercase italic tracking-widest text-white">Processing</h3>
-            <p class="text-[10px] text-up font-bold uppercase mt-2 animate-pulse">Broadcasting to Network...</p>
+            <div class="w-24 h-24 border-8 border-meme-green border-t-transparent rounded-full animate-spin mx-auto mb-10 shadow-brutal-green"></div>
+            <h3 class="text-5xl font-display uppercase italic tracking-tighter text-white animate-glitch">BROADCASTING...</h3>
+            <p class="font-mono text-xs text-meme-green font-bold uppercase mt-4 tracking-widest italic">SENDING DATA TO BLOCKS</p>
         </div>
     </div>
-    <div id="sidebarOverlay" class="hidden fixed inset-0 bg-black/50 z-30 lg:hidden" onclick="window.closeAllSidebars()"></div>
+
+    <div id="sidebarOverlay" class="hidden fixed inset-0 bg-black/80 z-30 lg:hidden" onclick="window.closeAllSidebars()"></div>
     <div id="sheetOverlay" class="hidden fixed inset-0 bg-black/60 z-[180] backdrop-blur-sm transition-opacity duration-300" onclick="hideInternalWalletSheet()"></div>
 
     <!-- Transaction History Modal -->
-    <div id="txHistoryModal" class="hidden fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
-        <div class="bg-card rounded-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col border border-border">
-            <div class="p-4 border-b border-border flex justify-between items-center bg-surface">
-                <h3 class="text-lg font-bold"><i class="fas fa-history mr-2 text-up"></i>Transaction History</h3>
-                <button onclick="toggleTxHistory()" class="text-gray-400 hover:text-white"><i class="fas fa-times text-xl"></i></button>
+    <div id="txHistoryModal" class="hidden fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-6">
+        <div class="bg-meme-surface border-4 border-black shadow-brutal-lg w-full max-w-xl max-h-[85vh] overflow-hidden flex flex-col">
+            <div class="p-6 border-b-4 border-black flex justify-between items-center bg-meme-green">
+                <h3 class="text-3xl font-display text-black italic uppercase tracking-widest"><i class="fas fa-history mr-4"></i>TX LOGS</h3>
+                <button onclick="toggleTxHistory()" class="text-black hover:rotate-90 transition-transform"><i class="fas fa-times text-2xl"></i></button>
             </div>
-            <div id="txHistoryList" class="flex-1 overflow-y-auto bg-bg"></div>
-            <div class="p-3 border-t border-border text-center bg-surface">
-                <a href="https://winscan.winsnip.xyz" target="_blank" class="text-xs text-gray-500 hover:text-up"><i class="fas fa-external-link-alt mr-1"></i>View on Winscan</a>
+            <div id="txHistoryList" class="flex-1 overflow-y-auto bg-black no-scrollbar"></div>
+            <div class="p-4 border-t-4 border-black text-center bg-meme-surface">
+                <a href="https://winscan.winsnip.xyz" target="_blank" class="font-display text-xl text-meme-cyan hover:text-white transition-colors italic uppercase tracking-tighter"><i class="fas fa-external-link-alt mr-2"></i>VIEW ON WINSCAN</a>
             </div>
         </div>
     </div>
 
-    <!-- Liquidity Modal -->
-    <div id="aiModal" class="hidden fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
-        <div class="bg-card rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto border border-border">
-            <div class="p-4 border-b border-border flex justify-between items-center sticky top-0 bg-card z-10">
-                <h3 class="text-lg font-bold text-up italic"><i class="fas fa-brain mr-2"></i>AI Market Analysis</h3>
-                <button onclick="hideAI()" class="text-gray-400 hover:text-white"><i class="fas fa-times text-xl"></i></button>
+    <!-- AI Modal -->
+    <div id="aiModal" class="hidden fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-6">
+        <div class="bg-meme-surface border-4 border-black shadow-brutal-lg w-full max-w-2xl max-h-[85vh] overflow-y-auto no-scrollbar relative">
+            <div class="p-6 border-b-4 border-black flex justify-between items-center sticky top-0 bg-meme-surface z-10">
+                <h3 class="text-4xl font-display text-meme-green italic uppercase tracking-tighter"><i class="fas fa-brain mr-4"></i>AI MARKET ORACLE</h3>
+                <button onclick="hideAI()" class="text-meme-pink hover:scale-125 transition-transform"><i class="fas fa-times text-2xl"></i></button>
             </div>
-            <div id="aiContent" class="p-4 text-sm text-gray-300"></div>
+            <div id="aiContent" class="p-8 font-mono text-sm text-gray-300 leading-relaxed uppercase tracking-wide italic"></div>
         </div>
     </div>
-
-    <!-- Donation Modal -->
-    <!-- Wallet Actions Modal (Send/Receive) -->
 
     <!-- Console Log Modal -->
-    <div id="consoleModal" class="hidden fixed inset-0 bg-black/95 z-[9999] flex items-center justify-center p-4">
-        <div class="bg-card border border-border w-full max-w-4xl h-[80vh] rounded-2xl flex flex-col overflow-hidden shadow-2xl">
-            <div class="p-3 border-b border-border flex justify-between items-center bg-surface">
-                <div class="flex items-center gap-2">
-                    <i class="fas fa-terminal text-green-400"></i>
-                    <span class="font-bold text-sm uppercase tracking-wider">System Console</span>
+    <div id="consoleModal" class="hidden fixed inset-0 bg-black/98 z-[9999] flex items-center justify-center p-6">
+        <div class="bg-meme-surface border-4 border-black w-full max-w-5xl h-[85vh] flex flex-col overflow-hidden shadow-brutal-lg">
+            <div class="p-4 border-b-4 border-black flex justify-between items-center bg-black">
+                <div class="flex items-center gap-4">
+                    <i class="fas fa-terminal text-meme-green text-2xl"></i>
+                    <span class="font-display text-2xl text-white uppercase italic tracking-widest">SYSTEM CONSOLE</span>
                 </div>
-                <button onclick="toggleConsoleModal()" class="text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
+                <button onclick="toggleConsoleModal()" class="text-meme-pink hover:scale-125 transition-transform"><i class="fas fa-times text-2xl"></i></button>
             </div>
-            <div id="consoleContent" class="flex-1 overflow-y-auto p-4 font-mono text-[10px] text-gray-400 bg-black"></div>
-            <div class="p-2 border-t border-border bg-surface flex justify-between items-center text-[10px] text-gray-500">
-                <span id="consoleStats">0 Logs</span>
-                <button onclick="clearConsoleLogs()" class="hover:text-white">CLEAR LOGS</button>
+            <div id="consoleContent" class="flex-1 overflow-y-auto p-6 font-mono text-[10px] text-meme-green bg-black no-scrollbar selection:bg-meme-green selection:text-black italic"></div>
+            <div class="p-4 border-t-4 border-black bg-meme-card flex justify-between items-center">
+                <span id="consoleStats" class="font-mono text-xs text-gray-500 font-bold uppercase tracking-widest italic">0 LOGS PROCESSED</span>
+                <button onclick="clearConsoleLogs()" class="font-display text-xl text-meme-pink hover:text-white transition-colors uppercase italic border-b-2 border-meme-pink tracking-tighter">PURGE LOGS</button>
             </div>
         </div>
     </div>
@@ -823,8 +785,6 @@
     <script src="./js/modules/market/ai.js"></script>
     <script src="./js/ui/rendering.js"></script>
     <script src="./js/ui/console.js"></script>
-    <!-- Transaction logic merged into wallet-core, keeping UI interaction -->
-    <!-- <script src="./js/modules/trade/transaction.js"></script> Removed -->
     <script src="./js/app.js"></script>
 
     <script>
@@ -837,10 +797,10 @@
                 sidebar.classList.add('-translate-x-full');
                 window.hideSidebarOverlay();
             } else {
-                document.getElementById('unifiedSidebar').classList.add('translate-x-full');
+                const unifiedSidebar = document.getElementById('unifiedSidebar');
+                if (unifiedSidebar) unifiedSidebar.classList.add('translate-x-full');
                 sidebar.classList.remove('-translate-x-full');
                 window.showSidebarOverlay();
-                // Load tokens when sidebar opened on mobile
                 if (window.loadTokensOptimized) window.loadTokensOptimized();
             }
         };
@@ -853,7 +813,8 @@
                 sidebar.classList.add('translate-x-full');
                 window.hideSidebarOverlay();
             } else {
-                document.getElementById('tokenSidebar').classList.add('-translate-x-full');
+                const tokenSidebar = document.getElementById('tokenSidebar');
+                if (tokenSidebar) tokenSidebar.classList.add('-translate-x-full');
                 sidebar.classList.remove('translate-x-full');
                 window.showSidebarOverlay();
             }
@@ -863,16 +824,18 @@
             const modal = document.getElementById('moreMenuModal');
             if (modal.classList.contains('hidden')) {
                 modal.classList.remove('hidden');
-                document.body.style.overflow = 'hidden';
+                document.body.classList.add('overflow-hidden');
             } else {
                 modal.classList.add('hidden');
-                document.body.style.overflow = '';
+                document.body.classList.remove('overflow-hidden');
             }
         };
 
         window.closeAllSidebars = function() {
-            document.getElementById('tokenSidebar').classList.add('-translate-x-full');
-            document.getElementById('unifiedSidebar').classList.add('translate-x-full');
+            const tokenSidebar = document.getElementById('tokenSidebar');
+            const unifiedSidebar = document.getElementById('unifiedSidebar');
+            if (tokenSidebar) tokenSidebar.classList.add('-translate-x-full');
+            if (unifiedSidebar) unifiedSidebar.classList.add('translate-x-full');
             window.hideSidebarOverlay();
         };
 
@@ -892,13 +855,13 @@
         let lastWidth = window.innerWidth;
         window.addEventListener('resize', () => {
             const newWidth = window.innerWidth;
-            // Only trigger if we cross the desktop breakpoint
             if ((lastWidth < 1024 && newWidth >= 1024) || (lastWidth >= 1024 && newWidth < 1024)) {
+                const tokenSidebar = document.getElementById('tokenSidebar');
                 if (newWidth >= 1024) {
-                    document.getElementById('tokenSidebar').classList.remove('-translate-x-full');
+                    if (tokenSidebar) tokenSidebar.classList.remove('-translate-x-full');
                     window.hideSidebarOverlay();
                 } else {
-                    document.getElementById('tokenSidebar').classList.add('-translate-x-full');
+                    if (tokenSidebar) tokenSidebar.classList.add('-translate-x-full');
                     window.hideSidebarOverlay();
                 }
             }

@@ -27,15 +27,13 @@ window.SettingsPage = {
 
     saveConfig: function() {
         localStorage.setItem('canonix_settings', JSON.stringify(this.config));
-
-        // Dispatch event for other modules to pick up changes
         window.dispatchEvent(new CustomEvent('canonix_settings_updated', { detail: this.config }));
     },
 
     updateConfig: function(key, value) {
         this.config[key] = value;
         this.saveConfig();
-        this.renderSettings(); // Re-render to show updated state
+        this.renderSettings();
     },
 
     renderSettings: function() {
@@ -43,115 +41,123 @@ window.SettingsPage = {
         if (!container) return;
 
         container.innerHTML = `
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
                 <!-- Sidebar Tabs -->
-                <div class="lg:col-span-1 space-y-2">
-                    <button class="w-full flex items-center gap-3 p-4 rounded-2xl bg-card border border-up text-up font-bold transition-all">
-                        <i class="fas fa-network-wired"></i> General & Network
+                <div class="lg:col-span-1 space-y-4">
+                    <button class="w-full flex items-center gap-4 p-6 bg-meme-surface border-4 border-black shadow-brutal text-meme-cyan font-display text-2xl uppercase italic rotate-[-1deg]">
+                        <i class="fas fa-network-wired"></i> HARDWARE
                     </button>
-                    <button class="w-full flex items-center gap-3 p-4 rounded-2xl bg-surface border border-border text-gray-400 hover:text-white transition-all">
-                        <i class="fas fa-brain"></i> AI Configuration
+                    <button class="w-full flex items-center gap-4 p-6 bg-meme-black border-4 border-black shadow-brutal text-gray-600 font-display text-2xl uppercase italic hover:text-white transition-all">
+                        <i class="fas fa-brain"></i> AI CORE
                     </button>
-                    <button class="w-full flex items-center gap-3 p-4 rounded-2xl bg-surface border border-border text-gray-400 hover:text-white transition-all">
-                        <i class="fas fa-shield-alt"></i> Security & Privacy
-                    </button>
-                    <button class="w-full flex items-center gap-3 p-4 rounded-2xl bg-surface border border-border text-gray-400 hover:text-white transition-all">
-                        <i class="fas fa-palette"></i> Appearance
+                    <button class="w-full flex items-center gap-4 p-6 bg-meme-black border-4 border-black shadow-brutal text-gray-600 font-display text-2xl uppercase italic hover:text-white transition-all">
+                        <i class="fas fa-shield-alt"></i> DEFENSE
                     </button>
                 </div>
 
                 <!-- Main Content -->
-                <div class="lg:col-span-2 space-y-8">
+                <div class="lg:col-span-2 space-y-12">
                     <!-- Network Section -->
-                    <div class="bg-card border border-border rounded-[2.5rem] overflow-hidden">
-                        <div class="p-8 border-b border-border">
-                            <h3 class="text-xl font-black italic uppercase">Network & Node Settings</h3>
+                    <div class="bg-meme-surface border-4 border-black shadow-brutal-lg overflow-hidden rotate-[0.5deg]">
+                        <div class="p-8 border-b-4 border-black bg-meme-black flex items-center gap-4">
+                            <i class="fas fa-satellite text-meme-cyan text-3xl"></i>
+                            <h3 class="text-4xl font-display text-white italic uppercase tracking-tighter">DATA UPLINK</h3>
                         </div>
-                        <div class="p-8 space-y-6">
-                            <div class="space-y-2">
-                                <label class="text-[10px] font-black uppercase text-gray-500 tracking-widest">Active Network</label>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <button onclick="SettingsPage.updateConfig('network', 'mainnet')" class="p-4 rounded-2xl border ${this.config.network === 'mainnet' ? 'border-up bg-up/5 text-up' : 'border-border bg-surface text-gray-500'} font-bold transition-all">
-                                        Paxi Mainnet
+                        <div class="p-8 space-y-10">
+                            <div class="space-y-4">
+                                <label class="font-mono text-[10px] font-black uppercase text-gray-600 tracking-widest">ACTIVE WAVELENGTH</label>
+                                <div class="grid grid-cols-2 gap-6">
+                                    <button onclick="SettingsPage.updateConfig('network', 'mainnet')" class="p-6 border-4 ${this.config.network === 'mainnet' ? 'border-meme-green bg-meme-green text-black shadow-brutal-green' : 'border-black bg-meme-black text-gray-600 shadow-brutal'} font-display text-2xl uppercase italic transition-all">
+                                        MAINNET
                                     </button>
-                                    <button onclick="SettingsPage.updateConfig('network', 'testnet')" class="p-4 rounded-2xl border ${this.config.network === 'testnet' ? 'border-up bg-up/5 text-up' : 'border-border bg-surface text-gray-500'} font-bold transition-all">
-                                        Paxi Testnet
+                                    <button onclick="SettingsPage.updateConfig('network', 'testnet')" class="p-6 border-4 ${this.config.network === 'testnet' ? 'border-meme-pink bg-meme-pink text-white shadow-brutal-pink' : 'border-black bg-meme-black text-gray-600 shadow-brutal'} font-display text-2xl uppercase italic transition-all">
+                                        TESTNET
                                     </button>
                                 </div>
                             </div>
 
-                            <div class="space-y-2">
-                                <label class="text-[10px] font-black uppercase text-gray-500 tracking-widest">Custom RPC Endpoint</label>
-                                <input type="text" value="${this.config.rpc}"
-                                    onchange="SettingsPage.updateConfig('rpc', this.value)"
-                                    placeholder="https://..."
-                                    class="w-full p-4 bg-surface border border-border rounded-2xl text-sm font-mono focus:border-up outline-none transition-all">
+                            <div class="space-y-4">
+                                <label class="font-mono text-[10px] font-black uppercase text-gray-600 tracking-widest">RPC COORDINATES</label>
+                                <div class="bg-black border-4 border-black p-4 shadow-[inset_0_4px_8px_rgba(0,0,0,0.5)]">
+                                    <input type="text" value="${this.config.rpc}"
+                                        onchange="SettingsPage.updateConfig('rpc', this.value)"
+                                        placeholder="https://..."
+                                        class="w-full bg-transparent text-meme-cyan font-mono text-xs focus:text-white outline-none">
+                                </div>
                             </div>
 
-                            <div class="space-y-2">
-                                <label class="text-[10px] font-black uppercase text-gray-500 tracking-widest">Custom LCD Endpoint</label>
-                                <input type="text" value="${this.config.lcd}"
-                                    onchange="SettingsPage.updateConfig('lcd', this.value)"
-                                    placeholder="https://..."
-                                    class="w-full p-4 bg-surface border border-border rounded-2xl text-sm font-mono focus:border-up outline-none transition-all">
+                            <div class="space-y-4">
+                                <label class="font-mono text-[10px] font-black uppercase text-gray-600 tracking-widest">LCD FREQUENCY</label>
+                                <div class="bg-black border-4 border-black p-4 shadow-[inset_0_4px_8px_rgba(0,0,0,0.5)]">
+                                    <input type="text" value="${this.config.lcd}"
+                                        onchange="SettingsPage.updateConfig('lcd', this.value)"
+                                        placeholder="https://..."
+                                        class="w-full bg-transparent text-meme-cyan font-mono text-xs focus:text-white outline-none">
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- AI Configuration -->
-                    <div class="bg-card border border-border rounded-[2.5rem] overflow-hidden">
-                        <div class="p-8 border-b border-border">
-                            <h3 class="text-xl font-black italic uppercase">AI Analysis Preferences</h3>
+                    <div class="bg-meme-surface border-4 border-black shadow-brutal-lg overflow-hidden rotate-[-0.5deg]">
+                        <div class="p-8 border-b-4 border-black bg-meme-black flex items-center gap-4">
+                            <i class="fas fa-microchip text-meme-pink text-3xl"></i>
+                            <h3 class="text-4xl font-display text-white italic uppercase tracking-tighter">AI BRAIN STEM</h3>
                         </div>
-                        <div class="p-8 space-y-6">
-                            <div class="flex items-center justify-between">
+                        <div class="p-8 space-y-10">
+                            <div class="flex items-center justify-between p-6 bg-black border-4 border-black shadow-brutal">
                                 <div>
-                                    <h4 class="font-bold text-white">Enable AI Insights</h4>
-                                    <p class="text-xs text-gray-500">Show Gemini-powered analysis in terminals</p>
+                                    <h4 class="font-display text-2xl text-white italic uppercase">Bionic Insights</h4>
+                                    <p class="font-mono text-[9px] text-gray-600 font-bold uppercase">Activate Gemini-PRO consciousness</p>
                                 </div>
-                                <button onclick="SettingsPage.updateConfig('aiEnabled', ${!this.config.aiEnabled})" class="w-12 h-6 rounded-full ${this.config.aiEnabled ? 'bg-up' : 'bg-gray-700'} relative transition-all">
-                                    <div class="absolute top-1 ${this.config.aiEnabled ? 'right-1' : 'left-1'} w-4 h-4 bg-white rounded-full transition-all"></div>
+                                <button onclick="SettingsPage.updateConfig('aiEnabled', ${!this.config.aiEnabled})" class="w-16 h-8 rounded-full border-2 border-black ${this.config.aiEnabled ? 'bg-meme-green' : 'bg-gray-800'} relative transition-all shadow-brutal">
+                                    <div class="absolute top-1 ${this.config.aiEnabled ? 'right-1' : 'left-1'} w-5 h-5 bg-white border-2 border-black rounded-full transition-all"></div>
                                 </button>
                             </div>
 
-                            <div class="space-y-2">
-                                <label class="text-[10px] font-black uppercase text-gray-500 tracking-widest">Model Selection</label>
-                                <select onchange="SettingsPage.updateConfig('aiModel', this.value)" class="w-full p-4 bg-surface border border-border rounded-2xl text-sm font-bold focus:border-up outline-none appearance-none">
-                                    <option value="gemini-pro" ${this.config.aiModel === 'gemini-pro' ? 'selected' : ''}>Gemini 1.5 Pro (Balanced)</option>
-                                    <option value="gemini-flash" ${this.config.aiModel === 'gemini-flash' ? 'selected' : ''}>Gemini 1.5 Flash (Fast)</option>
-                                </select>
+                            <div class="space-y-4">
+                                <label class="font-mono text-[10px] font-black uppercase text-gray-600 tracking-widest">NEURAL MODEL</label>
+                                <div class="bg-black border-4 border-black p-4 shadow-brutal">
+                                    <select onchange="SettingsPage.updateConfig('aiModel', this.value)" class="w-full bg-transparent font-display text-2xl text-meme-pink uppercase italic outline-none cursor-pointer">
+                                        <option value="gemini-pro" class="bg-meme-black" ${this.config.aiModel === 'gemini-pro' ? 'selected' : ''}>GEMINI 1.5 PRO (MAX IQ)</option>
+                                        <option value="gemini-flash" class="bg-meme-black" ${this.config.aiModel === 'gemini-flash' ? 'selected' : ''}>GEMINI 1.5 FLASH (SPEED)</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Security Section -->
-                    <div class="bg-card border border-border rounded-[2.5rem] overflow-hidden">
-                        <div class="p-8 border-b border-border">
-                            <h3 class="text-xl font-black italic uppercase">Security & Privacy</h3>
+                    <div class="bg-meme-surface border-4 border-black shadow-brutal-lg overflow-hidden rotate-[1deg]">
+                        <div class="p-8 border-b-4 border-black bg-meme-black flex items-center gap-4">
+                            <i class="fas fa-shield-halved text-meme-green text-3xl"></i>
+                            <h3 class="text-4xl font-display text-white italic uppercase tracking-tighter">FIREWALL OPS</h3>
                         </div>
-                        <div class="p-8 space-y-6">
-                            <div class="space-y-2">
-                                <label class="text-[10px] font-black uppercase text-gray-500 tracking-widest">Auto-Lock Session (Minutes)</label>
-                                <input type="number" value="${this.config.autoLock}"
-                                    onchange="SettingsPage.updateConfig('autoLock', parseInt(this.value))"
-                                    class="w-full p-4 bg-surface border border-border rounded-2xl text-sm font-bold focus:border-up outline-none transition-all">
+                        <div class="p-8 space-y-10">
+                            <div class="space-y-4">
+                                <label class="font-mono text-[10px] font-black uppercase text-gray-600 tracking-widest">AUTO-LOCKDOWN (MINS)</label>
+                                <div class="bg-black border-4 border-black p-4 shadow-brutal">
+                                    <input type="number" value="${this.config.autoLock}"
+                                        onchange="SettingsPage.updateConfig('autoLock', parseInt(this.value))"
+                                        class="w-full bg-transparent font-display text-4xl text-meme-green outline-none italic">
+                                </div>
                             </div>
 
-                            <div class="flex items-center justify-between">
+                            <div class="flex items-center justify-between p-6 bg-black border-4 border-black shadow-brutal">
                                 <div>
-                                    <h4 class="font-bold text-white">Advanced Mode</h4>
-                                    <p class="text-xs text-gray-500">Enable technical logs and raw transaction data</p>
+                                    <h4 class="font-display text-2xl text-white italic uppercase">Giga Mode</h4>
+                                    <p class="font-mono text-[9px] text-gray-600 font-bold uppercase">Exposure of technical log streams</p>
                                 </div>
-                                <button onclick="SettingsPage.updateConfig('advancedMode', ${!this.config.advancedMode})" class="w-12 h-6 rounded-full ${this.config.advancedMode ? 'bg-up' : 'bg-gray-700'} relative transition-all">
-                                    <div class="absolute top-1 ${this.config.advancedMode ? 'right-1' : 'left-1'} w-4 h-4 bg-white rounded-full transition-all"></div>
+                                <button onclick="SettingsPage.updateConfig('advancedMode', ${!this.config.advancedMode})" class="w-16 h-8 rounded-full border-2 border-black ${this.config.advancedMode ? 'bg-meme-green' : 'bg-gray-800'} relative transition-all shadow-brutal">
+                                    <div class="absolute top-1 ${this.config.advancedMode ? 'right-1' : 'left-1'} w-5 h-5 bg-white border-2 border-black rounded-full transition-all"></div>
                                 </button>
                             </div>
                         </div>
                     </div>
 
-                    <div class="flex justify-end gap-4">
-                        <button onclick="SettingsPage.resetToDefaults()" class="px-8 py-4 bg-surface border border-border rounded-2xl font-bold hover:text-down transition-all">RESET DEFAULTS</button>
-                        <button onclick="SettingsPage.saveConfig()" class="btn-primary px-12 py-4 rounded-2xl font-black text-white italic">SAVE ALL CHANGES</button>
+                    <div class="flex flex-col sm:flex-row justify-end gap-6 pt-10">
+                        <button onclick="SettingsPage.resetToDefaults()" class="px-10 py-5 bg-meme-black border-4 border-black text-gray-600 font-display text-2xl uppercase italic shadow-brutal hover:text-meme-pink transition-all">FACTORY RESET</button>
+                        <button onclick="SettingsPage.saveConfig()" class="px-16 py-6 bg-meme-pink text-white font-display text-5xl border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-2 hover:translate-y-2 transition-all uppercase italic">SAVE PARAMS</button>
                     </div>
                 </div>
             </div>
@@ -159,7 +165,7 @@ window.SettingsPage = {
     },
 
     resetToDefaults: function() {
-        if (confirm('Reset all settings to default values?')) {
+        if (confirm('PERMANENTLY REVERT TO FACTORY SPECS?')) {
             this.config = { ...this.defaults };
             this.saveConfig();
             this.renderSettings();

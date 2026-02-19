@@ -478,70 +478,45 @@ window.showNotif = function(msg, type = 'info') {
 
   const safeMsg = finalMsg;
 
-  // Ensure styles are present
-  if (!document.getElementById('paxi-notif-styles')) {
-    const style = document.createElement('style');
-    style.id = 'paxi-notif-styles';
-    style.innerHTML = `
-      .paxi-notif {
-        position: fixed; right: 16px; z-index: 10000;
-        padding: 8px 12px; border-radius: 12px;
-        background: rgba(15, 10, 30, 0.9); backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
-        display: flex; align-items: center; gap: 10px;
-        min-width: 200px; max-width: 320px; color: #fff;
-        transform: translateX(120%); transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        overflow: hidden; pointer-events: auto;
-      }
-      .paxi-notif.show { transform: translateX(0); }
-      .paxi-notif-progress {
-        position: absolute; bottom: 0; left: 0; height: 2px;
-        background: linear-gradient(90deg, #00f2fe, #ff0080);
-        width: 100%; transition: width 3s linear;
-      }
-      .paxi-notif-icon {
-        width: 24px; height: 24px; border-radius: 8px;
-        display: flex; align-items: center; justify-content: center; font-size: 11px;
-        flex-shrink: 0;
-      }
-      .paxi-notif-success .paxi-notif-icon { background: rgba(0, 242, 254, 0.15); color: #00f2fe; }
-      .paxi-notif-error .paxi-notif-icon { background: rgba(255, 0, 128, 0.15); color: #ff0080; }
-      .paxi-notif-info .paxi-notif-icon { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
-      .paxi-notif-text { font-size: 11px; font-weight: 600; line-height: 1.3; color: rgba(255,255,255,0.95); }
-    `;
-    document.head.appendChild(style);
-  }
-
   const icons = { success: 'check-circle', error: 'exclamation-circle', info: 'info-circle' };
+  const typeColors = {
+      success: 'border-meme-green text-meme-green bg-black/90',
+      error: 'border-meme-pink text-meme-pink bg-black/90',
+      info: 'border-meme-cyan text-meme-cyan bg-black/90'
+  };
 
   const notif = document.createElement('div');
-  notif.className = `paxi-notif paxi-notif-${type}`;
+  notif.className = `fixed right-4 z-[10000] p-4 border-4 border-black shadow-brutal flex items-center gap-4 min-w-[200px] max-w-[320px] transition-all duration-300 translate-x-[120%] overflow-hidden ${typeColors[type] || typeColors.info}`;
+
   notif.innerHTML = `
-    <div class="paxi-notif-icon"><i class="fas fa-${icons[type] || icons.info}"></i></div>
-    <div class="paxi-notif-text">${safeMsg}</div>
-    <div class="paxi-notif-progress" style="width: 100%"></div>
+    <div class="flex-shrink-0 w-8 h-8 flex items-center justify-center border-2 border-black bg-black"><i class="fas fa-${icons[type] || icons.info}"></i></div>
+    <div class="font-display text-lg uppercase italic tracking-tighter">${finalMsg}</div>
+    <div class="absolute bottom-0 left-0 h-1 bg-current transition-all duration-[3000ms] ease-linear w-full progress-bar"></div>
   `;
 
   document.body.appendChild(notif);
-
-  // Stacking logic
   window.activeNotifs.push(notif);
 
   const updatePositions = () => {
     let currentTop = 16;
     window.activeNotifs.forEach((el) => {
       el.style.top = `${currentTop}px`;
-      currentTop += el.offsetHeight + 8; // Height + spacing
+      currentTop += el.offsetHeight + 12;
     });
   };
 
   // Trigger animations
   requestAnimationFrame(() => {
     updatePositions();
-    notif.classList.add('show');
-    const progress = notif.querySelector('.paxi-notif-progress');
-    setTimeout(() => { if (progress) progress.style.width = '0%'; }, 50);
+    notif.classList.remove('translate-x-[120%]');
+    notif.classList.add('translate-x-0');
+    const progress = notif.querySelector('.progress-bar');
+    if (progress) {
+        requestAnimationFrame(() => {
+            progress.classList.remove('w-full');
+            progress.classList.add('w-0');
+        });
+    }
   });
 
   // Remove

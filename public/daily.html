@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Claim - Canonix DEX</title>
+    <title>DAILY CLAIM - CANONIX DEX</title>
+
+    <!-- FONTS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
+
     <link rel="apple-touch-icon" sizes="57x57" href="/assets/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="/assets/apple-icon-60x60.png">
     <link rel="apple-touch-icon" sizes="72x72" href="/assets/apple-icon-72x72.png">
@@ -18,87 +24,116 @@
     <link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon-96x96.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
     <link rel="manifest" href="/manifest.json">
-    <meta name="msapplication-TileColor" content="#222222">
+    <meta name="msapplication-TileColor" content="#000000">
     <meta name="msapplication-TileImage" content="/assets/ms-icon-144x144.png">
-    <meta name="theme-color" content="#222222">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="theme-color" content="#000000">
+
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
-    <script>
+
+    <script src="https://cdn.tailwindcss.com"></script><script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        bg: '#08060f',
-                        surface: '#0f0a1e',
-                        card: '#16102b',
-                        border: '#251b45',
-                        up: '#00f2fe',
-                        down: '#ff0080',
+                        'meme-black': '#000000',
+                        'meme-surface': '#0D0D0D',
+                        'meme-card': '#1A1A1A',
+                        'meme-green': '#39FF14',
+                        'meme-pink': '#FF007F',
+                        'meme-cyan': '#00FFFF',
+                        'meme-yellow': '#FFFF00',
+                    },
+                    fontFamily: {
+                        display: ['Bangers', 'system-ui'],
+                        mono: ['Space Mono', 'monospace'],
+                        sans: ['DM Sans', 'sans-serif'],
                     },
                     boxShadow: {
-                        'glow-up': '0 0 20px rgba(0, 242, 254, 0.15)',
+                        'brutal': '8px 8px 0px 0px rgba(0,0,0,1)',
+                        'brutal-green': '8px 8px 0px 0px #39FF14',
+                        'brutal-pink': '8px 8px 0px 0px #FF007F',
+                        'brutal-cyan': '8px 8px 0px 0px #00FFFF',
+                        'brutal-yellow': '8px 8px 0px 0px #FFFF00',
                     }
                 }
             }
         }
     </script>
-    <style>
-        body { background-color: #08060f; color: #e8eaed; font-family: 'Inter', sans-serif; }
-        .gradient-text { background: linear-gradient(135deg, #00f2fe 0%, #ff0080 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .btn-primary { background: linear-gradient(135deg, #00f2fe 0%, #764ba2 100%); transition: 0.3s; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0, 242, 254, 0.4); }
-    </style>
 </head>
-<body class="min-h-screen flex flex-col">
-        <nav class="border-b border-border bg-surface/80 backdrop-blur-md sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
-                <div class="flex items-center gap-2">
-                    <i class="fas fa-exchange-alt text-up text-2xl"></i>
-                    <span class="text-xl font-black gradient-text">CANONIX</span>
+<body class="bg-black text-white font-sans min-h-screen flex flex-col selection:bg-meme-pink selection:text-white">
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-[90] bg-black border-b-4 border-black">
+        <div class="max-w-[1400px] mx-auto px-6 h-20 md:h-24 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-4 group">
+                <div class="w-10 h-10 md:w-14 md:h-14 bg-meme-green border-4 border-black shadow-brutal flex items-center justify-center rotate-[-3deg] group-hover:rotate-0 transition-transform">
+                    <i class="fas fa-exchange-alt text-black text-xl md:text-2xl"></i>
                 </div>
-                <div class="hidden md:flex items-center gap-8">
-                    <a href="index.html" class="text-sm font-bold text-gray-400 hover:text-white transition-colors">Market</a>
-                    <a href="trade.html" class="text-sm font-bold text-gray-400 hover:text-white transition-colors">Trade</a>
-                    <a href="faq.html" class="text-sm font-bold text-gray-400 hover:text-white transition-colors">FAQ</a>
-                </div>
-                <div class="flex items-center gap-4">
-                    <a href="trade.html" class="btn-primary px-6 py-2 rounded-xl text-sm font-black text-white shadow-glow-up">LAUNCH APP</a>
-                </div>
+                <span class="text-3xl md:text-5xl font-display tracking-widest text-white group-hover:text-meme-green transition-colors uppercase">CANONIX</span>
+            </a>
+
+            <div class="hidden lg:flex items-center gap-12">
+                <a href="index.html" class="font-display text-2xl hover:text-meme-pink hover:translate-y-[-2px] transition-all uppercase">MARKETS</a>
+                <a href="trade.html" class="font-display text-2xl hover:text-meme-cyan hover:translate-y-[-2px] transition-all uppercase">TRADE</a>
+                <a href="faq.html" class="font-display text-2xl hover:text-meme-yellow hover:translate-y-[-2px] transition-all uppercase">HACKERS</a>
             </div>
+
+            <a href="trade.html" class="bg-meme-pink text-white font-display text-lg md:text-2xl px-6 md:px-8 py-2 md:py-3 border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">
+                LAUNCH APP
+            </a>
         </div>
     </nav>
 
-    <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
-        <div class="mb-12">
-            <h1 class="text-4xl font-black italic tracking-tighter uppercase mb-2">Daily Claim</h1>
-            <p class="text-gray-500 font-bold uppercase tracking-widest text-xs">Check in and get rewards</p>
+    <main class="flex-1 max-w-[1400px] mx-auto px-6 py-12 md:py-24 w-full">
+        <div class="mb-16 md:mb-32 text-center lg:text-left">
+            <div class="inline-block bg-meme-pink text-white font-mono font-bold text-xs px-4 py-1 border-2 border-black mb-6 rotate-[-1deg]">LOYALTY PROTOCOL V1.0</div>
+            <h1 class="text-6xl md:text-[120px] font-display italic leading-[0.8] mb-4 tracking-tighter uppercase drop-shadow-[8px_8px_0_rgba(0,255,255,0.3)]">
+                DAILY <span class="text-meme-cyan">CLAIM</span>
+            </h1>
+            <p class="font-mono text-gray-500 font-bold uppercase tracking-[0.3em] text-sm md:text-xl">THE REWARD DISTRIBUTOR IS BOOTING UP</p>
         </div>
 
-        <div class='bg-card border border-border rounded-[2.5rem] p-20 text-center'><div class='w-20 h-20 bg-up/10 rounded-3xl flex items-center justify-center mx-auto mb-8'><i class='fas fa-tools text-4xl text-up'></i></div><h2 class='text-3xl font-black mb-4'>COMING SOON</h2><p class='text-gray-400 max-w-md mx-auto'>We are working hard to bring this feature to Canonix. Stay tuned for updates on our official channels.</p><div class='mt-10 flex justify-center gap-4'><a href='index.html' class='px-8 py-3 bg-white/5 rounded-xl font-bold border border-white/10 hover:bg-white/10 transition-all'>BACK TO MARKET</a></div></div>
+        <div class='bg-meme-surface border-8 border-black shadow-brutal-cyan p-12 md:p-32 text-center relative overflow-hidden'>
+            <div class="absolute top-0 right-0 p-20 opacity-[0.03] rotate-12"><i class="fas fa-calendar-check text-[300px]"></i></div>
+
+            <div class="relative z-10">
+                <div class='w-24 h-24 md:w-40 md:h-40 bg-meme-cyan border-4 border-black shadow-brutal flex items-center justify-center mx-auto mb-12 rotate-[-10deg] animate-pulse'>
+                    <i class='fas fa-tools text-5xl md:text-7xl text-black'></i>
+                </div>
+                <h2 class='text-5xl md:text-9xl font-display text-white mb-6 italic uppercase tracking-tighter'>COMING SOON</h2>
+                <p class='font-display text-2xl md:text-4xl text-gray-500 max-w-2xl mx-auto uppercase italic leading-tight'>Our streak counters are currently being synchronized with the block height. Don't break the chain.</p>
+
+                <div class='mt-16 flex flex-col sm:flex-row justify-center gap-6'>
+                    <a href='index.html' class='px-12 py-5 bg-meme-green text-black font-display text-3xl border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic'>BACK TO MARKET</a>
+                    <a href='trade.html' class='px-12 py-5 bg-white text-black font-display text-3xl border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic'>GO TO TERMINAL</a>
+                </div>
+            </div>
+        </div>
     </main>
 
-        <footer class="border-t border-border py-12 bg-surface">
-        <div class="max-w-7xl mx-auto px-4 text-center">
-            <div class="flex items-center justify-center gap-2 mb-6">
-                <i class="fas fa-exchange-alt text-up text-xl"></i>
-                <span class="text-lg font-black gradient-text">CANONIX</span>
+    <footer class="py-20 bg-black border-t-8 border-black">
+        <div class="max-w-[1400px] mx-auto px-6 text-center">
+            <div class="flex items-center justify-center gap-4 mb-8">
+                <div class="w-12 h-12 bg-meme-pink border-4 border-black shadow-brutal flex items-center justify-center rotate-[-5deg]">
+                    <i class="fas fa-exchange-alt text-white text-2xl"></i>
+                </div>
+                <span class="text-4xl md:text-6xl font-display tracking-tighter text-white uppercase">CANONIX</span>
             </div>
-            <p class="text-gray-500 text-sm mb-8">Built for the next generation of DeFi on Paxi Network.</p>
-            <div class="flex justify-center gap-6 text-gray-400">
-                <a href="#" class="hover:text-white transition-colors"><i class="fab fa-twitter text-xl"></i></a>
-                <a href="#" class="hover:text-white transition-colors"><i class="fab fa-telegram text-xl"></i></a>
-                <a href="#" class="hover:text-white transition-colors"><i class="fab fa-github text-xl"></i></a>
+            <p class="font-mono text-gray-600 text-xs md:text-sm mb-12 uppercase font-bold tracking-widest">Built for the next generation of degens on Paxi Network.</p>
+
+            <div class="flex justify-center gap-8 mb-16">
+                <a href="#" class="w-14 h-14 bg-meme-card border-4 border-black shadow-brutal flex items-center justify-center text-white hover:text-meme-cyan hover:shadow-none transition-all rotate-[-10deg] hover:rotate-0"><i class="fab fa-twitter text-2xl"></i></a>
+                <a href="#" class="w-14 h-14 bg-meme-card border-4 border-black shadow-brutal flex items-center justify-center text-white hover:text-meme-green hover:shadow-none transition-all rotate-[10deg] hover:rotate-0"><i class="fab fa-telegram text-2xl"></i></a>
+                <a href="#" class="w-14 h-14 bg-meme-card border-4 border-black shadow-brutal flex items-center justify-center text-white hover:text-meme-pink hover:shadow-none transition-all rotate-[-5deg] hover:rotate-0"><i class="fab fa-github text-2xl"></i></a>
             </div>
-            <div class="mt-8 pt-8 border-t border-white/5 text-[10px] text-gray-600 font-bold uppercase tracking-widest">
-                &copy; 2026 Canonix Team. All Rights Reserved.
+
+            <div class="pt-8 border-t-2 border-meme-surface font-mono text-[10px] text-gray-700 font-black uppercase tracking-[0.5em]">
+                &copy; 2026 CANONIX PROTOCOL | NO RAGRETS
             </div>
         </div>
     </footer>
 
     <script src="./js/core/config.js"></script>
-
     <script src="./js/core/utils.js"></script>
 </body>
 </html>
