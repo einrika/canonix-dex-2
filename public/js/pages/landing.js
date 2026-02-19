@@ -131,7 +131,7 @@ window.loadMoreMarket = async function() {
     } finally {
         if (btn && !btn.classList.contains('hidden')) {
             btn.disabled = false;
-            btn.innerHTML = 'Load More Assets';
+            btn.innerHTML = 'LOAD MORE';
         }
     }
 };
@@ -185,8 +185,8 @@ function renderMarketGrid() {
         const change = (t.price_change_24h * 100).toFixed(2);
         const colorClass = t.price_change_24h >= 0 ? 'bg-meme-green text-black' : 'bg-meme-pink text-white';
         const shadowClass = t.price_change_24h >= 0
-            ? 'shadow-[3px_3px_0_0_#39FF14] md:shadow-brutal-green'
-            : 'shadow-[3px_3px_0_0_#FF007F] md:shadow-brutal-pink';
+            ? 'shadow-[3px_3px_0_0_#00FF9F] md:shadow-brutal-green'
+            : 'shadow-[3px_3px_0_0_#FF0055] md:shadow-brutal-pink';
         const vol = window.formatAmount(t.volume_24h);
 
         return `
@@ -294,7 +294,7 @@ function renderIndexAI(container, token, aiText) {
                     <i class="fas fa-brain"></i>
                 </div>
                 <div>
-                    <h3 class="font-display italic uppercase text-2xl md:text-4xl tracking-tighter">AI <span class="${colorClass}">SCAN</span></h3>
+                    <h3 class="font-display italic uppercase text-2xl md:text-4xl tracking-tighter">AI <span class="${colorClass}">ANALYSIS</span></h3>
                     <p class="font-mono text-[8px] md:text-xs text-gray-600 font-bold uppercase tracking-[0.4em]">GEMINI PRO 1.5 VERIFIED</p>
                 </div>
             </div>
@@ -339,7 +339,7 @@ function renderIndexAI(container, token, aiText) {
 
         <div class="mt-8 md:mt-10 flex justify-end">
             <a href="trade.html?token=${token.address}" class="px-8 md:px-10 py-3 md:py-4 bg-meme-green text-black font-display text-xl md:text-3xl border-2 md:border-4 border-black shadow-[4px_4px_0_0_#000] md:shadow-brutal hover:translate-x-[2px] md:hover:translate-x-[4px] hover:translate-y-[2px] md:hover:translate-y-[4px] hover:shadow-none transition-all flex items-center gap-3 md:gap-5 rotate-[-1deg]">
-                APE IN <i class="fas fa-arrow-right"></i>
+                TRADE NOW <i class="fas fa-arrow-right"></i>
             </a>
         </div>
     `;

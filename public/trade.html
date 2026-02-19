@@ -3,6 +3,87 @@
 
 <head>
     <meta charset="UTF-8">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'meme-black': '#000000',
+                        'meme-surface': '#0A0A0A',
+                        'meme-card': '#141414',
+                        'meme-green': '#00FF9F',
+                        'meme-pink': '#FF0055',
+                        'meme-cyan': '#00D4FF',
+                        'meme-yellow': '#FFD700',
+                        // Map old names to new palette for JS compatibility
+                        up: '#00FF9F',
+                        down: '#FF0055',
+                        accent: '#00D4FF',
+                        bg: '#000000',
+                        surface: '#0A0A0A',
+                        card: '#141414',
+                        border: '#000000',
+                    },
+                    fontFamily: {
+                        display: ['Bangers', 'system-ui'],
+                        mono: ['Space Mono', 'monospace'],
+                        sans: ['DM Sans', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'brutal-sm': '2px 2px 0px 0px rgba(0,0,0,1)',
+                        'brutal': '4px 4px 0px 0px rgba(0,0,0,1)',
+                        'brutal-lg': '6px 6px 0px 0px rgba(0,0,0,1)',
+                        'brutal-green': '4px 4px 0px 0px #00FF9F',
+                        'brutal-pink': '4px 4px 0px 0px #FF0055',
+                        'brutal-cyan': '4px 4px 0px 0px #00D4FF',
+                        'brutal-yellow': '4px 4px 0px 0px #FFD700',
+                        'glow': '0 0 10px rgba(0, 255, 159, 0.2)',
+                    },
+                    animation: {
+                        'marquee': 'marquee 25s linear infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'glitch': 'glitch 1s linear infinite',
+                        'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
+                        'slide-up': 'slideUp 0.3s ease-out',
+                        'fade-in': 'fadeIn 0.2s ease-out',
+                    },
+                    keyframes: {
+                        marquee: {
+                            '0%': { transform: 'translateX(0%)' },
+                            '100%': { transform: 'translateX(-50%)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        glitch: {
+                            '0%': { transform: 'translate(0)' },
+                            '20%': { transform: 'translate(-1px, 1px)' },
+                            '40%': { transform: 'translate(-1px, -1px)' },
+                            '60%': { transform: 'translate(1px, 1px)' },
+                            '80%': { transform: 'translate(1px, -1px)' },
+                            '100%': { transform: 'translate(0)' },
+                        },
+                        shake: {
+                            '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
+                            '20%, 80%': { transform: 'translate3d(1px, 0, 0)' },
+                            '30%, 50%, 70%': { transform: 'translate3d(-2px, 0, 0)' },
+                            '40%, 60%': { transform: 'translate3d(2px, 0, 0)' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(100%)' },
+                            '100%': { transform: 'translateY(0)' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     <!-- ===== PRIMARY META TAGS ===== -->
@@ -41,89 +122,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- TAILWIND -->
-    <script>
-        tailwind.config = {
 
-                theme: {
-                    extend: {
-                        colors: {
-                            'meme-black': '#000000',
-                            'meme-surface': '#0D0D0D',
-                            'meme-card': '#1A1A1A',
-                            'meme-green': '#39FF14',
-                            'meme-pink': '#FF007F',
-                            'meme-cyan': '#00FFFF',
-                            'meme-yellow': '#FFFF00',
-                            // Map old names to new palette for JS compatibility
-                            up: '#39FF14',
-                            down: '#FF007F',
-                            accent: '#00FFFF',
-                            bg: '#000000',
-                            surface: '#0D0D0D',
-                            card: '#1A1A1A',
-                            border: '#000000',
-                        },
-                        fontFamily: {
-                            display: ['Bangers', 'system-ui'],
-                            mono: ['Space Mono', 'monospace'],
-                            sans: ['DM Sans', 'sans-serif'],
-                        },
-                        boxShadow: {
-                            'brutal-sm': '2px 2px 0px 0px rgba(0,0,0,1)',
-                            'brutal': '4px 4px 0px 0px rgba(0,0,0,1)',
-                            'brutal-lg': '6px 6px 0px 0px rgba(0,0,0,1)',
-                            'brutal-green': '4px 4px 0px 0px #39FF14',
-                            'brutal-pink': '4px 4px 0px 0px #FF007F',
-                            'brutal-cyan': '4px 4px 0px 0px #00FFFF',
-                            'brutal-yellow': '4px 4px 0px 0px #FFFF00',
-                            'glow': '0 0 10px rgba(57, 255, 20, 0.2)',
-                        },
-                        animation: {
-                            'marquee': 'marquee 25s linear infinite',
-                            'float': 'float 6s ease-in-out infinite',
-                            'glitch': 'glitch 1s linear infinite',
-                            'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
-                            'slide-up': 'slideUp 0.3s ease-out',
-                            'fade-in': 'fadeIn 0.2s ease-out',
-                        },
-                        keyframes: {
-                            marquee: {
-                                '0%': { transform: 'translateX(0%)' },
-                                '100%': { transform: 'translateX(-50%)' },
-                            },
-                            float: {
-                                '0%, 100%': { transform: 'translateY(0)' },
-                                '50%': { transform: 'translateY(-10px)' },
-                            },
-                            glitch: {
-                                '0%': { transform: 'translate(0)' },
-                                '20%': { transform: 'translate(-1px, 1px)' },
-                                '40%': { transform: 'translate(-1px, -1px)' },
-                                '60%': { transform: 'translate(1px, 1px)' },
-                                '80%': { transform: 'translate(1px, -1px)' },
-                                '100%': { transform: 'translate(0)' },
-                            },
-                            shake: {
-                                '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
-                                '20%, 80%': { transform: 'translate3d(1px, 0, 0)' },
-                                '30%, 50%, 70%': { transform: 'translate3d(-2px, 0, 0)' },
-                                '40%, 60%': { transform: 'translate3d(2px, 0, 0)' },
-                            },
-                            slideUp: {
-                                '0%': { transform: 'translateY(100%)' },
-                                '100%': { transform: 'translateY(0)' },
-                            },
-                            fadeIn: {
-                                '0%': { opacity: '0' },
-                                '100%': { opacity: '1' },
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <script src="https://cdn.tailwindcss.com"></script>
+
 
     <script src="https://mainnet-api.paxinet.io/resources/js/paxi-cosmjs.umd.js"></script>
     <script type="module">
@@ -265,27 +265,27 @@
 
                     <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 md:gap-4 w-full lg:w-auto">
                         <div class="bg-black/20 p-1.5 border border-black">
-                            <div class="text-[6px] text-black uppercase font-black tracking-widest font-mono italic">Mcap</div>
+                            <div class="text-[8px] text-black uppercase font-black tracking-widest font-mono italic">Mcap</div>
                             <div id="mcapVal" class="text-[9px] font-mono font-bold text-white uppercase">0 PAXI</div>
                         </div>
                         <div class="bg-black/20 p-1.5 border border-black">
-                            <div class="text-[6px] text-black uppercase font-black tracking-widest font-mono italic">Liq</div>
+                            <div class="text-[8px] text-black uppercase font-black tracking-widest font-mono italic">Liq</div>
                             <div id="liqVal" class="text-[9px] font-mono font-bold text-meme-cyan uppercase">0 PAXI</div>
                         </div>
                         <div class="bg-black/20 p-1.5 border border-black">
-                            <div class="text-[6px] text-black uppercase font-black tracking-widest font-mono italic">High</div>
+                            <div class="text-[8px] text-black uppercase font-black tracking-widest font-mono italic">High</div>
                             <div id="high24h" class="text-[9px] font-mono font-bold text-meme-green">0.00</div>
                         </div>
                         <div class="bg-black/20 p-1.5 border border-black">
-                            <div class="text-[6px] text-black uppercase font-black tracking-widest font-mono italic">Low</div>
+                            <div class="text-[8px] text-black uppercase font-black tracking-widest font-mono italic">Low</div>
                             <div id="low24h" class="text-[9px] font-mono font-bold text-meme-pink">0.00</div>
                         </div>
                         <div class="bg-black/20 p-1.5 border border-black">
-                            <div class="text-[6px] text-black uppercase font-black tracking-widest font-mono italic">Vol</div>
+                            <div class="text-[8px] text-black uppercase font-black tracking-widest font-mono italic">Vol</div>
                             <div id="volVal" class="text-[9px] font-mono font-bold text-meme-yellow uppercase">0 PAXI</div>
                         </div>
                         <div class="bg-black/20 p-1.5 border border-black">
-                            <div class="text-[6px] text-black uppercase font-black tracking-widest font-mono italic">Signal</div>
+                            <div class="text-[8px] text-black uppercase font-black tracking-widest font-mono italic">Signal</div>
                             <div id="tradeSignal" class="text-[8px] font-display uppercase italic text-white tracking-tighter">Neutral</div>
                         </div>
                     </div>
@@ -296,15 +296,15 @@
             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 px-3 md:px-4 pb-4">
                 <div class="bg-meme-surface border-2 border-black p-4 shadow-brutal rotate-[-0.5deg]">
                     <h4 class="text-lg font-display text-meme-green mb-4 flex items-center gap-2 italic uppercase tracking-tighter">
-                        <i class="fas fa-chart-pie text-sm"></i> BATTLE STATS
+                        <i class="fas fa-chart-pie text-sm"></i> TRADE STATS
                     </h4>
                     <div class="space-y-3">
                         <div class="flex justify-between items-center">
-                            <span class="font-mono text-[9px] text-gray-500 font-bold uppercase tracking-widest">BULLS</span>
+                            <span class="font-mono text-[9px] text-gray-500 font-bold uppercase tracking-widest">BUYS</span>
                             <span id="buyCount" class="font-display text-xl text-meme-green italic">0</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span class="font-mono text-[9px] text-gray-500 font-bold uppercase tracking-widest">BEARS</span>
+                            <span class="font-mono text-[9px] text-gray-500 font-bold uppercase tracking-widest">SELLS</span>
                             <span id="sellCount" class="font-display text-xl text-meme-pink italic">0</span>
                         </div>
                         <div class="h-2 w-full bg-black border border-black overflow-hidden flex shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)]">
@@ -339,7 +339,7 @@
 
                 <div class="bg-meme-surface border-2 border-black p-4 shadow-brutal rotate-[-0.3deg]">
                     <h4 class="text-lg font-display text-meme-yellow mb-4 flex items-center gap-2 italic uppercase tracking-tighter">
-                        <i class="fas fa-info-circle text-sm"></i> INTEL
+                        <i class="fas fa-info-circle text-sm"></i> HISTORY
                     </h4>
                     <div class="space-y-3">
                         <div class="flex flex-col gap-1.5">
@@ -363,7 +363,7 @@
             <!-- Tabs Section (Holders) -->
             <div class="px-3 md:px-4 pb-20">
                 <div class="border-b-2 border-black flex gap-6 mb-4">
-                    <button onclick="window.loadTokenHolders()" id="tab-holders" class="font-display text-2xl text-white pb-1.5 hover:text-meme-cyan transition-colors uppercase italic border-b-2 border-transparent active:border-meme-cyan active:text-meme-cyan tracking-tighter">Top Apes</button>
+                    <button onclick="window.loadTokenHolders()" id="tab-holders" class="font-display text-2xl text-white pb-1.5 hover:text-meme-cyan transition-colors uppercase italic border-b-2 border-transparent active:border-meme-cyan active:text-meme-cyan tracking-tighter">Top Holders</button>
                 </div>
                 <div id="tabContent" class="bg-meme-surface border-2 border-black shadow-brutal min-h-[200px] overflow-hidden">
                     <!-- Table goes here -->
@@ -411,22 +411,22 @@
         <div class="flex items-center justify-around w-full">
             <button onclick="toggleMobileSidebar()" class="flex flex-col items-center gap-0.5 text-gray-600">
                 <i class="fas fa-th-list text-lg"></i>
-                <span class="text-[6px] font-black uppercase font-mono italic tracking-tight">Market</span>
+                <span class="text-[8px] font-black uppercase font-mono italic tracking-tight">Market</span>
             </button>
             <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="flex flex-col items-center gap-0.5 text-meme-cyan">
                 <i class="fas fa-chart-line text-lg"></i>
-                <span class="text-[6px] font-black uppercase font-mono italic tracking-tight">Chart</span>
+                <span class="text-[8px] font-black uppercase font-mono italic tracking-tight">Chart</span>
             </button>
             <button onclick="toggleUnifiedSidebar()" class="w-12 h-12 -mt-10 bg-meme-green border-2 border-black shadow-brutal-green flex items-center justify-center text-black rotate-45">
                 <i class="fas fa-wallet text-xl -rotate-45"></i>
             </button>
             <button onclick="showAIAnalysis()" class="flex flex-col items-center gap-0.5 text-meme-yellow">
                 <i class="fas fa-brain text-lg"></i>
-                <span class="text-[6px] font-black uppercase font-mono italic tracking-tight">AI Brain</span>
+                <span class="text-[8px] font-black uppercase font-mono italic tracking-tight">AI Brain</span>
             </button>
             <button onclick="toggleMoreMenu()" class="flex flex-col items-center gap-0.5 text-meme-pink">
                 <i class="fas fa-ellipsis-h text-lg"></i>
-                <span class="text-[6px] font-black uppercase font-mono italic tracking-tight">Apps</span>
+                <span class="text-[8px] font-black uppercase font-mono italic tracking-tight">Apps</span>
             </button>
         </div>
     </div>
@@ -627,7 +627,7 @@
 
             <div class="grid grid-cols-2 gap-3">
                 <button id="txCancelBtn" class="py-3 bg-black border-2 border-black text-gray-600 font-display text-lg uppercase italic hover:text-white transition-all shadow-brutal-sm hover:shadow-none tracking-tighter leading-none">Abort</button>
-                <button id="txConfirmBtn" class="py-3 bg-meme-green text-black font-display text-lg uppercase italic border-2 border-black shadow-brutal-sm hover:shadow-none tracking-tighter leading-none">PUMP</button>
+                <button id="txConfirmBtn" class="py-3 bg-meme-green text-black font-display text-lg uppercase italic border-2 border-black shadow-brutal-sm hover:shadow-none tracking-tighter leading-none">CONFIRM</button>
             </div>
         </div>
     </div>

@@ -280,9 +280,9 @@ window.renderAnalysis = function(data) {
 window.generateAIAnalysis = async function() {
     const content = document.getElementById('aiContent');
     content.innerHTML = `
-        <div class="flex items-center gap-3 mb-4">
-            <div class="loading"></div>
-            <span class="text-sm text-gray-400">Running advanced AI market analysis...</span>
+        <div class="flex flex-col items-center py-20 text-center animate-pulse">
+            <div class="w-16 h-16 border-4 border-meme-green border-t-transparent rounded-full animate-spin mb-8"></div>
+            <span class="font-display text-2xl text-meme-green uppercase italic">Analyzing Market...</span>
         </div>
     `;
 
@@ -367,7 +367,7 @@ window.generateAIAnalysis = async function() {
 
         if (serverResult) {
             aiText = serverResult;
-            aiSource = 'Gemini Pro (via Server)';
+            aiSource = 'Gemini Pro 1.5';
             aiType = 'premium';
         } else {
             // Fallback to Algorithm
@@ -376,7 +376,7 @@ window.generateAIAnalysis = async function() {
                 volatility, volatilityLabel, momentum, liquidity, liquidityScore,
                 volume24h, volumeRatio, levels, riskLevel, riskScore, tradeSignal
             });
-            aiSource = 'Advanced Algorithm';
+            aiSource = 'Canonix Algo';
             aiType = 'manual';
         }
 

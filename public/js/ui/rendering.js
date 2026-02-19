@@ -222,11 +222,19 @@ window.createTokenElement = function(addr) {
                 <span class="token-name font-mono text-[8px] text-gray-500 truncate max-w-[50px] md:max-w-[80px] font-bold italic uppercase">Loading...</span>
                 <div class="flex flex-col items-end">
                     <span class="token-mcap font-display text-[8px] md:text-[10px] text-gray-600 italic uppercase">MCap -</span>
-                    <span class="token-liq font-display text-[6px] md:text-[8px] text-gray-700 italic uppercase">Liq -</span>
+                    <span class="token-liq font-display text-[8px] md:text-[8px] text-gray-700 italic uppercase">Liq -</span>
                 </div>
             </div>
         </div>
+        <button class="info-btn p-1 text-gray-600 hover:text-meme-green transition-colors">
+            <i class="fas fa-info-circle text-xs md:text-sm"></i>
+        </button>
     `;
+
+    el.querySelector('.info-btn').onclick = (e) => {
+        e.stopPropagation();
+        window.showTokenDetail(e, addr);
+    };
 
     return el;
 };
@@ -419,7 +427,7 @@ window.renderSwapTerminal = async function() {
                 <button onclick="${isWatchOnly ? '' : 'window.executeTrade()'}"
                         ${isWatchOnly ? 'disabled' : ''}
                         class="w-full py-5 ${isBuy ? 'bg-meme-green shadow-brutal-green' : 'bg-meme-pink shadow-brutal-pink'} text-black border-4 border-black font-display text-3xl uppercase italic transition-all active:translate-x-1 active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed">
-                    ${isWatchOnly ? 'WATCH-ONLY' : (isBuy ? 'APE IN' : 'DUMP IT')}
+                    ${isWatchOnly ? 'WATCH-ONLY' : (isBuy ? 'BUY NOW' : 'SELL NOW')}
                 </button>
             </div>
         </div>`;

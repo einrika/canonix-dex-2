@@ -146,7 +146,7 @@ window.renderTransactionHistory = async function() {
                     <i class="fas fa-lock text-3xl text-gray-700"></i>
                 </div>
                 <p class="font-display text-2xl text-gray-600 uppercase italic">Connection Required</p>
-                <button onclick="window.showConnectModal()" class="mt-6 px-8 py-3 bg-meme-cyan text-black font-display text-xl uppercase italic border-4 border-black shadow-brutal hover:shadow-none transition-all">LINK TERMINAL</button>
+                <button onclick="window.showConnectModal()" class="mt-6 px-8 py-3 bg-meme-cyan text-black font-display text-xl uppercase italic border-4 border-black shadow-brutal hover:shadow-none transition-all">CONNECT WALLET</button>
             </div>`;
         return;
     }
@@ -156,7 +156,7 @@ window.renderTransactionHistory = async function() {
     const history = await window.loadTransactionHistory(window.wallet.address);
 
     if (history.length === 0) {
-        container.innerHTML = '<div class="text-center py-20 font-display text-2xl text-gray-700 uppercase italic">Zero Battles Logged</div>';
+        container.innerHTML = '<div class="text-center py-20 font-display text-2xl text-gray-700 uppercase italic">No transactions found</div>';
         return;
     }
     
@@ -183,7 +183,7 @@ window.renderTransactionHistory = async function() {
                                 <td class="p-6"><span class="font-mono text-sm font-bold text-white">${tx.amount.toFixed(4)}</span></td>
                                 <td class="p-6"><span class="font-display text-lg text-gray-600 italic uppercase">${timeStr}</span></td>
                                 <td class="p-6 text-right">
-                                    <button onclick="window.showTransactionDetailModal('${tx.hash}')" class="px-4 py-2 bg-meme-surface border-2 border-black text-meme-cyan font-display text-lg italic uppercase shadow-brutal hover:shadow-none transition-all">INTEL</button>
+                                    <button onclick="window.showTransactionDetailModal('${tx.hash}')" class="px-4 py-2 bg-meme-surface border-2 border-black text-meme-cyan font-display text-lg italic uppercase shadow-brutal hover:shadow-none transition-all">HISTORY</button>
                                 </td>
                             </tr>`;
                     }).join('')}
@@ -405,7 +405,7 @@ window.renderSidebarContent = function(tab) {
                     <i class="fas fa-lock text-3xl text-gray-700"></i>
                 </div>
                 <p class="font-display text-2xl text-gray-600 uppercase italic">Connect terminal to view ${tab}</p>
-                <button onclick="window.showConnectModal()" class="mt-8 px-8 py-3 bg-meme-cyan text-black font-display text-xl uppercase italic border-4 border-black shadow-brutal hover:shadow-none transition-all">LINK TERMINAL</button>
+                <button onclick="window.showConnectModal()" class="mt-8 px-8 py-3 bg-meme-cyan text-black font-display text-xl uppercase italic border-4 border-black shadow-brutal hover:shadow-none transition-all">CONNECT WALLET</button>
             </div>`;
         return;
     }

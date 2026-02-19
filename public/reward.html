@@ -2,44 +2,41 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Rewards – Canonix DEX</title>
-
-    <!-- FONTS -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- TAILWIND -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
-
-                theme: {
-                    extend: {
-                        colors: {
-                            'meme-black': '#000000',
-                            'meme-surface': '#0D0D0D',
-                            'meme-card': '#1A1A1A',
-                            'meme-green': '#39FF14',
-                            'meme-pink': '#FF007F',
-                            'meme-cyan': '#00FFFF',
-                            'meme-yellow': '#FFFF00',
-                        },
-                        fontFamily: {
-                            display: ['Bangers', 'system-ui'],
-                            mono: ['Space Mono', 'monospace'],
-                            sans: ['DM Sans', 'sans-serif'],
-                        },
-                        boxShadow: {
-                            'brutal-sm': '2px 2px 0px 0px rgba(0,0,0,1)',
-                            'brutal': '4px 4px 0px 0px rgba(0,0,0,1)',
-                            'brutal-lg': '6px 6px 0px 0px rgba(0,0,0,1)',
-                            'brutal-green': '4px 4px 0px 0px #39FF14',
-                            'brutal-pink': '4px 4px 0px 0px #FF007F',
-                            'brutal-yellow': '4px 4px 0px 0px #FFFF00',
-                        },
+            theme: {
+                extend: {
+                    colors: {
+                        'meme-black': '#000000',
+                        'meme-surface': '#0A0A0A',
+                        'meme-card': '#141414',
+                        'meme-green': '#00FF9F',
+                        'meme-pink': '#FF0055',
+                        'meme-cyan': '#00D4FF',
+                        'meme-yellow': '#FFD700',
+                        // Compatibility colors
+                        up: '#00FF9F',
+                        down: '#FF0055',
+                        accent: '#00D4FF',
+                        bg: '#000000',
+                        surface: '#0A0A0A',
+                        card: '#141414',
+                        border: '#000000',
+                    },
+                    fontFamily: {
+                        display: ['Bangers', 'system-ui'],
+                        mono: ['Space Mono', 'monospace'],
+                        sans: ['DM Sans', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'brutal-sm': '2px 2px 0px 0px rgba(0,0,0,1)',
+                        'brutal': '4px 4px 0px 0px rgba(0,0,0,1)',
+                        'brutal-lg': '6px 6px 0px 0px rgba(0,0,0,1)',
+                        'brutal-green': '4px 4px 0px 0px #00FF9F',
+                        'brutal-pink': '4px 4px 0px 0px #FF0055',
+                        'brutal-yellow': '4px 4px 0px 0px #FFD700',
+                    },
                         animation: {
                             'float': 'float 6s ease-in-out infinite',
                             'pulse-glow': 'pulseGlow 2s ease-in-out infinite',
@@ -59,7 +56,19 @@
             }
         }
     </script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Rewards – Canonix DEX</title>
+
+    <!-- FONTS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- TAILWIND -->
+
+
 </head>
 <body class="bg-meme-black text-white font-sans selection:bg-meme-yellow selection:text-black">
 
@@ -223,7 +232,7 @@
     <section class="py-16 md:py-24 px-4 bg-meme-surface border-t-2 border-black">
         <div class="max-w-4xl mx-auto">
             <div class="text-center mb-12">
-                <h3 class="text-3xl md:text-3xl font-display italic uppercase tracking-tighter leading-none mb-4">DAILY <span class="text-meme-green">MISSIONS</span></h3>
+                <h3 class="text-3xl md:text-3xl font-display italic uppercase tracking-tighter leading-none mb-4">DAILY <span class="text-meme-green">TASKS</span></h3>
                 <p class="font-mono text-[10px] md:text-xs text-gray-500 font-bold uppercase tracking-widest italic">Complete tasks to earn multipliers and points</p>
             </div>
 

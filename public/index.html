@@ -3,6 +3,60 @@
 
 <head>
     <meta charset="UTF-8">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'meme-black': '#000000',
+                        'meme-surface': '#0A0A0A',
+                        'meme-card': '#141414',
+                        'meme-green': '#00FF9F',
+                        'meme-pink': '#FF0055',
+                        'meme-cyan': '#00D4FF',
+                        'meme-yellow': '#FFD700',
+                        // Compatibility colors
+                        up: '#00FF9F',
+                        down: '#FF0055',
+                        accent: '#00D4FF',
+                        bg: '#000000',
+                        surface: '#0A0A0A',
+                        card: '#141414',
+                        border: '#000000',
+                    },
+                    fontFamily: {
+                        display: ['Bangers', 'system-ui'],
+                        mono: ['Space Mono', 'monospace'],
+                        sans: ['DM Sans', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'brutal-sm': '2px 2px 0px 0px rgba(0,0,0,1)',
+                        'brutal': '4px 4px 0px 0px rgba(0,0,0,1)',
+                        'brutal-lg': '6px 6px 0px 0px rgba(0,0,0,1)',
+                        'brutal-green': '4px 4px 0px 0px #00FF9F',
+                        'brutal-pink': '4px 4px 0px 0px #FF0055',
+                        'brutal-cyan': '4px 4px 0px 0px #00D4FF',
+                        'brutal-yellow': '4px 4px 0px 0px #FFD700',
+                    },
+                    animation: {
+                        'marquee': 'marquee 25s linear infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        marquee: {
+                            '0%': { transform: 'translateX(0%)' },
+                            '100%': { transform: 'translateX(-50%)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                    }
+                }
+            }
+        }
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Canonix - Premium DEX on Paxi Network</title>
 
@@ -11,62 +65,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
 
-    <!-- TAILWIND CONFIG -->
-    <script>
-        tailwind.config = {
-                theme: {
-                    extend: {
-                        colors: {
-                            'meme-black': '#000000',
-                            'meme-surface': '#0D0D0D',
-                            'meme-card': '#1A1A1A',
-                            'meme-green': '#39FF14',
-                            'meme-pink': '#FF007F',
-                            'meme-cyan': '#00FFFF',
-                            'meme-yellow': '#FFFF00',
-                            // Compatibility colors
-                            up: '#39FF14',
-                            down: '#FF007F',
-                            accent: '#00FFFF',
-                            bg: '#000000',
-                            surface: '#0D0D0D',
-                            card: '#1A1A1A',
-                            border: '#000000',
-                        },
-                        fontFamily: {
-                            display: ['Bangers', 'system-ui'],
-                            mono: ['Space Mono', 'monospace'],
-                            sans: ['DM Sans', 'sans-serif'],
-                        },
-                        boxShadow: {
-                            'brutal-sm': '2px 2px 0px 0px rgba(0,0,0,1)',
-                            'brutal': '4px 4px 0px 0px rgba(0,0,0,1)',
-                            'brutal-lg': '6px 6px 0px 0px rgba(0,0,0,1)',
-                            'brutal-green': '4px 4px 0px 0px #39FF14',
-                            'brutal-pink': '4px 4px 0px 0px #FF007F',
-                            'brutal-cyan': '4px 4px 0px 0px #00FFFF',
-                            'brutal-yellow': '4px 4px 0px 0px #FFFF00',
-                        },
-                        animation: {
-                            'marquee': 'marquee 25s linear infinite',
-                            'float': 'float 6s ease-in-out infinite',
-                        },
-                        keyframes: {
-                            marquee: {
-                                '0%': { transform: 'translateX(0%)' },
-                                '100%': { transform: 'translateX(-50%)' },
-                            },
-                            float: {
-                                '0%, 100%': { transform: 'translateY(0)' },
-                                '50%': { transform: 'translateY(-20px)' },
-                            },
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- TAILWIND -->
+
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <link rel="apple-touch-icon" sizes="57x57" href="/assets/apple-icon-57x57.png">
@@ -123,7 +124,7 @@
     <!-- Hero Section -->
     <header class="relative pt-8 pb-16 overflow-hidden px-4">
         <!-- Background Grid -->
-        <div class="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(#39FF14_1px,transparent_1px)] bg-[length:20px_20px]"></div>
+        <div class="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(#00FF9F_1px,transparent_1px)] bg-[length:20px_20px]"></div>
 
         <div class="max-w-7xl mx-auto relative z-10">
             <div class="grid lg:grid-cols-2 gap-12 items-center">
@@ -148,15 +149,15 @@
                     <div class="grid grid-cols-3 gap-4">
                         <div>
                             <div class="text-3xl font-display text-meme-yellow italic mb-0.5 tracking-tighter">$<span class="counter" data-target="128">0</span>M+</div>
-                            <div class="text-[8px] text-gray-700 font-black uppercase tracking-widest font-mono italic">Giga Volume</div>
+                            <div class="text-[8px] text-gray-700 font-black uppercase tracking-widest font-mono italic text-center">Volume</div>
                         </div>
                         <div>
                             <div class="text-3xl font-display text-meme-pink italic mb-0.5 tracking-tighter"><span class="counter" data-target="45">0</span>K+</div>
-                            <div class="text-[8px] text-gray-700 font-black uppercase tracking-widest font-mono italic">Active Apes</div>
+                            <div class="text-[8px] text-gray-700 font-black uppercase tracking-widest font-mono italic text-center">Traders</div>
                         </div>
                         <div>
                             <div class="text-3xl font-display text-meme-cyan italic mb-0.5 tracking-tighter"><span class="counter" data-target="890">0</span>+</div>
-                            <div class="text-[8px] text-gray-700 font-black uppercase tracking-widest font-mono italic">Shitcoins</div>
+                            <div class="text-[8px] text-gray-700 font-black uppercase tracking-widest font-mono italic text-center">Tokens</div>
                         </div>
                     </div>
                 </div>
@@ -172,7 +173,7 @@
                                 <div class="w-2 h-2 rounded-full bg-meme-green border border-black"></div>
                             </div>
                             <div class="aspect-video bg-meme-surface border-2 border-black relative flex items-center justify-center">
-                                <svg viewBox="0 0 100 40" class="w-full h-24 text-meme-green drop-shadow-[0_0_10px_#39FF14]">
+                                <svg viewBox="0 0 100 40" class="w-full h-24 text-meme-green drop-shadow-[0_0_10px_#00FF9F]">
                                     <path d="M0,35 Q10,35 20,30 T40,20 T60,25 T80,5 T100,0" fill="none" stroke="currentColor" stroke-width="2" class="animate-pulse" />
                                 </svg>
                                 <div class="absolute inset-0 flex items-center justify-center">
@@ -194,7 +195,7 @@
         <div class="absolute inset-0 opacity-20 bg-[radial-gradient(circle,#000_1px,transparent_1px)] bg-[length:15px_15px]"></div>
         <div class="max-w-7xl mx-auto relative z-10 text-center">
             <div class="inline-block px-4 py-1 bg-black text-white font-display text-base uppercase italic rotate-[-1deg] mb-6">Live Competition</div>
-            <h2 class="text-4xl md:text-6xl font-display text-white italic uppercase tracking-tighter mb-8 drop-shadow-[4px_4px_0_rgba(0,0,0,1)]">Degen Trading War</h2>
+            <h2 class="text-4xl md:text-6xl font-display text-white italic uppercase tracking-tighter mb-8 drop-shadow-[4px_4px_0_rgba(0,0,0,1)]">Trading War</h2>
 
             <div class="grid md:grid-cols-3 gap-6 mb-10 max-w-3xl mx-auto">
                 <div class="bg-black border-2 border-black p-4 shadow-brutal rotate-[-2deg]">
@@ -203,7 +204,7 @@
                 </div>
                 <div class="bg-white border-2 border-black p-6 shadow-brutal rotate-[1deg]">
                     <div class="text-black font-display text-3xl italic uppercase mb-1">2,481</div>
-                    <div class="text-gray-500 font-mono text-[8px] font-black uppercase tracking-widest italic">Warriors</div>
+                    <div class="text-gray-500 font-mono text-[8px] font-black uppercase tracking-widest italic">Participants</div>
                 </div>
                 <div class="bg-meme-green border-2 border-black p-6 shadow-brutal rotate-[-1deg]">
                     <div class="text-black font-display text-3xl italic uppercase mb-1">2d : 14h</div>
@@ -211,7 +212,7 @@
                 </div>
             </div>
 
-            <button class="bg-white text-black font-display text-2xl px-8 py-3 border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">JOIN THE WAR</button>
+            <button class="bg-white text-black font-display text-2xl px-8 py-3 border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">JOIN NOW</button>
         </div>
     </section>
 
@@ -220,8 +221,8 @@
         <div class="max-w-7xl mx-auto">
             <div class="flex flex-col lg:flex-row justify-between items-end gap-6 mb-10 reveal">
                 <div class="max-w-xl">
-                    <h2 class="text-4xl font-display text-white italic uppercase tracking-tighter mb-3 drop-shadow-[4px_4px_0_rgba(57,255,20,1)]">Shitcoin Radar</h2>
-                    <p class="font-mono text-gray-500 font-black uppercase tracking-widest text-sm italic">Real-time intel on the next potential moon.</p>
+                    <h2 class="text-4xl font-display text-white italic uppercase tracking-tighter mb-3 drop-shadow-[4px_4px_0_rgba(0,255,159,1)]">Market Radar</h2>
+                    <p class="font-mono text-gray-500 font-black uppercase tracking-widest text-sm italic">Real-time data on trending tokens.</p>
                 </div>
                 <!-- Filters -->
                 <div class="flex flex-wrap gap-2">
@@ -236,7 +237,7 @@
             <div class="mb-10 reveal">
                 <div class="relative">
                     <i class="fas fa-search absolute left-6 top-1/2 -translate-y-1/2 text-meme-cyan text-lg"></i>
-                    <input type="text" id="marketSearch" placeholder="SEARCH SHITCOINS..."
+                    <input type="text" id="marketSearch" placeholder="SEARCH TOKENS..."
                            class="w-full pl-14 pr-6 py-4 bg-meme-surface border-4 border-black text-xl font-display outline-none focus:border-meme-pink transition-all text-white placeholder:text-gray-800 italic uppercase"
                            oninput="window.filterMarket()">
                 </div>
@@ -251,7 +252,7 @@
             </div>
 
             <div class="mt-16 text-center reveal">
-                <button id="loadMoreMarket" onclick="window.loadMoreMarket()" class="bg-meme-cyan text-black font-display text-3xl px-12 py-5 border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">LOAD MORE CRAP</button>
+                <button id="loadMoreMarket" onclick="window.loadMoreMarket()" class="bg-meme-cyan text-black font-display text-3xl px-12 py-5 border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">LOAD MORE</button>
             </div>
         </div>
     </section>
@@ -323,7 +324,7 @@
                 <div class="w-12 h-12 bg-meme-pink border-2 border-black shadow-brutal flex items-center justify-center rotate-[10deg]">
                     <i class="fas fa-exchange-alt text-white text-2xl"></i>
                 </div>
-                <span class="text-3xl font-display tracking-widest text-white italic">CANONIX</span>
+                <span class="text-5xl font-display tracking-widest text-white italic">CANONIX</span>
             </div>
             <div class="flex flex-wrap justify-center gap-8 font-display text-xl mb-12">
                 <a href="#" class="text-gray-600 hover:text-meme-green transition-colors uppercase italic">Docs</a>

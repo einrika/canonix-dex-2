@@ -2,6 +2,53 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'meme-black': '#000000',
+                        'meme-surface': '#0A0A0A',
+                        'meme-card': '#141414',
+                        'meme-green': '#00FF9F',
+                        'meme-pink': '#FF0055',
+                        'meme-cyan': '#00D4FF',
+                        'meme-yellow': '#FFD700',
+                        up: '#00FF9F',
+                        down: '#FF0055',
+                        accent: '#00D4FF',
+                        bg: '#000000',
+                        surface: '#0A0A0A',
+                        card: '#141414',
+                        border: '#000000',
+                    },
+                    fontFamily: {
+                        display: ['Bangers', 'system-ui'],
+                        mono: ['Space Mono', 'monospace'],
+                        sans: ['DM Sans', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'brutal-sm': '2px 2px 0px 0px rgba(0,0,0,1)',
+                        'brutal': '4px 4px 0px 0px rgba(0,0,0,1)',
+                        'brutal-lg': '6px 6px 0px 0px rgba(0,0,0,1)',
+                        'brutal-green': '4px 4px 0px 0px #00FF9F',
+                        'brutal-pink': '4px 4px 0px 0px #FF0055',
+                        'brutal-cyan': '4px 4px 0px 0px #00D4FF',
+                        'brutal-yellow': '4px 4px 0px 0px #FFD700',
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'marquee': 'marquee 25s linear infinite',
+                    },
+                    keyframes: {
+                        float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } },
+                        marquee: { '0%': { transform: 'translateX(0%)' }, '100%': { transform: 'translateX(-50%)' } }
+                    }
+                }
+            }
+        }
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LOTTERY - CANONIX DEX</title>
 
@@ -31,35 +78,8 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <script src="https://cdn.tailwindcss.com"></script><script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'meme-black': '#000000',
-                        'meme-surface': '#0D0D0D',
-                        'meme-card': '#1A1A1A',
-                        'meme-green': '#39FF14',
-                        'meme-pink': '#FF007F',
-                        'meme-cyan': '#00FFFF',
-                        'meme-yellow': '#FFFF00',
-                    },
-                    fontFamily: {
-                        display: ['Bangers', 'system-ui'],
-                        mono: ['Space Mono', 'monospace'],
-                        sans: ['DM Sans', 'sans-serif'],
-                    },
-                    boxShadow: {
-                        'brutal': '8px 8px 0px 0px rgba(0,0,0,1)',
-                        'brutal-green': '8px 8px 0px 0px #39FF14',
-                        'brutal-pink': '8px 8px 0px 0px #FF007F',
-                        'brutal-cyan': '8px 8px 0px 0px #00FFFF',
-                        'brutal-yellow': '8px 8px 0px 0px #FFFF00',
-                    }
-                }
-            }
-        }
-    </script>
+
+
 </head>
 <body class="bg-black text-white font-sans min-h-screen flex flex-col selection:bg-meme-pink selection:text-white">
     <!-- Navigation -->

@@ -41,14 +41,14 @@ Object.assign(window.WalletUI, {
         if (!activeWallet) {
             container.innerHTML = `
                 <div class="flex flex-col items-center justify-center py-12 px-6 text-center animate-fade-in">
-                    <div class="w-24 h-24 bg-meme-green border-4 border-black shadow-brutal flex items-center justify-center mb-8 rotate-[-10deg]">
-                        <i class="fas fa-wallet text-4xl text-black"></i>
+                    <div class="w-16 h-16 bg-meme-green border-4 border-black shadow-brutal flex items-center justify-center mb-8 rotate-[-10deg]">
+                        <i class="fas fa-wallet text-3xl text-black"></i>
                     </div>
-                    <h3 class="text-3xl font-display italic mb-4 uppercase tracking-tighter text-white drop-shadow-[2px_2px_0_rgba(0,0,0,1)]">Identity Lost</h3>
-                    <p class="text-[10px] text-gray-500 mb-10 uppercase font-black tracking-widest leading-relaxed italic">You are a ghost in the machine. Connect a wallet to manifest.</p>
+                    <h3 class="text-3xl font-display italic mb-4 uppercase tracking-tighter text-white drop-shadow-[2px_2px_0_rgba(0,0,0,1)]">NO WALLET</h3>
+                    <p class="text-[10px] text-gray-500 mb-10 uppercase font-black tracking-widest leading-relaxed italic">Connect a wallet to start trading on Paxi Network.</p>
                     <div class="flex flex-col gap-4 w-full">
-                        <button onclick="window.WalletUI.showCreateModal()" class="w-full py-5 bg-meme-green text-black font-display text-2xl border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">Spawn New</button>
-                        <button onclick="window.WalletUI.showImportModal()" class="w-full py-5 bg-black border-4 border-black text-white font-display text-2xl shadow-brutal-cyan hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">Import Soul</button>
+                        <button onclick="window.WalletUI.showCreateModal()" class="w-full py-5 bg-meme-green text-black font-display text-2xl border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">CREATE NEW</button>
+                        <button onclick="window.WalletUI.showImportModal()" class="w-full py-5 bg-black border-4 border-black text-white font-display text-2xl shadow-brutal-cyan hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">IMPORT WALLET</button>
                     </div>
                 </div>
             `;
@@ -58,12 +58,12 @@ Object.assign(window.WalletUI, {
         if (isLocked && !activeWallet.isWatchOnly) {
             container.innerHTML = `
                 <div class="flex flex-col items-center justify-center py-16 px-6 text-center animate-fade-in">
-                    <div class="w-24 h-24 bg-meme-pink border-4 border-black shadow-brutal flex items-center justify-center mb-8 rotate-[10deg]">
-                        <i class="fas fa-lock text-4xl text-white"></i>
+                    <div class="w-16 h-16 bg-meme-pink border-4 border-black shadow-brutal flex items-center justify-center mb-8 rotate-[10deg]">
+                        <i class="fas fa-lock text-3xl text-white"></i>
                     </div>
-                    <h3 class="text-3xl font-display italic mb-4 uppercase tracking-tighter text-white drop-shadow-[2px_2px_0_rgba(0,0,0,1)]">Vault Sealed</h3>
-                    <p class="text-[10px] text-gray-500 mb-10 uppercase font-black tracking-widest leading-relaxed italic">Your assets are protected by the neural link. Decrypt to continue.</p>
-                    <button onclick="window.WalletUI.unlockActiveWallet()" class="w-full py-5 bg-meme-pink text-white font-display text-2xl border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">DECRYPT NOW</button>
+                    <h3 class="text-3xl font-display italic mb-4 uppercase tracking-tighter text-white drop-shadow-[2px_2px_0_rgba(0,0,0,1)]">WALLET LOCKED</h3>
+                    <p class="text-[10px] text-gray-500 mb-10 uppercase font-black tracking-widest leading-relaxed italic">Enter your PIN to unlock and access your assets.</p>
+                    <button onclick="window.WalletUI.unlockActiveWallet()" class="w-full py-5 bg-meme-pink text-white font-display text-2xl border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">UNLOCK NOW</button>
                 </div>
             `;
             return;
@@ -269,12 +269,12 @@ Object.assign(window.WalletUI, {
                     </div>
 
                     <div class="mb-8">
-                        <div class="text-[10px] text-gray-700 font-black uppercase tracking-widest mb-1 italic">CREDITS</div>
+                        <div class="text-[10px] text-gray-700 font-black uppercase tracking-widest mb-1 italic">TOTAL BALANCE</div>
                         <div class="flex items-baseline gap-2">
                             <span id="sidebar-paxi-bal" class="text-5xl font-display italic tracking-tighter text-meme-green drop-shadow-[3px_3px_0_rgba(0,0,0,1)]">0.00</span>
                             <span class="text-lg font-display text-white italic uppercase">PAXI</span>
                         </div>
-                        <div id="portfolio-usd" class="text-[10px] text-gray-600 font-mono font-bold mt-2 uppercase tracking-widest">$0.00 USD <span class="text-meme-pink ml-2">SCANNING...</span></div>
+                        <div id="portfolio-usd" class="text-[10px] text-gray-600 font-mono font-bold mt-2 uppercase tracking-widest">$0.00 USD</div>
                     </div>
 
                     <div class="flex items-center gap-3 p-3 bg-black border-2 border-black shadow-inner">
@@ -300,14 +300,14 @@ Object.assign(window.WalletUI, {
                 <!-- Tabs -->
                 <div class="space-y-6">
                     <div class="flex bg-black p-1 border-4 border-black shadow-brutal rotate-[0.5deg]">
-                        <button onclick="window.WalletUI.setWalletSubTab('assets')" id="wallet-tab-assets" class="flex-1 py-3 font-display text-2xl transition-all bg-meme-green text-black italic">STASH</button>
-                        <button onclick="window.WalletUI.setWalletSubTab('history')" id="wallet-tab-history" class="flex-1 py-3 font-display text-2xl transition-all text-gray-600 italic hover:text-white">INTEL</button>
+                        <button onclick="window.WalletUI.setWalletSubTab('assets')" id="wallet-tab-assets" class="flex-1 py-3 font-display text-2xl transition-all bg-meme-green text-black italic">ASSETS</button>
+                        <button onclick="window.WalletUI.setWalletSubTab('history')" id="wallet-tab-history" class="flex-1 py-3 font-display text-2xl transition-all text-gray-600 italic hover:text-white">HISTORY</button>
                     </div>
 
                     <!-- Assets Section -->
                     <div id="wallet-assets-section" class="space-y-6">
                         <div class="flex justify-between items-center px-2">
-                            <h4 class="text-sm font-display uppercase tracking-tighter text-white italic underline decoration-meme-green decoration-2 underline-offset-4">INVENTORY</h4>
+                            <h4 class="text-sm font-display uppercase tracking-tighter text-white italic underline decoration-meme-green decoration-2 underline-offset-4">MY ASSETS</h4>
                             <button onclick="window.WalletUI.showImportTokenModal()" class="w-8 h-8 bg-meme-yellow border-2 border-black shadow-brutal-sm flex items-center justify-center text-black hover:shadow-none"><i class="fas fa-plus text-xs"></i></button>
                         </div>
 
