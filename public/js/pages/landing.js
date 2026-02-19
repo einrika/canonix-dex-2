@@ -6,6 +6,7 @@
 window.marketTokens = [];
 window.marketFilter = 'hot';
 window.marketSearchQuery = '';
+window.marketPage = 0;
 window.marketLimit = 12;
 window.searchTimeout = null;
 
@@ -27,9 +28,9 @@ async function loadMarketData() {
         const grid = document.getElementById('marketGrid');
         if (!grid) return;
 
-        // Fetch tokens (reusing tokens.js logic if possible, or direct fetch)
-        // For landing, we fetch page 0 of all contracts
-        const url = `${window.APP_CONFIG.EXPLORER_API}/prc20/contracts?page=0&_t=${Date.now()}`;
+        window.marketPage = 0;
+        // Fetch tokens using BACKEND_API (via fetchDirect routing)
+        const url = `${window.APP_CONFIG.EXPLORER_API}/prc20/contracts?page=${window.marketPage}&_t=${Date.now()}`;
         const data = await window.fetchDirect(url);
 
         if (data && data.contracts) {
@@ -97,9 +98,42 @@ window.filterMarket = function() {
     }, 500); // 500ms debounce
 };
 
-window.loadMoreMarket = function() {
-    window.marketLimit += 12;
-    renderMarketGrid();
+window.loadMoreMarket = async function() {
+    const btn = document.getElementById('loadMoreMarket');
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-circle-notch fa-spin mr-2"></i> Loading...';
+    }
+
+    try {
+        window.marketPage++;
+        const url = `${window.APP_CONFIG.EXPLORER_API}/prc20/contracts?page=${window.marketPage}&_t=${Date.now()}`;
+        const data = await window.fetchDirect(url);
+
+        if (data && data.contracts && data.contracts.length > 0) {
+            const newTokens = data.contracts.map(c => window.processTokenDetail(c.contract_address, c));
+            // Append unique tokens only
+            newTokens.forEach(t => {
+                if (!window.marketTokens.find(mt => mt.address === t.address)) {
+                    window.marketTokens.push(t);
+                }
+            });
+
+            window.marketLimit = window.marketTokens.length;
+            renderMarketGrid();
+        } else {
+            // No more tokens
+            if (btn) btn.classList.add('hidden');
+        }
+    } catch (e) {
+        console.error('Load more failed:', e);
+        window.marketPage--; // Rollback page on error
+    } finally {
+        if (btn && !btn.classList.contains('hidden')) {
+            btn.disabled = false;
+            btn.innerHTML = 'Load More Tokens';
+        }
+    }
 };
 
 function renderMarketGrid() {
@@ -153,34 +187,34 @@ function renderMarketGrid() {
         const vol = window.formatAmount(t.volume_24h);
 
         return `
-            <a href="trade.html?token=${t.address}" class="bg-card border border-border p-6 rounded-[2rem] hover:border-up/50 transition-all group block">
-                <div class="flex items-center gap-4 mb-6">
-                    <div class="relative">
+            <a href="trade.html?token=${t.address}" class="bg-card border border-border p-3 sm:p-6 rounded-2xl sm:rounded-[2rem] hover:border-up/50 transition-all group block">
+                <div class="flex items-center gap-2 sm:gap-4 mb-3 sm:mb-6">
+                    <div class="relative flex-shrink-0">
                         ${t.logo ?
-                            `<img src="${t.logo}" class="w-12 h-12 rounded-full border border-border group-hover:scale-110 transition-transform">` :
-                            `<div class="w-12 h-12 rounded-full bg-surface border border-border flex items-center justify-center text-sm font-black text-gray-500">${t.symbol.charAt(0)}</div>`
+                            `<img src="${t.logo}" class="w-8 h-8 sm:w-12 sm:h-12 rounded-full border border-border group-hover:scale-110 transition-transform">` :
+                            `<div class="w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-surface border border-border flex items-center justify-center text-[10px] sm:text-sm font-black text-gray-500">${t.symbol.charAt(0)}</div>`
                         }
                     </div>
-                    <div>
-                        <div class="flex items-center gap-1.5">
-                            <span class="font-black text-white text-lg tracking-tighter uppercase italic">${t.symbol}</span>
-                            ${t.verified ? `<i class="fas fa-check-circle text-blue-400 text-[10px]"></i>` : ''}
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-1">
+                            <span class="font-black text-white text-xs sm:text-lg tracking-tighter uppercase italic truncate">${t.symbol}</span>
+                            ${t.verified ? `<i class="fas fa-check-circle text-blue-400 text-[8px] sm:text-[10px]"></i>` : ''}
                         </div>
-                        <div class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">PRC-20</div>
+                        <div class="text-[8px] sm:text-[10px] text-gray-500 font-bold uppercase tracking-widest">PRC-20</div>
                     </div>
                 </div>
 
-                <div class="space-y-4">
+                <div class="space-y-2 sm:space-y-4">
                     <div>
-                        <div class="text-xl font-mono font-black text-white">${t.price_paxi.toFixed(8)} PAXI</div>
-                        <div class="mt-2 inline-block px-3 py-1 rounded-full text-[10px] font-black ${colorClass}">
+                        <div class="text-sm sm:text-xl font-mono font-black text-white truncate">${t.price_paxi.toFixed(8)} PAXI</div>
+                        <div class="mt-1 sm:mt-2 inline-block px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[8px] sm:text-[10px] font-black ${colorClass}">
                             ${t.price_change_24h >= 0 ? '+' : ''}${change}%
                         </div>
                     </div>
 
-                    <div class="pt-4 border-t border-white/5 flex justify-between items-center">
-                        <span class="text-[10px] text-gray-500 font-black uppercase">Vol</span>
-                        <span class="text-[10px] text-gray-300 font-mono font-bold">${vol} PAXI</span>
+                    <div class="pt-2 sm:pt-4 border-t border-white/5 flex justify-between items-center">
+                        <span class="text-[8px] sm:text-[10px] text-gray-500 font-black uppercase">Vol</span>
+                        <span class="text-[8px] sm:text-[10px] text-gray-300 font-mono font-bold">${vol} PAXI</span>
                     </div>
                 </div>
             </a>
