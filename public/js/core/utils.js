@@ -418,13 +418,18 @@ window.showTxResult = function(data) {
     document.getElementById('logAmount').className = `text-[10px] font-mono font-bold ${isSuccess ? 'text-meme-green' : 'text-gray-400'}`;
 
     const activeNet = window.NetworkManager?.getActiveNetwork();
-    document.getElementById('logNetwork').textContent = network || (activeNet?.name || 'Paxi Mainnet');
+    const netEl = document.getElementById('logNetwork');
+    if (netEl) netEl.textContent = network || (activeNet?.name || 'Paxi Mainnet');
 
     const addrEl = document.getElementById('logAddress');
-    addrEl.textContent = address || '--';
-    document.getElementById('copyAddressBtn').onclick = () => {
-        if (address) navigator.clipboard.writeText(address);
-    };
+    if (addrEl) addrEl.textContent = address || '--';
+
+    const copyBtn = document.getElementById('copyAddressBtn');
+    if (copyBtn) {
+        copyBtn.onclick = () => {
+            if (address) navigator.clipboard.writeText(address);
+        };
+    }
 
     const hashEl = document.getElementById('logHash');
     const hashContainer = document.getElementById('logHashContainer');
@@ -442,18 +447,18 @@ window.showTxResult = function(data) {
     const extraInfo = document.getElementById('txExtraInfo');
     if (isSuccess && height && extraInfo) {
         extraInfo.classList.remove('hidden');
-        extraInfo.innerHTML = `
-            <div class="flex justify-between items-center mt-2 pt-2 border-t border-meme-surface/30">
-                <span class="font-mono text-[7px] uppercase font-bold text-gray-600 italic">HEIGHT</span>
-                <span class="font-mono text-[9px] text-meme-cyan">${height}</span>
-            </div>
-            <div class="flex justify-between items-center">
-                <span class="font-mono text-[7px] uppercase font-bold text-gray-600 italic">GAS (USED/WANT)</span>
-                <span class="font-mono text-[9px] text-gray-500">${gasUsed || 0} / ${gasWanted || 0}</span>
-            </div>
-        `;
+        extraInfo.classList.add('flex');
+
+        const hEl = document.getElementById('logHeight');
+        const guEl = document.getElementById('logGasUsed');
+        const gwEl = document.getElementById('logGasWanted');
+
+        if (hEl) hEl.textContent = height;
+        if (guEl) guEl.textContent = gasUsed || '0';
+        if (gwEl) gwEl.textContent = gasWanted || '0';
     } else if (extraInfo) {
         extraInfo.classList.add('hidden');
+        extraInfo.classList.remove('flex');
     }
 
     // Error
