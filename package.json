@@ -6,12 +6,19 @@
   "scripts": {
     "dev": "netlify dev",
     "build": "echo 'No build step'",
-    "deploy": "netlify deploy --prod"
+    "deploy": "netlify deploy --prod",
+    "cap:sync": "npx cap sync",
+    "cap:copy": "npx cap copy",
+    "cap:open": "npx cap open android",
+    "android:build": "cd android && ./gradlew assembleDebug"
   },
   "dependencies": {
     "node-fetch": "^2.6.7"
   },
   "devDependencies": {
+    "@capacitor/android": "^6.2.1",
+    "@capacitor/cli": "^6.2.1",
+    "@capacitor/core": "^6.2.1",
     "netlify-cli": "^17.0.0"
   }
 }

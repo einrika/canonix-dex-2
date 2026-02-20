@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Paxi DEX</string>
+    <string name="title_activity_main">Paxi DEX</string>
+    <string name="package_name">com.paxi.dex</string>
+    <string name="custom_url_scheme">com.paxi.dex</string>
+</resources>
