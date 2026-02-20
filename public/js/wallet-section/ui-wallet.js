@@ -457,28 +457,24 @@ Object.assign(window.WalletUI, {
                                 <span class="text-base font-display italic text-white uppercase truncate tracking-tighter">${token.name}</span>
                                 <div class="flex flex-col items-end flex-shrink-0">
                                     <span id="bal-${token.address}" class="text-sm font-mono font-black text-meme-cyan">...</span>
-                                    <div class="flex gap-1 mt-1">
-                                        <button onclick="event.stopPropagation(); window.WalletUI.showAssetDetailModal('${token.address}')"
-                                                class="w-5 h-5 bg-meme-cyan border border-black flex items-center justify-center text-[8px] text-black hover:bg-white transition-all shadow-brutal-sm hover:shadow-none"
-                                                title="Details">
-                                            <i class="fas fa-info"></i>
+                                    ${canHide ? `
+                                        <button onclick="event.stopPropagation(); window.WalletUI.confirmHideToken('${token.address}')"
+                                                class="mt-1 w-5 h-5 bg-meme-yellow border border-black flex items-center justify-center text-[8px] text-black hover:bg-meme-pink transition-all shadow-brutal-sm hover:shadow-none"
+                                                title="Hide">
+                                            <i class="fas fa-eye-slash"></i>
                                         </button>
-                                        ${canHide ? `
-                                            <button onclick="event.stopPropagation(); window.WalletUI.confirmHideToken('${token.address}')"
-                                                    class="w-5 h-5 bg-meme-yellow border border-black flex items-center justify-center text-[8px] text-black hover:bg-meme-pink transition-all shadow-brutal-sm hover:shadow-none"
-                                                    title="Hide">
-                                                <i class="fas fa-eye-slash"></i>
-                                            </button>
-                                        ` : ''}
-                                    </div>
+                                    ` : ''}
                                 </div>
                             </div>
-                            <div class="flex justify-between items-center">
+                            <div class="flex justify-between items-end mt-1">
                                 <div class="flex items-center gap-2">
                                     <span class="text-[9px] font-black text-gray-600 uppercase tracking-widest italic">${token.symbol}</span>
                                     <span class="text-[8px] font-mono font-bold ${meta.change24h >= 0 ? 'text-meme-green' : 'text-meme-pink'}">${meta.change24h >= 0 ? '+' : ''}${meta.change24h.toFixed(2)}%</span>
                                 </div>
-                                <span id="val-${token.address}" class="text-[10px] font-display text-white/50 italic tracking-tighter">...</span>
+                                <div class="text-right">
+                                    <div id="price-${token.address}" class="text-[8px] font-mono font-bold text-meme-yellow">...</div>
+                                    <div id="val-${token.address}" class="text-[10px] font-display text-white/50 italic tracking-tighter">...</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -489,142 +485,6 @@ Object.assign(window.WalletUI, {
         this.updateAssetBalances();
     },
 
-    showAssetDetailModal: function(address) {
-        const token = window.AssetManager.apiTokens.find(t => t.address === address);
-        if (!token || !token.contractData) {
-                        return;
-        }
-
-        const c = token.contractData;
-        const a = token.accountData;
-        const meta = window.AssetManager.getAssetMeta(address);
-
-        // Helper to resolve IPFS and blockchain hosting URLs
-        const resolveImageUrl = (url) => {
-            if (!url) return '';
-            if (url.startsWith('ipfs://')) return `https://ipfs.io/ipfs/${url.replace('ipfs://', '')}`;
-            if (url.includes('pinata.cloud/ipfs/')) return url;
-            if (url.startsWith('ar://')) return `https://arweave.net/${url.replace('ar://', '')}`;
-            if (url.includes('/ipfs/')) return url;
-            if (url.startsWith('http://') || url.startsWith('https://')) return url;
-            if (url.match(/^[a-zA-Z0-9]{46,}$/)) return `https://ipfs.io/ipfs/${url}`;
-            return url;
-        };
-
-        const logoUrl = resolveImageUrl(c.logo);
-
-        const formatNumber = (num) => {
-            if (!num) return '0';
-            return parseFloat(num).toLocaleString(undefined, {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 6
-            });
-        };
-
-        const formatUSD = (num) => {
-            if (!num) return '$0.00';
-            return '$' + parseFloat(num).toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            });
-        };
-
-        const balance = a.balance / Math.pow(10, c.decimals || 6);
-        const usdValue = balance * meta.priceUSD;
-
-        const modalHtml = `
-            <div id="assetDetailModal" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-[650] flex items-end sm:items-center justify-center p-0 sm:p-4" onclick="if(event.target === this) this.remove()">
-                <div class="bg-surface border-t sm:border border-border w-full max-w-2xl rounded-t-[2.5rem] sm:rounded-[2.5rem] max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
-                    <!-- Header -->
-                    <div class="p-6 border-b border-border sticky top-0 bg-surface z-10">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <div class="w-12 h-12 rounded-full bg-card border border-border flex items-center justify-center overflow-hidden relative">
-                                    ${logoUrl ? `<img src="${logoUrl}" class="w-full h-full object-cover" onerror=\"this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden'); this.nextElementSibling.classList.add('flex');\">
-                                                <span class="hidden absolute inset-0 flex items-center justify-center font-black">${c.symbol.charAt(0)}</span>`
-                                             : `<span class="font-black">${c.symbol.charAt(0)}</span>`}
-                                </div>
-                                <div>
-                                    <h3 class="text-lg font-black uppercase tracking-tight">${c.name}</h3>
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-xs text-gray-500 font-bold">${c.symbol}</span>
-                                        ${c.official_verified ? '<span class="px-1.5 py-0.5 bg-blue-500/20 text-blue-400 text-[8px] font-black rounded uppercase">Verified</span>' : ''}
-                                    </div>
-                                </div>
-                            </div>
-                            <button onclick="this.closest('#assetDetailModal').remove()" class="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10">
-                                <i class="fas fa-times text-gray-400"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Content -->
-                    <div class="p-6 space-y-6">
-                        <!-- Your Holdings -->
-                        <div class="p-4 bg-gradient-to-br from-up/10 to-purple-500/10 rounded-2xl border border-up/20">
-                            <div class="text-[10px] text-gray-400 font-black uppercase tracking-widest mb-3">Your Holdings</div>
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="text-xs text-gray-500">Balance</span>
-                                <span class="text-xl font-black text-white">${formatNumber(balance)} ${c.symbol}</span>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-xs text-gray-500">Value</span>
-                                <span class="text-lg font-black text-up">${formatUSD(usdValue)}</span>
-                            </div>
-                        </div>
-
-                        <!-- Price & Change -->
-                        <div class="grid grid-cols-2 gap-3">
-                            <div class="p-3 bg-card/30 rounded-xl border border-border">
-                                <div class="text-[9px] text-gray-500 font-bold uppercase mb-1">Price (PAXI)</div>
-                                <div class="text-sm font-mono text-white">${formatNumber(meta.price)}</div>
-                            </div>
-                            <div class="p-3 bg-card/30 rounded-xl border border-border">
-                                <div class="text-[9px] text-gray-500 font-bold uppercase mb-1">24h Change</div>
-                                <div class="text-sm font-mono ${meta.change24h >= 0 ? 'text-up' : 'text-down'}">${meta.change24h >= 0 ? '+' : ''}${meta.change24h.toFixed(2)}%</div>
-                            </div>
-                        </div>
-
-                        <!-- Market Stats -->
-                        <div class="space-y-3">
-                            <h4 class="text-[10px] font-black uppercase tracking-widest text-gray-500">Market Statistics</h4>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div class="p-3 bg-card/30 rounded-xl border border-border">
-                                    <div class="text-[9px] text-gray-500 font-bold uppercase mb-1">24h Volume</div>
-                                    <div class="text-sm font-mono text-white">${formatUSD(c.volume || 0)}</div>
-                                </div>
-                                <div class="p-3 bg-card/30 rounded-xl border border-border">
-                                    <div class="text-[9px] text-gray-500 font-bold uppercase mb-1">Holders</div>
-                                    <div class="text-sm font-mono text-white">${formatNumber(c.holders || 0)}</div>
-                                </div>
-                                <div class="p-3 bg-card/30 rounded-xl border border-border col-span-2">
-                                    <div class="text-[9px] text-gray-500 font-bold uppercase mb-1">Total Supply</div>
-                                    <div class="text-sm font-mono text-white">${formatNumber(c.total_supply / Math.pow(10, c.decimals || 6))}</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Contract Info -->
-                        <div class="space-y-3">
-                            <h4 class="text-[10px] font-black uppercase tracking-widest text-gray-500">Contract Information</h4>
-                            <div class="p-3 bg-card/30 rounded-xl border border-border">
-                                <div class="text-[10px] text-gray-500 mb-2">Contract Address</div>
-                                <div class="flex items-center gap-2">
-                                    <code class="text-[9px] font-mono text-white truncate flex-1">${c.contract_address}</code>
-                                    <button onclick="navigator.clipboard.writeText('${c.contract_address}'); " class="text-up hover:scale-110 transition-transform">
-                                        <i class="fas fa-copy text-xs"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            ${c.desc ? `<p class="text-xs text-gray-400">${c.desc}</p>` : ''}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        document.body.insertAdjacentHTML('beforeend', modalHtml);
-    },
 
     confirmHideToken: function(address) {
         const token = window.AssetManager.getTokens().find(t => t.address === address);
@@ -673,63 +533,124 @@ Object.assign(window.WalletUI, {
             return url;
         };
 
+        const formatNumber = (num) => {
+            if (!num) return '0';
+            return parseFloat(num).toLocaleString(undefined, {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 6
+            });
+        };
+
+        const formatUSD = (num) => {
+            if (!num) return '$0.00';
+            return '$' + parseFloat(num).toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        };
+
         const logoUrl = resolveImageUrl(token.logo);
+        const meta = window.AssetManager.getAssetMeta(address);
+        const c = token.contractData || {};
+        const balance = (token.balance || 0) / Math.pow(10, token.decimals || 6);
+        const usdValue = balance * (meta.priceUSD || 0);
 
         const modalHtml = `
             <div id="assetActionModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[630] flex items-end" onclick="if(event.target === this) this.remove()">
-                <div class="bg-card border-t border-border w-full rounded-t-[2.5rem] p-6 animate-slide-up" onclick="event.stopPropagation()">
+                <div class="bg-card border-t border-border w-full rounded-t-[2.5rem] p-6 animate-slide-up max-h-[90vh] overflow-y-auto no-scrollbar" onclick="event.stopPropagation()">
                     <div class="w-12 h-1 bg-gray-600 rounded-full mx-auto mb-6"></div>
 
-                    <div class="flex items-center gap-3 mb-6">
-                        <div class="w-12 h-12 rounded-full bg-surface border border-border flex items-center justify-center font-black overflow-hidden">
-                            ${logoUrl ? `<img src="${logoUrl}" class="w-full h-full object-cover">` : `<span>${token.symbol.charAt(0)}</span>`}
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center gap-3">
+                            <div class="w-14 h-14 rounded-full bg-surface border-2 border-black flex items-center justify-center font-black overflow-hidden shadow-brutal-sm rotate-[-5deg]">
+                                ${logoUrl ? `<img src="${logoUrl}" class="w-full h-full object-cover">` : `<span>${token.symbol.charAt(0)}</span>`}
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-black italic uppercase tracking-tighter text-white">${token.name}</h3>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[10px] font-mono text-gray-500 font-bold uppercase">${token.symbol}</span>
+                                    ${c.official_verified ? '<span class="px-1.5 py-0.5 bg-meme-cyan/20 text-meme-cyan text-[8px] font-black border border-meme-cyan/30 uppercase italic">Verified</span>' : ''}
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <h3 class="text-lg font-black italic uppercase tracking-tighter">${token.name}</h3>
-                            <div class="text-[10px] font-mono text-gray-500">${token.symbol}</div>
-                        </div>
+                        <button onclick="document.getElementById('assetActionModal').remove()" class="text-gray-500 hover:text-meme-pink transition-colors">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
                     </div>
 
-                    <div class="space-y-3">
+                    <!-- Integrated Details Section -->
+                    <div class="grid grid-cols-1 gap-4 mb-8">
+                        <!-- Holding Summary -->
+                        <div class="p-4 bg-meme-surface border-2 border-black shadow-brutal-sm rotate-[0.5deg]">
+                            <div class="text-[9px] text-gray-500 font-black uppercase tracking-widest mb-3 italic">YOUR HOLDINGS</div>
+                            <div class="flex justify-between items-end">
+                                <div class="text-xl font-display text-white italic tracking-tighter">${formatNumber(balance)} ${token.symbol}</div>
+                                <div class="text-lg font-display text-meme-green italic tracking-tighter">${formatUSD(usdValue)}</div>
+                            </div>
+                        </div>
+
+                        <!-- Market Stats -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="p-3 bg-black border border-black">
+                                <div class="text-[8px] text-gray-600 uppercase font-black italic mb-1">Price (PAXI)</div>
+                                <div class="text-[10px] font-mono font-bold text-white">${meta.price.toFixed(8)}</div>
+                            </div>
+                            <div class="p-3 bg-black border border-black">
+                                <div class="text-[8px] text-gray-600 uppercase font-black italic mb-1">24h Change</div>
+                                <div class="text-[10px] font-mono font-bold ${meta.change24h >= 0 ? 'text-meme-green' : 'text-meme-pink'}">${meta.change24h >= 0 ? '+' : ''}${meta.change24h.toFixed(2)}%</div>
+                            </div>
+                        </div>
+
+                        ${address !== 'PAXI' ? `
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="p-3 bg-black border border-black">
+                                <div class="text-[8px] text-gray-600 uppercase font-black italic mb-1">Holders</div>
+                                <div class="text-[10px] font-mono font-bold text-meme-cyan">${formatNumber(c.holders || 0)}</div>
+                            </div>
+                            <div class="p-3 bg-black border border-black">
+                                <div class="text-[8px] text-gray-600 uppercase font-black italic mb-1">Volume (24h)</div>
+                                <div class="text-[10px] font-mono font-bold text-meme-yellow">${formatUSD(c.volume || 0)}</div>
+                            </div>
+                        </div>
+                        <div class="p-3 bg-black border border-black">
+                            <div class="text-[8px] text-gray-600 uppercase font-black italic mb-1">Contract Address</div>
+                            <div class="flex items-center gap-2">
+                                <code class="text-[8px] font-mono text-gray-400 truncate flex-1 uppercase tracking-tighter">${address}</code>
+                                <button onclick="navigator.clipboard.writeText('${address}')" class="text-meme-yellow hover:scale-125 transition-transform"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="window.WalletUI.handleBottomSheetAction('${address}', 'swap')"
+                                class="col-span-2 flex items-center justify-center gap-3 p-4 bg-meme-cyan border-2 border-black shadow-brutal-sm hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all group">
+                            <i class="fas fa-exchange-alt text-black text-lg group-hover:rotate-180 transition-transform duration-500"></i>
+                            <span class="text-lg font-display uppercase italic text-black">SWAP TOKEN</span>
+                        </button>
+
                         <button onclick="window.WalletUI.handleBottomSheetAction('${address}', 'send')"
-                                class="w-full flex items-center gap-4 p-4 bg-surface border border-border rounded-2xl hover:border-up/50 transition-all group">
-                            <div class="w-12 h-12 rounded-full bg-up/10 flex items-center justify-center text-up group-hover:scale-110 transition-transform">
-                                <i class="fas fa-paper-plane text-xl"></i>
-                            </div>
-                            <div class="flex-1 text-left">
-                                <div class="text-sm font-black uppercase tracking-widest text-white">Send</div>
-                                <div class="text-xs text-gray-500">Transfer to another address</div>
-                            </div>
-                            <i class="fas fa-chevron-right text-gray-600"></i>
+                                class="flex items-center justify-center gap-3 p-4 bg-meme-green border-2 border-black shadow-brutal-sm hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all group">
+                            <i class="fas fa-paper-plane text-black text-base group-hover:rotate-12 transition-transform"></i>
+                            <span class="text-base font-display uppercase italic text-black">SEND</span>
                         </button>
 
                         <button onclick="window.WalletUI.handleBottomSheetAction('${address}', 'lp')"
-                                class="w-full flex items-center gap-4 p-4 bg-surface border border-border rounded-2xl hover:border-blue-500/50 transition-all group">
-                            <div class="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
-                                <i class="fas fa-plus-circle text-xl"></i>
-                            </div>
-                            <div class="flex-1 text-left">
-                                <div class="text-sm font-black uppercase tracking-widest text-white">Add Liquidity</div>
-                                <div class="text-xs text-gray-500">Provide liquidity to pool</div>
-                            </div>
-                            <i class="fas fa-chevron-right text-gray-600"></i>
+                                class="flex items-center justify-center gap-3 p-4 bg-white border-2 border-black shadow-brutal-sm hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all group">
+                            <i class="fas fa-plus-circle text-black text-base group-hover:scale-110 transition-transform"></i>
+                            <span class="text-base font-display uppercase italic text-black">LIQUIDITY</span>
                         </button>
 
                         <button onclick="window.WalletUI.handleBottomSheetAction('${address}', 'burn')"
-                                class="w-full flex items-center gap-4 p-4 bg-surface border border-border rounded-2xl hover:border-down/50 transition-all group">
-                            <div class="w-12 h-12 rounded-full bg-down/10 flex items-center justify-center text-down group-hover:scale-110 transition-transform">
-                                <i class="fas fa-fire text-xl"></i>
-                            </div>
-                            <div class="flex-1 text-left">
-                                <div class="text-sm font-black uppercase tracking-widest text-white">Burn</div>
-                                <div class="text-xs text-gray-500">Permanently destroy tokens</div>
-                            </div>
-                            <i class="fas fa-chevron-right text-gray-600"></i>
+                                class="col-span-2 flex items-center justify-center gap-3 p-4 bg-meme-pink border-2 border-black shadow-brutal-sm hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all group">
+                            <i class="fas fa-fire text-white text-lg group-hover:animate-bounce"></i>
+                            <span class="text-lg font-display uppercase italic text-white">BURN TOKEN</span>
                         </button>
                     </div>
 
                     <button onclick="document.getElementById('assetActionModal').remove()"
-                            class="w-full mt-4 py-4 bg-surface border border-border text-white rounded-2xl font-black text-sm hover:bg-card transition-all">
+                            class="w-full mt-6 py-4 bg-meme-surface border-2 border-black text-gray-500 rounded-none font-display text-xl uppercase italic hover:text-white transition-all">
                         Cancel
                     </button>
                 </div>
@@ -741,6 +662,14 @@ Object.assign(window.WalletUI, {
     handleBottomSheetAction: function(address, action) {
         // Close asset action modal first
         document.getElementById('assetActionModal')?.remove();
+
+        if (action === 'swap') {
+            if (address !== 'PAXI' && window.selectPRC20) {
+                window.selectPRC20(address);
+            }
+            window.setSidebarTab('swap');
+            return;
+        }
 
         // Set token if not PAXI
         if (address !== 'PAXI' && window.selectPRC20) {
@@ -1120,6 +1049,9 @@ Object.assign(window.WalletUI, {
             console.error("❌ Error fetching PAXI balance:", e);
         }
 
+        let totalUSD = 0;
+        const currentPaxiPrice = window.paxiPriceUSD || 0.05;
+
         for (const token of tokens) {
             try {
                 let amount = 0;
@@ -1140,23 +1072,33 @@ Object.assign(window.WalletUI, {
                 const balEl = document.getElementById(`bal-${token.address}`);
                 if (balEl) window.setText(balEl, amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 }));
 
-                // Update value display
-                const valEl = document.getElementById(`val-${token.address}`);
-                if (valEl) {
-                    const meta = window.AssetManager.getAssetMeta(token.address);
-                    const currentPaxiPrice = window.paxiPriceUSD || 0.05;
+                const meta = window.AssetManager.getAssetMeta(token.address);
 
+                // Update Price Display
+                const priceEl = document.getElementById(`price-${token.address}`);
+                if (priceEl) {
                     if (token.address === 'PAXI') {
-                        // For PAXI, show USD value directly
-                        const usdValue = amount * currentPaxiPrice;
-                        window.setText(valEl, `$${usdValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
+                        window.setText(priceEl, '1.00 PAXI');
                     } else {
-                        // For PRC20, show USD value derived from PAXI (Sinkron)
-                        // Formula: Amount * Price_In_PAXI * PAXI_Price_In_USD
-                        const paxiValue = amount * meta.price;
-                        const usdValue = paxiValue * currentPaxiPrice;
-                        window.setText(valEl, `$${usdValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
+                        window.setText(priceEl, `${meta.price.toFixed(8)} PAXI`);
                     }
+                }
+
+                // Calculate & Update value display
+                let usdValue = 0;
+                const valEl = document.getElementById(`val-${token.address}`);
+
+                if (token.address === 'PAXI') {
+                    usdValue = amount * currentPaxiPrice;
+                } else {
+                    const paxiValue = amount * meta.price;
+                    usdValue = paxiValue * currentPaxiPrice;
+                }
+
+                totalUSD += usdValue;
+
+                if (valEl) {
+                    window.setText(valEl, `$${usdValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD`);
                 }
 
                 // Auto hide zero balance if setting enabled
@@ -1166,6 +1108,12 @@ Object.assign(window.WalletUI, {
             } catch (e) {
                 console.error(`❌ Error updating balance for ${token.symbol}:`, e);
             }
+        }
+
+        // Update total portfolio USD
+        const portfolioUSD = document.getElementById('portfolio-usd');
+        if (portfolioUSD) {
+            window.setText(portfolioUSD, `$${totalUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD`);
         }
     },
 
