@@ -202,32 +202,32 @@ window.renderTokenSidebar = function(filter = '', isAppend = false) {
 // ===== CREATE TOKEN ELEMENT =====
 window.createTokenElement = function(addr) {
     const el = document.createElement('div');
-    el.className = 'token-sidebar-item p-3 md:p-4 flex items-center gap-3 md:gap-4 cursor-pointer border-b border-black hover:bg-meme-green/5 transition-all group';
+    el.className = 'token-sidebar-item p-3 flex items-center gap-3 cursor-pointer border-b border-black hover:bg-meme-surface transition-all group';
     el.setAttribute('data-token', addr);
     el.onclick = () => window.selectPRC20(addr);
 
-    // Initial skeleton - Brutal Style
+    // Initial skeleton - Restored Layout + New Theme
     el.innerHTML = `
         <div class="relative flex-shrink-0">
-            <div class="token-logo-container w-8 h-8 md:w-10 md:h-10 border-2 border-black bg-meme-surface flex items-center justify-center text-[10px] md:text-xs font-black text-gray-500 shadow-brutal-sm group-hover:rotate-6 transition-transform">?</div>
-            <div class="pump-indicator absolute -top-1 -right-1 w-2 md:w-3 h-2 md:h-3 bg-meme-green border border-black shadow-brutal-sm animate-pulse hidden"></div>
+            <div class="token-logo-container w-10 h-10 border-2 border-black bg-meme-surface flex items-center justify-center text-[10px] font-black text-gray-600 shadow-brutal-sm">?</div>
+            <div class="pump-indicator absolute -top-1 -right-1 w-3 h-3 bg-meme-green border border-black shadow-brutal-sm animate-pulse hidden"></div>
             <div class="verified-indicator absolute -bottom-1 -right-1 text-[8px] text-meme-cyan bg-black border border-black shadow-brutal-sm hidden"><i class="fas fa-check-circle"></i></div>
         </div>
         <div class="flex-1 min-w-0">
             <div class="flex items-center justify-between gap-1 mb-0.5">
-                <span class="token-symbol font-display text-xs md:text-base text-white truncate italic uppercase tracking-tighter">...</span>
-                <span class="token-change font-mono text-[8px] md:text-[10px] font-black uppercase text-gray-700">0.00%</span>
+                <span class="token-symbol font-display text-base text-white truncate italic uppercase tracking-tighter">...</span>
+                <span class="token-change font-mono text-[10px] font-black uppercase text-gray-500">0.00%</span>
             </div>
-            <div class="flex items-center justify-between gap-1">
-                <span class="token-name font-mono text-[8px] text-gray-500 truncate max-w-[50px] md:max-w-[80px] font-bold italic uppercase">Loading...</span>
+            <div class="flex items-center justify-between text-[8px] font-mono font-bold text-gray-600 uppercase italic">
+                <span class="token-name truncate max-w-[60px]">Loading...</span>
                 <div class="flex flex-col items-end">
-                    <span class="token-mcap font-display text-[8px] md:text-[10px] text-gray-600 italic uppercase">MCap -</span>
-                    <span class="token-liq font-display text-[8px] md:text-[8px] text-gray-700 italic uppercase">Liq -</span>
+                    <span class="token-mcap text-gray-500">MCap -</span>
+                    <span class="token-liq text-gray-700 text-[6px]">Liq -</span>
                 </div>
             </div>
         </div>
         <button class="info-btn p-1 text-gray-600 hover:text-meme-green transition-colors">
-            <i class="fas fa-info-circle text-xs md:text-sm"></i>
+            <i class="fas fa-info-circle text-xs"></i>
         </button>
     `;
 
@@ -246,9 +246,9 @@ window.patchTokenElement = function(el, addr) {
 
     const isActive = window.currentPRC20 === addr;
     if (isActive) {
-        el.classList.add('bg-meme-green/10', 'border-l-4', 'border-l-meme-green');
+        el.classList.add('active', 'bg-meme-green/10', 'border-l-4', 'border-l-meme-green');
     } else {
-        el.classList.remove('bg-meme-green/10', 'border-l-4', 'border-l-meme-green');
+        el.classList.remove('active', 'bg-meme-green/10', 'border-l-4', 'border-l-meme-green');
     }
 
     // Update Symbol
@@ -267,7 +267,7 @@ window.patchTokenElement = function(el, addr) {
     const changeText = `${priceChange >= 0 ? '+' : ''}${(priceChange * 100).toFixed(2)}%`;
     if (changeEl.textContent !== changeText) {
         changeEl.textContent = changeText;
-        changeEl.className = `token-change font-mono text-[8px] md:text-[10px] font-black uppercase ${priceChange >= 0 ? 'text-meme-green' : 'text-meme-pink'}`;
+        changeEl.className = `token-change font-mono text-[10px] font-black uppercase ${priceChange >= 0 ? 'text-meme-green' : 'text-meme-pink'}`;
     }
 
     // Update MCap
@@ -297,7 +297,7 @@ window.patchTokenElement = function(el, addr) {
         if (!img) {
             logoContainer.innerHTML = '';
             img = document.createElement('img');
-            img.className = 'w-8 h-8 md:w-10 md:h-10 border-2 border-black group-hover:rotate-6 transition-transform object-cover';
+            img.className = 'w-10 h-10 border-2 border-black group-hover:rotate-6 transition-transform object-cover';
             img.loading = 'lazy';
             img.onerror = () => {
                 img.classList.add('hidden');

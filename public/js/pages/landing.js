@@ -196,46 +196,41 @@ function renderMarketGrid() {
     grid.innerHTML = display.map(t => {
         const change = (t.price_change_24h * 100).toFixed(2);
         const colorClass = t.price_change_24h >= 0 ? 'bg-meme-green text-black' : 'bg-meme-pink text-white';
-        const shadowClass = t.price_change_24h >= 0
-            ? 'shadow-[3px_3px_0_0_#00D685] md:shadow-brutal-green'
-            : 'shadow-[3px_3px_0_0_#D60047] md:shadow-brutal-pink';
         const vol = window.formatAmount(t.volume_24h);
         const logoUrl = window.normalizeLogoUrl(t.logo);
 
         return `
-            <a href="trade.html?token=${t.address}" class="bg-meme-surface border-2 md:border-4 border-black p-4 md:p-8 ${shadowClass} hover:shadow-none hover:translate-x-[2px] md:hover:translate-x-[4px] hover:translate-y-[2px] md:hover:translate-y-[4px] transition-all group block relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-16 md:w-32 h-16 md:h-32 bg-white/5 -rotate-45 translate-x-8 md:translate-x-16 -translate-y-8 md:-translate-y-16 group-hover:bg-white/10 transition-colors"></div>
-
-                <div class="flex items-center gap-3 md:gap-6 mb-4 md:mb-10">
+            <a href="trade.html?token=${t.address}" class="bg-meme-surface border-4 border-black p-4 md:p-6 shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all group block relative overflow-hidden">
+                <div class="flex items-center gap-3 md:gap-4 mb-6 md:mb-8">
                     <div class="relative flex-shrink-0">
                         ${logoUrl ?
-                            `<img src="${logoUrl}" class="w-8 h-8 md:w-16 md:h-16 rounded-none border-2 md:border-4 border-black group-hover:scale-110 group-hover:rotate-6 transition-transform shadow-[2px_2px_0_0_#000] md:shadow-brutal object-cover" onerror=\"this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden'); this.nextElementSibling.classList.add('flex');\">
-                             <div class="hidden" class="w-8 h-8 md:w-16 md:h-16 bg-meme-yellow border-2 md:border-4 border-black items-center justify-center text-sm md:text-xl font-display text-black group-hover:rotate-6 transition-transform shadow-[2px_2px_0_0_#000] md:shadow-brutal">${t.symbol.charAt(0)}</div>` :
-                            `<div class="w-8 h-8 md:w-16 md:h-16 bg-meme-yellow border-2 md:border-4 border-black flex items-center justify-center text-sm md:text-xl font-display text-black group-hover:rotate-6 transition-transform shadow-[2px_2px_0_0_#000] md:shadow-brutal">${t.symbol.charAt(0)}</div>`
+                            `<img src="${logoUrl}" class="w-10 h-10 md:w-12 md:h-12 border-2 border-black group-hover:rotate-6 transition-transform shadow-brutal-sm object-cover" onerror=\"this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');\">
+                             <div class="hidden w-10 h-10 md:w-12 md:h-12 bg-meme-yellow border-2 border-black flex items-center justify-center text-lg font-display text-black shadow-brutal-sm">${t.symbol.charAt(0)}</div>` :
+                            `<div class="w-10 h-10 md:w-12 md:h-12 bg-meme-yellow border-2 border-black flex items-center justify-center text-lg font-display text-black shadow-brutal-sm">${t.symbol.charAt(0)}</div>`
                         }
                     </div>
                     <div class="min-w-0">
-                        <div class="flex items-center gap-1 md:gap-2">
-                            <span class="font-display text-xs md:text-2xl text-white tracking-tight uppercase italic truncate">${t.symbol}</span>
-                            ${t.verified ? `<i class="fas fa-check-circle text-meme-cyan text-[8px] md:text-sm"></i>` : ''}
+                        <div class="flex items-center gap-1.5">
+                            <span class="font-display text-lg md:text-2xl text-white tracking-tighter uppercase italic truncate">${t.symbol}</span>
+                            ${t.verified ? `<i class="fas fa-check-circle text-meme-cyan text-xs md:text-sm"></i>` : ''}
                         </div>
-                        <div class="hidden md:block text-[10px] text-meme-cyan font-mono font-bold uppercase tracking-[0.2em]">PRC-20 ASSET</div>
+                        <div class="text-[8px] md:text-[10px] text-meme-cyan font-mono font-bold uppercase tracking-widest">PRC-20 ASSET</div>
                     </div>
                 </div>
 
-                <div class="space-y-2 md:space-y-6 relative z-10">
+                <div class="space-y-3 md:space-y-4 relative z-10">
                     <div>
-                        <div class="hidden md:block text-xs text-gray-500 font-mono font-bold uppercase tracking-widest mb-1">CURRENT PRICE</div>
-                        <div class="text-[10px] md:text-2xl font-display text-white italic tracking-tight truncate">${t.price_paxi.toFixed(6)} <span class="text-meme-yellow text-[8px] md:text-base">PAXI</span></div>
+                        <div class="text-[8px] md:text-xs text-gray-500 font-mono font-bold uppercase tracking-widest mb-1 italic">Price</div>
+                        <div class="text-lg md:text-2xl font-display text-white italic tracking-tight truncate">${t.price_paxi.toFixed(8)} <span class="text-meme-yellow text-xs">PAXI</span></div>
                     </div>
 
-                    <div class="flex justify-between items-center pt-2 md:pt-6 border-t-2 md:border-t-4 border-black">
-                        <div class="px-1 md:px-4 py-0.5 md:py-1.5 border md:border-2 border-black font-display text-[10px] md:text-xl ${colorClass}">
+                    <div class="flex justify-between items-center pt-3 md:pt-4 border-t-2 border-black">
+                        <div class="px-2 md:px-3 py-0.5 md:py-1 border-2 border-black font-display text-[10px] md:text-base ${colorClass}">
                             ${t.price_change_24h >= 0 ? '+' : ''}${change}%
                         </div>
                         <div class="text-right">
-                            <div class="hidden md:block text-[10px] text-gray-600 font-mono font-bold uppercase tracking-widest">24H VOLUME</div>
-                            <div class="text-[10px] md:text-lg font-display text-meme-cyan italic tracking-tight">${vol}</div>
+                            <div class="text-[7px] md:text-[8px] text-gray-600 font-mono font-bold uppercase tracking-widest italic">Volume</div>
+                            <div class="text-[10px] md:text-base font-display text-meme-cyan italic tracking-tight">${vol}</div>
                         </div>
                     </div>
                 </div>
