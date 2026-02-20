@@ -96,7 +96,7 @@ window.renderHoldersTable = function(list, page) {
         const addr = item.address || item.account_address || item;
         const bal = item.balance !== undefined ? item.balance : '-';
         const pct = item.percentage !== undefined ? item.percentage : 0;
-        const shortAddr = typeof addr === 'string' ? window.shortenAddress(addr, 10) : 'Unknown';
+        const shortAddr = typeof addr === 'string' ? window.shortenAddress(addr, 7) : 'Unknown';
         const fullAddr = typeof addr === 'string' ? addr : '';
         let balanceDisplay = bal; if (typeof bal === 'number') balanceDisplay = window.formatBalance(bal, 6);
         else if (typeof bal === 'string' && bal !== '-' && bal !== 'Loading...') {
@@ -109,10 +109,10 @@ window.renderHoldersTable = function(list, page) {
             <td class="p-4 font-display text-xl italic text-gray-700">#${rank}</td>
             <td class="p-4 font-mono text-[10px] text-gray-400">
                 <div class="flex items-center gap-2">
-                    <span class="truncate max-w-[100px] uppercase font-bold text-white">${shortAddr}</span>
+                    <span class="truncate max-w-[200px] uppercase font-bold text-white">${shortAddr}</span>
                     ${isMe ? '<span class="px-1.5 py-0.5 bg-meme-green text-black border border-black text-[7px] font-black italic">YOU</span>' : ''}
                     ${isPool ? '<span class="px-1.5 py-0.5 bg-meme-cyan text-black border border-black text-[7px] font-black italic">[POOL]</span>' : ''}
-                    <a href="https://winscan.winsnip.xyz/paxi-mainnet/accounts/${fullAddr}" target="_blank" class="text-meme-yellow hover:scale-110 transition-transform"><i class="fas fa-external-link-alt text-[10px]"></i></a>
+                    <a href="https://explorer.paxinet.io/accounts/${fullAddr}" target="_blank" class="text-meme-yellow hover:scale-110 transition-transform"><i class="fas fa-external-link-alt text-[10px]"></i></a>
                 </div>
             </td>
             <td class="p-4 text-right font-mono text-[10px] font-black text-white">${balanceDisplay}</td>
