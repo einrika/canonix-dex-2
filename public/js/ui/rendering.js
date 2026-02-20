@@ -263,11 +263,14 @@ window.patchTokenElement = function(el, addr) {
 
     // Update Price Change
     const changeEl = el.querySelector('.token-change');
-    const priceChange = window.numtokenlist(detail.price_change_24h);
-    const changeText = `${priceChange >= 0 ? '+' : ''}${(priceChange * 100).toFixed(2)}%`;
+    const priceChangeRaw = window.numtokenlist(detail.price_change_24h);
+    const priceChangePct = priceChangeRaw * 100;
+    const changeText = `${priceChangePct >= 0 ? '+' : ''}${priceChangePct.toFixed(2)}%`;
+
     if (changeEl.textContent !== changeText) {
         changeEl.textContent = changeText;
-        changeEl.className = `token-change font-mono text-[10px] font-black uppercase ${priceChange >= 0 ? 'text-meme-green' : 'text-meme-pink'}`;
+        changeEl.classList.remove('text-meme-green', 'text-meme-pink');
+        changeEl.classList.add(priceChangePct >= 0 ? 'text-meme-green' : 'text-meme-pink');
     }
 
     // Update MCap

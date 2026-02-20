@@ -214,16 +214,29 @@ window.updateDashboard = function(detail) {
 
     const changeEl = document.getElementById('priceChange');
     if (changeEl) {
-        const val = (detail.price_change_24h * 100).toFixed(2);
-        window.setText(changeEl, (val >= 0 ? '+' : '') + val + '%');
-        changeEl.className = `font-display text-lg px-3 border-2 border-black italic ${val >= 0 ? 'bg-meme-green text-black' : 'bg-meme-pink text-white'}`;
+        const rawChange = detail.price_change_24h || 0;
+        const valNum = rawChange * 100;
+        const valText = (valNum >= 0 ? '+' : '') + valNum.toFixed(2) + '%';
+        window.setText(changeEl, valText);
+
+        // Use classList for safer class management
+        changeEl.classList.remove('bg-meme-green', 'bg-meme-pink', 'text-black', 'text-white');
+        if (valNum >= 0) {
+            changeEl.classList.add('bg-meme-green', 'text-black');
+        } else {
+            changeEl.classList.add('bg-meme-pink', 'text-white');
+        }
     }
 
     window.setText('mcapVal', window.formatAmount(detail.market_cap) + ' PAXI');
     window.setText('liqVal', window.formatAmount(detail.liquidity) + ' PAXI');
     window.setText('volVal', window.formatAmount(detail.volume_24h) + ' PAXI');
-    window.setText('high24h', window.formatPrice(detail.high_24h || detail.price_paxi));
-    window.setText('low24h', window.formatPrice(detail.low_24h || detail.price_paxi));
+
+    // Fix High/Low price logic
+    const high = detail.high_24h > 0 ? detail.high_24h : detail.price_paxi;
+    const low = detail.low_24h > 0 ? detail.low_24h : detail.price_paxi;
+    window.setText('high24h', window.formatPrice(high));
+    window.setText('low24h', window.formatPrice(low));
 
     const signalEl = document.getElementById('tradeSignal');
     if (signalEl) {
@@ -264,10 +277,29 @@ window.updateDashboard = function(detail) {
     window.setText('holderCount', detail.holders.toLocaleString());
 
     window.setText('caAddr', address);
+
+    // Total Supply
+    window.setText('totalSupply', window.formatAmount(detail.total_supply_num, 0));
+
+    // Minting & Verified Status
     const minter = document.getElementById('minterStatus');
     if (minter) {
         window.setText(minter, detail.minting_disabled ? 'OPENED' : 'RUG-PROOF');
-        minter.className = detail.minting_disabled ? 'text-meme-pink font-display text-xl uppercase italic' : 'text-meme-green font-display text-xl uppercase italic';
+        minter.className = detail.minting_disabled ? 'font-display text-base text-meme-pink uppercase italic tracking-tighter' : 'font-display text-base text-meme-green uppercase italic tracking-tighter';
+    }
+
+    const verif = document.getElementById('verifyStatus');
+    if (verif) {
+        window.setText(verif, detail.official_verified ? 'OFFICIAL' : 'COMMUNITY');
+        verif.className = detail.official_verified ? 'font-display text-base text-meme-cyan uppercase italic tracking-tighter' : 'font-display text-base text-gray-600 uppercase italic tracking-tighter';
+    }
+
+    // Desc & Marketing
+    const descCard = document.getElementById('tokenDetailsCard');
+    if (descCard) {
+        descCard.classList.remove('hidden');
+        window.setText('tokenDesc', detail.description || 'NO DESCRIPTION AVAILABLE.');
+        window.setText('mktAddr', detail.marketing_wallet || 'N/A');
     }
 
     const logoEl = document.getElementById('tokenLogo');
@@ -357,6 +389,13 @@ window.updateTradeBalances = async function() {
 window.copyAddrText = function() {
     if (!window.currentPRC20) return;
     navigator.clipboard.writeText(window.currentPRC20);
+};
+
+window.copyMktAddr = function() {
+    const el = document.getElementById('mktAddr');
+    if (el && el.textContent !== 'N/A') {
+        navigator.clipboard.writeText(el.textContent);
+    }
 };
 
 window.showSlippageModal = function() {

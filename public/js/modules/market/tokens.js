@@ -62,7 +62,12 @@ window.processTokenDetail = function(contractAddress, data) {
         is_pump: c.is_pump === true,
         txs_count: parseInt(c.txs_count || 0),
         created_at: c.created_at,
-        website: c.project || ''
+        website: c.project || '',
+        minting_disabled: c.minting_disabled === true,
+        official_verified: c.official_verified === true,
+        marketing_wallet: c.marketing || '',
+        high_24h: parseFloat(c.high_24h || 0),
+        low_24h: parseFloat(c.low_24h || 0)
     };
 };
 
@@ -288,7 +293,8 @@ window.setSort = async function(sortType, event) {
 // ===== LOAD NON-PUMP TOKENS =====
 window.loadNonPumpTokens = async function() {
     try {
-        const url = `${window.APP_CONFIG.BACKEND_API}/token-list?type=nonpump&_t=${Date.now()}`;
+        // Use EXPLORER_API for consistency with index.html (verified working)
+        const url = `${window.APP_CONFIG.EXPLORER_API}/prc20/contracts?page=0&type=nonpump&_t=${Date.now()}`;
         const data = await window.fetchDirect(url);
 
         if (data && data.contracts) {

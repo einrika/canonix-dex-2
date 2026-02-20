@@ -296,7 +296,7 @@ window.generateAIAnalysis = async function() {
     const content = document.getElementById('aiContent');
     if (!content) return;
 
-    if (!window.priceHistory?.length || !window.currentPRC20 || !window.poolData) {
+    if (!window.currentPRC20) {
         window.renderAnalysis(null);
         return;
     }
@@ -309,21 +309,24 @@ window.generateAIAnalysis = async function() {
     `;
 
     try {
-        const prices = window.priceHistory.map(h => h.price);
-        const volumes = window.priceHistory.map(h => h.volume || 0);
+        const detail = window.tokenDetails.get(window.currentPRC20);
+        const history = window.priceHistory || [];
 
-        const latestPrice = prices.at(-1);
-        const firstPrice = prices[0];
-        const change24h = ((latestPrice - firstPrice) / firstPrice) * 100;
+        const prices = history.length > 0 ? history.map(h => h.price) : [detail?.price_paxi || 0];
+        const volumes = history.length > 0 ? history.map(h => h.volume || 0) : [detail?.volume_24h || 0];
 
-        const liquidity = parseFloat(window.poolData.reserve_paxi || 0) / 1e6;
-        const volume24h = parseFloat(document.getElementById('volume24h')?.textContent) || 0;
+        const latestPrice = detail?.price_paxi || prices.at(-1) || 0;
+        const firstPrice = prices[0] || latestPrice;
+        const change24h = detail ? detail.price_change_24h * 100 : ((latestPrice - firstPrice) / (firstPrice || 1)) * 100;
 
-        const rsi = window.calculateRSI(prices, 14);
-        const macd = window.calculateMACD(prices);
-        const volatility = window.calculateVolatility(prices);
-        const momentum = window.calculateMomentum(prices);
-        const levels = window.findSupportResistance(prices);
+        const liquidity = detail ? detail.liquidity : (parseFloat(window.poolData?.reserve_paxi || 0) / 1e6);
+        const volume24h = detail ? detail.volume_24h : (parseFloat(document.getElementById('volume24h')?.textContent) || 0);
+
+        const rsi = prices.length > 1 ? window.calculateRSI(prices, 14) : 50;
+        const macd = prices.length > 1 ? window.calculateMACD(prices) : { macd: 0, signal: 0, histogram: 0 };
+        const volatility = prices.length > 1 ? window.calculateVolatility(prices) : 0;
+        const momentum = prices.length > 1 ? window.calculateMomentum(prices) : 0;
+        const levels = prices.length > 1 ? window.findSupportResistance(prices) : { support: latestPrice * 0.9, resistance: latestPrice * 1.1 };
 
         const avgVolume = volumes.reduce((a, b) => a + b, 0) / volumes.length;
         const volumeRatio = volume24h / (avgVolume || 1);
