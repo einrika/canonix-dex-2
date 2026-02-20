@@ -3,101 +3,101 @@
 
 <head>
     <meta charset="UTF-8">
-
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind = {
             config: {
-            theme: {
-                extend: {
-                    colors: {
-                        'meme-black': '#191922',
-                        'meme-surface': '#191922',
-                        'meme-card': '#21212e',
-                        'meme-green': '#00D685',
-                        'meme-pink': '#D60047',
-                        'meme-cyan': '#00B2D6',
-                        'meme-yellow': '#D6B500',
-                        // Map old names to new palette for JS compatibility
-                        up: '#00D685',
-                        down: '#D60047',
-                        accent: '#00B2D6',
-                        bg: '#191922',
-                        surface: '#191922',
-                        card: '#21212e',
-                        border: '#000000',
-                    },
-                    fontFamily: {
-                        display: ['Bangers', 'system-ui'],
-                        mono: ['Space Mono', 'monospace'],
-                        sans: ['DM Sans', 'sans-serif'],
-                    },
-                    boxShadow: {
-                        'brutal-sm': '2px 2px 0px 0px rgba(0,0,0,1)',
-                        'brutal': '4px 4px 0px 0px rgba(0,0,0,1)',
-                        'brutal-lg': '6px 6px 0px 0px rgba(0,0,0,1)',
-                        'brutal-green': '4px 4px 0px 0px #00D685',
-                        'brutal-pink': '4px 4px 0px 0px #D60047',
-                        'brutal-cyan': '4px 4px 0px 0px #00B2D6',
-                        'brutal-yellow': '4px 4px 0px 0px #D6B500',
-                        'glow': '0 0 10px rgba(0, 255, 159, 0.2)',
-                    },
-                    animation: {
-                        'marquee': 'marquee 25s linear infinite',
-                        'float': 'float 6s ease-in-out infinite',
-                        'glitch': 'glitch 1s linear infinite',
-                        'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
-                        'slide-up': 'slideUp 0.3s ease-out',
-                        'fade-in': 'fadeIn 0.2s ease-out',
-                    },
-                    keyframes: {
-                        marquee: {
-                            '0%': { transform: 'translateX(0%)' },
-                            '100%': { transform: 'translateX(-50%)' },
+                theme: {
+                    extend: {
+                        colors: {
+                            'meme-black': '#191922',
+                            'meme-surface': '#191922',
+                            'meme-card': '#21212e',
+                            'meme-green': '#00D685',
+                            'meme-pink': '#D60047',
+                            'meme-cyan': '#00B2D6',
+                            'meme-yellow': '#D6B500',
+                            // Map old names to new palette for JS compatibility
+                            up: '#00D685',
+                            down: '#D60047',
+                            accent: '#00B2D6',
+                            bg: '#191922',
+                            surface: '#191922',
+                            card: '#21212e',
+                            border: '#000000',
                         },
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-10px)' },
+                        fontFamily: {
+                            display: ['Bangers', 'system-ui'],
+                            mono: ['Space Mono', 'monospace'],
+                            sans: ['DM Sans', 'sans-serif'],
                         },
-                        glitch: {
-                            '0%': { transform: 'translate(0)' },
-                            '20%': { transform: 'translate(-1px, 1px)' },
-                            '40%': { transform: 'translate(-1px, -1px)' },
-                            '60%': { transform: 'translate(1px, 1px)' },
-                            '80%': { transform: 'translate(1px, -1px)' },
-                            '100%': { transform: 'translate(0)' },
+                        boxShadow: {
+                            'brutal-sm': '2px 2px 0px 0px rgba(0,0,0,1)',
+                            'brutal': '4px 4px 0px 0px rgba(0,0,0,1)',
+                            'brutal-lg': '6px 6px 0px 0px rgba(0,0,0,1)',
+                            'brutal-green': '4px 4px 0px 0px #00D685',
+                            'brutal-pink': '4px 4px 0px 0px #D60047',
+                            'brutal-cyan': '4px 4px 0px 0px #00B2D6',
+                            'brutal-yellow': '4px 4px 0px 0px #D6B500',
+                            'glow': '0 0 10px rgba(0, 255, 159, 0.2)',
                         },
-                        shake: {
-                            '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
-                            '20%, 80%': { transform: 'translate3d(1px, 0, 0)' },
-                            '30%, 50%, 70%': { transform: 'translate3d(-2px, 0, 0)' },
-                            '40%, 60%': { transform: 'translate3d(2px, 0, 0)' },
+                        animation: {
+                            'marquee': 'marquee 25s linear infinite',
+                            'float': 'float 6s ease-in-out infinite',
+                            'glitch': 'glitch 1s linear infinite',
+                            'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
+                            'slide-up': 'slideUp 0.3s ease-out',
+                            'fade-in': 'fadeIn 0.2s ease-out',
                         },
-                        slideUp: {
-                            '0%': { transform: 'translateY(100%)' },
-                            '100%': { transform: 'translateY(0)' },
-                        },
-                        fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' },
+                        keyframes: {
+                            marquee: {
+                                '0%': { transform: 'translateX(0%)' },
+                                '100%': { transform: 'translateX(-50%)' },
+                            },
+                            float: {
+                                '0%, 100%': { transform: 'translateY(0)' },
+                                '50%': { transform: 'translateY(-10px)' },
+                            },
+                            glitch: {
+                                '0%': { transform: 'translate(0)' },
+                                '20%': { transform: 'translate(-1px, 1px)' },
+                                '40%': { transform: 'translate(-1px, -1px)' },
+                                '60%': { transform: 'translate(1px, 1px)' },
+                                '80%': { transform: 'translate(1px, -1px)' },
+                                '100%': { transform: 'translate(0)' },
+                            },
+                            shake: {
+                                '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
+                                '20%, 80%': { transform: 'translate3d(1px, 0, 0)' },
+                                '30%, 50%, 70%': { transform: 'translate3d(-2px, 0, 0)' },
+                                '40%, 60%': { transform: 'translate3d(2px, 0, 0)' },
+                            },
+                            slideUp: {
+                                '0%': { transform: 'translateY(100%)' },
+                                '100%': { transform: 'translateY(0)' },
+                            },
+                            fadeIn: {
+                                '0%': { opacity: '0' },
+                                '100%': { opacity: '1' },
+                            }
                         }
                     }
                 }
             }
         }
-        }
     </script>
-
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
+    
     <!-- ===== PRIMARY META TAGS ===== -->
     <title>Canonix – Paxi Pumpfun Trade</title>
-
+    
     <!-- FONTS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
-
+    
     <link rel="apple-touch-icon" sizes="57x57" href="/assets/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="/assets/apple-icon-60x60.png">
     <link rel="apple-touch-icon" sizes="72x72" href="/assets/apple-icon-72x72.png">
@@ -121,12 +121,12 @@
     <meta name="author" content="Canonix Team">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <meta name="language" content="English">
-
+    
     <!-- ===== EXTERNAL CSS ===== -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    
     <!-- TAILWIND -->
-
+    
     <script src="https://mainnet-api.paxinet.io/resources/js/paxi-cosmjs.umd.js"></script>
     <script type="module">
         import { DirectSecp256k1HdWallet, DirectSecp256k1Wallet } from 'https://esm.sh/@cosmjs/proto-signing@0.32.3';
@@ -155,7 +155,7 @@
                 </h1>
             </a>
         </div>
-
+        
         <div class="flex items-center gap-3">
             <!-- Functional Icons -->
             <div class="hidden xl:flex items-center gap-2 border-r-2 border-black pr-3 mr-1 h-full">
@@ -166,7 +166,7 @@
                 <button onclick="toggleConsoleModal()" title="System Console" class="w-8 h-8 flex items-center justify-center border border-black bg-black text-meme-green hover:bg-meme-green hover:text-black transition-all shadow-brutal-sm"><i class="fas fa-terminal text-xs"></i></button>
                 <button onclick="window.location.href='setting.html'" title="Settings" class="w-8 h-8 flex items-center justify-center border border-black bg-meme-surface text-white hover:bg-white hover:text-black transition-all shadow-brutal-sm"><i class="fas fa-cog text-xs"></i></button>
             </div>
-
+            
             <div id="walletInfo" class="hidden sm:flex items-center gap-3 px-3 py-1.5 bg-meme-card border-2 border-black shadow-brutal-sm">
                 <div class="text-right">
                     <div id="walletAddrShort" class="text-[8px] font-mono text-gray-500 font-bold uppercase tracking-tight">...</div>
@@ -179,7 +179,7 @@
             </button>
         </div>
     </header>
-
+    
     <!-- Ticker News -->
     <div class="bg-meme-yellow border-b-2 border-black py-1 overflow-hidden whitespace-nowrap z-[60] relative flex items-center min-h-[28px] md:min-h-[36px]">
         <div id="tickerContent" class="animate-marquee inline-block">
@@ -188,16 +188,14 @@
             <span class="inline-block text-black font-display text-[10px] md:text-sm mx-4 md:mx-8 italic uppercase tracking-tighter">PUMP IT HARDER</span>
         </div>
     </div>
-
+    
     <div class="flex-1 flex overflow-hidden">
         <!-- ===== LEFT SIDEBAR: TOKEN LIST ===== -->
         <aside id="tokenSidebar" class="w-[280px] border-r-2 border-black bg-bg flex flex-col lg:static fixed left-0 top-14 bottom-0 z-[110] transition-transform duration-300 -translate-x-full lg:translate-x-0 overflow-hidden">
             <div class="p-3 bg-meme-surface border-b-2 border-black">
                 <div class="relative mb-3">
                     <i class="fas fa-search absolute left-2.5 top-1/2 -translate-y-1/2 text-meme-cyan text-xs"></i>
-                    <input type="text" id="tokenSidebarSearch" placeholder="SEARCH..."
-                        class="w-full pl-8 pr-3 py-2 bg-black border border-black text-xs font-display outline-none focus:border-meme-cyan transition-all text-white placeholder:text-gray-700 italic uppercase"
-                        oninput="filterTokenSidebar()">
+                    <input type="text" id="tokenSidebarSearch" placeholder="SEARCH..." class="w-full pl-8 pr-3 py-2 bg-black border border-black text-xs font-display outline-none focus:border-meme-cyan transition-all text-white placeholder:text-gray-700 italic uppercase" oninput="filterTokenSidebar()">
                 </div>
                 <div class="flex gap-1.5 overflow-x-auto no-scrollbar pb-1">
                     <button onclick="setSort('hot', event)" class="sort-btn px-3 py-1 border-2 border-black bg-meme-green text-black font-display text-[10px] shadow-brutal-sm hover:shadow-none hover:bg-meme-green hover:text-black transition-all uppercase italic">HOT</button>
@@ -215,7 +213,7 @@
                 </div>
             </div>
         </aside>
-
+        
         <!-- ===== MAIN CONTENT ===== -->
         <main class="flex-1 overflow-y-auto bg-bg relative no-scrollbar">
             
@@ -237,7 +235,7 @@
                             <i class="fas fa-brain text-xs"></i> AI
                         </button>
                     </div>
-
+                    
                     <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 w-full lg:w-auto">
                         <div class="bg-black/20 p-1.5 border border-black overflow-hidden">
                             <div class="text-[7px] text-black uppercase font-black tracking-widest font-mono italic truncate">Mcap</div>
@@ -289,14 +287,14 @@
                     </div>
                 </div>
             </div>
-
+            
             <!-- Swap Section (Visible only when connected) -->
             <div id="mainSwapContainer" class="px-3 md:px-4 pb-4 hidden">
                 <div class="bg-meme-surface border-2 border-black shadow-brutal p-4" id="mainSwapTerminal">
                     <!-- Swap Content Injected by JS -->
                 </div>
             </div>
-
+            
             <!-- Detailed Stats Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 px-3 md:px-4 pb-4">
                 <div class="bg-meme-surface border-2 border-black p-4 shadow-brutal rotate-[-0.5deg]">
@@ -321,7 +319,7 @@
                         </div>
                     </div>
                 </div>
-
+                
                 <div class="bg-meme-surface border-2 border-black p-4 shadow-brutal rotate-[0.5deg]">
                     <h4 class="text-lg font-display text-meme-cyan mb-4 flex items-center gap-2 italic uppercase tracking-tighter">
                         <i class="fas fa-droplet text-sm"></i> POOL DEPTH
@@ -341,7 +339,7 @@
                         </div>
                     </div>
                 </div>
-
+                
                 <div class="bg-meme-surface border-2 border-black p-4 shadow-brutal rotate-[-0.3deg]">
                     <h4 class="text-lg font-display text-meme-yellow mb-4 flex items-center gap-2 italic uppercase tracking-tighter">
                         <i class="fas fa-info-circle text-sm"></i> TOKEN INFO
@@ -354,7 +352,7 @@
                         <div class="flex flex-col gap-1.5">
                             <span class="font-mono text-[8px] text-gray-600 font-bold uppercase tracking-widest">CONTRACT CA</span>
                             <div class="flex items-center gap-2 bg-black p-2 border border-black shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)]">
-                                <code id="caAddr" class="text-[8px] font-mono text-meme-green truncate flex-1 uppercase tracking-tighter">paxi...</code>
+                                <code id="caAddr" class="text-[10px] font-mono text-meme-green flex-1 uppercase tracking-tighter break-all">paxi...</code>
                                 <button onclick="copyAddrText()" class="text-meme-yellow hover:scale-110 transition-transform"><i class="fas fa-copy text-sm"></i></button>
                             </div>
                         </div>
@@ -372,7 +370,7 @@
                     </div>
                 </div>
             </div>
-
+            
             <!-- Token Details (Desc & Marketing) -->
             <div id="tokenDetailsCard" class="px-3 md:px-4 pb-4 hidden">
                 <div class="bg-meme-surface border-2 border-black p-4 shadow-brutal">
@@ -384,14 +382,14 @@
                         <div>
                             <h4 class="text-lg font-display text-meme-yellow mb-2 italic uppercase tracking-tighter">MARKETING</h4>
                             <div class="flex items-center gap-2 bg-black p-2 border border-black">
-                                <code id="mktAddr" class="text-[8px] font-mono text-gray-500 truncate flex-1 uppercase tracking-tighter italic">N/A</code>
+                                <code id="mktAddr" class="text-[10px] font-mono text-gray-500 break-all flex-1 uppercase tracking-tighter italic">N/A</code>
                                 <button onclick="window.copyMktAddr()" class="text-meme-yellow hover:scale-110 transition-transform"><i class="fas fa-copy text-sm"></i></button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
+            
             <!-- Tabs Section (Holders) -->
             <div class="px-3 md:px-4 pb-20">
                 <div class="flex gap-2 mb-4">
@@ -402,7 +400,7 @@
                 </div>
             </div>
         </main>
-
+        
         <!-- ===== RIGHT SIDEBAR: UNIFIED WALLET TERMINAL ===== -->
         <aside id="unifiedSidebar" class="w-[320px] border-l-2 border-black bg-bg flex flex-col lg:static fixed right-0 top-14 bottom-0 z-[110] transition-transform duration-300 translate-x-full lg:translate-x-0 overflow-hidden">
             <!-- Sidebar Navigation Tabs -->
@@ -415,7 +413,7 @@
                 <button onclick="setSidebarTab('burn')" id="side-tab-burn" class="hidden"></button>
                 <button onclick="setSidebarTab('donate')" id="side-tab-donate" class="hidden"></button>
             </div>
-
+            
             <div id="sidebarContent" class="flex-1 overflow-y-auto p-4 no-scrollbar bg-bg">
                 <!-- Content will be injected by JS based on tab -->
                 <div class="text-center py-24 flex flex-col items-center">
@@ -428,7 +426,7 @@
             </div>
         </aside>
     </div>
-
+    
     <!-- Mobile Navigation Bar -->
     <div class="lg:hidden fixed bottom-0 left-0 right-0 h-20 bg-bg border-t-2 border-black z-[100] flex flex-col justify-between p-1.5">
         <div class="flex items-center justify-between w-full mb-1 px-3">
@@ -462,9 +460,9 @@
             </button>
         </div>
     </div>
-
+    
     <!-- ===== MODALS & BOTTOM SHEETS ===== -->
-
+    
     <!-- More Menu Modal -->
     <div id="moreMenuModal" class="hidden fixed inset-0 bg-black/95 z-[200] flex flex-col animate-fade-in p-4">
         <div class="flex justify-between items-center mb-8">
@@ -505,7 +503,7 @@
             <button onclick="showConnectModal()" class="w-full py-4 bg-meme-pink text-white font-display text-2xl border-2 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic tracking-tighter">Connect Wallet</button>
         </div>
     </div>
-
+    
     <!-- Token Selection Modal -->
     <div id="tokenModal" class="hidden fixed inset-0 bg-black/90 z-[333] flex items-center justify-center p-4">
         <div class="bg-meme-surface border-2 border-black shadow-brutal-lg w-full max-w-lg max-h-[80vh] overflow-hidden flex flex-col">
@@ -516,14 +514,12 @@
                 </button>
             </div>
             <div class="p-4 bg-meme-card border-b-2 border-black">
-                <input type="text" id="tokenSearch" placeholder="SEARCH..."
-                    class="w-full px-3 py-3 bg-black border-2 border-black text-white font-display text-lg outline-none focus:border-meme-green placeholder:text-gray-800 uppercase italic"
-                    oninput="filterTokens()">
+                <input type="text" id="tokenSearch" placeholder="SEARCH..." class="w-full px-3 py-3 bg-black border-2 border-black text-white font-display text-lg outline-none focus:border-meme-green placeholder:text-gray-800 uppercase italic" oninput="filterTokens()">
             </div>
             <div id="tokenList" class="flex-1 overflow-y-auto no-scrollbar bg-bg"></div>
         </div>
     </div>
-
+    
     <!-- Connect Wallet Modal -->
     <div id="connectModal" class="hidden fixed inset-0 bg-black/95 z-[100] flex items-center justify-center p-4">
         <div class="bg-meme-surface border-2 border-black shadow-brutal w-full max-w-sm overflow-hidden">
@@ -535,35 +531,44 @@
                 <button onclick="connectWallet('internal')" class="w-full flex items-center justify-between p-4 bg-meme-surface border-2 border-black shadow-brutal hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all group">
                     <div class="flex items-center gap-3 text-left">
                         <div class="w-10 h-10 bg-meme-green border-2 border-black flex items-center justify-center text-black text-lg group-hover:rotate-12 transition-transform"><i class="fas fa-shield-alt"></i></div>
-                        <div><div class="text-lg font-display text-white uppercase italic tracking-tighter leading-none">Internal</div><div class="font-mono text-[7px] text-gray-500 font-bold uppercase tracking-widest italic">Secure & Encrypted</div></div>
+                        <div>
+                            <div class="text-lg font-display text-white uppercase italic tracking-tighter leading-none">Internal</div>
+                            <div class="font-mono text-[7px] text-gray-500 font-bold uppercase tracking-widest italic">Secure & Encrypted</div>
+                        </div>
                     </div>
                     <i class="fas fa-chevron-right text-gray-800 text-xs"></i>
                 </button>
                 <button onclick="connectWallet('paxihub')" class="w-full flex items-center justify-between p-4 bg-meme-surface border-2 border-black shadow-brutal hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all group">
                     <div class="flex items-center gap-3 text-left">
                         <div class="w-10 h-10 bg-meme-pink border-2 border-black flex items-center justify-center text-white text-lg group-hover:rotate-12 transition-transform"><i class="fas fa-wallet"></i></div>
-                        <div><div class="text-lg font-display text-white uppercase italic tracking-tighter leading-none">PaxiHub</div><div class="font-mono text-[7px] text-gray-500 font-bold uppercase tracking-widest italic">Mobile & Extension</div></div>
+                        <div>
+                            <div class="text-lg font-display text-white uppercase italic tracking-tighter leading-none">PaxiHub</div>
+                            <div class="font-mono text-[7px] text-gray-500 font-bold uppercase tracking-widest italic">Mobile & Extension</div>
+                        </div>
                     </div>
                     <i class="fas fa-chevron-right text-gray-800 text-xs"></i>
                 </button>
                 <button onclick="connectWallet('keplr')" class="w-full flex items-center justify-between p-4 bg-meme-surface border-2 border-black shadow-brutal hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all group">
                     <div class="flex items-center gap-3 text-left">
                         <div class="w-10 h-10 bg-meme-cyan border-2 border-black flex items-center justify-center text-black text-lg group-hover:rotate-12 transition-transform"><i class="fas fa-rocket"></i></div>
-                        <div><div class="text-lg font-display text-white uppercase italic tracking-tighter leading-none">Keplr</div><div class="font-mono text-[7px] text-gray-500 font-bold uppercase tracking-widest italic">Cosmos Extension</div></div>
+                        <div>
+                            <div class="text-lg font-display text-white uppercase italic tracking-tighter leading-none">Keplr</div>
+                            <div class="font-mono text-[7px] text-gray-500 font-bold uppercase tracking-widest italic">Cosmos Extension</div>
+                        </div>
                     </div>
                     <i class="fas fa-chevron-right text-gray-800 text-xs"></i>
                 </button>
             </div>
         </div>
     </div>
-
+    
     <!-- PIN Bottom Sheet -->
     <div id="pinSheet" class="hidden fixed inset-0 bg-black/95 z-[100000] flex items-end justify-center">
         <div class="bg-meme-surface w-full max-w-md border-t-4 border-black animate-slide-up flex flex-col p-6 pb-12">
             <div class="w-16 h-2 bg-black rounded-full mx-auto mb-8 shrink-0"></div>
             <h3 id="pinTitle" class="text-3xl font-display text-center mb-2 uppercase italic tracking-tighter text-meme-cyan">Unlock</h3>
             <p id="pinMsg" class="font-mono text-[8px] text-gray-500 text-center mb-8 font-bold uppercase tracking-widest italic">Enter your 6-digit access code</p>
-
+            
             <!-- Pin Dots -->
             <div id="pinDots" class="flex justify-center gap-4 mb-10 shrink-0">
                 <div class="pin-dot w-5 h-5 bg-black border-2 border-black shadow-brutal-sm"></div>
@@ -573,7 +578,7 @@
                 <div class="pin-dot w-5 h-5 bg-black border-2 border-black shadow-brutal-sm"></div>
                 <div class="pin-dot w-5 h-5 bg-black border-2 border-black shadow-brutal-sm"></div>
             </div>
-
+            
             <!-- Keypad -->
             <div class="grid grid-cols-3 gap-4 max-w-xs mx-auto">
                 <button onclick="pressPin(1)" class="w-14 h-14 bg-black border-2 border-black shadow-brutal flex items-center justify-center text-xl font-display hover:bg-meme-green hover:text-black hover:shadow-none transition-all italic">1</button>
@@ -592,7 +597,7 @@
             <button onclick="hidePinSheet()" class="mt-8 font-display text-xl text-gray-700 uppercase italic hover:text-white transition-colors tracking-widest shrink-0">Abort</button>
         </div>
     </div>
-
+    
     <!-- Internal Wallet Sheet -->
     <div id="internalWalletSheet" class="fixed inset-0 bg-black/80 z-[190] flex items-end justify-center transition-transform duration-300 translate-y-full">
         <div class="bg-meme-surface w-full max-w-md rounded-t-[3rem] border-t-4 border-black p-8 flex flex-col items-center">
@@ -603,7 +608,7 @@
             <button onclick="hideInternalWalletSheet()" class="mt-8 font-display text-xl text-gray-700 uppercase italic tracking-widest hover:text-meme-pink transition-colors">Close</button>
         </div>
     </div>
-
+    
     <!-- Slippage Settings Modal -->
     <div id="slippageModal" class="hidden fixed inset-0 bg-black/95 z-[400] flex items-center justify-center p-4">
         <div class="bg-meme-surface border-2 border-black shadow-brutal w-full max-w-xs overflow-hidden">
@@ -626,10 +631,10 @@
             </div>
         </div>
     </div>
-
+    
     <!-- Notification Container -->
     <div id="notificationContainer" class="fixed top-16 right-4 z-[9999] flex flex-col gap-3"></div>
-
+    
     <!-- Wallet Switcher Modal -->
     <div id="walletSwitcherModal" class="hidden fixed inset-0 bg-black/95 z-[60000] flex items-center justify-center p-4">
         <div class="bg-meme-surface border-2 border-black shadow-brutal w-full max-w-sm overflow-hidden">
@@ -641,11 +646,14 @@
                 <!-- Populated by JS -->
             </div>
             <div class="p-4 bg-meme-card border-t-2 border-black">
-                <button onclick="window.WalletUI.hideWalletSwitcher(); showConnectModal();" class="w-full py-3 bg-meme-cyan text-black font-display text-xl border-2 border-black shadow-brutal-sm hover:shadow-none transition-all uppercase italic tracking-tighter">Add New Wallet</button>
+                <div class="flex flex-col gap-4 w-full">
+                    <button onclick="window.WalletUI.hideWalletSwitcher(); window.WalletUI.showCreateModal()" class="w-full py-4 bg-meme-green text-black font-display text-xl border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">CREATE NEW WALLET</button>
+                    <button onclick="window.WalletUI.hideWalletSwitcher(); window.WalletUI.showImportModal()" class="w-full py-4 bg-black border-4 border-black text-white font-display text-xl shadow-brutal-cyan hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">IMPORT WALLET</button>
+                </div>
             </div>
         </div>
     </div>
-
+    
     <!-- Transaction Confirmation Modal -->
     <div id="txConfirmModal" class="hidden fixed inset-0 bg-black/98 z-[70000] flex items-center justify-center p-4">
         <div class="bg-meme-surface border-2 border-black w-full max-w-xs rounded-[2rem] p-6 animate-slide-up shadow-brutal">
@@ -656,7 +664,7 @@
                 <h3 class="text-2xl font-display uppercase italic tracking-widest mb-1 text-white leading-none">CONFIRM</h3>
                 <p id="txConfirmMsg" class="font-mono text-[7px] text-gray-500 uppercase font-bold tracking-widest italic">VERIFY ACTION</p>
             </div>
-
+            
             <div class="space-y-3 bg-black border border-black p-4 mb-6 shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)]">
                 <div class="flex justify-between items-center gap-2">
                     <span class="font-mono text-[7px] uppercase font-black text-gray-600 italic shrink-0">ACTION</span>
@@ -671,14 +679,14 @@
                     <span id="txConfirmFee" class="font-mono text-[10px] font-bold text-meme-green">--</span>
                 </div>
             </div>
-
+            
             <div class="grid grid-cols-2 gap-3">
                 <button id="txCancelBtn" class="py-3 bg-black border-2 border-black text-gray-600 font-display text-lg uppercase italic hover:text-white transition-all shadow-brutal-sm hover:shadow-none tracking-tighter leading-none">Abort</button>
                 <button id="txConfirmBtn" class="py-3 bg-meme-green text-black font-display text-lg uppercase italic border-2 border-black shadow-brutal-sm hover:shadow-none tracking-tighter leading-none">CONFIRM</button>
             </div>
         </div>
     </div>
-
+    
     <!-- Transaction Result Modal -->
     <div id="txResultModal" class="hidden fixed inset-0 bg-black/98 z-[80000] flex items-center justify-center p-4">
         <div class="bg-meme-surface border-2 border-black w-full max-w-sm rounded-[2rem] p-6 animate-slide-up overflow-y-auto max-h-[90vh] shadow-brutal no-scrollbar text-center">
@@ -686,13 +694,13 @@
             </div>
             <h3 id="txResultStatus" class="text-3xl font-display uppercase italic tracking-widest mb-1 leading-none">STATUS</h3>
             <div id="txResultType" class="font-mono text-[7px] font-bold uppercase tracking-widest text-gray-600 italic mb-6">LOG</div>
-
+            
             <div class="space-y-3 bg-black border border-black p-4 mb-6 shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)] text-left">
                 <div class="flex justify-between items-center border-b border-meme-surface pb-2 mb-2">
                     <span class="font-mono text-[7px] uppercase font-black text-gray-600 italic">TIME</span>
                     <span id="txResultTime" class="font-mono text-[10px] text-meme-cyan uppercase">--:--</span>
                 </div>
-
+                
                 <div class="space-y-2.5">
                     <div class="flex justify-between items-center">
                         <span class="font-mono text-[7px] uppercase font-bold text-gray-600 italic">TYPE</span>
@@ -746,14 +754,14 @@
                     </div>
                 </div>
             </div>
-
+            
             <button onclick="window.closeTxResult()" class="w-full py-4 bg-black border-2 border-black text-white font-display text-xl uppercase italic shadow-brutal hover:shadow-none hover:bg-meme-surface transition-all tracking-tighter leading-none">CLOSE</button>
         </div>
     </div>
-
+    
     <!-- Global Feature Lock Overlay -->
     <div id="featureLockOverlay" class="hidden fixed inset-0 bg-black/60 z-[9999] backdrop-blur-md"></div>
-
+    
     <!-- Transaction Loader -->
     <div id="txLoader" class="hidden fixed inset-0 bg-black/90 z-[30000] flex items-center justify-center">
         <div class="text-center">
@@ -762,10 +770,10 @@
             <p class="font-mono text-[8px] text-meme-green font-bold uppercase mt-3 tracking-widest italic">WRITING TO BLOCKS</p>
         </div>
     </div>
-
+    
     <div id="sidebarOverlay" class="hidden fixed inset-0 bg-black/80 z-[105] lg:hidden" onclick="window.closeAllSidebars()"></div>
     <div id="sheetOverlay" class="hidden fixed inset-0 bg-black/60 z-[180] backdrop-blur-sm transition-opacity duration-300" onclick="hideInternalWalletSheet()"></div>
-
+    
     <!-- AI Modal -->
     <div id="aiModal" class="hidden fixed inset-0 bg-black/95 z-[120] flex items-center justify-center p-4">
         <div class="bg-meme-surface border-2 border-black shadow-brutal w-full max-w-xl max-h-[80vh] overflow-y-auto no-scrollbar relative">
@@ -776,7 +784,7 @@
             <div id="aiContent" class="p-6 font-mono text-[10px] text-gray-400 leading-relaxed uppercase tracking-wider italic"></div>
         </div>
     </div>
-
+    
     <!-- Console Log Modal -->
     <div id="consoleModal" class="hidden fixed inset-0 bg-black/98 z-[9999] flex items-center justify-center p-4">
         <div class="bg-meme-surface border-2 border-black w-full max-w-4xl h-[70vh] flex flex-col overflow-hidden shadow-brutal">
@@ -794,7 +802,7 @@
             </div>
         </div>
     </div>
-
+    
     <!-- ===== MODULAR JAVASCRIPT FILES ===== -->
     <script src="./js/core/config.js"></script>
     <script src="./js/core/utils.js"></script>
@@ -814,13 +822,13 @@
     <script src="./js/ui/rendering.js"></script>
     <script src="./js/ui/console.js"></script>
     <script src="./js/app.js"></script>
-
+    
     <script>
         // REDESIGN SPECIFIC UI FUNCTIONS
         window.toggleMobileSidebar = function() {
             const sidebar = document.getElementById('tokenSidebar');
             const isOpen = !sidebar.classList.contains('-translate-x-full');
-
+            
             if (isOpen) {
                 sidebar.classList.add('-translate-x-full');
                 window.hideSidebarOverlay();
@@ -832,11 +840,11 @@
                 if (window.loadTokensOptimized) window.loadTokensOptimized();
             }
         };
-
+        
         window.toggleUnifiedSidebar = function() {
             const sidebar = document.getElementById('unifiedSidebar');
             const isOpen = !sidebar.classList.contains('translate-x-full');
-
+            
             if (isOpen) {
                 sidebar.classList.add('translate-x-full');
                 window.hideSidebarOverlay();
@@ -847,7 +855,7 @@
                 window.showSidebarOverlay();
             }
         };
-
+        
         window.toggleMoreMenu = function() {
             const modal = document.getElementById('moreMenuModal');
             if (modal.classList.contains('hidden')) {
@@ -858,7 +866,7 @@
                 document.body.classList.remove('overflow-hidden');
             }
         };
-
+        
         window.closeAllSidebars = function() {
             const tokenSidebar = document.getElementById('tokenSidebar');
             const unifiedSidebar = document.getElementById('unifiedSidebar');
@@ -866,19 +874,19 @@
             if (unifiedSidebar) unifiedSidebar.classList.add('translate-x-full');
             window.hideSidebarOverlay();
         };
-
+        
         window.showSidebarOverlay = function() {
             if (window.innerWidth < 1024) {
                 const overlay = document.getElementById('sidebarOverlay');
                 if (overlay) overlay.classList.remove('hidden');
             }
         };
-
+        
         window.hideSidebarOverlay = function() {
             const overlay = document.getElementById('sidebarOverlay');
             if (overlay) overlay.classList.add('hidden');
         };
-
+        
         // Ensure UI stays responsive
         let lastWidth = window.innerWidth;
         window.addEventListener('resize', () => {
@@ -897,4 +905,5 @@
         });
     </script>
 </body>
+
 </html>

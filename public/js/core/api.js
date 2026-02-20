@@ -95,17 +95,28 @@ window.historyIsEnd = false;
 
 window.loadTransactionHistory = async function(address, page = 1) {
   if (!address) return [];
+  
   try {
-    const url = `/api/tx-history?address=${address}&page=${page}&limit=10&_t=${Date.now()}`;
+    const params = new URLSearchParams({
+      address: address,
+      page: page,
+      limit: 10,
+      _t: Date.now()
+    });
+    
+    const url = `${window.APP_CONFIG.BACKEND_API}/api/tx-history?${params.toString()}`;
+    
     const data = await window.fetchDirect(url);
-
+    
     if (data && data.transactions) {
-        if (data.transactions.length < 10) window.historyIsEnd = true;
-        return data.transactions;
+      if (data.transactions.length < 10) window.historyIsEnd = true;
+      return data.transactions;
     }
+    
   } catch (e) {
     console.error('Failed to load transaction history:', e);
   }
+  
   return [];
 };
 
@@ -127,9 +138,9 @@ window.fetchGasEstimate = async function(msgCount = 1) {
   } catch (e) {
     // Network requires min 40,000 upaxi fee
     const gasLimit = 500000 + (300000 * (msgCount - 1));
-    const est = Math.max(Math.ceil(gasLimit * 0.025), 40000);
+    const est = Math.max(Math.ceil(gasLimit * 0.05), 40000);
     return {
-      gasPrice: "0.025",
+      gasPrice: "0.05",
       gasLimit: gasLimit.toString(),
       estimatedFee: est.toString(),
       usdValue: (est / 1e6 * (window.paxiPriceUSD || 0.05)).toFixed(4)
@@ -160,6 +171,7 @@ window.loadWalletTokens = async function(address) {
   }
   return [];
 };
+
 // ===== FETCH USER LP POSITIONS DIRECT =====
 window.fetchUserLPPositions = async function(userAddress) {
   if (!userAddress) return [];

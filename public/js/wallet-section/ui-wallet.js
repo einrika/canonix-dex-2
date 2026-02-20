@@ -215,7 +215,7 @@ Object.assign(window.WalletUI, {
                     </div>
 
                     <div class="flex items-center gap-3 p-3 bg-black border-2 border-black shadow-inner">
-                        <code class="text-[10px] font-mono text-gray-500 flex-1 truncate font-bold">${wallet.address}</code>
+                        <code class="text-[10px] font-mono text-gray-500 flex-1 break-all font-bold">${window.shortenAddress(wallet.address, 10)}</code>
                         <button onclick="window.copyAddress(event, '${wallet.address}')" class="w-8 h-8 flex items-center justify-center bg-meme-cyan text-black border-2 border-black shadow-brutal-sm hover:shadow-none transition-all">
                             <i class="fas fa-copy text-xs"></i>
                         </button>
@@ -553,7 +553,7 @@ Object.assign(window.WalletUI, {
                         <div class="p-3 bg-black border border-black">
                             <div class="text-[8px] text-gray-600 uppercase font-black italic mb-1">Contract Address</div>
                             <div class="flex items-center gap-2">
-                                <code class="text-[8px] font-mono text-gray-400 truncate flex-1 uppercase tracking-tighter">${address}</code>
+                                <code class="text-[8px] font-mono text-gray-400 break-all flex-1 uppercase tracking-tighter">${window.shortenAddress(address, 10)}</code>
                                 <button onclick="navigator.clipboard.writeText('${address}')" class="text-meme-yellow hover:scale-125 transition-transform"><i class="fas fa-copy"></i></button>
                             </div>
                         </div>

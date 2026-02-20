@@ -133,66 +133,6 @@ window.renderTokenList = function(filter = '') {
     }).join('');
 };
 
-
-window.txHistory = [];
-
-window.renderTransactionHistory = async function() {
-    const container = document.getElementById('tabContent') || document.getElementById('txHistoryList');
-    if (!container) return;
-
-    if (!window.wallet) {
-        container.innerHTML = `
-            <div class="flex flex-col items-center justify-center py-20 px-6 text-center animate-fade-in">
-                <div class="w-20 h-20 bg-meme-card border-4 border-black shadow-brutal flex items-center justify-center mb-8 rotate-[-10deg]">
-                    <i class="fas fa-lock text-3xl text-gray-700"></i>
-                </div>
-                <p class="font-display text-2xl text-gray-600 uppercase italic">Connection Required</p>
-                <button onclick="window.showConnectModal()" class="mt-6 px-8 py-3 bg-meme-cyan text-black font-display text-xl uppercase italic border-4 border-black shadow-brutal hover:shadow-none transition-all">CONNECT WALLET</button>
-            </div>`;
-        return;
-    }
-
-    container.innerHTML = '<div class="text-center py-20"><div class="w-12 h-12 border-4 border-meme-green border-t-transparent rounded-full animate-spin mx-auto"></div></div>';
-
-    const history = await window.loadTransactionHistory(window.wallet.address);
-
-    if (history.length === 0) {
-        container.innerHTML = '<div class="text-center py-20 font-display text-2xl text-gray-700 uppercase italic">No transactions found</div>';
-        return;
-    }
-    
-    container.innerHTML = `
-        <div class="overflow-x-auto no-scrollbar">
-            <table class="w-full text-left border-collapse">
-                <thead class="bg-black">
-                    <tr class="font-display text-lg text-gray-500 uppercase italic border-b-4 border-black">
-                        <th class="p-6">TYPE</th>
-                        <th class="p-6">ASSET</th>
-                        <th class="p-6">AMOUNT</th>
-                        <th class="p-6">TIME</th>
-                        <th class="p-6 text-right">ACTION</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y-2 divide-black">
-                    ${history.map(tx => {
-                        const timeStr = new Date(tx.timestamp).toLocaleString();
-                        const typeColor = tx.type === 'Swap' ? 'text-meme-green' : (tx.type === 'Transfer' ? 'text-meme-cyan' : 'text-white');
-                        return `
-                            <tr class="hover:bg-meme-card transition-colors group">
-                                <td class="p-6"><span class="font-display text-2xl italic uppercase ${typeColor}">${tx.type}</span></td>
-                                <td class="p-6"><span class="font-mono text-sm font-black text-meme-yellow uppercase tracking-tighter">${tx.symbol || 'PAXI'}</span></td>
-                                <td class="p-6"><span class="font-mono text-sm font-bold text-white">${tx.amount.toFixed(4)}</span></td>
-                                <td class="p-6"><span class="font-display text-lg text-gray-600 italic uppercase">${timeStr}</span></td>
-                                <td class="p-6 text-right">
-                                    <button onclick="window.showTransactionDetailModal('${tx.hash}')" class="px-4 py-2 bg-meme-surface border-2 border-black text-meme-cyan font-display text-lg italic uppercase shadow-brutal hover:shadow-none transition-all">HISTORY</button>
-                                </td>
-                            </tr>`;
-                    }).join('')}
-                </tbody>
-            </table>
-        </div>`;
-};
-
 // ===== ERROR MODAL =====
 window.showError = function(message) {
     const modal = document.getElementById('errorModal');
@@ -284,13 +224,13 @@ window.updateDashboard = function(detail) {
     // Minting & Verified Status
     const minter = document.getElementById('minterStatus');
     if (minter) {
-        window.setText(minter, detail.minting_disabled ? 'OPENED' : 'RUG-PROOF');
-        minter.className = detail.minting_disabled ? 'font-display text-base text-meme-pink uppercase italic tracking-tighter' : 'font-display text-base text-meme-green uppercase italic tracking-tighter';
+        window.setText(minter, detail.minting_disabled ? 'Freezing and minting have been revoked' : 'Freezing and minting have not been revoked');
+        minter.className = detail.minting_disabled ? 'font-display text-base text-meme-green uppercase italic tracking-tighter' : 'font-display text-base text-meme-pink uppercase italic tracking-tighter';
     }
 
     const verif = document.getElementById('verifyStatus');
     if (verif) {
-        window.setText(verif, detail.official_verified ? 'OFFICIAL' : 'COMMUNITY');
+        window.setText(verif, detail.official_verified ? 'OFFICIAL VERIFIED' : 'NOT VERIFIED');
         verif.className = detail.official_verified ? 'font-display text-base text-meme-cyan uppercase italic tracking-tighter' : 'font-display text-base text-gray-600 uppercase italic tracking-tighter';
     }
 
