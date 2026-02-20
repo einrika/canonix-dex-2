@@ -219,6 +219,21 @@ window.generateAdvancedAnalysis = function(data) {
 
 // ===== RENDER ANALYSIS =====
 window.renderAnalysis = function(data) {
+    if (!data) {
+        const content = document.getElementById('aiContent');
+        if (content) {
+            content.innerHTML = `
+                <div class="flex flex-col items-center py-20 text-center animate-fade-in">
+                    <div class="w-16 h-16 bg-meme-card border-4 border-black shadow-brutal flex items-center justify-center text-gray-700 text-3xl mb-8 rotate-[-10deg]">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="text-2xl font-display text-white italic uppercase tracking-tighter mb-4">INITIALIZING DATA...</h3>
+                    <p class="font-mono text-[8px] text-gray-600 font-bold uppercase tracking-widest italic max-w-[200px]">Select a token from the terminal to begin deep neural market analysis.</p>
+                </div>
+            `;
+        }
+        return;
+    }
     const {
         symbol, latestPrice, change24h, sentiment, trend, rsi,
         volatilityLabel, liquidity, liquidityScore,
@@ -279,17 +294,19 @@ window.renderAnalysis = function(data) {
 // ===== MAIN AI ANALYSIS GENERATOR =====
 window.generateAIAnalysis = async function() {
     const content = document.getElementById('aiContent');
+    if (!content) return;
+
+    if (!window.priceHistory?.length || !window.currentPRC20 || !window.poolData) {
+        window.renderAnalysis(null);
+        return;
+    }
+
     content.innerHTML = `
         <div class="flex flex-col items-center py-20 text-center animate-pulse">
             <div class="w-16 h-16 border-4 border-meme-green border-t-transparent rounded-full animate-spin mb-8"></div>
             <span class="font-display text-2xl text-meme-green uppercase italic">Analyzing Market...</span>
         </div>
     `;
-
-    if (!window.priceHistory?.length || !window.currentPRC20 || !window.poolData) {
-        content.innerHTML = '<div class="text-center text-gray-400 py-8">Select a token to analyze</div>';
-        return;
-    }
 
     try {
         const prices = window.priceHistory.map(h => h.price);

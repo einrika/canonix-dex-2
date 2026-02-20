@@ -394,7 +394,7 @@ window.showTxResult = function(data) {
     const modal = document.getElementById('txResultModal');
     if (!modal) return;
 
-    const { status, type, asset, amount, network, address, hash, error } = data;
+    const { status, type, asset, amount, network, address, hash, error, height, gasUsed, gasWanted } = data;
     const isSuccess = status === 'success';
 
     // Status UI
@@ -428,13 +428,32 @@ window.showTxResult = function(data) {
 
     const hashEl = document.getElementById('logHash');
     const hashContainer = document.getElementById('logHashContainer');
-    if (isSuccess && hash) {
-        hashContainer.classList.remove('hidden');
-        hashEl.textContent = hash;
+    if (hash) {
+        if (hashContainer) hashContainer.classList.remove('hidden');
+        if (hashEl) hashEl.textContent = hash;
         const explorer = activeNet?.explorer || 'https://explorer.paxinet.io';
-        document.getElementById('viewHashBtn').onclick = () => window.open(`${explorer}/tx/${hash}`, '_blank');
+        const viewBtn = document.getElementById('viewHashBtn');
+        if (viewBtn) viewBtn.onclick = () => window.open(`${explorer}/tx/${hash}`, '_blank');
     } else {
-        hashContainer.classList.add('hidden');
+        if (hashContainer) hashContainer.classList.add('hidden');
+    }
+
+    // New Fields: Height & Gas
+    const extraInfo = document.getElementById('txExtraInfo');
+    if (isSuccess && height && extraInfo) {
+        extraInfo.classList.remove('hidden');
+        extraInfo.innerHTML = `
+            <div class="flex justify-between items-center mt-2 pt-2 border-t border-meme-surface/30">
+                <span class="font-mono text-[7px] uppercase font-bold text-gray-600 italic">HEIGHT</span>
+                <span class="font-mono text-[9px] text-meme-cyan">${height}</span>
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="font-mono text-[7px] uppercase font-bold text-gray-600 italic">GAS (USED/WANT)</span>
+                <span class="font-mono text-[9px] text-gray-500">${gasUsed || 0} / ${gasWanted || 0}</span>
+            </div>
+        `;
+    } else if (extraInfo) {
+        extraInfo.classList.add('hidden');
     }
 
     // Error

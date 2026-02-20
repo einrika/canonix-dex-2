@@ -95,77 +95,11 @@ Object.assign(window.WalletUI, {
             assetsSection.classList.add('hidden');
 
             // Load history when tab is opened
-            this.loadHistory();
-        }
-    },
-
-    loadHistory: function() {
-        const container = document.getElementById('history-container');
-        if (!container) return;
-
-        const activeWallet = window.WalletManager.getActiveWallet();
-        if (!activeWallet) {
-            container.innerHTML = '<div class="text-center py-8 text-gray-500 text-sm">No wallet connected</div>';
-            return;
-        }
-
-        container.innerHTML = '<div class="text-center py-8"><div class="w-8 h-8 border-4 border-meme-green border-t-transparent rounded-full animate-spin mx-auto"></div><div class="text-[10px] text-gray-500 mt-3 uppercase font-black tracking-widest">Loading History...</div></div>';
-        
-        // Fetch transactions using existing function
-        if (window.fetchUserTransactions) {
-            window.fetchUserTransactions(activeWallet.address).then(txs => {
-                if (!txs || txs.length === 0) {
-                    container.innerHTML = `
-                        <div class="text-center py-12">
-                            <i class="fas fa-history text-4xl text-gray-700 mb-3"></i>
-                            <p class="text-sm text-gray-500 font-bold">No transaction history</p>
-                            <p class="text-xs text-gray-600 mt-1">Your transactions will appear here</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                // Render transaction list
-                container.innerHTML = `
-                    <div class="space-y-2">
-                        ${txs.slice(0, 20).map(tx => {
-                            const isSent = tx.from === activeWallet.address;
-                            const type = isSent ? 'Sent' : 'Received';
-                            const icon = isSent ? 'fa-arrow-up' : 'fa-arrow-down';
-                            const color = isSent ? 'text-down' : 'text-up';
-                            
-                            return `
-                                <div class="p-3 bg-surface border border-border rounded-xl hover:bg-card transition-all">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-full bg-${isSent ? 'down' : 'up'}/10 flex items-center justify-center ${color}">
-                                            <i class="fas ${icon} text-sm"></i>
-                                        </div>
-                                        <div class="flex-1 min-w-0">
-                                            <div class="flex justify-between items-start mb-1">
-                                                <span class="text-xs font-bold ${color}">${type}</span>
-                                                <span class="text-xs font-mono">${tx.amount || '0'} ${tx.symbol || 'PAXI'}</span>
-                                            </div>
-                                            <div class="text-[10px] text-gray-500">${window.shortenAddress(isSent ? tx.to : tx.from)}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            `;
-                        }).join('')}
-                    </div>
-                `;
-            }).catch(err => {
-                console.error('Failed to load history:', err);
-                container.innerHTML = '<div class="text-center py-8 text-gray-500 text-sm">Failed to load history</div>';
-            });
-        } else {
-            // Fallback if function not available
-            container.innerHTML = `
-                <div class="text-center py-12">
-                    <i class="fas fa-history text-4xl text-gray-700 mb-3"></i>
-                    <p class="text-sm text-gray-500 font-bold">No transaction history</p>
-                    <p class="text-xs text-gray-600 mt-1">Your transactions will appear here</p>
-                </div>
-            `;
+            if (window.WalletHistory) {
+                window.WalletHistory.loadHistory();
+            } else if (this.loadHistory) {
+                this.loadHistory();
+            }
         }
     },
 
@@ -259,10 +193,13 @@ Object.assign(window.WalletUI, {
                             <h3 class="text-3xl font-display italic tracking-tighter text-white uppercase drop-shadow-[2px_2px_0_rgba(0,0,0,1)]">${wallet.name}</h3>
                         </div>
                         <div class="flex gap-2">
+                            <button onclick="window.WalletUI.showWalletSwitcher()" class="w-10 h-10 flex items-center justify-center bg-black border-2 border-black text-gray-500 hover:text-meme-yellow transition-all shadow-brutal-sm hover:shadow-none" title="Switch Wallet">
+                                <i class="fas fa-exchange-alt text-sm"></i>
+                            </button>
                             <button id="wallet-refresh-btn" class="w-10 h-10 flex items-center justify-center bg-black border-2 border-black text-gray-500 hover:text-meme-green transition-all shadow-brutal-sm hover:shadow-none" title="Sync">
                                 <i class="fas fa-sync-alt text-sm"></i>
                             </button>
-                            <button id="wallet-settings-btn" class="w-10 h-10 flex items-center justify-center bg-black border-2 border-black text-gray-500 hover:text-meme-cyan transition-all shadow-brutal-sm hover:shadow-none">
+                            <button id="wallet-settings-btn" class="w-10 h-10 flex items-center justify-center bg-black border-2 border-black text-gray-500 hover:text-meme-cyan transition-all shadow-brutal-sm hover:shadow-none" title="Settings">
                                 <i class="fas fa-cog"></i>
                             </button>
                         </div>
@@ -553,6 +490,7 @@ Object.assign(window.WalletUI, {
         const meta = window.AssetManager.getAssetMeta(address);
         const c = token.contractData || {};
         const balance = (token.balance || 0) / Math.pow(10, token.decimals || 6);
+        const paxiValue = address === 'PAXI' ? balance : (balance * meta.price);
         const usdValue = balance * (meta.priceUSD || 0);
 
         const modalHtml = `
@@ -592,8 +530,8 @@ Object.assign(window.WalletUI, {
                         <!-- Market Stats -->
                         <div class="grid grid-cols-2 gap-3">
                             <div class="p-3 bg-black border border-black">
-                                <div class="text-[8px] text-gray-600 uppercase font-black italic mb-1">Price (PAXI)</div>
-                                <div class="text-[10px] font-mono font-bold text-white">${meta.price.toFixed(8)}</div>
+                                <div class="text-[8px] text-gray-600 uppercase font-black italic mb-1">Your Value (PAXI)</div>
+                                <div class="text-[10px] font-mono font-bold text-white">${paxiValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })}</div>
                             </div>
                             <div class="p-3 bg-black border border-black">
                                 <div class="text-[8px] text-gray-600 uppercase font-black italic mb-1">24h Change</div>
@@ -1049,6 +987,7 @@ Object.assign(window.WalletUI, {
             console.error("❌ Error fetching PAXI balance:", e);
         }
 
+        let totalPAXIValue = 0;
         let totalUSD = 0;
         const currentPaxiPrice = window.paxiPriceUSD || 0.05;
 
@@ -1074,31 +1013,31 @@ Object.assign(window.WalletUI, {
 
                 const meta = window.AssetManager.getAssetMeta(token.address);
 
-                // Update Price Display
-                const priceEl = document.getElementById(`price-${token.address}`);
-                if (priceEl) {
-                    if (token.address === 'PAXI') {
-                        window.setText(priceEl, '1.00 PAXI');
-                    } else {
-                        window.setText(priceEl, `${meta.price.toFixed(8)} PAXI`);
-                    }
-                }
-
-                // Calculate & Update value display
-                let usdValue = 0;
-                const valEl = document.getElementById(`val-${token.address}`);
+                // Calculate values
+                let tokenPaxiValue = 0;
+                let tokenUsdValue = 0;
 
                 if (token.address === 'PAXI') {
-                    usdValue = amount * currentPaxiPrice;
+                    tokenPaxiValue = amount;
+                    tokenUsdValue = amount * currentPaxiPrice;
                 } else {
-                    const paxiValue = amount * meta.price;
-                    usdValue = paxiValue * currentPaxiPrice;
+                    tokenPaxiValue = amount * meta.price;
+                    tokenUsdValue = tokenPaxiValue * currentPaxiPrice;
                 }
 
-                totalUSD += usdValue;
+                totalPAXIValue += tokenPaxiValue;
+                totalUSD += tokenUsdValue;
 
+                // Update Value Display in PAXI (Per Item Holding Value, not Price)
+                const priceEl = document.getElementById(`price-${token.address}`);
+                if (priceEl) {
+                    window.setText(priceEl, `${tokenPaxiValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })} PAXI`);
+                }
+
+                // Update USD value display
+                const valEl = document.getElementById(`val-${token.address}`);
                 if (valEl) {
-                    window.setText(valEl, `$${usdValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD`);
+                    window.setText(valEl, `$${tokenUsdValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD`);
                 }
 
                 // Auto hide zero balance if setting enabled
@@ -1108,6 +1047,12 @@ Object.assign(window.WalletUI, {
             } catch (e) {
                 console.error(`❌ Error updating balance for ${token.symbol}:`, e);
             }
+        }
+
+        // Update total portfolio in PAXI (Main display)
+        const sidebarPaxiBal = document.getElementById('sidebar-paxi-bal');
+        if (sidebarPaxiBal) {
+            window.setText(sidebarPaxiBal, totalPAXIValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
         }
 
         // Update total portfolio USD
@@ -1351,49 +1296,55 @@ Object.assign(window.WalletUI, {
         });
     },
 
-    showWalletSwitcher: function() {
-        const wallets = window.WalletManager.getWallets();
-        const activeId = window.WalletManager.activeId;
+    showWalletSwitcher() {
+        const modal = document.getElementById('walletSwitcherModal');
+        const container = document.getElementById('walletListContainer');
+        if (!modal || !container) return;
 
-        const modalHtml = `
-            <div id="switcherModal" class="fixed inset-0 bg-black/90 z-[600] flex items-center justify-center p-4">
-                <div class="bg-card border border-border w-full max-w-md rounded-[2.5rem] flex flex-col max-h-[80vh]">
-                    <div class="p-6 border-b border-border flex justify-between items-center">
-                        <h3 class="text-lg font-black italic uppercase tracking-tighter">My Wallets</h3>
-                        <button onclick="document.getElementById('switcherModal').remove()" class="text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
+        const wallets = window.WalletManager.getWallets();
+        const activeWallet = window.WalletManager.getActiveWallet();
+
+        container.innerHTML = wallets.map(w => `
+            <button onclick="window.WalletUI.handleSwitchWallet('${w.id}')" class="w-full flex items-center justify-between p-4 ${w.id === activeWallet?.id ? 'bg-meme-green text-black' : 'bg-meme-surface text-white'} border-2 border-black shadow-brutal-sm hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all group text-left">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 ${w.id === activeWallet?.id ? 'bg-black text-meme-green' : 'bg-meme-pink text-white'} border-2 border-black flex items-center justify-center text-xs group-hover:rotate-12 transition-transform shrink-0">
+                        <i class="fas fa-wallet"></i>
                     </div>
-                    <div class="flex-1 overflow-y-auto p-6 space-y-3 no-scrollbar">
-                        ${wallets.map(w => `
-                            <div class="p-4 rounded-2xl border ${w.id === activeId ? 'border-up bg-up/5' : 'border-border bg-surface/50'} flex items-center gap-4 hover:border-border/80 cursor-pointer transition-all" onclick="window.WalletUI.switchWallet('${w.id}')">
-                                <div class="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center text-gray-500">
-                                    <i class="fas ${w.isWatchOnly ? 'fa-eye' : 'fa-wallet'} ${w.id === activeId ? 'text-up' : ''}"></i>
-                                </div>
-                                <div class="flex-1 min-w-0" onclick="window.WalletUI.switchWallet('${w.id}')">
-                                    <div class="font-black italic text-sm truncate uppercase tracking-tighter">${w.name}</div>
-                                    <div class="text-[10px] font-mono text-gray-500 truncate">${w.address}</div>
-                                </div>
-                                <div class="flex items-center gap-3">
-                                    <button onclick="window.WalletUI.showWalletSettings('${w.id}')" class="text-gray-500 hover:text-white p-2">
-                                        <i class="fas fa-cog"></i>
-                                    </button>
-                                    ${w.id === activeId ? '<i class="fas fa-check-circle text-up"></i>' : ''}
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                    <div class="p-6 border-t border-border grid grid-cols-2 gap-3">
-                        <button onclick="window.WalletUI.showCreateModal(); document.getElementById('switcherModal').remove()" class="py-3 bg-up/10 text-up rounded-xl font-black text-[10px] uppercase italic border border-up/20">Add Wallet</button>
-                        <button onclick="window.WalletUI.showImportModal(); document.getElementById('switcherModal').remove()" class="py-3 bg-card text-white rounded-xl font-black text-[10px] uppercase italic border border-border">Import</button>
+                    <div class="min-w-0">
+                        <div class="text-base font-display uppercase italic tracking-tighter leading-none truncate">${w.name || 'Wallet'}</div>
+                        <div class="font-mono text-[7px] ${w.id === activeWallet?.id ? 'text-black/60' : 'text-gray-500'} font-bold uppercase tracking-widest italic truncate">${window.shortenAddress(w.address)}</div>
                     </div>
                 </div>
-            </div>
-        `;
-        document.body.insertAdjacentHTML('beforeend', modalHtml);
+                ${w.id === activeWallet?.id ? '<i class="fas fa-check-circle shrink-0"></i>' : '<i class="fas fa-chevron-right text-gray-800 shrink-0"></i>'}
+            </button>
+        `).join('');
+
+        modal.classList.remove('hidden');
     },
 
-    switchWallet: function(id) {
+    hideWalletSwitcher() {
+        const modal = document.getElementById('walletSwitcherModal');
+        if (modal) modal.classList.add('hidden');
+    },
+
+    async handleSwitchWallet(id) {
+        this.hideWalletSwitcher();
         window.WalletManager.setActiveWallet(id);
-        document.getElementById('switcherModal')?.remove();
+
+        // If we have a session PIN, try to fully connect the wallet
+        const wallet = window.WalletManager.getWallet(id);
+        const pin = window.WalletSecurity.getSessionPin();
+
+        if (pin && wallet && !wallet.isWatchOnly) {
+            try {
+                await window.connectInternalWallet(id, pin);
+            } catch (e) {
+                console.error("Failed to re-init signer on switch", e);
+            }
+        }
+
+        // Trigger UI refresh
+        if (window.refreshAllUI) window.refreshAllUI();
         this.renderDashboard();
     },
 

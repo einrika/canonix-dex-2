@@ -191,7 +191,7 @@
 
     <div class="flex-1 flex overflow-hidden">
         <!-- ===== LEFT SIDEBAR: TOKEN LIST ===== -->
-        <aside id="tokenSidebar" class="w-[280px] border-r-2 border-black bg-bg flex flex-col lg:static fixed left-0 top-14 bottom-0 z-40 transition-transform duration-300 -translate-x-full lg:translate-x-0 overflow-hidden">
+        <aside id="tokenSidebar" class="w-[280px] border-r-2 border-black bg-bg flex flex-col lg:static fixed left-0 top-14 bottom-0 z-[110] transition-transform duration-300 -translate-x-full lg:translate-x-0 overflow-hidden">
             <div class="p-3 bg-meme-surface border-b-2 border-black">
                 <div class="relative mb-3">
                     <i class="fas fa-search absolute left-2.5 top-1/2 -translate-y-1/2 text-meme-cyan text-xs"></i>
@@ -377,7 +377,7 @@
         </main>
 
         <!-- ===== RIGHT SIDEBAR: UNIFIED WALLET TERMINAL ===== -->
-        <aside id="unifiedSidebar" class="w-[320px] border-l-2 border-black bg-bg flex flex-col lg:static fixed right-0 top-14 bottom-0 z-40 transition-transform duration-300 translate-x-full lg:translate-x-0 overflow-hidden">
+        <aside id="unifiedSidebar" class="w-[320px] border-l-2 border-black bg-bg flex flex-col lg:static fixed right-0 top-14 bottom-0 z-[110] transition-transform duration-300 translate-x-full lg:translate-x-0 overflow-hidden">
             <!-- Sidebar Navigation Tabs -->
             <div class="flex bg-meme-surface border-b-2 border-black p-1.5 gap-1.5">
                 <button onclick="setSidebarTab('wallet')" id="side-tab-wallet" class="flex-1 py-2 bg-black border border-black text-meme-green font-display text-base shadow-brutal-sm hover:shadow-none transition-all uppercase italic tracking-tighter">Wallet</button>
@@ -603,8 +603,24 @@
     <!-- Notification Container -->
     <div id="notificationContainer" class="fixed top-16 right-4 z-[9999] flex flex-col gap-3"></div>
 
+    <!-- Wallet Switcher Modal -->
+    <div id="walletSwitcherModal" class="hidden fixed inset-0 bg-black/95 z-[60000] flex items-center justify-center p-4">
+        <div class="bg-meme-surface border-2 border-black shadow-brutal w-full max-w-sm overflow-hidden">
+            <div class="p-4 border-b-2 border-black flex justify-between items-center bg-meme-green">
+                <h3 class="text-2xl font-display text-black italic uppercase tracking-tighter">Switch Wallet</h3>
+                <button onclick="window.WalletUI.hideWalletSwitcher()" class="text-black hover:scale-125 transition-transform"><i class="fas fa-times text-lg"></i></button>
+            </div>
+            <div id="walletListContainer" class="p-4 space-y-3 bg-black max-h-[60vh] overflow-y-auto no-scrollbar">
+                <!-- Populated by JS -->
+            </div>
+            <div class="p-4 bg-meme-card border-t-2 border-black">
+                <button onclick="window.WalletUI.hideWalletSwitcher(); showConnectModal();" class="w-full py-3 bg-meme-cyan text-black font-display text-xl border-2 border-black shadow-brutal-sm hover:shadow-none transition-all uppercase italic tracking-tighter">Add New Wallet</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Transaction Confirmation Modal -->
-    <div id="txConfirmModal" class="hidden fixed inset-0 bg-black/98 z-[40000] flex items-center justify-center p-4">
+    <div id="txConfirmModal" class="hidden fixed inset-0 bg-black/98 z-[70000] flex items-center justify-center p-4">
         <div class="bg-meme-surface border-2 border-black w-full max-w-xs rounded-[2rem] p-6 animate-slide-up shadow-brutal">
             <div class="text-center mb-6">
                 <div class="w-14 h-14 bg-meme-green border-2 border-black shadow-brutal-sm flex items-center justify-center mx-auto mb-4 rotate-[-10deg]">
@@ -637,7 +653,7 @@
     </div>
 
     <!-- Transaction Result Modal -->
-    <div id="txResultModal" class="hidden fixed inset-0 bg-black/98 z-[50000] flex items-center justify-center p-4">
+    <div id="txResultModal" class="hidden fixed inset-0 bg-black/98 z-[80000] flex items-center justify-center p-4">
         <div class="bg-meme-surface border-2 border-black w-full max-w-sm rounded-[2rem] p-6 animate-slide-up overflow-y-auto max-h-[90vh] shadow-brutal no-scrollbar text-center">
             <div id="txResultIcon" class="w-16 h-16 border-2 border-black shadow-brutal-sm flex items-center justify-center mx-auto mb-4 rotate-[8deg]">
             </div>
@@ -670,6 +686,20 @@
                             <button id="viewHashBtn" class="text-meme-green hover:scale-110 transition-all"><i class="fas fa-external-link-alt text-xs"></i></button>
                         </div>
                     </div>
+                    <div id="txExtraInfo" class="hidden flex flex-col gap-2 pt-2 border-t border-meme-surface mt-2">
+                        <div class="flex justify-between items-center">
+                            <span class="font-mono text-[7px] uppercase font-bold text-gray-600 italic">HEIGHT</span>
+                            <span id="logHeight" class="font-mono text-[10px] text-white">--</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="font-mono text-[7px] uppercase font-bold text-gray-600 italic">GAS USED</span>
+                            <span id="logGasUsed" class="font-mono text-[10px] text-meme-cyan">--</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="font-mono text-[7px] uppercase font-bold text-gray-600 italic">GAS WANTED</span>
+                            <span id="logGasWanted" class="font-mono text-[10px] text-gray-500">--</span>
+                        </div>
+                    </div>
                     <div id="logErrorContainer" class="hidden flex flex-col gap-1">
                         <span class="font-mono text-[7px] uppercase font-bold text-meme-pink text-center italic">ERROR</span>
                         <div class="p-3 bg-meme-pink/10 border border-meme-pink/30">
@@ -695,11 +725,11 @@
         </div>
     </div>
 
-    <div id="sidebarOverlay" class="hidden fixed inset-0 bg-black/80 z-30 lg:hidden" onclick="window.closeAllSidebars()"></div>
+    <div id="sidebarOverlay" class="hidden fixed inset-0 bg-black/80 z-[105] lg:hidden" onclick="window.closeAllSidebars()"></div>
     <div id="sheetOverlay" class="hidden fixed inset-0 bg-black/60 z-[180] backdrop-blur-sm transition-opacity duration-300" onclick="hideInternalWalletSheet()"></div>
 
     <!-- AI Modal -->
-    <div id="aiModal" class="hidden fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4">
+    <div id="aiModal" class="hidden fixed inset-0 bg-black/95 z-[120] flex items-center justify-center p-4">
         <div class="bg-meme-surface border-2 border-black shadow-brutal w-full max-w-xl max-h-[80vh] overflow-y-auto no-scrollbar relative">
             <div class="p-4 border-b-2 border-black flex justify-between items-center sticky top-0 bg-meme-surface z-10">
                 <h3 class="text-2xl font-display text-meme-green italic uppercase tracking-tighter"><i class="fas fa-brain mr-3 text-lg"></i>AI ORACLE</h3>
@@ -733,6 +763,7 @@
     <script src="./js/core/api.js"></script>
     <!-- New Wallet Section -->
     <script src="./js/wallet-section/wallet-core.js"></script>
+    <script src="./js/wallet-section/history.js"></script>
     <script src="./js/wallet-section/ui-wallet.js"></script>
     <!-- Other Modules -->
     <script src="./js/modules/market/tokens.js"></script>

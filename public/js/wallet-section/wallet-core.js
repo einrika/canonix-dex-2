@@ -906,10 +906,65 @@ window.buildAndSendTx = async function(messages, memo = "", options = {}) {
             body: JSON.stringify({ tx_bytes: txBytesBase64, mode: 'BROADCAST_MODE_SYNC' })
         });
 
+        if (!broadcastRes.tx_response || broadcastRes.tx_response.code !== 0) {
+            hideLoader();
+            const errorLog = broadcastRes.tx_response?.raw_log || broadcastRes.tx_response?.message || "Unknown Network Error";
+            throw new Error(`Broadcast failed: ${errorLog}`);
+        }
+
+        const hash = broadcastRes.tx_response.txhash;
+        console.log('📡 TX Broadcasted, Hash:', hash);
+
+        // 7. Poll for Result (DeliverTx)
+        if (!silent) window.showNotif('Confirming transaction...', 'info');
+
+        let result = null;
+        let attempts = 0;
+        const maxAttempts = 15;
+
+        while (attempts < maxAttempts) {
+            try {
+                // Use Tendermint RPC for detailed result as requested
+                const pollRes = await window.fetchDirect(`${endpoints.rpc}/tx?hash=0x${hash}`);
+                if (pollRes && pollRes.result) {
+                    result = pollRes.result;
+                    break;
+                }
+            } catch (e) {
+                // Not found yet or other error, continue polling
+            }
+            attempts++;
+            await new Promise(r => setTimeout(r, 2000));
+        }
+
         hideLoader();
 
-        if (broadcastRes.tx_response && broadcastRes.tx_response.code === 0) {
-            const hash = broadcastRes.tx_response.txhash;
+        if (result && result.tx_result) {
+            const code = result.tx_result.code;
+            const isSuccess = code === 0;
+
+            if (!silent) {
+                window.showTxResult({
+                    status: isSuccess ? 'success' : 'failed',
+                    type: metadata.type || 'Transaction',
+                    asset: metadata.asset || '--',
+                    amount: metadata.amount || '--',
+                    address: metadata.address || window.wallet.address,
+                    hash: hash,
+                    error: isSuccess ? null : (result.tx_result.log || "Execution Failed"),
+                    height: result.height,
+                    gasUsed: result.tx_result.gas_used,
+                    gasWanted: result.tx_result.gas_wanted
+                });
+            }
+
+            if (!isSuccess) {
+                throw new Error(`Transaction failed: ${result.tx_result.log || 'Unknown Error'}`);
+            }
+
+            return { success: true, hash, height: result.height, ...result };
+        } else {
+            // Fallback if polling failed but broadcast succeeded
             if (!silent) {
                 window.showTxResult({
                     status: 'success',
@@ -917,15 +972,11 @@ window.buildAndSendTx = async function(messages, memo = "", options = {}) {
                     asset: metadata.asset || '--',
                     amount: metadata.amount || '--',
                     address: metadata.address || window.wallet.address,
-                    hash: hash
+                    hash: hash,
+                    note: "Transaction sent but could not verify result. Check explorer."
                 });
             }
-            console.log('✅ TX Hash:', hash);
-            
-            return { success: true, hash, ...broadcastRes.tx_response };
-        } else {
-            const errorLog = broadcastRes.tx_response?.raw_log || broadcastRes.tx_response?.message || "Unknown Network Error";
-            throw new Error(`Broadcast failed: ${errorLog}`);
+            return { success: true, hash };
         }
 
     } catch (err) {
