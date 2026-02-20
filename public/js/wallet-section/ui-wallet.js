@@ -249,7 +249,7 @@ Object.assign(window.WalletUI, {
             <div class="space-y-8 animate-fade-in p-1">
                 <!-- Wallet Card - Brutal Style -->
                 <div class="p-6 bg-meme-surface border-4 border-black shadow-brutal rotate-[-1deg] relative overflow-hidden group">
-                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-meme-green opacity-5 blur-3xl rounded-full"></div>
+                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-meme-green opacity-5 blur-3xl rounded-full pointer-events-none"></div>
                     <div class="flex justify-between items-start mb-8">
                         <div>
                             <div class="flex items-center gap-2 mb-2">

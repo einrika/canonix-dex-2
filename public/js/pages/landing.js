@@ -9,6 +9,8 @@ window.marketSubFilter = 'all';
 window.marketSearchQuery = '';
 window.marketPage = 0;
 window.marketLimit = 12;
+window.marketTotalAvailable = 0;  // ✅ FIX: Track total dari API
+window.marketIsFetching = false;  // ✅ FIX: Guard double-fetch
 window.searchTimeout = null;
 
 window.addEventListener('load', async () => {
@@ -33,12 +35,14 @@ async function loadMarketData(type = 'all') {
         grid.innerHTML = '<div class="col-span-full text-center py-20 text-gray-600 font-bold uppercase tracking-widest"><div class="w-10 h-10 border-4 border-meme-green border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>SYNCING...</div>';
 
         window.marketPage = 0;
-        // Fetch tokens using BACKEND_API (via fetchDirect routing)
+        window.marketTokens = []; // ✅ FIX: Reset array saat load awal
+
         const url = `${window.APP_CONFIG.EXPLORER_API}/prc20/contracts?page=${window.marketPage}&type=${type}&_t=${Date.now()}`;
         const data = await window.fetchDirect(url);
 
         if (data && data.contracts) {
             window.marketTokens = data.contracts.map(c => window.processTokenDetail(c.contract_address, c));
+            window.marketTotalAvailable = data.total || data.totals || 0; // ✅ FIX: Simpan total dari API
             renderMarketGrid();
         }
     } catch (e) {
@@ -76,7 +80,7 @@ window.setMarketFilter = function(type, btn) {
         loadMarketData('nonpump');
     } else {
         subTabsContainer.classList.add('hidden');
-        loadMarketData(type === 'verified' ? 'all' : 'all'); // Verified handles locally or via filter
+        loadMarketData(type === 'verified' ? 'all' : 'all');
     }
 };
 
@@ -134,51 +138,65 @@ window.filterMarket = function() {
 
             if (data && data.contracts) {
                 window.marketTokens = data.contracts.map(c => window.processTokenDetail(c.contract_address, c));
+                window.marketTotalAvailable = window.marketTokens.length; // search = tidak ada load more
                 renderMarketGrid();
             } else {
                 window.marketTokens = [];
+                window.marketTotalAvailable = 0;
                 renderMarketGrid();
             }
         } catch (e) {
             console.error('Search error:', e);
-            grid.innerHTML = '<div class="col-span-full text-center py-20 text-down font-bold uppercase tracking-widest">Search failed</div>';
+            const grid = document.getElementById('marketGrid');
+            if (grid) grid.innerHTML = '<div class="col-span-full text-center py-20 text-down font-bold uppercase tracking-widest">Search failed</div>';
         }
     }, 500); // 500ms debounce
 };
 
+// ✅ FIX: loadMoreMarket — fetch + append + guard isFetching
 window.loadMoreMarket = async function() {
+    if (window.marketIsFetching) return; // ✅ Guard double-click
+
     const btn = document.getElementById('loadMoreMarket');
     if (btn) {
         btn.disabled = true;
         btn.innerHTML = '<i class="fas fa-circle-notch fa-spin mr-2"></i> LOADING...';
     }
 
+    window.marketIsFetching = true;
+
     try {
-        window.marketPage++;
-        const type = (window.marketFilter === 'pumping') ? 'all' : 'nonpump';
-        const url = `${window.APP_CONFIG.EXPLORER_API}/prc20/contracts?page=${window.marketPage}&type=${type}&_t=${Date.now()}`;
+        const nextPage = window.marketPage + 1;
+        const type = (window.marketFilter === 'nonpump') ? 'nonpump' : (window.marketFilter === 'pumping') ? 'pumping' : 'all';
+        const url = `${window.APP_CONFIG.EXPLORER_API}/prc20/contracts?page=${nextPage}&type=${type}&_t=${Date.now()}`;
         const data = await window.fetchDirect(url);
 
         if (data && data.contracts && data.contracts.length > 0) {
-            const newTokens = data.contracts.map(c => window.processTokenDetail(c.contract_address, c));
+            window.marketPage = nextPage; // ✅ Hanya update page kalau berhasil
 
-            // Append unique tokens only
-            newTokens.forEach(t => {
-                if (!window.marketTokens.find(mt => mt.address === t.address)) {
-                    window.marketTokens.push(t);
+            if (data.total || data.totals) {
+                window.marketTotalAvailable = data.total || data.totals; // ✅ Update total
+            }
+
+            // ✅ Append token baru, skip duplikat
+            data.contracts.forEach(c => {
+                const detail = window.processTokenDetail(c.contract_address, c);
+                if (!window.marketTokens.find(mt => mt.address === detail.address)) {
+                    window.marketTokens.push(detail);
                 }
             });
 
-            window.marketLimit = window.marketTokens.length;
             renderMarketGrid();
         } else {
-            // No more tokens
-            if (btn) btn.classList.add('hidden');
+            // Tidak ada data lagi
+            window.marketTotalAvailable = window.marketTokens.length; // ✅ Stop load more
+            renderMarketGrid();
         }
     } catch (e) {
         console.error('Load more failed:', e);
-        window.marketPage--; // Rollback page on error
+        // Tidak rollback marketPage karena nextPage belum di-assign
     } finally {
+        window.marketIsFetching = false;
         if (btn && !btn.classList.contains('hidden')) {
             btn.disabled = false;
             btn.innerHTML = 'LOAD MORE';
@@ -231,10 +249,14 @@ function renderMarketGrid() {
         );
     }
 
-    const display = filtered.slice(0, window.marketLimit);
+    // ✅ FIX: Tampilkan semua token yang sudah di-fetch, tanpa slice by marketLimit
+    const display = filtered;
 
     if (display.length === 0) {
         grid.innerHTML = '<div class="col-span-full text-center py-20 text-gray-600 font-bold uppercase tracking-widest">No assets found</div>';
+        // Sembunyikan tombol load more saat kosong
+        const loadMoreBtn = document.getElementById('loadMoreMarket');
+        if (loadMoreBtn) loadMoreBtn.classList.add('hidden');
         return;
     }
 
@@ -254,10 +276,10 @@ function renderMarketGrid() {
                             `<div class="w-10 h-10 md:w-12 md:h-12 bg-meme-yellow border-2 border-black flex items-center justify-center text-lg font-display text-black shadow-brutal-sm">${t.symbol.charAt(0)}</div>`
                         }
                     </div>
-                    <div class="min-w-0">
-                        <div class="flex items-center gap-1.5">
-                            <span class="font-display text-lg md:text-2xl text-white tracking-tighter uppercase italic truncate">${t.symbol}</span>
-                            ${t.verified ? `<i class="fas fa-check-circle text-meme-cyan text-xs md:text-sm"></i>` : ''}
+                    <div class="flex-1 overflow-hidden">
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            <span class="font-display text-lg md:text-2xl text-white tracking-tighter uppercase italic break-all">${t.symbol}</span>
+                            ${t.verified ? `<i class="fas fa-check-circle text-meme-cyan text-xs md:text-sm flex-shrink-0"></i>` : ''}
                         </div>
                         <div class="text-[8px] md:text-[10px] text-meme-cyan font-mono font-bold uppercase tracking-widest">PRC-20 ASSET</div>
                     </div>
@@ -278,18 +300,20 @@ function renderMarketGrid() {
                             <div class="text-[10px] md:text-base font-display text-meme-cyan italic tracking-tight">${vol}</div>
                         </div>
                     </div>
+                    <div class="text-[8px] text-gray-500 font-mono mt-0.5" title="${t.address}">${t.address.slice(0, 6)}....${t.address.slice(-6)}</div>
                 </div>
             </a>
         `;
     }).join('');
 
-    // Hide Load More if no more tokens
+    // ✅ FIX: Tampilkan/sembunyikan tombol Load More berdasarkan total dari API
     const loadMoreBtn = document.getElementById('loadMoreMarket');
     if (loadMoreBtn) {
-        if (window.marketLimit >= filtered.length) {
-            loadMoreBtn.classList.add('hidden');
-        } else {
+        const hasMore = window.marketTotalAvailable > window.marketTokens.length;
+        if (hasMore) {
             loadMoreBtn.classList.remove('hidden');
+        } else {
+            loadMoreBtn.classList.add('hidden');
         }
     }
 }

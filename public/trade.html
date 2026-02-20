@@ -218,36 +218,7 @@
 
         <!-- ===== MAIN CONTENT ===== -->
         <main class="flex-1 overflow-y-auto bg-bg relative no-scrollbar">
-            <!-- Chart Container -->
-            <div class="p-3 md:p-4">
-                <div class="bg-meme-surface border-2 border-black shadow-brutal overflow-hidden">
-                    <div class="p-2.5 border-b-2 border-black flex items-center justify-between bg-meme-card">
-                        <div class="flex items-center gap-3 overflow-x-auto no-scrollbar">
-                            <div class="flex gap-1.5 pr-3 border-r border-black">
-                                <button onclick="setTimeframe('realtime', this)" class="tf-btn px-2 py-0.5 bg-meme-green text-black font-display text-[10px] border border-black shadow-brutal-sm hover:shadow-none transition-all uppercase italic">LIVE</button>
-                                <button onclick="setTimeframe('1h', this)" class="tf-btn px-2 py-0.5 bg-black text-white font-display text-[10px] border border-black shadow-brutal-sm hover:shadow-none transition-all uppercase italic">1H</button>
-                                <button onclick="setTimeframe('24h', this)" class="tf-btn px-2 py-0.5 bg-black text-white font-display text-[10px] border border-black shadow-brutal-sm hover:shadow-none transition-all uppercase italic">24H</button>
-                            </div>
-                            <div class="flex gap-1.5">
-                                <button id="toggleMA7" onclick="toggleMA(7)" class="px-2 py-0.5 bg-black text-gray-600 font-display text-[10px] border border-black shadow-brutal-sm hover:text-meme-yellow transition-all uppercase italic">MA7</button>
-                                <button id="toggleMA25" onclick="toggleMA(25)" class="px-2 py-0.5 bg-black text-gray-600 font-display text-[10px] border border-black shadow-brutal-sm hover:text-meme-pink transition-all uppercase italic">MA25</button>
-                            </div>
-                        </div>
-                        <div id="chartStatus" class="font-mono text-[8px] text-meme-green font-bold uppercase tracking-widest animate-pulse">FEED ACTIVE</div>
-                    </div>
-                    <div class="h-[250px] md:h-[400px] w-full relative bg-black" id="chartWrapper">
-                        <div id="priceChart" class="w-full h-full"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Swap Section (Visible only when connected) -->
-            <div id="mainSwapContainer" class="px-3 md:px-4 pb-4 hidden">
-                <div class="bg-meme-surface border-2 border-black shadow-brutal p-4" id="mainSwapTerminal">
-                    <!-- Swap Content Injected by JS -->
-                </div>
-            </div>
-
+            
             <!-- Token Header / Stats -->
             <div class="bg-meme-pink border-y-2 border-black px-4 py-3 mb-4 z-30">
                 <div class="flex flex-col lg:flex-row items-center justify-between gap-4">
@@ -293,6 +264,36 @@
                             <div id="tradeSignal" class="text-[8px] font-display uppercase italic text-white tracking-tighter truncate">Neutral</div>
                         </div>
                     </div>
+                </div>
+            </div>
+            
+            <!-- Chart Container -->
+            <div class="p-3 md:p-4">
+                <div class="bg-meme-surface border-2 border-black shadow-brutal overflow-hidden">
+                    <div class="p-2.5 border-b-2 border-black flex items-center justify-between bg-meme-card">
+                        <div class="flex items-center gap-3 overflow-x-auto no-scrollbar">
+                            <div class="flex gap-1.5 pr-3 border-r border-black">
+                                <button onclick="setTimeframe('realtime', this)" class="tf-btn px-2 py-0.5 bg-meme-green text-black font-display text-[10px] border border-black shadow-brutal-sm hover:shadow-none transition-all uppercase italic">LIVE</button>
+                                <button onclick="setTimeframe('1h', this)" class="tf-btn px-2 py-0.5 bg-black text-white font-display text-[10px] border border-black shadow-brutal-sm hover:shadow-none transition-all uppercase italic">1H</button>
+                                <button onclick="setTimeframe('24h', this)" class="tf-btn px-2 py-0.5 bg-black text-white font-display text-[10px] border border-black shadow-brutal-sm hover:shadow-none transition-all uppercase italic">24H</button>
+                            </div>
+                            <div class="flex gap-1.5">
+                                <button id="toggleMA7" onclick="toggleMA(7)" class="px-2 py-0.5 bg-black text-gray-600 font-display text-[10px] border border-black shadow-brutal-sm hover:text-meme-yellow transition-all uppercase italic">MA7</button>
+                                <button id="toggleMA25" onclick="toggleMA(25)" class="px-2 py-0.5 bg-black text-gray-600 font-display text-[10px] border border-black shadow-brutal-sm hover:text-meme-pink transition-all uppercase italic">MA25</button>
+                            </div>
+                        </div>
+                        <div id="chartStatus" class="font-mono text-[8px] text-meme-green font-bold uppercase tracking-widest animate-pulse">FEED ACTIVE</div>
+                    </div>
+                    <div class="h-[250px] md:h-[400px] w-full relative bg-black" id="chartWrapper">
+                        <div id="priceChart" class="w-full h-full"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Swap Section (Visible only when connected) -->
+            <div id="mainSwapContainer" class="px-3 md:px-4 pb-4 hidden">
+                <div class="bg-meme-surface border-2 border-black shadow-brutal p-4" id="mainSwapTerminal">
+                    <!-- Swap Content Injected by JS -->
                 </div>
             </div>
 
