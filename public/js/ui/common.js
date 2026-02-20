@@ -230,19 +230,19 @@ window.updateDashboard = function(detail) {
         const change = detail.price_change_24h;
         if (change >= 0.05) {
             window.setText(signalEl, 'GIGA BULL');
-            signalEl.className = 'font-display text-xl uppercase italic text-meme-green';
+            signalEl.className = 'font-display text-[9px] uppercase italic text-meme-green font-bold';
         } else if (change > 0) {
             window.setText(signalEl, 'MOONING');
-            signalEl.className = 'font-display text-xl uppercase italic text-meme-green opacity-70';
+            signalEl.className = 'font-display text-[9px] uppercase italic text-meme-green opacity-70 font-bold';
         } else if (change <= -0.05) {
             window.setText(signalEl, 'TOTAL REKT');
-            signalEl.className = 'font-display text-xl uppercase italic text-meme-pink';
+            signalEl.className = 'font-display text-[9px] uppercase italic text-meme-pink font-bold';
         } else if (change < 0) {
             window.setText(signalEl, 'BLEEDING');
-            signalEl.className = 'font-display text-xl uppercase italic text-meme-pink opacity-70';
+            signalEl.className = 'font-display text-[9px] uppercase italic text-meme-pink opacity-70 font-bold';
         } else {
             window.setText(signalEl, 'STAGNANT');
-            signalEl.className = 'font-display text-xl uppercase italic text-gray-500';
+            signalEl.className = 'font-display text-[9px] uppercase italic text-gray-500 font-bold';
         }
     }
 
@@ -251,10 +251,11 @@ window.updateDashboard = function(detail) {
     window.setText('txCount', detail.txs_count.toLocaleString());
 
     const totalTrade = detail.buys + detail.sells;
-    const buyRatio = totalTrade > 0 ? (detail.buys / totalTrade) * 100 : 50;
+    const buyRatio = totalTrade > 0 ? Math.round((detail.buys / totalTrade) * 100) : 50;
     const bar = document.getElementById('buyRatioBar');
     if (bar) {
-        bar.className = `h-full bg-meme-green transition-all duration-500 w-[${buyRatio}%]`;
+        bar.style.width = `${buyRatio}%`;
+        bar.className = `h-full bg-meme-green transition-all duration-500`;
     }
 
     window.setText('resPaxi', window.formatAmount(detail.reserve_paxi / 1000000, 2));
@@ -365,13 +366,13 @@ window.showSlippageModal = function() {
 
 window.setTab = function(name) {
     document.querySelectorAll('.tab-btn').forEach(b => {
-        b.classList.remove('text-meme-cyan', 'border-meme-cyan');
-        b.classList.add('text-white', 'border-transparent');
+        b.classList.remove('active', 'bg-meme-green', 'text-black');
+        b.classList.add('bg-black', 'text-white');
     });
     const btn = document.getElementById('tab-' + name);
     if (btn) {
-        btn.classList.add('text-meme-cyan', 'border-meme-cyan');
-        btn.classList.remove('text-white', 'border-transparent');
+        btn.classList.add('active', 'bg-meme-green', 'text-black');
+        btn.classList.remove('bg-black', 'text-white');
     }
     if (name === 'holders') window.loadTokenHolders(); else window.renderTransactionHistory();
 };
@@ -385,14 +386,14 @@ window.setSidebarTab = function(tab) {
     tabs.forEach(t => {
         const btn = document.getElementById('side-tab-' + t);
         if (btn) {
-            btn.classList.remove('bg-meme-card', 'text-meme-green', 'shadow-brutal');
-            btn.classList.add('bg-black', 'text-gray-700');
+            btn.classList.remove('bg-meme-green', 'text-black', 'shadow-brutal');
+            btn.classList.add('bg-black', 'text-gray-500');
         }
     });
     const activeBtn = document.getElementById('side-tab-' + tab);
     if (activeBtn) {
-        activeBtn.classList.add('bg-meme-card', 'text-meme-green', 'shadow-brutal');
-        activeBtn.classList.remove('bg-black', 'text-gray-700');
+        activeBtn.classList.add('bg-meme-green', 'text-black', 'shadow-brutal');
+        activeBtn.classList.remove('bg-black', 'text-gray-500');
     }
     window.renderSidebarContent(tab);
 };

@@ -135,7 +135,7 @@
                     <div class="inline-block px-2 py-0.5 bg-meme-cyan border border-black font-mono text-[8px] font-black text-black uppercase tracking-widest mb-4 rotate-[-2deg]">
                         Bonding Curve Terminal v2.0
                     </div>
-                    <h1 class="text-4xl md:text-6xl font-display mb-4 leading-[0.9] tracking-tighter italic uppercase text-white drop-shadow-[4px_4px_0_rgba(0,0,0,1)]">
+                    <h1 class="text-3xl md:text-6xl font-display mb-4 leading-[0.9] tracking-tighter italic uppercase text-white drop-shadow-[4px_4px_0_rgba(0,0,0,1)]">
                         Unleash The <br>
                         <span class="text-meme-green">Meme Energy</span>
                     </h1>
@@ -198,7 +198,7 @@
         <div class="absolute inset-0 opacity-20 bg-[radial-gradient(circle,#000_1px,transparent_1px)] bg-[length:15px_15px]"></div>
         <div class="max-w-7xl mx-auto relative z-10 text-center">
             <div class="inline-block px-4 py-1 bg-black text-white font-display text-base uppercase italic rotate-[-1deg] mb-6">Live Competition</div>
-            <h2 class="text-4xl md:text-6xl font-display text-white italic uppercase tracking-tighter mb-8 drop-shadow-[4px_4px_0_rgba(0,0,0,1)]">Trading War</h2>
+            <h2 class="text-3xl md:text-6xl font-display text-white italic uppercase tracking-tighter mb-8 drop-shadow-[4px_4px_0_rgba(0,0,0,1)]">Trading War</h2>
 
             <div class="grid md:grid-cols-3 gap-6 mb-10 max-w-3xl mx-auto">
                 <div class="bg-black border-2 border-black p-4 shadow-brutal rotate-[-2deg]">
@@ -228,12 +228,19 @@
                     <p class="font-mono text-gray-500 font-black uppercase tracking-widest text-sm italic">Real-time data on trending tokens.</p>
                 </div>
                 <!-- Filters -->
-                <div class="flex flex-wrap gap-2">
-                    <button onclick="window.setMarketFilter('pumping', this)" class="market-filter-btn px-4 py-2 bg-meme-green border-2 border-black text-black font-display text-lg italic uppercase shadow-brutal hover:shadow-none transition-all">Pumping</button>
-                    <button onclick="window.setMarketFilter('hot', this)" class="market-filter-btn px-4 py-2 bg-black border-2 border-black text-white font-display text-lg italic uppercase shadow-brutal hover:shadow-none transition-all">Hot</button>
-                    <button onclick="window.setMarketFilter('new', this)" class="market-filter-btn px-4 py-2 bg-black border-2 border-black text-white font-display text-lg italic uppercase shadow-brutal hover:shadow-none transition-all">New</button>
-                    <button onclick="window.setMarketFilter('marketcap', this)" class="market-filter-btn px-4 py-2 bg-black border-2 border-black text-white font-display text-lg italic uppercase shadow-brutal hover:shadow-none transition-all">Mcap</button>
-                    <button onclick="window.setMarketFilter('gainers', this)" class="market-filter-btn px-4 py-2 bg-black border-2 border-black text-white font-display text-lg italic uppercase shadow-brutal hover:shadow-none transition-all">Gainers</button>
+                <div class="flex flex-col gap-4">
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="window.setMarketFilter('pumping', this)" class="market-filter-btn px-4 py-2 bg-meme-green border-2 border-black text-black font-display text-lg italic uppercase shadow-brutal hover:shadow-none transition-all">Pumping</button>
+                        <button onclick="window.setMarketFilter('hot', this)" class="market-filter-btn px-4 py-2 bg-black border-2 border-black text-white font-display text-lg italic uppercase shadow-brutal hover:shadow-none transition-all">Hot</button>
+                        <button onclick="window.setMarketFilter('new', this)" class="market-filter-btn px-4 py-2 bg-black border-2 border-black text-white font-display text-lg italic uppercase shadow-brutal hover:shadow-none transition-all">New</button>
+                        <button onclick="window.setMarketFilter('marketcap', this)" class="market-filter-btn px-4 py-2 bg-black border-2 border-black text-white font-display text-lg italic uppercase shadow-brutal hover:shadow-none transition-all">Mcap</button>
+                        <button onclick="window.setMarketFilter('gainers', this)" class="market-filter-btn px-4 py-2 bg-black border-2 border-black text-white font-display text-lg italic uppercase shadow-brutal hover:shadow-none transition-all">Gainers</button>
+                        <button onclick="window.setMarketFilter('verified', this)" class="market-filter-btn px-4 py-2 bg-black border-2 border-black text-white font-display text-lg italic uppercase shadow-brutal hover:shadow-none transition-all">Verified</button>
+                        <button onclick="window.setMarketFilter('nonpump', this)" class="market-filter-btn px-4 py-2 bg-black border-2 border-black text-white font-display text-lg italic uppercase shadow-brutal hover:shadow-none transition-all">Non-PUMP</button>
+                    </div>
+                    <div id="marketSubTabs" class="hidden flex flex-wrap gap-2 p-3 bg-meme-card border-2 border-black shadow-brutal-sm rotate-[-0.5deg]">
+                        <!-- JS Populated -->
+                    </div>
                 </div>
             </div>
 
@@ -327,7 +334,7 @@
                 <div class="w-12 h-12 bg-meme-pink border-2 border-black shadow-brutal flex items-center justify-center rotate-[10deg]">
                     <i class="fas fa-exchange-alt text-white text-2xl"></i>
                 </div>
-                <span class="text-5xl font-display tracking-widest text-white italic">CANONIX</span>
+                <span class="text-3xl md:text-5xl font-display tracking-widest text-white italic">CANONIX</span>
             </div>
             <div class="flex flex-wrap justify-center gap-8 font-display text-xl mb-12">
                 <a href="#" class="text-gray-600 hover:text-meme-green transition-colors uppercase italic">Docs</a>

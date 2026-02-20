@@ -47,8 +47,8 @@ Object.assign(window.WalletUI, {
                     <h3 class="text-3xl font-display italic mb-4 uppercase tracking-tighter text-white drop-shadow-[2px_2px_0_rgba(0,0,0,1)]">NO WALLET</h3>
                     <p class="text-[10px] text-gray-500 mb-10 uppercase font-black tracking-widest leading-relaxed italic">Connect a wallet to start trading on Paxi Network.</p>
                     <div class="flex flex-col gap-4 w-full">
-                        <button onclick="window.WalletUI.showCreateModal()" class="w-full py-5 bg-meme-green text-black font-display text-2xl border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">CREATE NEW</button>
-                        <button onclick="window.WalletUI.showImportModal()" class="w-full py-5 bg-black border-4 border-black text-white font-display text-2xl shadow-brutal-cyan hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">IMPORT WALLET</button>
+                        <button onclick="window.WalletUI.showCreateModal()" class="w-full py-4 bg-meme-green text-black font-display text-xl border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">CREATE NEW</button>
+                        <button onclick="window.WalletUI.showImportModal()" class="w-full py-4 bg-black border-4 border-black text-white font-display text-xl shadow-brutal-cyan hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">IMPORT WALLET</button>
                     </div>
                 </div>
             `;

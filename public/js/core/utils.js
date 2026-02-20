@@ -502,7 +502,7 @@ window.showNotif = function(msg, type = 'info') {
     window.activeNotifs.forEach((el) => {
       // Remove any existing top-[...] classes
       el.classList.forEach(cls => { if (cls.startsWith('top-[')) el.classList.remove(cls); });
-      el.classList.add(`top-[${currentTop}px]`);
+      el.classList.add(`top-[${Math.round(currentTop)}px]`);
       currentTop += el.offsetHeight + 12;
     });
   };

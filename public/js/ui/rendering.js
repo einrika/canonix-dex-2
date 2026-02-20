@@ -97,12 +97,12 @@ window.renderTokenSidebar = function(filter = '', isAppend = false) {
           container.prepend(subTabs);
       }
       const subTabsHtml = `
-            <button onclick="window.setSubSort('all')" class="px-3 py-1 text-[9px] font-black uppercase tracking-tighter rounded-full transition-all ${window.currentSubSort === 'all' ? 'bg-up text-bg shadow-brutal-sm' : 'text-gray-500 hover:text-gray-300'}">ALL NON-PUMP</button>
-            <button onclick="window.setSubSort('new')" class="px-3 py-1 text-[9px] font-black uppercase tracking-tighter rounded-full transition-all ${window.currentSubSort === 'new' ? 'bg-up text-bg shadow-brutal-sm' : 'text-gray-500 hover:text-gray-300'}">NEW</button>
-            <button onclick="window.setSubSort('gainer')" class="px-3 py-1 text-[9px] font-black uppercase tracking-tighter rounded-full transition-all ${window.currentSubSort === 'gainer' ? 'bg-up text-bg shadow-brutal-sm' : 'text-gray-500 hover:text-gray-300'}">GAINER</button>
-            <button onclick="window.setSubSort('hot')" class="px-3 py-1 text-[9px] font-black uppercase tracking-tighter rounded-full transition-all ${window.currentSubSort === 'hot' ? 'bg-up text-bg shadow-brutal-sm' : 'text-gray-500 hover:text-gray-300'}">HOT</button>
-            <button onclick="window.setSubSort('marketcap')" class="px-3 py-1 text-[9px] font-black uppercase tracking-tighter rounded-full transition-all ${window.currentSubSort === 'marketcap' ? 'bg-up text-bg shadow-brutal-sm' : 'text-gray-500 hover:text-gray-300'}">MARKET CAP</button>
-            <button onclick="window.setSubSort('verified')" class="px-3 py-1 text-[9px] font-black uppercase tracking-tighter rounded-full transition-all ${window.currentSubSort === 'verified' ? 'bg-up text-bg shadow-brutal-sm' : 'text-gray-500 hover:text-gray-300'}">VERIFIED</button>
+            <button onclick="window.setSubSort('all')" class="px-3 py-1 text-[9px] font-display border-2 border-black uppercase italic transition-all shadow-brutal-sm hover:shadow-none ${window.currentSubSort === 'all' ? 'bg-meme-cyan text-black' : 'bg-black text-white hover:bg-meme-cyan/20'}">ALL NON-PUMP</button>
+            <button onclick="window.setSubSort('new')" class="px-3 py-1 text-[9px] font-display border-2 border-black uppercase italic transition-all shadow-brutal-sm hover:shadow-none ${window.currentSubSort === 'new' ? 'bg-meme-cyan text-black' : 'bg-black text-white hover:bg-meme-cyan/20'}">NEW</button>
+            <button onclick="window.setSubSort('gainer')" class="px-3 py-1 text-[9px] font-display border-2 border-black uppercase italic transition-all shadow-brutal-sm hover:shadow-none ${window.currentSubSort === 'gainer' ? 'bg-meme-cyan text-black' : 'bg-black text-white hover:bg-meme-cyan/20'}">GAINER</button>
+            <button onclick="window.setSubSort('hot')" class="px-3 py-1 text-[9px] font-display border-2 border-black uppercase italic transition-all shadow-brutal-sm hover:shadow-none ${window.currentSubSort === 'hot' ? 'bg-meme-cyan text-black' : 'bg-black text-white hover:bg-meme-cyan/20'}">HOT</button>
+            <button onclick="window.setSubSort('marketcap')" class="px-3 py-1 text-[9px] font-display border-2 border-black uppercase italic transition-all shadow-brutal-sm hover:shadow-none ${window.currentSubSort === 'marketcap' ? 'bg-meme-cyan text-black' : 'bg-black text-white hover:bg-meme-cyan/20'}">MCAP</button>
+            <button onclick="window.setSubSort('verified')" class="px-3 py-1 text-[9px] font-display border-2 border-black uppercase italic transition-all shadow-brutal-sm hover:shadow-none ${window.currentSubSort === 'verified' ? 'bg-meme-cyan text-black' : 'bg-black text-white hover:bg-meme-cyan/20'}">VERIFIED</button>
       `;
       if (subTabs.innerHTML !== subTabsHtml) subTabs.innerHTML = subTabsHtml;
   } else if (subTabs) {
@@ -213,13 +213,13 @@ window.createTokenElement = function(addr) {
             <div class="pump-indicator absolute -top-1 -right-1 w-3 h-3 bg-meme-green border border-black shadow-brutal-sm animate-pulse hidden"></div>
             <div class="verified-indicator absolute -bottom-1 -right-1 text-[8px] text-meme-cyan bg-black border border-black shadow-brutal-sm hidden"><i class="fas fa-check-circle"></i></div>
         </div>
-        <div class="flex-1 min-w-0">
-            <div class="flex items-center justify-between gap-1 mb-0.5">
-                <span class="token-symbol font-display text-base text-white truncate italic uppercase tracking-tighter">...</span>
-                <span class="token-change font-mono text-[10px] font-black uppercase text-gray-500">0.00%</span>
+        <div class="flex-1 min-w-0 overflow-hidden">
+            <div class="flex items-center justify-between gap-2 mb-0.5">
+                <span class="token-symbol font-display text-base text-white truncate italic uppercase tracking-tighter flex-1">...</span>
+                <span class="token-change font-mono text-[10px] font-black uppercase text-gray-500 shrink-0">0.00%</span>
             </div>
             <div class="flex items-center justify-between text-[8px] font-mono font-bold text-gray-600 uppercase italic">
-                <span class="token-name truncate max-w-[60px]">Loading...</span>
+                <span class="token-name truncate flex-1">Loading...</span>
                 <div class="flex flex-col items-end">
                     <span class="token-mcap text-gray-500">MCap -</span>
                     <span class="token-liq text-gray-700 text-[6px]">Liq -</span>

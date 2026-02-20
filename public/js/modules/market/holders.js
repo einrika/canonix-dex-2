@@ -119,8 +119,8 @@ window.renderHoldersTable = function(list, page) {
             <td class="p-4 text-right min-w-[100px]">
                 <div class="flex flex-col items-end gap-1">
                     <span class="font-display text-sm text-meme-cyan italic">${pct.toFixed(2)}%</span>
-                    <div class="w-20 h-1.5 bg-black border border-meme-surface overflow-hidden shadow-inner">
-                        <div class="h-full bg-meme-cyan" class="w-[${Math.min(100, pct)}%]"></div>
+                    <div class="w-32 h-2.5 bg-black border border-meme-surface overflow-hidden shadow-inner">
+                        <div class="h-full bg-meme-cyan border-r-2 border-black w-[${Math.round(pct)}%]"></div>
                     </div>
                 </div>
             </td>

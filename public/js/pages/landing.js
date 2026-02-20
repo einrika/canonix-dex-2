@@ -5,6 +5,7 @@
 
 window.marketTokens = [];
 window.marketFilter = 'hot';
+window.marketSubFilter = 'all';
 window.marketSearchQuery = '';
 window.marketPage = 0;
 window.marketLimit = 12;
@@ -47,6 +48,7 @@ async function loadMarketData(type = 'all') {
 
 window.setMarketFilter = function(type, btn) {
     window.marketFilter = type;
+    window.marketSubFilter = 'all'; // Reset sub-filter
 
     // Update UI buttons - Brutal Style
     document.querySelectorAll('.market-filter-btn').forEach(b => {
@@ -57,17 +59,53 @@ window.setMarketFilter = function(type, btn) {
     if (btn) {
         btn.classList.add('bg-meme-green', 'text-black');
         btn.classList.remove('bg-black', 'text-white');
+    } else {
+        document.querySelectorAll('.market-filter-btn').forEach(b => {
+            if (b.getAttribute('onclick')?.includes(`'${type}'`)) {
+                b.classList.add('bg-meme-green', 'text-black');
+                b.classList.remove('bg-black', 'text-white');
+            }
+        });
     }
 
-    // If it's one of the non-pump filters or pumping, we might need a fresh fetch
-    // But for now let's just use the current tokens if they are already nonpump?
-    // Actually, backend 'nonpump' type returns different tokens.
-    if (type === 'hot' || type === 'new' || type === 'marketcap' || type === 'gainers') {
+    // Handle Sub-Tabs UI
+    const subTabsContainer = document.getElementById('marketSubTabs');
+    if (type === 'nonpump') {
+        subTabsContainer.classList.remove('hidden');
+        renderMarketSubTabs();
         loadMarketData('nonpump');
     } else {
-        loadMarketData('all');
+        subTabsContainer.classList.add('hidden');
+        loadMarketData(type === 'verified' ? 'all' : 'all'); // Verified handles locally or via filter
     }
 };
+
+window.setMarketSubFilter = function(subType, btn) {
+    window.marketSubFilter = subType;
+    renderMarketSubTabs();
+    renderMarketGrid();
+};
+
+function renderMarketSubTabs() {
+    const container = document.getElementById('marketSubTabs');
+    if (!container) return;
+
+    const subTabs = [
+        { id: 'all', label: 'ALL NON-PUMP' },
+        { id: 'new', label: 'NEW' },
+        { id: 'gainer', label: 'GAINER' },
+        { id: 'hot', label: 'HOT' },
+        { id: 'marketcap', label: 'MCAP' },
+        { id: 'verified', label: 'VERIFIED' }
+    ];
+
+    container.innerHTML = subTabs.map(tab => {
+        const isActive = window.marketSubFilter === tab.id;
+        return `<button onclick="window.setMarketSubFilter('${tab.id}', this)"
+            class="px-3 py-1 text-[10px] font-display border-2 border-black uppercase italic transition-all shadow-brutal-sm hover:shadow-none
+            ${isActive ? 'bg-meme-cyan text-black' : 'bg-black text-white hover:bg-meme-cyan/20'}">${tab.label}</button>`;
+    }).join('');
+}
 
 window.filterMarket = function() {
     const query = document.getElementById('marketSearch').value.trim();
@@ -155,26 +193,33 @@ function renderMarketGrid() {
     let filtered = [...window.marketTokens];
 
     // Apply Filter Logic
-    switch (window.marketFilter) {
-        case 'pumping':
-            filtered = filtered.filter(t => t.is_pump);
-            break;
-        case 'nonpump':
-            filtered = filtered.filter(t => !t.is_pump);
-            break;
-        case 'new':
-            filtered.sort((a, b) => b.id - a.id);
-            break;
-        case 'marketcap':
-            filtered.sort((a, b) => b.market_cap - a.market_cap);
-            break;
-        case 'gainers':
-            filtered.sort((a, b) => b.price_change_24h - a.price_change_24h);
-            break;
-        case 'hot':
-        default:
-            filtered.sort((a, b) => b.volume_24h - a.volume_24h);
-            break;
+    if (window.marketFilter === 'pumping') {
+        filtered = filtered.filter(t => t.is_pump);
+        filtered.sort((a, b) => b.volume_24h - a.volume_24h);
+    } else if (window.marketFilter === 'verified') {
+        filtered = filtered.filter(t => t.verified);
+        filtered.sort((a, b) => b.volume_24h - a.volume_24h);
+    } else if (window.marketFilter === 'nonpump') {
+        filtered = filtered.filter(t => !t.is_pump);
+
+        // Apply sub-filter sorting/filtering
+        switch(window.marketSubFilter) {
+            case 'new': filtered.sort((a, b) => b.id - a.id); break;
+            case 'gainer': filtered.sort((a, b) => b.price_change_24h - a.price_change_24h); break;
+            case 'marketcap': filtered.sort((a, b) => b.market_cap - a.market_cap); break;
+            case 'verified': filtered = filtered.filter(t => t.verified); filtered.sort((a, b) => b.volume_24h - a.volume_24h); break;
+            case 'hot':
+            default: filtered.sort((a, b) => b.volume_24h - a.volume_24h); break;
+        }
+    } else {
+        // Standard filters
+        switch (window.marketFilter) {
+            case 'new': filtered.sort((a, b) => b.id - a.id); break;
+            case 'marketcap': filtered.sort((a, b) => b.market_cap - a.market_cap); break;
+            case 'gainers': filtered.sort((a, b) => b.price_change_24h - a.price_change_24h); break;
+            case 'hot':
+            default: filtered.sort((a, b) => b.volume_24h - a.volume_24h); break;
+        }
     }
 
     // Apply Search Query

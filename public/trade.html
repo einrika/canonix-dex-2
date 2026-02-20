@@ -200,10 +200,12 @@
                         oninput="filterTokenSidebar()">
                 </div>
                 <div class="flex gap-1.5 overflow-x-auto no-scrollbar pb-1">
-                    <button onclick="setSort('hot', event)" class="sort-btn active px-3 py-1 border border-black bg-meme-green text-black font-display text-[10px] shadow-brutal-sm hover:shadow-none transition-all uppercase italic">HOT</button>
-                    <button onclick="setSort('new', event)" class="sort-btn px-3 py-1 border border-black bg-black text-white font-display text-[10px] shadow-brutal-sm hover:shadow-none transition-all uppercase italic">NEW</button>
-                    <button onclick="setSort('gainer', event)" class="sort-btn px-3 py-1 border border-black bg-black text-white font-display text-[10px] shadow-brutal-sm hover:shadow-none transition-all uppercase italic">WIN</button>
-                    <button onclick="setSort('marketcap', event)" class="sort-btn px-3 py-1 border border-black bg-black text-white font-display text-[10px] shadow-brutal-sm hover:shadow-none transition-all uppercase italic">MCAP</button>
+                    <button onclick="setSort('hot', event)" class="sort-btn px-3 py-1 border-2 border-black bg-meme-green text-black font-display text-[10px] shadow-brutal-sm hover:shadow-none hover:bg-meme-green hover:text-black transition-all uppercase italic">HOT</button>
+                    <button onclick="setSort('new', event)" class="sort-btn px-3 py-1 border-2 border-black bg-black text-white font-display text-[10px] shadow-brutal-sm hover:shadow-none hover:bg-meme-green hover:text-black transition-all uppercase italic">NEW</button>
+                    <button onclick="setSort('gainer', event)" class="sort-btn px-3 py-1 border-2 border-black bg-black text-white font-display text-[10px] shadow-brutal-sm hover:shadow-none hover:bg-meme-green hover:text-black transition-all uppercase italic">WIN</button>
+                    <button onclick="setSort('marketcap', event)" class="sort-btn px-3 py-1 border-2 border-black bg-black text-white font-display text-[10px] shadow-brutal-sm hover:shadow-none hover:bg-meme-green hover:text-black transition-all uppercase italic">MCAP</button>
+                    <button onclick="setSort('verified', event)" class="sort-btn px-3 py-1 border-2 border-black bg-black text-white font-display text-[10px] shadow-brutal-sm hover:shadow-none hover:bg-meme-green hover:text-black transition-all uppercase italic">VERIFIED</button>
+                    <button onclick="setSort('nonpump', event)" class="sort-btn px-3 py-1 border-2 border-black bg-black text-white font-display text-[10px] shadow-brutal-sm hover:shadow-none hover:bg-meme-green hover:text-black transition-all uppercase italic whitespace-nowrap">NON-PUMP</button>
                 </div>
             </div>
             <div id="tokenSidebarList" class="flex-1 overflow-y-auto no-scrollbar bg-black">
@@ -265,30 +267,30 @@
                         </button>
                     </div>
 
-                    <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 md:gap-4 w-full lg:w-auto">
-                        <div class="bg-black/20 p-1.5 border border-black">
-                            <div class="text-[8px] text-black uppercase font-black tracking-widest font-mono italic">Mcap</div>
-                            <div id="mcapVal" class="text-[9px] font-mono font-bold text-white uppercase">0 PAXI</div>
+                    <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 w-full lg:w-auto">
+                        <div class="bg-black/20 p-1.5 border border-black overflow-hidden">
+                            <div class="text-[7px] text-black uppercase font-black tracking-widest font-mono italic truncate">Mcap</div>
+                            <div id="mcapVal" class="text-[8px] font-mono font-bold text-white uppercase truncate">0 PAXI</div>
                         </div>
-                        <div class="bg-black/20 p-1.5 border border-black">
-                            <div class="text-[8px] text-black uppercase font-black tracking-widest font-mono italic">Liq</div>
-                            <div id="liqVal" class="text-[9px] font-mono font-bold text-meme-cyan uppercase">0 PAXI</div>
+                        <div class="bg-black/20 p-1.5 border border-black overflow-hidden">
+                            <div class="text-[7px] text-black uppercase font-black tracking-widest font-mono italic truncate">Liq</div>
+                            <div id="liqVal" class="text-[8px] font-mono font-bold text-meme-cyan uppercase truncate">0 PAXI</div>
                         </div>
-                        <div class="bg-black/20 p-1.5 border border-black">
-                            <div class="text-[8px] text-black uppercase font-black tracking-widest font-mono italic">High</div>
-                            <div id="high24h" class="text-[9px] font-mono font-bold text-meme-green">0.00</div>
+                        <div class="bg-black/20 p-1.5 border border-black overflow-hidden">
+                            <div class="text-[7px] text-black uppercase font-black tracking-widest font-mono italic truncate">High</div>
+                            <div id="high24h" class="text-[8px] font-mono font-bold text-meme-green truncate">0.00</div>
                         </div>
-                        <div class="bg-black/20 p-1.5 border border-black">
-                            <div class="text-[8px] text-black uppercase font-black tracking-widest font-mono italic">Low</div>
-                            <div id="low24h" class="text-[9px] font-mono font-bold text-meme-pink">0.00</div>
+                        <div class="bg-black/20 p-1.5 border border-black overflow-hidden">
+                            <div class="text-[7px] text-black uppercase font-black tracking-widest font-mono italic truncate">Low</div>
+                            <div id="low24h" class="text-[8px] font-mono font-bold text-meme-pink truncate">0.00</div>
                         </div>
-                        <div class="bg-black/20 p-1.5 border border-black">
-                            <div class="text-[8px] text-black uppercase font-black tracking-widest font-mono italic">Vol</div>
-                            <div id="volVal" class="text-[9px] font-mono font-bold text-meme-yellow uppercase">0 PAXI</div>
+                        <div class="bg-black/20 p-1.5 border border-black overflow-hidden">
+                            <div class="text-[7px] text-black uppercase font-black tracking-widest font-mono italic truncate">Vol</div>
+                            <div id="volVal" class="text-[8px] font-mono font-bold text-meme-yellow uppercase truncate">0 PAXI</div>
                         </div>
-                        <div class="bg-black/20 p-1.5 border border-black">
-                            <div class="text-[8px] text-black uppercase font-black tracking-widest font-mono italic">Signal</div>
-                            <div id="tradeSignal" class="text-[8px] font-display uppercase italic text-white tracking-tighter">Neutral</div>
+                        <div class="bg-black/20 p-1.5 border border-black overflow-hidden">
+                            <div class="text-[7px] text-black uppercase font-black tracking-widest font-mono italic truncate">Signal</div>
+                            <div id="tradeSignal" class="text-[8px] font-display uppercase italic text-white tracking-tighter truncate">Neutral</div>
                         </div>
                     </div>
                 </div>
@@ -364,8 +366,8 @@
 
             <!-- Tabs Section (Holders) -->
             <div class="px-3 md:px-4 pb-20">
-                <div class="border-b-2 border-black flex gap-6 mb-4">
-                    <button onclick="window.loadTokenHolders()" id="tab-holders" class="font-display text-2xl text-white pb-1.5 hover:text-meme-cyan transition-colors uppercase italic border-b-2 border-transparent active:border-meme-cyan active:text-meme-cyan tracking-tighter">Top Holders</button>
+                <div class="flex gap-2 mb-4">
+                    <button onclick="window.setTab('holders')" id="tab-holders" class="tab-btn active px-6 py-2 bg-meme-green text-black font-display text-2xl border-2 border-black shadow-brutal hover:shadow-none transition-all uppercase italic tracking-tighter">Top Holders</button>
                 </div>
                 <div id="tabContent" class="bg-meme-surface border-2 border-black shadow-brutal min-h-[200px] overflow-hidden">
                     <!-- Table goes here -->
