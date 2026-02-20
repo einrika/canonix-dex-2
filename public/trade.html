@@ -4,15 +4,16 @@
 <head>
     <meta charset="UTF-8">
 
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind = {
             config: {
             theme: {
                 extend: {
                     colors: {
-                        'meme-black': '#000000',
-                        'meme-surface': '#050505',
-                        'meme-card': '#0D0D0D',
+                        'meme-black': '#191922',
+                        'meme-surface': '#191922',
+                        'meme-card': '#21212e',
                         'meme-green': '#00D685',
                         'meme-pink': '#D60047',
                         'meme-cyan': '#00B2D6',
@@ -21,9 +22,9 @@
                         up: '#00D685',
                         down: '#D60047',
                         accent: '#00B2D6',
-                        bg: '#000000',
-                        surface: '#050505',
-                        card: '#0D0D0D',
+                        bg: '#191922',
+                        surface: '#191922',
+                        card: '#21212e',
                         border: '#000000',
                     },
                     fontFamily: {
@@ -86,7 +87,6 @@
         }
         }
     </script>
-    <script src="https://cdn.tailwindcss.com"></script>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
@@ -140,9 +140,9 @@
     <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
 </head>
 
-<body class="bg-black text-white font-sans h-screen flex flex-col overflow-hidden selection:bg-meme-pink selection:text-white">
+<body class="bg-bg text-white font-sans h-screen flex flex-col overflow-hidden selection:bg-meme-pink selection:text-white">
     <!-- ===== HEADER ===== -->
-    <header class="h-14 border-b-2 border-black hidden lg:flex items-center justify-between px-4 bg-black z-50">
+    <header class="h-14 border-b-2 border-black hidden lg:flex items-center justify-between px-4 bg-bg z-50">
         <div class="flex items-center gap-3">
             <button onclick="toggleMobileSidebar()" class="lg:hidden text-white p-1.5 border border-black bg-meme-card"><i class="fas fa-bars"></i></button>
             <a href="index.html" class="flex items-center group">
@@ -191,7 +191,7 @@
 
     <div class="flex-1 flex overflow-hidden">
         <!-- ===== LEFT SIDEBAR: TOKEN LIST ===== -->
-        <aside id="tokenSidebar" class="w-[280px] border-r-2 border-black bg-black flex flex-col lg:static fixed left-0 top-14 bottom-0 z-40 transition-transform duration-300 -translate-x-full lg:translate-x-0 overflow-hidden">
+        <aside id="tokenSidebar" class="w-[280px] border-r-2 border-black bg-bg flex flex-col lg:static fixed left-0 top-14 bottom-0 z-40 transition-transform duration-300 -translate-x-full lg:translate-x-0 overflow-hidden">
             <div class="p-3 bg-meme-surface border-b-2 border-black">
                 <div class="relative mb-3">
                     <i class="fas fa-search absolute left-2.5 top-1/2 -translate-y-1/2 text-meme-cyan text-xs"></i>
@@ -208,7 +208,7 @@
                     <button onclick="setSort('nonpump', event)" class="sort-btn px-3 py-1 border-2 border-black bg-black text-white font-display text-[10px] shadow-brutal-sm hover:shadow-none hover:bg-meme-green hover:text-black transition-all uppercase italic whitespace-nowrap">NON-PUMP</button>
                 </div>
             </div>
-            <div id="tokenSidebarList" class="flex-1 overflow-y-auto no-scrollbar bg-black">
+            <div id="tokenSidebarList" class="flex-1 overflow-y-auto no-scrollbar bg-bg">
                 <div class="p-8 text-center text-gray-500">
                     <div class="w-8 h-8 border-2 border-meme-green border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
                     <p class="font-mono text-[8px] font-bold uppercase tracking-widest italic">Scanning...</p>
@@ -217,7 +217,7 @@
         </aside>
 
         <!-- ===== MAIN CONTENT ===== -->
-        <main class="flex-1 overflow-y-auto bg-black relative no-scrollbar">
+        <main class="flex-1 overflow-y-auto bg-bg relative no-scrollbar">
             <!-- Chart Container -->
             <div class="p-3 md:p-4">
                 <div class="bg-meme-surface border-2 border-black shadow-brutal overflow-hidden">
@@ -376,7 +376,7 @@
         </main>
 
         <!-- ===== RIGHT SIDEBAR: UNIFIED WALLET TERMINAL ===== -->
-        <aside id="unifiedSidebar" class="w-[320px] border-l-2 border-black bg-black flex flex-col lg:static fixed right-0 top-14 bottom-0 z-40 transition-transform duration-300 translate-x-full lg:translate-x-0 overflow-hidden">
+        <aside id="unifiedSidebar" class="w-[320px] border-l-2 border-black bg-bg flex flex-col lg:static fixed right-0 top-14 bottom-0 z-40 transition-transform duration-300 translate-x-full lg:translate-x-0 overflow-hidden">
             <!-- Sidebar Navigation Tabs -->
             <div class="flex bg-meme-surface border-b-2 border-black p-1.5 gap-1.5">
                 <button onclick="setSidebarTab('wallet')" id="side-tab-wallet" class="flex-1 py-2 bg-black border border-black text-meme-green font-display text-base shadow-brutal-sm hover:shadow-none transition-all uppercase italic tracking-tighter">Wallet</button>
@@ -388,7 +388,7 @@
                 <button onclick="setSidebarTab('donate')" id="side-tab-donate" class="hidden"></button>
             </div>
 
-            <div id="sidebarContent" class="flex-1 overflow-y-auto p-4 no-scrollbar bg-black">
+            <div id="sidebarContent" class="flex-1 overflow-y-auto p-4 no-scrollbar bg-bg">
                 <!-- Content will be injected by JS based on tab -->
                 <div class="text-center py-24 flex flex-col items-center">
                     <div class="w-16 h-16 bg-meme-card border-2 border-black shadow-brutal flex items-center justify-center text-gray-700 text-3xl mb-6 rotate-[-10deg]">
@@ -402,7 +402,7 @@
     </div>
 
     <!-- Mobile Navigation Bar -->
-    <div class="lg:hidden fixed bottom-0 left-0 right-0 h-20 bg-black border-t-2 border-black z-[100] flex flex-col justify-between p-1.5">
+    <div class="lg:hidden fixed bottom-0 left-0 right-0 h-20 bg-bg border-t-2 border-black z-[100] flex flex-col justify-between p-1.5">
         <div class="flex items-center justify-between w-full mb-1 px-3">
             <div class="flex items-center gap-2">
                 <h1 class="text-lg font-display text-meme-green italic tracking-tighter uppercase">CANONIX</h1>
@@ -492,7 +492,7 @@
                     class="w-full px-3 py-3 bg-black border-2 border-black text-white font-display text-lg outline-none focus:border-meme-green placeholder:text-gray-800 uppercase italic"
                     oninput="filterTokens()">
             </div>
-            <div id="tokenList" class="flex-1 overflow-y-auto no-scrollbar bg-black"></div>
+            <div id="tokenList" class="flex-1 overflow-y-auto no-scrollbar bg-bg"></div>
         </div>
     </div>
 

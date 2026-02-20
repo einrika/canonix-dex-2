@@ -617,10 +617,12 @@ window.setText = function(idOrEl, text) {
     if (el) el.textContent = text;
 };
 
-window.shortenAddress = function(address, chars = 8) {
+window.shortenAddress = function(address, chars = 7) {
     if (!address) return '';
-    if (address.length <= (chars * 2) + 3) return address;
-    return `${address.slice(0, chars)}...${address.slice(-chars)}`;
+    let start = chars;
+    let end = chars === 7 ? 6 : chars;
+    if (address.length <= start + end) return address;
+    return `${address.slice(0, start)}....${address.slice(-end)}`;
 };
 
 window.setHtml = function(idOrEl, html) {

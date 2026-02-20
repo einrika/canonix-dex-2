@@ -4,15 +4,16 @@
 <head>
     <meta charset="UTF-8">
 
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind = {
             config: {
             theme: {
                 extend: {
                     colors: {
-                        'meme-black': '#000000',
-                        'meme-surface': '#050505',
-                        'meme-card': '#0D0D0D',
+                        'meme-black': '#191922',
+                        'meme-surface': '#191922',
+                        'meme-card': '#21212e',
                         'meme-green': '#00D685',
                         'meme-pink': '#D60047',
                         'meme-cyan': '#00B2D6',
@@ -21,9 +22,9 @@
                         up: '#00D685',
                         down: '#D60047',
                         accent: '#00B2D6',
-                        bg: '#000000',
-                        surface: '#050505',
-                        card: '#0D0D0D',
+                        bg: '#191922',
+                        surface: '#191922',
+                        card: '#21212e',
                         border: '#000000',
                     },
                     fontFamily: {
@@ -59,7 +60,6 @@
         }
         }
     </script>
-    <script src="https://cdn.tailwindcss.com"></script>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Canonix - Premium DEX on Paxi Network</title>
@@ -92,7 +92,7 @@
     <meta name="theme-color" content="#000000">
 </head>
 
-<body class="min-h-screen bg-black text-white font-sans selection:bg-meme-pink selection:text-white">
+<body class="min-h-screen bg-bg text-white font-sans selection:bg-meme-pink selection:text-white">
     <!-- Marquee Header -->
     <div class="bg-meme-yellow border-b-2 border-black py-0.5 overflow-hidden whitespace-nowrap z-[60] relative">
         <div class="animate-marquee inline-block">
@@ -105,7 +105,7 @@
         </div>
     </div>
 
-    <nav class="border-b-2 border-black bg-black sticky top-0 z-50 px-4">
+    <nav class="border-b-2 border-black bg-bg sticky top-0 z-50 px-4">
         <div class="max-w-7xl mx-auto h-14 flex justify-between items-center">
             <div class="flex items-center gap-2">
                 <div class="w-8 h-8 bg-meme-green border-2 border-black shadow-brutal-sm flex items-center justify-center rotate-[-5deg]">
@@ -220,7 +220,7 @@
     </section>
 
     <!-- Market Section -->
-    <section id="market" class="py-12 bg-black px-4">
+    <section id="market" class="py-12 bg-bg px-4">
         <div class="max-w-7xl mx-auto">
             <div class="flex flex-col lg:flex-row justify-between items-end gap-6 mb-10 reveal">
                 <div class="max-w-xl">
@@ -268,7 +268,7 @@
     </section>
 
     <!-- AI Scan Section -->
-    <section class="py-16 bg-black relative px-4">
+    <section class="py-16 bg-bg relative px-4">
         <div class="max-w-7xl mx-auto">
             <div class="bg-meme-surface border-4 border-black p-8 relative overflow-hidden reveal group">
                 <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-meme-cyan opacity-10 blur-3xl rounded-full animate-pulse"></div>
@@ -328,7 +328,7 @@
     </section>
 
     <!-- Footer -->
-    <footer class="py-16 bg-black border-t-4 border-black px-4">
+    <footer class="py-16 bg-bg border-t-4 border-black">
         <div class="max-w-7xl mx-auto text-center">
             <div class="flex items-center justify-center gap-4 mb-12">
                 <div class="w-12 h-12 bg-meme-pink border-2 border-black shadow-brutal flex items-center justify-center rotate-[10deg]">

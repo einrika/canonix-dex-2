@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
 
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind = {
             config: {
             theme: {
                 extend: {
                     colors: {
-                        'meme-black': '#000000',
-                        'meme-surface': '#050505',
-                        'meme-card': '#0D0D0D',
+                        'meme-black': '#191922',
+                        'meme-surface': '#191922',
+                        'meme-card': '#21212e',
                         'meme-green': '#00D685',
                         'meme-pink': '#D60047',
                         'meme-cyan': '#00B2D6',
@@ -20,9 +21,9 @@
                         up: '#00D685',
                         down: '#D60047',
                         accent: '#00B2D6',
-                        bg: '#000000',
-                        surface: '#050505',
-                        card: '#0D0D0D',
+                        bg: '#191922',
+                        surface: '#191922',
+                        card: '#21212e',
                         border: '#000000',
                     },
                     fontFamily: {
@@ -57,7 +58,6 @@
         }
         }
     </script>
-    <script src="https://cdn.tailwindcss.com"></script>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Launchpad – Canonix DEX</title>
@@ -72,10 +72,10 @@
     <!-- TAILWIND -->
 
 </head>
-<body class="bg-meme-black text-white font-sans selection:bg-meme-green selection:text-black">
+<body class="bg-bg text-white font-sans selection:bg-meme-green selection:text-black">
 
     <!-- HEADER -->
-    <nav class="sticky top-0 z-50 bg-black border-b-2 border-black h-16 flex items-center px-4 md:px-8 justify-between">
+    <nav class="sticky top-0 z-50 bg-bg border-b-2 border-black h-16 flex items-center px-4 md:px-8 justify-between">
         <a href="index.html" class="flex items-center group">
             <div class="w-8 h-8 bg-meme-green border-2 border-black shadow-brutal-sm flex items-center justify-center rotate-[-3deg] group-hover:rotate-0 transition-transform mr-3">
                 <i class="fas fa-rocket text-black text-xs"></i>
@@ -146,7 +146,7 @@
     </section>
 
     <!-- ACTIVE MISSIONS -->
-    <section class="py-16 md:py-24 px-4 bg-black">
+    <section class="py-16 md:py-24 px-4 bg-bg">
         <div class="max-w-6xl mx-auto">
             <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
                 <div>
@@ -261,7 +261,7 @@
     </section>
 
     <!-- FOOTER -->
-    <footer class="py-12 px-4 bg-black border-t-2 border-black">
+    <footer class="py-12 px-4 bg-bg border-t-2 border-black">
         <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
             <div class="col-span-1 md:col-span-2">
                 <h1 class="text-3xl font-display text-meme-green mb-6 italic uppercase tracking-tighter">CANONIX</h1>
