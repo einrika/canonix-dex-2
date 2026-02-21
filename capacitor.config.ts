@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.paxi.dex',
-  appName: 'Paxi DEX',
+  appName: 'Canonix',
   webDir: 'public',
   server: {
     url: 'https://stalwart-ganache-32b226.netlify.app',

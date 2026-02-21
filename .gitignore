@@ -3,3 +3,4 @@ node_modules/
 netlify_output.log
 http_server.log
 verification/
+*.log
