@@ -1,17 +1,28 @@
 {
-  "name": "paxi-dex",
+  "name": "canonix-dex",
   "version": "1.0.0",
   "description": "Canonix",
   "main": "index.js",
   "scripts": {
     "dev": "netlify dev",
     "build": "echo 'No build step'",
-    "deploy": "netlify deploy --prod"
+    "deploy": "netlify deploy --prod",
+    "cap:sync": "npx cap sync",
+    "cap:copy": "npx cap copy",
+    "cap:open": "npx cap open android",
+    "android:build": "cd android && ./gradlew assembleDebug"
   },
   "dependencies": {
+    "@capacitor/app": "^6.0.3",
     "node-fetch": "^2.6.7"
   },
   "devDependencies": {
-    "netlify-cli": "^17.0.0"
+    "@capacitor/android": "^6.2.1",
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^6.2.1",
+    "@capacitor/core": "^6.2.1",
+    "@capacitor/ios": "^6.2.1",
+    "netlify-cli": "^17.0.0",
+    "typescript": "^5.9.3"
   }
 }
