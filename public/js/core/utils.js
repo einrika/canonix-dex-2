@@ -391,6 +391,13 @@ window.setCachedData = function(key, value) {
 
 // ===== NOTIFICATION SYSTEM =====
 window.showTxResult = function(data) {
+    const enableModal = localStorage.getItem('paxi_enable_result_modal') !== 'false';
+
+    if (!enableModal) {
+        window.renderCompactNotif(data);
+        return;
+    }
+
     const modal = document.getElementById('txResultModal');
     if (!modal) return;
 
@@ -480,6 +487,57 @@ window.closeTxResult = function() {
         modal.classList.add('hidden');
         modal.classList.remove('flex');
     }
+};
+
+window.renderCompactNotif = function(data) {
+    const container = document.getElementById('notificationContainer');
+    if (!container) return;
+
+    const { status, type, action, from, receive, error } = data;
+    const isSuccess = status === 'success';
+
+    const notif = document.createElement('div');
+    notif.className = `p-3 border-2 border-black shadow-brutal-sm flex flex-col gap-1 min-w-[240px] animate-slide-up ${isSuccess ? 'bg-meme-green text-black' : 'bg-meme-pink text-white'}`;
+
+    const actionType = action || type || 'Transaction';
+
+    notif.innerHTML = `
+        <div class="flex justify-between items-center border-b border-black/20 pb-1 mb-1">
+            <span class="font-display text-sm uppercase italic tracking-tighter">${actionType} Result</span>
+            <i class="fas ${isSuccess ? 'fa-check-circle' : 'fa-times-circle'}"></i>
+        </div>
+        <div class="font-mono text-[9px] grid grid-cols-[60px_1fr] gap-x-2 leading-tight">
+            <span class="opacity-70 uppercase font-black">Status</span>
+            <span class="font-bold uppercase tracking-tight">: ${isSuccess ? 'Success' : 'Failed'}</span>
+
+            <span class="opacity-70 uppercase font-black">Action</span>
+            <span class="font-bold uppercase tracking-tight">: ${actionType}</span>
+
+            ${from ? `
+            <span class="opacity-70 uppercase font-black">From</span>
+            <span class="font-bold uppercase tracking-tight truncate">: ${from}</span>
+            ` : ''}
+
+            ${receive ? `
+            <span class="opacity-70 uppercase font-black">Receive</span>
+            <span class="font-bold uppercase tracking-tight truncate">: ${receive}</span>
+            ` : ''}
+
+            ${!isSuccess && error ? `
+            <span class="opacity-70 uppercase font-black">Error</span>
+            <span class="font-bold uppercase tracking-tight italic">: ${error.substring(0, 30)}${error.length > 30 ? '...' : ''}</span>
+            ` : ''}
+        </div>
+    `;
+
+    container.appendChild(notif);
+
+    // Auto remove
+    setTimeout(() => {
+        notif.classList.add('opacity-0', 'translate-x-full');
+        notif.style.transition = 'all 0.4s ease-in';
+        setTimeout(() => notif.remove(), 400);
+    }, 6000);
 };
 
 window.activeNotifs = [];

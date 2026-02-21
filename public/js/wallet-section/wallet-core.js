@@ -709,7 +709,7 @@ window.confirmTxCustom = function(memo, feeStr) {
 window.buildAndSendTx = async function(messages, memo = "", options = {}) {
     if (!window.wallet) throw new Error("Wallet not connected");
 
-    const { silent = false, sequenceOverride = null, type = 'default', metadata = {} } = options;
+    const { silent = false, sequenceOverride = null, type = 'default', metadata = {}, gasEstimate: preSimulatedGas = null } = options;
 
     // Safety check: Prevent automatic/silent transactions if wallet is locked
     if (window.walletType === 'internal' && !window.WalletSecurity.getSessionPin()) {
@@ -729,16 +729,23 @@ window.buildAndSendTx = async function(messages, memo = "", options = {}) {
     const showLoader = () => { if (!silent && loader) { loader.classList.remove('hidden'); loader.classList.add('flex'); } };
     const hideLoader = () => { if (loader) { loader.classList.add('hidden'); loader.classList.remove('flex'); } };
 
+    let gasEstimate = preSimulatedGas;
+
     try {
-        if (!silent) {
+        if (!silent && !gasEstimate) {
             window.showNotif('Loading', 'info');
             // 1. Simulation first to show fee in confirmation
-            const gasEstimate = await window.simulateGas(messages, memo, { type });
+            gasEstimate = await window.simulateGas(messages, memo, { type });
             const feeDisplay = `${window.formatAmount(parseInt(gasEstimate.estimatedFee) / 1e6, 4)} PAXI`;
 
             const confirmed = await window.confirmTxCustom(memo, feeDisplay);
             if (!confirmed) throw new Error("Transaction cancelled");
 
+            showLoader();
+        } else if (!silent && gasEstimate) {
+            const feeDisplay = `${window.formatAmount(parseInt(gasEstimate.estimatedFee) / 1e6, 4)} PAXI`;
+            const confirmed = await window.confirmTxCustom(memo, feeDisplay);
+            if (!confirmed) throw new Error("Transaction cancelled");
             showLoader();
         }
         // For internal wallet, ensure signer exists
@@ -780,12 +787,14 @@ window.buildAndSendTx = async function(messages, memo = "", options = {}) {
             }
         }
 
-        // 2. Fetch Chain ID & Account Info
-        const [chainRes, accountRes, gasEstimate] = await Promise.all([
+        // 2. Fetch Chain ID & Account Info & Gas (if not already simulated)
+        const [chainRes, accountRes, finalGasEstimate] = await Promise.all([
             window.fetchDirect(`${endpoints.rpc}/status`),
             window.fetchDirect(`${endpoints.lcd}/cosmos/auth/v1beta1/accounts/${window.wallet.address}`),
-            window.simulateGas(messages, memo, { type }) // Re-simulate to be sure
+            gasEstimate ? Promise.resolve(gasEstimate) : window.simulateGas(messages, memo, { type })
         ]);
+
+        gasEstimate = finalGasEstimate;
 
         const chainId = chainRes.result.node_info.network;
         const account = accountRes.account.base_account || accountRes.account;
@@ -934,7 +943,7 @@ window.buildAndSendTx = async function(messages, memo = "", options = {}) {
                 // Not found yet or other error, continue polling
             }
             attempts++;
-            await new Promise(r => setTimeout(r, 2000));
+            await new Promise(r => setTimeout(r, 1000));
         }
 
         hideLoader();
@@ -1052,10 +1061,14 @@ window.executeSwap = async function(contractAddress, offerDenom, offerAmount, mi
     // 3. Platform Fee Removed (Bundled Support Fee logic deleted)
 
     // 4. Send Bundled Transaction (Atomic)
+    const isBuy = offerDenom === window.APP_CONFIG.DENOM;
     const metadata = {
         type: 'Swap',
-        asset: offerDenom === window.APP_CONFIG.DENOM ? `PAXI / ${tokenDetail?.symbol || 'TOKEN'}` : `${tokenDetail?.symbol || 'TOKEN'} / PAXI`,
-        amount: `${offerAmount} ${offerDenom === window.APP_CONFIG.DENOM ? 'PAXI' : (tokenDetail?.symbol || 'TOKEN')}`,
+        action: isBuy ? 'Buy' : 'Sell',
+        from: `${offerAmount} ${isBuy ? 'PAXI' : (tokenDetail?.symbol || 'TOKEN')}`,
+        receive: `${minReceive} ${isBuy ? (tokenDetail?.symbol || 'TOKEN') : 'PAXI'}`,
+        asset: isBuy ? `PAXI / ${tokenDetail?.symbol || 'TOKEN'}` : `${tokenDetail?.symbol || 'TOKEN'} / PAXI`,
+        amount: `${offerAmount} ${isBuy ? 'PAXI' : (tokenDetail?.symbol || 'TOKEN')}`,
         address: window.wallet.address
     };
     const result = await window.buildAndSendTx(msgs, memo, { type: 'swap', metadata });
@@ -1116,6 +1129,9 @@ window.executeAddLPTransaction = async function(contractAddress, paxiAmount, tok
 
     const metadata = {
         type: 'Add Liquidity',
+        action: 'Add LP',
+        from: `${paxiAmount} PAXI + ${tokenAmount} ${tokenDetail?.symbol || 'TOKEN'}`,
+        receive: 'LP Tokens',
         asset: `PAXI / ${tokenDetail?.symbol || 'TOKEN'}`,
         amount: `${paxiAmount} PAXI + ${tokenAmount} ${tokenDetail?.symbol || 'TOKEN'}`,
         address: window.wallet.address
@@ -1141,6 +1157,9 @@ window.executeRemoveLPTransaction = async function(contractAddress, lpAmount) {
 
     const metadata = {
         type: 'Remove Liquidity',
+        action: 'Remove LP',
+        from: `${lpAmount} LP Tokens`,
+        receive: 'PAXI + Token',
         asset: `PAXI / ${window.tokenDetails?.get(contractAddress)?.symbol || 'TOKEN'}`,
         amount: `${lpAmount} LP Tokens`,
         address: window.wallet.address
@@ -1191,6 +1210,9 @@ window.executeSendTransaction = async function(tokenAddress, recipient, amount, 
 
     const metadata = {
         type: 'Send',
+        action: 'Send',
+        from: `${amount} ${tokenAddress === 'PAXI' ? 'PAXI' : (tokenDetail?.symbol || 'TOKEN')}`,
+        receive: `To ${window.shortenAddress(recipient)}`,
         asset: tokenAddress === 'PAXI' ? 'PAXI' : (tokenDetail?.symbol || 'TOKEN'),
         amount: `${amount} ${tokenAddress === 'PAXI' ? 'PAXI' : (tokenDetail?.symbol || 'TOKEN')}`,
         address: recipient
@@ -1226,6 +1248,9 @@ window.executeBurnTransaction = async function(contractAddress, amount) {
 
     const metadata = {
         type: 'Burn',
+        action: 'Burn',
+        from: `${amount} ${tokenDetail?.symbol || 'TOKEN'}`,
+        receive: 'Supply Reduction',
         asset: tokenDetail?.symbol || 'TOKEN',
         amount: `${amount} ${tokenDetail?.symbol || 'TOKEN'}`,
         address: window.wallet.address

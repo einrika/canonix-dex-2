@@ -105,6 +105,18 @@
 
                 <div class="flex items-center justify-between p-4 bg-black border border-black group">
                     <div>
+                        <div class="text-xl font-display text-white uppercase italic tracking-tighter">Result Modal</div>
+                        <p class="font-mono text-[8px] text-gray-600 font-bold uppercase tracking-widest italic">Show detailed popup after transactions</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="toggleResultModal" class="sr-only peer" onchange="updateSetting('paxi_enable_result_modal', this.checked)">
+                        <div class="w-12 h-6 bg-meme-surface border-2 border-black peer-checked:bg-meme-green transition-colors"></div>
+                        <div class="absolute left-1 top-1 w-4 h-4 bg-white border-2 border-black transition-transform peer-checked:translate-x-6"></div>
+                    </label>
+                </div>
+
+                <div class="flex items-center justify-between p-4 bg-black border border-black group">
+                    <div>
                         <div class="text-xl font-display text-white uppercase italic tracking-tighter">Compact View</div>
                         <p class="font-mono text-[8px] text-gray-600 font-bold uppercase tracking-widest italic">Optimized for small displays</p>
                     </div>
@@ -175,7 +187,21 @@
     </main>
 
     <script>
-        // JS logic preserved if any
+        function updateSetting(key, value) {
+            localStorage.setItem(key, value);
+            console.log(`Setting updated: ${key} = ${value}`);
+        }
+
+        function loadSettings() {
+            const enableModal = localStorage.getItem('paxi_enable_result_modal');
+            const toggle = document.getElementById('toggleResultModal');
+            if (toggle) {
+                // Default to true if not set
+                toggle.checked = enableModal === null ? true : enableModal === 'true';
+            }
+        }
+
+        window.onload = loadSettings;
     </script>
 </body>
 </html>
