@@ -1,13 +1,14 @@
 const fetch = require('node-fetch');
-const { sendResponse, getCached, setCached, checkRateLimit } = require('./utils/common');
+const { sendResponse, getCached, setCached, checkRateLimit } = require('../utils/common');
 
-exports.handler = async (event) => {
-    if (event.httpMethod === 'OPTIONS') return sendResponse(true);
+const tokenListHandler = async (req, res) => {
+    // OPTIONS is handled by CORS middleware, but we'll keep the logic if needed
+    if (req.method === 'OPTIONS') return res.sendStatus(200);
 
-    const ip = event.headers['client-ip'] || event.headers['x-forwarded-for'] || 'unknown';
-    if (!checkRateLimit(ip)) return sendResponse(false, null, 'Too many requests', 429);
+    const ip = req.headers['client-ip'] || req.headers['x-forwarded-for'] || req.ip || 'unknown';
+    if (!checkRateLimit(ip)) return sendResponse(res, false, null, 'Too many requests', 429);
 
-    const { query, page = 0, name, type = 'all' } = event.queryStringParameters || {};
+    const { query, page = 0, name, type = 'all' } = req.query || {};
     const searchQuery = query || name;
 
     let apiUrl;
@@ -17,7 +18,6 @@ exports.handler = async (event) => {
         apiUrl = `https://explorer.paxinet.io/api/prc20/search?name=${encodeURIComponent(searchQuery)}`;
         cacheKey = `search_${searchQuery}`;
     } else if (type === 'nonpump') {
-        // Use new pumpfun API for non-pump tokens
         apiUrl = `https://paxi-pumpfun.winsnip.xyz/api/prc20-tokens?chain=paxi-mainnet`;
         cacheKey = `nonpump_tokens`;
     } else {
@@ -26,7 +26,7 @@ exports.handler = async (event) => {
     }
 
     const cachedData = getCached(cacheKey);
-    if (cachedData) return sendResponse(true, cachedData);
+    if (cachedData) return sendResponse(res, true, cachedData);
 
     try {
         const response = await fetch(apiUrl, { timeout: 10000 });
@@ -34,9 +34,7 @@ exports.handler = async (event) => {
 
         const data = await response.json();
 
-        // Normalize pumpfun response to match explorer format if needed
         if (type === 'nonpump' && data.tokens) {
-            // Transform pumpfun tokens to match our processTokenDetail expectations
             data.contracts = data.tokens.map(t => ({
                 contract_address: t.contract_address,
                 name: t.token_info.name,
@@ -57,14 +55,16 @@ exports.handler = async (event) => {
                 sells: t.sells,
                 is_pump: t.is_pump,
                 txs_count: t.txs_count,
-                created_at: t.timestamp // use timestamp as approximation
+                created_at: t.timestamp
             }));
         }
 
         setCached(cacheKey, data, 120);
-        return sendResponse(true, data);
+        return sendResponse(res, true, data);
     } catch (error) {
         console.error('Error fetching token list:', error);
-        return sendResponse(false, null, 'Failed to fetch token list', 500);
+        return sendResponse(res, false, null, 'Failed to fetch token list', 500);
     }
 };
+
+module.exports = tokenListHandler;

@@ -1,14 +1,13 @@
-const { sendResponse, getAdminState, updateAdminState, isValidPaxiAddress } = require('./utils/common');
+const { sendResponse, getAdminState, updateAdminState, isValidPaxiAddress } = require('../utils/common');
 
-exports.handler = async (event) => {
-    if (event.httpMethod === 'OPTIONS') return sendResponse(true);
+const adminControlHandler = async (req, res) => {
+    if (req.method === 'OPTIONS') return res.sendStatus(200);
 
     let currentState = getAdminState();
 
-    if (event.httpMethod === 'POST') {
+    if (req.method === 'POST') {
         try {
-            const body = JSON.parse(event.body || '{}');
-            const { action: bodyAction, value } = body;
+            const { action: bodyAction, value } = req.body || {};
 
             switch (bodyAction) {
                 case 'freeze':
@@ -20,7 +19,7 @@ exports.handler = async (event) => {
                         blocked.add(value);
                         currentState = updateAdminState({ blockedAddresses: Array.from(blocked) });
                     } else if (value) {
-                        return sendResponse(false, null, 'Invalid address to block', 400);
+                        return sendResponse(res, false, null, 'Invalid address to block', 400);
                     }
                     break;
                 case 'unblock':
@@ -31,9 +30,11 @@ exports.handler = async (event) => {
                     break;
             }
         } catch (e) {
-            return sendResponse(false, null, 'Invalid request body', 400);
+            return sendResponse(res, false, null, 'Invalid request body', 400);
         }
     }
 
-    return sendResponse(true, currentState);
+    return sendResponse(res, true, currentState);
 };
+
+module.exports = adminControlHandler;
