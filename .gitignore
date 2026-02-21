@@ -2,4 +2,6 @@ node_modules/
 .netlify/
 netlify_output.log
 http_server.log
+server.log
+.env
 verification/

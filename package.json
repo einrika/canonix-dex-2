@@ -4,11 +4,15 @@
   "description": "Canonix",
   "main": "index.js",
   "scripts": {
-    "dev": "netlify dev",
+    "start": "node server.js",
+    "dev": "node server.js",
     "build": "echo 'No build step'",
     "deploy": "netlify deploy --prod"
   },
   "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
     "node-fetch": "^2.6.7"
   },
   "devDependencies": {
