@@ -17,14 +17,14 @@ window.initChart = function() {
     container.innerHTML = '';
 
     const chartOptions = {
-        layout: { background: { color: 'transparent' }, textColor: '#9ca3af' },
+        layout: { background: { color: 'transparent' }, textColor: '#B3B3B3' },
         grid: {
-            vertLines: { color: 'rgba(255, 255, 255, 0.05)' },
-            horzLines: { color: 'rgba(255, 255, 255, 0.05)' }
+            vertLines: { color: 'rgba(250, 250, 250, 0.05)' },
+            horzLines: { color: 'rgba(250, 250, 250, 0.05)' }
         },
         crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
         rightPriceScale: {
-            borderColor: 'rgba(255, 255, 255, 0.1)',
+            borderColor: 'rgba(250, 250, 250, 0.1)',
             scaleMargins: { top: 0.2, bottom: 0.2 },
             precision: 8,
             autoScale: true,
@@ -33,7 +33,7 @@ window.initChart = function() {
             priceFormatter: price => typeof price === 'number' ? price.toFixed(8) : price
         },
         timeScale: {
-            borderColor: 'rgba(255, 255, 255, 0.1)',
+            borderColor: 'rgba(250, 250, 250, 0.1)',
             timeVisible: true,
             secondsVisible: false,
         }
@@ -81,13 +81,13 @@ window.initChart = function() {
         btn7.classList.toggle('bg-up/20', ma7Visible);
         btn7.classList.toggle('text-up', ma7Visible);
         btn7.classList.toggle('border-up/30', ma7Visible);
-        btn7.classList.toggle('text-gray-500', !ma7Visible);
+        btn7.classList.toggle('text-secondary-text', !ma7Visible);
     }
     if (btn25) {
         btn25.classList.toggle('bg-up/20', ma25Visible);
         btn25.classList.toggle('text-up', ma25Visible);
         btn25.classList.toggle('border-up/30', ma25Visible);
-        btn25.classList.toggle('text-gray-500', !ma25Visible);
+        btn25.classList.toggle('text-secondary-text', !ma25Visible);
     }
 
     // Sync Timeframe Buttons
@@ -125,14 +125,14 @@ window.initChart = function() {
         const colorClass = parseFloat(priceChange) >= 0 ? 'text-up' : 'text-down';
 
         tooltip.innerHTML = `
-            <div class="font-black text-gray-400 mb-2 border-b border-border/50 pb-2 text-[10px] tracking-tight">${dateStr}</div>
+            <div class="font-black text-secondary-text mb-2 border-b border-border/50 pb-2 text-[10px] tracking-tight">${dateStr}</div>
             <div class="space-y-1.5">
-                <div class="flex justify-between items-center"><span class="text-gray-500 uppercase font-bold">Open</span> <span class="font-mono text-white">${dataPoint.open.toFixed(8)}</span></div>
-                <div class="flex justify-between items-center"><span class="text-gray-500 uppercase font-bold text-up">High</span> <span class="font-mono text-up">${dataPoint.high.toFixed(8)}</span></div>
-                <div class="flex justify-between items-center"><span class="text-gray-500 uppercase font-bold text-down">Low</span> <span class="font-mono text-down">${dataPoint.low.toFixed(8)}</span></div>
-                <div class="flex justify-between items-center"><span class="text-gray-500 uppercase font-bold">Close</span> <span class="font-mono text-white font-black">${dataPoint.close.toFixed(8)}</span></div>
-                <div class="flex justify-between items-center border-t border-border/30 pt-1.5"><span class="text-gray-500 uppercase font-bold">Change</span> <span class="font-mono ${colorClass} font-black">${priceChange}%</span></div>
-                <div class="flex justify-between items-center"><span class="text-gray-500 uppercase font-bold">Volume</span> <span class="font-mono text-gray-300">${(dataPoint.volume || 0).toLocaleString()}</span></div>
+                <div class="flex justify-between items-center"><span class="text-secondary-text uppercase font-bold">Open</span> <span class="font-mono text-primary-text">${dataPoint.open.toFixed(8)}</span></div>
+                <div class="flex justify-between items-center"><span class="text-secondary-text uppercase font-bold text-up">High</span> <span class="font-mono text-up">${dataPoint.high.toFixed(8)}</span></div>
+                <div class="flex justify-between items-center"><span class="text-secondary-text uppercase font-bold text-down">Low</span> <span class="font-mono text-down">${dataPoint.low.toFixed(8)}</span></div>
+                <div class="flex justify-between items-center"><span class="text-secondary-text uppercase font-bold">Close</span> <span class="font-mono text-primary-text font-black">${dataPoint.close.toFixed(8)}</span></div>
+                <div class="flex justify-between items-center border-t border-border/30 pt-1.5"><span class="text-secondary-text uppercase font-bold">Change</span> <span class="font-mono ${colorClass} font-black">${priceChange}%</span></div>
+                <div class="flex justify-between items-center"><span class="text-secondary-text uppercase font-bold">Volume</span> <span class="font-mono text-gray-300">${(dataPoint.volume || 0).toLocaleString()}</span></div>
                 <div class="flex justify-between items-center border-t border-border/30 pt-1.5"><span class="text-[#ffeb3b] uppercase font-bold">MA7</span> <span class="font-mono text-[#ffeb3b]">${ma7 ? ma7.value.toFixed(8) : '-'}</span></div>
                 <div class="flex justify-between items-center"><span class="text-[#9c27b0] uppercase font-bold">MA25</span> <span class="font-mono text-[#9c27b0]">${ma25 ? ma25.value.toFixed(8) : '-'}</span></div>
             </div>
@@ -182,7 +182,7 @@ window.toggleMA = function(period) {
         btn.classList.toggle('bg-up/20', !isVisible);
         btn.classList.toggle('text-up', !isVisible);
         btn.classList.toggle('border-up/30', !isVisible);
-        btn.classList.toggle('text-gray-500', isVisible);
+        btn.classList.toggle('text-secondary-text', isVisible);
     }
     localStorage.setItem(period === 7 ? 'ma7Visible' : 'ma25Visible', !isVisible);
 };

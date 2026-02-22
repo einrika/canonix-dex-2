@@ -20,7 +20,7 @@ window.updateSliderGradient = function(sliderId, percent) {
     if (slider.classList.contains('accent-up')) color = '#00B2D6';
     if (slider.classList.contains('accent-down')) color = '#D60047';
 
-    slider.className = `w-full h-3 bg-[linear-gradient(to_right,${color}_0%,${color}_${Math.round(value)}%,#050505_${Math.round(value)}%,#050505_100%)] rounded-none appearance-none cursor-pointer border-2 border-black shadow-brutal-sm`;
+    slider.className = `w-full h-3 bg-[linear-gradient(to_right,${color}_0%,${color}_${Math.round(value)}%,#121314_${Math.round(value)}%,#121314_100%)] rounded-none appearance-none cursor-pointer border-2 border-card shadow-brutal-sm`;
 };
 
 // ===== UPDATE LP FROM SLIDER =====

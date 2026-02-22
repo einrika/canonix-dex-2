@@ -11,9 +11,9 @@
             theme: {
                 extend: {
                     colors: {
-                        'meme-black': '#191922',
-                        'meme-surface': '#191922',
-                        'meme-card': '#21212e',
+                        'meme-black': '#0B0C0D',
+                        'meme-surface': '#121314',
+                        'meme-card': '#1A1B1C',
                         'meme-green': '#00D685',
                         'meme-pink': '#D60047',
                         'meme-cyan': '#00B2D6',
@@ -22,10 +22,14 @@
                         up: '#00D685',
                         down: '#D60047',
                         accent: '#00B2D6',
-                        bg: '#191922',
-                        surface: '#191922',
-                        card: '#21212e',
-                        border: '#000000',
+                        bg: '#0B0C0D',
+                        surface: '#121314',
+                        card: '#1A1B1C',
+                        border: '#0B0C0D',
+                        // Text colors for dark background
+                        'primary-text': '#FAFAFA',
+                        'secondary-text': '#E5E5E5',
+                        'muted-text': '#B3B3B3',
                     },
                     fontFamily: {
                         display: ['Bangers', 'system-ui'],
@@ -33,9 +37,9 @@
                         sans: ['DM Sans', 'sans-serif'],
                     },
                     boxShadow: {
-                        'brutal-sm': '2px 2px 0px 0px rgba(0,0,0,1)',
-                        'brutal': '4px 4px 0px 0px rgba(0,0,0,1)',
-                        'brutal-lg': '6px 6px 0px 0px rgba(0,0,0,1)',
+                        'brutal-sm': '2px 2px 0px 0px rgba(11,12,13,1)',
+                        'brutal': '4px 4px 0px 0px rgba(11,12,13,1)',
+                        'brutal-lg': '6px 6px 0px 0px rgba(11,12,13,1)',
                         'brutal-green': '4px 4px 0px 0px #00D685',
                         'brutal-pink': '4px 4px 0px 0px #D60047',
                         'brutal-cyan': '4px 4px 0px 0px #00B2D6',
@@ -87,14 +91,14 @@
     <link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon-96x96.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
     <link rel="manifest" href="/manifest.json">
-    <meta name="msapplication-TileColor" content="#000000">
+    <meta name="msapplication-TileColor" content="#0B0C0D">
     <meta name="msapplication-TileImage" content="/assets/ms-icon-144x144.png">
-    <meta name="theme-color" content="#000000">
+    <meta name="theme-color" content="#0B0C0D">
 </head>
 
-<body class="min-h-screen bg-bg text-white font-sans selection:bg-meme-pink selection:text-white">
+<body class="min-h-screen bg-bg text-primary-text font-sans selection:bg-meme-pink selection:text-primary-text">
     <!-- Marquee Header -->
-    <div class="bg-meme-yellow border-b-2 border-black py-0.5 overflow-hidden whitespace-nowrap z-[60] relative">
+    <div class="bg-meme-yellow border-b-2 border-card py-0.5 overflow-hidden whitespace-nowrap z-[60] relative">
         <div class="animate-marquee inline-block">
             <span class="text-black font-display text-sm mx-4 italic uppercase">Soon $$$</span>
             <span class="text-black font-display text-sm mx-4 italic uppercase">Degens Only</span>
@@ -105,21 +109,21 @@
         </div>
     </div>
 
-    <nav class="border-b-2 border-black bg-bg sticky top-0 z-50 px-4">
+    <nav class="border-b-2 border-card bg-bg sticky top-0 z-50 px-4">
         <div class="max-w-7xl mx-auto h-14 flex justify-between items-center">
             <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-meme-green border-2 border-black shadow-brutal-sm flex items-center justify-center rotate-[-5deg]">
+                <div class="w-8 h-8 bg-meme-green border-2 border-card shadow-brutal-sm flex items-center justify-center rotate-[-5deg]">
                     <i class="fas fa-exchange-alt text-black text-sm"></i>
                 </div>
-                <span class="text-2xl font-display tracking-widest text-white italic">CANONIX</span>
+                <span class="text-2xl font-display tracking-widest text-primary-text italic">CANONIX</span>
             </div>
             <div class="hidden md:flex items-center gap-4">
-                <a href="#market" class="font-display text-lg text-white hover:text-meme-green transition-colors uppercase italic">Markets</a>
-                <a href="trade.html" class="font-display text-lg text-white hover:text-meme-cyan transition-colors uppercase italic">Degen Tech</a>
-                <a href="faq.html" class="font-display text-lg text-white hover:text-meme-pink transition-colors uppercase italic">Hackers</a>
+                <a href="#market" class="font-display text-lg text-primary-text hover:text-meme-green transition-colors uppercase italic">Markets</a>
+                <a href="trade.html" class="font-display text-lg text-primary-text hover:text-meme-cyan transition-colors uppercase italic">Degen Tech</a>
+                <a href="faq.html" class="font-display text-lg text-primary-text hover:text-meme-pink transition-colors uppercase italic">Hackers</a>
             </div>
             <div class="flex items-center gap-2">
-                <a href="trade.html" class="bg-meme-pink text-white font-display text-lg px-4 py-1.5 border-2 border-black shadow-brutal hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all uppercase italic">APP</a>
+                <a href="trade.html" class="bg-meme-pink text-primary-text font-display text-lg px-4 py-1.5 border-2 border-card shadow-brutal hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all uppercase italic">APP</a>
             </div>
         </div>
     </nav>
@@ -132,90 +136,90 @@
         <div class="max-w-7xl mx-auto relative z-10">
             <div class="grid lg:grid-cols-2 gap-12 items-center">
                 <div class="reveal">
-                    <div class="inline-block px-2 py-0.5 bg-meme-cyan border border-black font-mono text-[8px] font-black text-black uppercase tracking-widest mb-4 rotate-[-2deg]">
+                    <div class="inline-block px-2 py-0.5 bg-meme-cyan border border-card font-mono text-[8px] font-black text-black uppercase tracking-widest mb-4 rotate-[-2deg]">
                         Bonding Curve Terminal v2.0
                     </div>
-                    <h1 class="text-3xl md:text-6xl font-display mb-4 leading-[0.9] tracking-tighter italic uppercase text-white drop-shadow-[4px_4px_0_rgba(0,0,0,1)]">
+                    <h1 class="text-3xl md:text-6xl font-display mb-4 leading-[0.9] tracking-tighter italic uppercase text-primary-text drop-shadow-[4px_4px_0_rgba(11,12,13,1)]">
                         Unleash The <br>
                         <span class="text-meme-green">Meme Energy</span>
                     </h1>
-                    <p class="font-mono text-gray-500 text-sm md:text-lg max-w-md mb-8 leading-relaxed font-bold uppercase italic">
+                    <p class="font-mono text-secondary-text text-sm md:text-lg max-w-md mb-8 leading-relaxed font-bold uppercase italic">
                         Decentralized PRC20 trading for true degens. No cap, no ragrets, just pure pump.
                     </p>
 
                     <div class="flex flex-col sm:flex-row gap-4 mb-12">
-                        <a href="trade.html" class="bg-meme-green text-black font-display text-2xl px-8 py-3 border-2 border-black shadow-brutal-green hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic text-center">TRADE NOW</a>
-                        <a href="#market" class="bg-meme-black text-white font-display text-2xl px-8 py-3 border-2 border-black shadow-brutal-cyan hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic text-center">EXPLORE</a>
+                        <a href="trade.html" class="bg-meme-green text-black font-display text-2xl px-8 py-3 border-2 border-card shadow-brutal-green hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic text-center">TRADE NOW</a>
+                        <a href="#market" class="bg-bg text-primary-text font-display text-2xl px-8 py-3 border-2 border-card shadow-brutal-cyan hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic text-center">EXPLORE</a>
                     </div>
 
                     <!-- Metrics -->
                     <div class="grid grid-cols-3 gap-4">
                         <div>
                             <div class="text-3xl font-display text-meme-yellow italic mb-0.5 tracking-tighter">$<span class="counter" data-target="0">0</span>M+</div>
-                            <div class="text-[8px] text-gray-700 font-black uppercase tracking-widest font-mono italic text-center">Volume</div>
+                            <div class="text-[8px] text-muted-text font-black uppercase tracking-widest font-mono italic text-center">Volume</div>
                         </div>
                         <div>
                             <div class="text-3xl font-display text-meme-pink italic mb-0.5 tracking-tighter"><span class="counter" data-target="2">0</span>K+</div>
-                            <div class="text-[8px] text-gray-700 font-black uppercase tracking-widest font-mono italic text-center">Traders</div>
+                            <div class="text-[8px] text-muted-text font-black uppercase tracking-widest font-mono italic text-center">Traders</div>
                         </div>
                         <div>
                             <div class="text-3xl font-display text-meme-cyan italic mb-0.5 tracking-tighter"><span class="counter" data-target="0">0</span>+</div>
-                            <div class="text-[8px] text-gray-700 font-black uppercase tracking-widest font-mono italic text-center">Tokens</div>
+                            <div class="text-[8px] text-muted-text font-black uppercase tracking-widest font-mono italic text-center">Tokens</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Visual Asset -->
                 <div class="relative lg:block hidden">
-                    <div class="bg-meme-card border-4 border-black p-2 shadow-brutal-lg rotate-2 relative overflow-hidden group">
+                    <div class="bg-card border-4 border-card p-2 shadow-brutal-lg rotate-2 relative overflow-hidden group">
                         <div class="absolute -top-10 -right-10 w-40 h-40 bg-meme-green opacity-20 blur-3xl rounded-full"></div>
-                        <div class="relative z-10 border-2 border-black bg-black p-4">
+                        <div class="relative z-10 border-2 border-card bg-surface p-4">
                             <div class="flex items-center gap-1.5 mb-4">
-                                <div class="w-2 h-2 rounded-full bg-meme-pink border border-black"></div>
-                                <div class="w-2 h-2 rounded-full bg-meme-yellow border border-black"></div>
-                                <div class="w-2 h-2 rounded-full bg-meme-green border border-black"></div>
+                                <div class="w-2 h-2 rounded-full bg-meme-pink border border-card"></div>
+                                <div class="w-2 h-2 rounded-full bg-meme-yellow border border-card"></div>
+                                <div class="w-2 h-2 rounded-full bg-meme-green border border-card"></div>
                             </div>
-                            <div class="aspect-video bg-meme-surface border-2 border-black relative flex items-center justify-center">
+                            <div class="aspect-video bg-surface border-2 border-card relative flex items-center justify-center">
                                 <svg viewBox="0 0 100 40" class="w-full h-24 text-meme-green drop-shadow-[0_0_10px_#00FF9F]">
                                     <path d="M0,35 Q10,35 20,30 T40,20 T60,25 T80,5 T100,0" fill="none" stroke="currentColor" stroke-width="2" class="animate-pulse" />
                                 </svg>
                                 <div class="absolute inset-0 flex items-center justify-center">
-                                    <span class="font-display text-4xl text-white uppercase italic tracking-tighter drop-shadow-[2px_2px_0_rgba(0,0,0,1)]">Pumping...</span>
+                                    <span class="font-display text-4xl text-primary-text uppercase italic tracking-tighter drop-shadow-[2px_2px_0_rgba(11,12,13,1)]">Pumping...</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <!-- Floating Ornaments -->
-                    <div class="absolute -top-8 -left-8 w-16 h-16 bg-meme-yellow border-2 border-black shadow-brutal rotate-[-15deg] animate-float"></div>
-                    <div class="absolute -bottom-8 -right-8 w-14 h-14 bg-meme-pink border-2 border-black shadow-brutal rotate-[15deg] animate-float delay-[1s]"></div>
+                    <div class="absolute -top-8 -left-8 w-16 h-16 bg-meme-yellow border-2 border-card shadow-brutal rotate-[-15deg] animate-float"></div>
+                    <div class="absolute -bottom-8 -right-8 w-14 h-14 bg-meme-pink border-2 border-card shadow-brutal rotate-[15deg] animate-float delay-[1s]"></div>
                 </div>
             </div>
         </div>
     </header>
 
     <!-- Event Banner -->
-    <section class="py-10 bg-meme-pink border-y-4 border-black relative overflow-hidden px-4">
+    <section class="py-10 bg-meme-pink border-y-4 border-card relative overflow-hidden px-4">
         <div class="absolute inset-0 opacity-20 bg-[radial-gradient(circle,#000_1px,transparent_1px)] bg-[length:15px_15px]"></div>
         <div class="max-w-7xl mx-auto relative z-10 text-center">
-            <div class="inline-block px-4 py-1 bg-black text-white font-display text-base uppercase italic rotate-[-1deg] mb-6">Live Competition (coming soon)</div>
-            <h2 class="text-3xl md:text-6xl font-display text-white italic uppercase tracking-tighter mb-8 drop-shadow-[4px_4px_0_rgba(0,0,0,1)]">Trading War</h2>
+            <div class="inline-block px-4 py-1 bg-surface text-primary-text font-display text-base uppercase italic rotate-[-1deg] mb-6">Live Competition (coming soon)</div>
+            <h2 class="text-3xl md:text-6xl font-display text-primary-text italic uppercase tracking-tighter mb-8 drop-shadow-[4px_4px_0_rgba(11,12,13,1)]">Trading War</h2>
 
             <div class="grid md:grid-cols-3 gap-6 mb-10 max-w-3xl mx-auto">
-                <div class="bg-black border-2 border-black p-4 shadow-brutal rotate-[-2deg]">
+                <div class="bg-surface border-2 border-card p-4 shadow-brutal rotate-[-2deg]">
                     <div class="text-meme-yellow font-display text-3xl italic uppercase mb-1">5k PAXI</div>
-                    <div class="text-white font-mono text-[8px] font-black uppercase tracking-widest italic">Prize Pool</div>
+                    <div class="text-primary-text font-mono text-[8px] font-black uppercase tracking-widest italic">Prize Pool</div>
                 </div>
-                <div class="bg-white border-2 border-black p-6 shadow-brutal rotate-[1deg]">
+                <div class="bg-white border-2 border-card p-6 shadow-brutal rotate-[1deg]">
                     <div class="text-black font-display text-3xl italic uppercase mb-1">0</div>
-                    <div class="text-gray-500 font-mono text-[8px] font-black uppercase tracking-widest italic">Participants</div>
+                    <div class="text-secondary-text font-mono text-[8px] font-black uppercase tracking-widest italic">Participants</div>
                 </div>
-                <div class="bg-meme-green border-2 border-black p-6 shadow-brutal rotate-[-1deg]">
+                <div class="bg-meme-green border-2 border-card p-6 shadow-brutal rotate-[-1deg]">
                     <div class="text-black font-display text-3xl italic uppercase mb-1">?? : ??</div>
                     <div class="text-black font-mono text-[8px] font-black uppercase tracking-widest italic">Time Left</div>
                 </div>
             </div>
 
-            <button class="bg-white text-black font-display text-2xl px-8 py-3 border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">JOIN NOW</button>
+            <button class="bg-white text-black font-display text-2xl px-8 py-3 border-4 border-card shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">JOIN NOW</button>
         </div>
     </section>
 
@@ -224,21 +228,21 @@
         <div class="max-w-7xl mx-auto">
             <div class="flex flex-col lg:flex-row justify-between items-end gap-6 mb-10 reveal">
                 <div class="max-w-xl">
-                    <h2 class="text-4xl font-display text-white italic uppercase tracking-tighter mb-3 drop-shadow-[4px_4px_0_rgba(0,255,159,1)]">Market Radar</h2>
-                    <p class="font-mono text-gray-500 font-black uppercase tracking-widest text-sm italic">Real-time data on trending tokens.</p>
+                    <h2 class="text-4xl font-display text-primary-text italic uppercase tracking-tighter mb-3 drop-shadow-[4px_4px_0_rgba(0,255,159,1)]">Market Radar</h2>
+                    <p class="font-mono text-secondary-text font-black uppercase tracking-widest text-sm italic">Real-time data on trending tokens.</p>
                 </div>
                 <!-- Filters -->
                 <div class="flex flex-col gap-4">
                     <div class="flex flex-wrap gap-2">
-                        <button onclick="window.setMarketFilter('pumping', this)" class="market-filter-btn px-4 py-2 bg-meme-green border-2 border-black text-black font-display text-lg italic uppercase shadow-brutal hover:shadow-none transition-all">Pumping</button>
-                        <button onclick="window.setMarketFilter('hot', this)" class="market-filter-btn px-4 py-2 bg-black border-2 border-black text-white font-display text-lg italic uppercase shadow-brutal hover:shadow-none transition-all">Hot</button>
-                        <button onclick="window.setMarketFilter('new', this)" class="market-filter-btn px-4 py-2 bg-black border-2 border-black text-white font-display text-lg italic uppercase shadow-brutal hover:shadow-none transition-all">New</button>
-                        <button onclick="window.setMarketFilter('marketcap', this)" class="market-filter-btn px-4 py-2 bg-black border-2 border-black text-white font-display text-lg italic uppercase shadow-brutal hover:shadow-none transition-all">Mcap</button>
-                        <button onclick="window.setMarketFilter('gainers', this)" class="market-filter-btn px-4 py-2 bg-black border-2 border-black text-white font-display text-lg italic uppercase shadow-brutal hover:shadow-none transition-all">Gainers</button>
-                        <button onclick="window.setMarketFilter('verified', this)" class="market-filter-btn px-4 py-2 bg-black border-2 border-black text-white font-display text-lg italic uppercase shadow-brutal hover:shadow-none transition-all">Verified</button>
-                        <button onclick="window.setMarketFilter('nonpump', this)" class="market-filter-btn px-4 py-2 bg-black border-2 border-black text-white font-display text-lg italic uppercase shadow-brutal hover:shadow-none transition-all">Non-PUMP</button>
+                        <button onclick="window.setMarketFilter('pumping', this)" class="market-filter-btn px-4 py-2 bg-meme-green border-2 border-card text-black font-display text-lg italic uppercase shadow-brutal hover:shadow-none transition-all">Pumping</button>
+                        <button onclick="window.setMarketFilter('hot', this)" class="market-filter-btn px-4 py-2 bg-surface border-2 border-card text-primary-text font-display text-lg italic uppercase shadow-brutal hover:shadow-none transition-all">Hot</button>
+                        <button onclick="window.setMarketFilter('new', this)" class="market-filter-btn px-4 py-2 bg-surface border-2 border-card text-primary-text font-display text-lg italic uppercase shadow-brutal hover:shadow-none transition-all">New</button>
+                        <button onclick="window.setMarketFilter('marketcap', this)" class="market-filter-btn px-4 py-2 bg-surface border-2 border-card text-primary-text font-display text-lg italic uppercase shadow-brutal hover:shadow-none transition-all">Mcap</button>
+                        <button onclick="window.setMarketFilter('gainers', this)" class="market-filter-btn px-4 py-2 bg-surface border-2 border-card text-primary-text font-display text-lg italic uppercase shadow-brutal hover:shadow-none transition-all">Gainers</button>
+                        <button onclick="window.setMarketFilter('verified', this)" class="market-filter-btn px-4 py-2 bg-surface border-2 border-card text-primary-text font-display text-lg italic uppercase shadow-brutal hover:shadow-none transition-all">Verified</button>
+                        <button onclick="window.setMarketFilter('nonpump', this)" class="market-filter-btn px-4 py-2 bg-surface border-2 border-card text-primary-text font-display text-lg italic uppercase shadow-brutal hover:shadow-none transition-all">Non-PUMP</button>
                     </div>
-                    <div id="marketSubTabs" class="hidden flex flex-wrap gap-2 p-3 bg-meme-card border-2 border-black shadow-brutal-sm rotate-[-0.5deg]">
+                    <div id="marketSubTabs" class="hidden flex flex-wrap gap-2 p-3 bg-card border-2 border-card shadow-brutal-sm rotate-[-0.5deg]">
                         <!-- JS Populated -->
                     </div>
                 </div>
@@ -249,7 +253,7 @@
                 <div class="relative">
                     <i class="fas fa-search absolute left-6 top-1/2 -translate-y-1/2 text-meme-cyan text-lg"></i>
                     <input type="text" id="marketSearch" placeholder="SEARCH TOKENS..."
-                           class="w-full pl-14 pr-6 py-4 bg-meme-surface border-4 border-black text-xl font-display outline-none focus:border-meme-pink transition-all text-white placeholder:text-gray-800 italic uppercase"
+                           class="w-full pl-14 pr-6 py-4 bg-surface border-4 border-card text-xl font-display outline-none focus:border-meme-pink transition-all text-primary-text placeholder:text-muted-text italic uppercase"
                            oninput="window.filterMarket()">
                 </div>
             </div>
@@ -257,12 +261,12 @@
             <!-- Grid -->
             <div id="marketGrid" class="grid grid-cols-2 gap-3 md:gap-6 reveal">
                 <!-- JS Populated -->
-                <div class="animate-pulse bg-meme-card border-4 border-black h-64"></div>
-                <div class="animate-pulse bg-meme-card border-4 border-black h-64"></div>
+                <div class="animate-pulse bg-card border-4 border-card h-64"></div>
+                <div class="animate-pulse bg-card border-4 border-card h-64"></div>
             </div>
 
             <div class="mt-16 text-center reveal">
-                <button id="loadMoreMarket" onclick="window.loadMoreMarket()" class="bg-meme-cyan text-black font-display text-3xl px-12 py-5 border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">LOAD MORE</button>
+                <button id="loadMoreMarket" onclick="window.loadMoreMarket()" class="bg-meme-cyan text-black font-display text-3xl px-12 py-5 border-4 border-card shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">LOAD MORE</button>
             </div>
         </div>
     </section>
@@ -270,29 +274,29 @@
     <!-- AI Scan Section -->
     <section class="py-16 bg-bg relative px-4">
         <div class="max-w-7xl mx-auto">
-            <div class="bg-meme-surface border-4 border-black p-8 relative overflow-hidden reveal group">
+            <div class="bg-surface border-4 border-card p-8 relative overflow-hidden reveal group">
                 <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-meme-cyan opacity-10 blur-3xl rounded-full animate-pulse"></div>
 
                 <div id="index-ai-content" class="relative z-10">
                     <div class="flex items-center gap-6 mb-8">
-                        <div class="w-16 h-16 bg-meme-green border-2 border-black shadow-brutal flex items-center justify-center rotate-[-10deg]">
+                        <div class="w-16 h-16 bg-meme-green border-2 border-card shadow-brutal flex items-center justify-center rotate-[-10deg]">
                             <i class="fas fa-brain text-black text-3xl animate-pulse"></i>
                         </div>
                         <div>
-                            <h3 class="font-display italic uppercase text-4xl text-white tracking-tighter mb-1">Network Oracle</h3>
+                            <h3 class="font-display italic uppercase text-4xl text-primary-text tracking-tighter mb-1">Network Oracle</h3>
                             <p class="font-mono text-meme-cyan font-black uppercase tracking-widest text-[10px] animate-glitch">GEMINI PRO 1.5 DEEP SCAN ACTIVE</p>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                        <div class="h-20 bg-black border-2 border-black p-4 animate-pulse"></div>
-                        <div class="h-20 bg-black border-2 border-black p-4 animate-pulse"></div>
-                        <div class="h-20 bg-black border-2 border-black p-4 animate-pulse"></div>
-                        <div class="h-20 bg-black border-2 border-black p-4 animate-pulse"></div>
+                        <div class="h-20 bg-surface border-2 border-card p-4 animate-pulse"></div>
+                        <div class="h-20 bg-surface border-2 border-card p-4 animate-pulse"></div>
+                        <div class="h-20 bg-surface border-2 border-card p-4 animate-pulse"></div>
+                        <div class="h-20 bg-surface border-2 border-card p-4 animate-pulse"></div>
                     </div>
-                    <div class="bg-black border-2 border-black p-8 h-40 relative overflow-hidden flex items-center justify-center">
+                    <div class="bg-surface border-2 border-card p-8 h-40 relative overflow-hidden flex items-center justify-center">
                         <div class="absolute inset-0 bg-meme-green/5 animate-pulse"></div>
-                        <div class="relative z-10 font-mono text-gray-700 font-bold uppercase tracking-widest text-xs italic">Awaiting block intelligence...</div>
+                        <div class="relative z-10 font-mono text-muted-text font-bold uppercase tracking-widest text-xs italic">Awaiting block intelligence...</div>
                     </div>
                 </div>
             </div>
@@ -300,7 +304,7 @@
     </section>
 
     <!-- Feature Section -->
-    <section class="py-16 bg-meme-yellow border-y-4 border-black px-4">
+    <section class="py-16 bg-meme-yellow border-y-4 border-card px-4">
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-16 reveal">
                 <h2 class="text-4xl font-display text-black italic uppercase tracking-tighter leading-none mb-4 drop-shadow-[4px_4px_0_rgba(255,255,255,1)]">Degen Protocols</h2>
@@ -308,36 +312,36 @@
             </div>
 
             <div class="grid md:grid-cols-3 gap-6">
-                <div class="reveal p-6 bg-black border-4 border-black shadow-brutal hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all">
-                    <div class="w-12 h-12 bg-meme-green border-2 border-black flex items-center justify-center text-black text-xl mb-6"><i class="fas fa-bolt"></i></div>
-                    <h4 class="text-3xl font-display text-white mb-4 italic uppercase tracking-tighter">Hyper-Speed</h4>
-                    <p class="font-mono text-gray-500 text-[10px] font-bold uppercase tracking-wide leading-relaxed italic">Paxi Network native settlement. Front-run the rugs with sub-second execution latency.</p>
+                <div class="reveal p-6 bg-surface border-4 border-card shadow-brutal hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all">
+                    <div class="w-12 h-12 bg-meme-green border-2 border-card flex items-center justify-center text-black text-xl mb-6"><i class="fas fa-bolt"></i></div>
+                    <h4 class="text-3xl font-display text-primary-text mb-4 italic uppercase tracking-tighter">Hyper-Speed</h4>
+                    <p class="font-mono text-secondary-text text-[10px] font-bold uppercase tracking-wide leading-relaxed italic">Paxi Network native settlement. Front-run the rugs with sub-second execution latency.</p>
                 </div>
-                <div class="reveal p-6 bg-black border-4 border-black shadow-brutal hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all delay-[100ms]">
-                    <div class="w-12 h-12 bg-meme-pink border-2 border-black flex items-center justify-center text-white text-xl mb-6"><i class="fas fa-brain"></i></div>
-                    <h4 class="text-3xl font-display text-white mb-4 italic uppercase tracking-tighter">AI Oracle</h4>
-                    <p class="font-mono text-gray-500 text-[10px] font-bold uppercase tracking-wide leading-relaxed italic">Gemini Pro 1.5 scanning every transaction. Real-time alpha from pure noise.</p>
+                <div class="reveal p-6 bg-surface border-4 border-card shadow-brutal hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all delay-[100ms]">
+                    <div class="w-12 h-12 bg-meme-pink border-2 border-card flex items-center justify-center text-primary-text text-xl mb-6"><i class="fas fa-brain"></i></div>
+                    <h4 class="text-3xl font-display text-primary-text mb-4 italic uppercase tracking-tighter">AI Oracle</h4>
+                    <p class="font-mono text-secondary-text text-[10px] font-bold uppercase tracking-wide leading-relaxed italic">Gemini Pro 1.5 scanning every transaction. Real-time alpha from pure noise.</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="py-16 bg-bg border-t-4 border-black">
+    <footer class="py-16 bg-bg border-t-4 border-card">
         <div class="max-w-7xl mx-auto text-center">
             <div class="flex items-center justify-center gap-4 mb-12">
-                <div class="w-12 h-12 bg-meme-pink border-2 border-black shadow-brutal flex items-center justify-center rotate-[10deg]">
-                    <i class="fas fa-exchange-alt text-white text-2xl"></i>
+                <div class="w-12 h-12 bg-meme-pink border-2 border-card shadow-brutal flex items-center justify-center rotate-[10deg]">
+                    <i class="fas fa-exchange-alt text-primary-text text-2xl"></i>
                 </div>
-                <span class="text-3xl md:text-5xl font-display tracking-widest text-white italic">CANONIX</span>
+                <span class="text-3xl md:text-5xl font-display tracking-widest text-primary-text italic">CANONIX</span>
             </div>
             <div class="flex flex-wrap justify-center gap-8 font-display text-xl mb-12">
-                <a href="#" class="text-gray-600 hover:text-meme-green transition-colors uppercase italic">Docs</a>
-                <a href="#" class="text-gray-600 hover:text-meme-pink transition-colors uppercase italic">Github</a>
-                <a href="#" class="text-gray-600 hover:text-meme-cyan transition-colors uppercase italic">Twitter</a>
-                <a href="#" class="text-gray-600 hover:text-meme-yellow transition-colors uppercase italic">Telegram</a>
+                <a href="#" class="text-muted-text hover:text-meme-green transition-colors uppercase italic">Docs</a>
+                <a href="#" class="text-muted-text hover:text-meme-pink transition-colors uppercase italic">Github</a>
+                <a href="#" class="text-muted-text hover:text-meme-cyan transition-colors uppercase italic">Twitter</a>
+                <a href="#" class="text-muted-text hover:text-meme-yellow transition-colors uppercase italic">Telegram</a>
             </div>
-            <div class="font-mono text-[8px] text-gray-800 font-black uppercase tracking-[0.5em]">
+            <div class="font-mono text-[8px] text-muted-text font-black uppercase tracking-[0.5em]">
                 &copy; 2026 Canonix Protocol | Built by Degens for Degens
             </div>
         </div>

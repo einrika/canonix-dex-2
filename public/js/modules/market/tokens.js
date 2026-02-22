@@ -266,19 +266,19 @@ window.setSort = async function(sortType, event) {
     window.currentSort = sortType;
     document.querySelectorAll('.sort-btn').forEach(btn => {
         btn.classList.remove('bg-meme-green', 'text-black');
-        btn.classList.add('bg-black', 'text-white');
+        btn.classList.add('bg-surface', 'text-primary-text');
     });
 
     if (event && event.currentTarget) {
         event.currentTarget.classList.add('bg-meme-green', 'text-black');
-        event.currentTarget.classList.remove('bg-black', 'text-white');
+        event.currentTarget.classList.remove('bg-surface', 'text-primary-text');
     } else {
         // Fallback search by sortType if event is missing (e.g. initial load)
         const allBtns = document.querySelectorAll('.sort-btn');
         allBtns.forEach(btn => {
             if (btn.getAttribute('onclick')?.includes(`'${sortType}'`)) {
                 btn.classList.add('bg-meme-green', 'text-black');
-                btn.classList.remove('bg-black', 'text-white');
+                btn.classList.remove('bg-surface', 'text-primary-text');
             }
         });
     }

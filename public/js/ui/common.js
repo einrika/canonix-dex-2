@@ -87,7 +87,7 @@ window.renderTokenList = function(filter = '') {
     });
     
     if (filtered.length === 0) {
-        container.innerHTML = '<div class="text-center font-display text-2xl text-gray-700 py-12 uppercase italic">No Trash Detected</div>';
+        container.innerHTML = '<div class="text-center font-display text-2xl text-muted-text py-12 uppercase italic">No Trash Detected</div>';
         return;
     }
     
@@ -97,38 +97,38 @@ window.renderTokenList = function(filter = '') {
         
         if (!detail) {
             return `
-                <div class="p-6 border-b-2 border-black flex items-center gap-6 hover:bg-meme-surface cursor-pointer group transition-colors" onclick="window.selectPRC20('${addr}')">
-                    <div class="w-14 h-14 bg-meme-card border-4 border-black shadow-brutal flex items-center justify-center font-display text-2xl text-gray-700 rotate-[-5deg]">?</div>
+                <div class="p-6 border-b-2 border-card flex items-center gap-6 hover:bg-surface cursor-pointer group transition-colors" onclick="window.selectPRC20('${addr}')">
+                    <div class="w-14 h-14 bg-card border-4 border-card shadow-brutal flex items-center justify-center font-display text-2xl text-muted-text rotate-[-5deg]">?</div>
                     <div class="flex-1 min-w-0">
-                        <div class="font-mono text-xs text-gray-500 font-bold truncate uppercase">${addr}</div>
-                        <div class="font-display text-lg text-gray-700 italic uppercase">SYNCING...</div>
+                        <div class="font-mono text-xs text-secondary-text font-bold truncate uppercase">${addr}</div>
+                        <div class="font-display text-lg text-muted-text italic uppercase">SYNCING...</div>
                     </div>
-                    <i class="fas fa-chevron-right text-gray-800"></i>
+                    <i class="fas fa-chevron-right text-muted-text"></i>
                 </div>`;
         }
         
         return `
-            <div class="p-6 border-b-2 border-black flex items-center gap-6 hover:bg-meme-surface cursor-pointer group transition-colors" onclick="window.selectPRC20('${addr}')">
+            <div class="p-6 border-b-2 border-card flex items-center gap-6 hover:bg-surface cursor-pointer group transition-colors" onclick="window.selectPRC20('${addr}')">
                 <div class="relative rotate-[-5deg] group-hover:rotate-0 transition-transform">
-                    <div class="w-16 h-16 bg-meme-card border-4 border-black shadow-brutal flex items-center justify-center font-display text-3xl overflow-hidden">
+                    <div class="w-16 h-16 bg-card border-4 border-card shadow-brutal flex items-center justify-center font-display text-3xl overflow-hidden">
                         ${detail.logo ? `<img src="${detail.logo}" class="w-full h-full object-cover">` : `<span>${detail.symbol.charAt(0)}</span>`}
                     </div>
-                    ${detail.verified ? `<div class="absolute -bottom-2 -right-2 w-6 h-6 bg-meme-green border-2 border-black flex items-center justify-center text-black text-[10px]"><i class="fas fa-check"></i></div>` : ''}
+                    ${detail.verified ? `<div class="absolute -bottom-2 -right-2 w-6 h-6 bg-meme-green border-2 border-card flex items-center justify-center text-black text-[10px]"><i class="fas fa-check"></i></div>` : ''}
                 </div>
                 <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-3 mb-1">
-                        <span class="font-display text-2xl text-white italic uppercase tracking-tighter">${detail.name}</span>
-                        <span class="px-2 py-0.5 bg-black border border-black text-meme-cyan font-mono text-[9px] font-bold uppercase">${detail.symbol}</span>
+                        <span class="font-display text-2xl text-primary-text italic uppercase tracking-tighter">${detail.name}</span>
+                        <span class="px-2 py-0.5 bg-surface border border-card text-meme-cyan font-mono text-[9px] font-bold uppercase">${detail.symbol}</span>
                     </div>
                     <div class="flex items-center gap-4">
-                        <code class="font-mono text-[10px] text-gray-600 uppercase font-bold truncate">${shortAddr}</code>
+                        <code class="font-mono text-[10px] text-muted-text uppercase font-bold truncate">${shortAddr}</code>
                         <div class="flex gap-2">
                             <button onclick="window.copyAddress(event, '${addr}')" class="text-meme-yellow hover:scale-125 transition-transform"><i class="fas fa-copy"></i></button>
                             <button onclick="window.showTokenDetail(event, '${addr}')" class="text-meme-cyan hover:scale-125 transition-transform"><i class="fas fa-info-circle"></i></button>
                         </div>
                     </div>
                 </div>
-                <i class="fas fa-chevron-right text-gray-800 group-hover:translate-x-2 transition-transform"></i>
+                <i class="fas fa-chevron-right text-muted-text group-hover:translate-x-2 transition-transform"></i>
             </div>`;
     }).join('');
 };
@@ -160,11 +160,11 @@ window.updateDashboard = function(detail) {
         window.setText(changeEl, valText);
 
         // Use classList for safer class management
-        changeEl.classList.remove('bg-meme-green', 'bg-meme-pink', 'text-black', 'text-white');
+        changeEl.classList.remove('bg-meme-green', 'bg-meme-pink', 'text-black', 'text-primary-text');
         if (valNum >= 0) {
             changeEl.classList.add('bg-meme-green', 'text-black');
         } else {
-            changeEl.classList.add('bg-meme-pink', 'text-white');
+            changeEl.classList.add('bg-meme-pink', 'text-primary-text');
         }
     }
 
@@ -195,7 +195,7 @@ window.updateDashboard = function(detail) {
             signalEl.className = 'font-display text-[9px] uppercase italic text-meme-pink opacity-70 font-bold';
         } else {
             window.setText(signalEl, 'STAGNANT');
-            signalEl.className = 'font-display text-[9px] uppercase italic text-gray-500 font-bold';
+            signalEl.className = 'font-display text-[9px] uppercase italic text-secondary-text font-bold';
         }
     }
 
@@ -231,7 +231,7 @@ window.updateDashboard = function(detail) {
     const verif = document.getElementById('verifyStatus');
     if (verif) {
         window.setText(verif, detail.official_verified ? 'OFFICIAL VERIFIED' : 'NOT VERIFIED');
-        verif.className = detail.official_verified ? 'font-display text-base text-meme-cyan uppercase italic tracking-tighter' : 'font-display text-base text-gray-600 uppercase italic tracking-tighter';
+        verif.className = detail.official_verified ? 'font-display text-base text-meme-cyan uppercase italic tracking-tighter' : 'font-display text-base text-muted-text uppercase italic tracking-tighter';
     }
 
     // Desc & Marketing
@@ -254,8 +254,8 @@ window.updateDashboard = function(detail) {
     const socials = document.getElementById('socialLinks');
     if (socials) {
         socials.innerHTML = '';
-        if (detail.website) socials.innerHTML += `<a href="${detail.website}" target="_blank" class="w-10 h-10 flex items-center justify-center bg-black border-2 border-black text-white hover:text-meme-green shadow-brutal hover:shadow-none transition-all"><i class="fas fa-globe"></i></a>`;
-        if (detail.project) socials.innerHTML += `<a href="${detail.project}" target="_blank" class="w-10 h-10 flex items-center justify-center bg-black border-2 border-black text-white hover:text-meme-cyan shadow-brutal hover:shadow-none transition-all"><i class="fab fa-twitter"></i></a>`;
+        if (detail.website) socials.innerHTML += `<a href="${detail.website}" target="_blank" class="w-10 h-10 flex items-center justify-center bg-surface border-2 border-card text-primary-text hover:text-meme-green shadow-brutal hover:shadow-none transition-all"><i class="fas fa-globe"></i></a>`;
+        if (detail.project) socials.innerHTML += `<a href="${detail.project}" target="_blank" class="w-10 h-10 flex items-center justify-center bg-surface border-2 border-card text-primary-text hover:text-meme-cyan shadow-brutal hover:shadow-none transition-all"><i class="fab fa-twitter"></i></a>`;
     }
 
     window.setText('recvTokenSymbol', detail.symbol);
@@ -271,12 +271,12 @@ window.setTradeType = function(type) {
     const sellTab = document.getElementById('sellTab');
     if (type === 'buy') {
         if (buyTab) buyTab.className = 'flex-1 py-3 font-display text-2xl bg-meme-green text-black shadow-brutal uppercase italic';
-        if (sellTab) sellTab.className = 'flex-1 py-3 font-display text-2xl text-gray-600 uppercase italic';
+        if (sellTab) sellTab.className = 'flex-1 py-3 font-display text-2xl text-muted-text uppercase italic';
         window.setText('payTokenSymbol', 'PAXI');
         window.setText('recvTokenSymbol', window.currentTokenInfo?.symbol || 'TOKEN');
     } else {
-        if (sellTab) sellTab.className = 'flex-1 py-3 font-display text-2xl bg-meme-pink text-white shadow-brutal uppercase italic';
-        if (buyTab) buyTab.className = 'flex-1 py-3 font-display text-2xl text-gray-600 uppercase italic';
+        if (sellTab) sellTab.className = 'flex-1 py-3 font-display text-2xl bg-meme-pink text-primary-text shadow-brutal uppercase italic';
+        if (buyTab) buyTab.className = 'flex-1 py-3 font-display text-2xl text-muted-text uppercase italic';
         window.setText('payTokenSymbol', window.currentTokenInfo?.symbol || 'TOKEN');
         window.setText('recvTokenSymbol', 'PAXI');
     }
@@ -346,12 +346,12 @@ window.showSlippageModal = function() {
 window.setTab = function(name) {
     document.querySelectorAll('.tab-btn').forEach(b => {
         b.classList.remove('active', 'bg-meme-green', 'text-black');
-        b.classList.add('bg-black', 'text-white');
+        b.classList.add('bg-surface', 'text-primary-text');
     });
     const btn = document.getElementById('tab-' + name);
     if (btn) {
         btn.classList.add('active', 'bg-meme-green', 'text-black');
-        btn.classList.remove('bg-black', 'text-white');
+        btn.classList.remove('bg-surface', 'text-primary-text');
     }
     if (name === 'holders') window.loadTokenHolders(); else window.renderTransactionHistory();
 };
@@ -366,13 +366,13 @@ window.setSidebarTab = function(tab) {
         const btn = document.getElementById('side-tab-' + t);
         if (btn) {
             btn.classList.remove('bg-meme-green', 'text-black', 'shadow-brutal');
-            btn.classList.add('bg-black', 'text-gray-500');
+            btn.classList.add('bg-surface', 'text-secondary-text');
         }
     });
     const activeBtn = document.getElementById('side-tab-' + tab);
     if (activeBtn) {
         activeBtn.classList.add('bg-meme-green', 'text-black', 'shadow-brutal');
-        activeBtn.classList.remove('bg-black', 'text-gray-500');
+        activeBtn.classList.remove('bg-surface', 'text-secondary-text');
     }
     window.renderSidebarContent(tab);
 };
@@ -384,11 +384,11 @@ window.renderSidebarContent = function(tab) {
     if (!window.wallet && tab !== 'swap' && tab !== 'wallet') {
         container.innerHTML = `
             <div class="flex flex-col items-center justify-center py-20 px-6 text-center animate-fade-in">
-                <div class="w-20 h-20 bg-meme-card border-4 border-black shadow-brutal flex items-center justify-center mb-8 rotate-[-10deg]">
-                    <i class="fas fa-lock text-3xl text-gray-700"></i>
+                <div class="w-20 h-20 bg-card border-4 border-card shadow-brutal flex items-center justify-center mb-8 rotate-[-10deg]">
+                    <i class="fas fa-lock text-3xl text-muted-text"></i>
                 </div>
-                <p class="font-display text-2xl text-gray-600 uppercase italic">Connect terminal to view ${tab}</p>
-                <button onclick="window.showConnectModal()" class="mt-8 px-8 py-3 bg-meme-cyan text-black font-display text-xl uppercase italic border-4 border-black shadow-brutal hover:shadow-none transition-all">CONNECT WALLET</button>
+                <p class="font-display text-2xl text-muted-text uppercase italic">Connect terminal to view ${tab}</p>
+                <button onclick="window.showConnectModal()" class="mt-8 px-8 py-3 bg-meme-cyan text-black font-display text-xl uppercase italic border-4 border-card shadow-brutal hover:shadow-none transition-all">CONNECT WALLET</button>
             </div>`;
         return;
     }

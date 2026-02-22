@@ -412,7 +412,7 @@ window.showTxResult = function(data) {
     statusEl.textContent = isSuccess ? 'Success' : 'Failed';
     statusEl.className = `text-xl md:text-2xl font-black uppercase italic tracking-widest mb-1 ${isSuccess ? 'text-meme-green' : 'text-meme-pink'}`;
 
-    iconEl.className = `w-12 h-12 md:w-16 md:h-16 rounded-full border-2 border-black flex items-center justify-center mx-auto mb-3 ${isSuccess ? 'bg-meme-green text-black' : 'bg-meme-pink text-white'} shadow-brutal-sm`;
+    iconEl.className = `w-12 h-12 md:w-16 md:h-16 rounded-full border-2 border-card flex items-center justify-center mx-auto mb-3 ${isSuccess ? 'bg-meme-green text-black' : 'bg-meme-pink text-primary-text'} shadow-brutal-sm`;
     iconEl.innerHTML = `<i class="fas ${isSuccess ? 'fa-check-circle' : 'fa-times-circle'} text-2xl"></i>`;
 
     typeEl.textContent = `${type} Details`;
@@ -422,7 +422,7 @@ window.showTxResult = function(data) {
     document.getElementById('logType').textContent = type || '--';
     document.getElementById('logAsset').textContent = asset || '--';
     document.getElementById('logAmount').textContent = amount || '0.00';
-    document.getElementById('logAmount').className = `text-[10px] font-mono font-bold ${isSuccess ? 'text-meme-green' : 'text-gray-400'}`;
+    document.getElementById('logAmount').className = `text-[10px] font-mono font-bold ${isSuccess ? 'text-meme-green' : 'text-secondary-text'}`;
 
     const activeNet = window.NetworkManager?.getActiveNetwork();
     const netEl = document.getElementById('logNetwork');
@@ -497,12 +497,12 @@ window.renderCompactNotif = function(data) {
     const isSuccess = status === 'success';
 
     const notif = document.createElement('div');
-    notif.className = `p-3 border-2 border-black shadow-brutal-sm flex flex-col gap-1 min-w-[240px] animate-slide-up ${isSuccess ? 'bg-meme-green text-black' : 'bg-meme-pink text-white'}`;
+    notif.className = `p-3 border-2 border-card shadow-brutal-sm flex flex-col gap-1 min-w-[240px] animate-slide-up ${isSuccess ? 'bg-meme-green text-black' : 'bg-meme-pink text-primary-text'}`;
 
     const actionType = action || type || 'Transaction';
 
     notif.innerHTML = `
-        <div class="flex justify-between items-center border-b border-black/20 pb-1 mb-1">
+        <div class="flex justify-between items-center border-b border-card/20 pb-1 mb-1">
             <span class="font-display text-sm uppercase italic tracking-tighter">${actionType} Result</span>
             <i class="fas ${isSuccess ? 'fa-check-circle' : 'fa-times-circle'}"></i>
         </div>
@@ -562,16 +562,16 @@ window.showNotif = function(msg, type = 'info') {
 
   const icons = { success: 'check-circle', error: 'exclamation-circle', info: 'info-circle' };
   const typeColors = {
-      success: 'border-meme-green text-meme-green bg-black/90',
-      error: 'border-meme-pink text-meme-pink bg-black/90',
-      info: 'border-meme-cyan text-meme-cyan bg-black/90'
+      success: 'border-meme-green text-meme-green bg-surface/90',
+      error: 'border-meme-pink text-meme-pink bg-surface/90',
+      info: 'border-meme-cyan text-meme-cyan bg-surface/90'
   };
 
   const notif = document.createElement('div');
-  notif.className = `fixed right-4 z-[10000] p-4 border-4 border-black shadow-brutal flex items-center gap-4 min-w-[200px] max-w-[320px] transition-all duration-300 translate-x-[120%] overflow-hidden ${typeColors[type] || typeColors.info}`;
+  notif.className = `fixed right-4 z-[10000] p-4 border-4 border-card shadow-brutal flex items-center gap-4 min-w-[200px] max-w-[320px] transition-all duration-300 translate-x-[120%] overflow-hidden ${typeColors[type] || typeColors.info}`;
 
   notif.innerHTML = `
-    <div class="flex-shrink-0 w-8 h-8 flex items-center justify-center border-2 border-black bg-black"><i class="fas fa-${icons[type] || icons.info}"></i></div>
+    <div class="flex-shrink-0 w-8 h-8 flex items-center justify-center border-2 border-card bg-surface"><i class="fas fa-${icons[type] || icons.info}"></i></div>
     <div class="font-display text-lg uppercase italic tracking-tighter">${finalMsg}</div>
     <div class="absolute bottom-0 left-0 h-1 bg-current transition-all duration-[3000ms] ease-linear w-full progress-bar"></div>
   `;

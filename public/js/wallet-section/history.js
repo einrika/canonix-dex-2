@@ -48,7 +48,7 @@ function getTxMeta(type) {
         },
         other: {
             icon: "fa-receipt",
-            color: "text-gray-400",
+            color: "text-secondary-text",
             label: "TRANSACTION"
         }
     };
@@ -61,7 +61,7 @@ window.renderTransactionHistory = async function(page = 1) {
     
     if (!window.wallet || !window.wallet.address) {
         container.innerHTML = `
-            <div class="text-center py-20 font-bold text-gray-500 uppercase text-sm">
+            <div class="text-center py-20 font-bold text-secondary-text uppercase text-sm">
                 Wallet Not Connected
             </div>
         `;
@@ -82,7 +82,7 @@ window.renderTransactionHistory = async function(page = 1) {
         
         if (!history || history.length === 0) {
             container.innerHTML = `
-                <div class="text-center py-20 text-gray-500 font-bold uppercase text-sm">
+                <div class="text-center py-20 text-secondary-text font-bold uppercase text-sm">
                     No transaction history found
                 </div>
             `;
@@ -118,26 +118,26 @@ function renderTxCard(tx) {
     
     return `
         <div onclick="openTxDetailModal('${tx.hash}','${txType}')"
-            class="bg-meme-card border border-gray-800 rounded-lg p-3 hover:bg-meme-card/70 transition cursor-pointer">
+            class="bg-card border border-gray-800 rounded-lg p-3 hover:bg-card/70 transition cursor-pointer">
 
             <div class="flex justify-between items-center">
 
                 <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-full bg-black/40 flex items-center justify-center">
+                    <div class="w-8 h-8 rounded-full bg-surface/40 flex items-center justify-center">
                         <i class="fa-solid ${meta.icon} ${meta.color} text-xs"></i>
                     </div>
                     <div>
                         <div class="text-xs font-bold ${meta.color}">
                             ${meta.label}
                         </div>
-                        <div class="text-[10px] text-gray-500 font-mono">
+                        <div class="text-[10px] text-secondary-text font-mono">
                             Block ${tx.block || "-"}
                         </div>
                     </div>
                 </div>
 
                 <div class="text-right">
-                    <div class="text-[10px] text-gray-500">${time}</div>
+                    <div class="text-[10px] text-secondary-text">${time}</div>
                     <div class="text-[10px] font-bold ${statusColor}">
                         ${tx.status || "-"}
                     </div>
@@ -153,14 +153,14 @@ function renderTxCard(tx) {
     
     const modal = document.createElement("div");
     modal.id = "tx-detail-modal";
-    modal.className = "fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center";
+    modal.className = "fixed inset-0 bg-surface/70 backdrop-blur-sm hidden items-center justify-center";
     modal.style.zIndex = "9999";
     
     modal.innerHTML = `
-        <div class="bg-meme-card border border-gray-800 rounded-xl w-full max-w-2xl p-4 relative m-6 max-h-[85vh] overflow-y-auto text-xs">
+        <div class="bg-card border border-gray-800 rounded-xl w-full max-w-2xl p-4 relative m-6 max-h-[85vh] overflow-y-auto text-xs">
 
             <button id="tx-modal-close"
-                class="absolute top-3 right-3 text-gray-400 hover:text-white text-sm">
+                class="absolute top-3 right-3 text-secondary-text hover:text-primary-text text-sm">
                 <i class="fa-solid fa-xmark"></i>
             </button>
 
@@ -217,10 +217,10 @@ window.openTxDetailModal = async function(hash, txType) {
                     </div>
                 </div>
 
-                <div class="border border-gray-800 rounded-lg p-3 bg-black/30 flex flex-col gap-2">
+                <div class="border border-gray-800 rounded-lg p-3 bg-surface/30 flex flex-col gap-2">
 
                     <div>
-                        <div class="text-gray-400 text-[10px]">HASH</div>
+                        <div class="text-secondary-text text-[10px]">HASH</div>
                         <a href="https://explorer.paxinet.io/txs/${tx.txhash}"
                            target="_blank"
                            class="font-mono break-all text-blue-400 hover:underline">
@@ -230,19 +230,19 @@ window.openTxDetailModal = async function(hash, txType) {
 
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <div class="text-gray-400 text-[10px]">BLOCK</div>
+                            <div class="text-secondary-text text-[10px]">BLOCK</div>
                             <div class="font-mono">${tx.height}</div>
                         </div>
                         <div>
-                            <div class="text-gray-400 text-[10px]">GAS USED</div>
+                            <div class="text-secondary-text text-[10px]">GAS USED</div>
                             <div class="font-mono">${tx.gas_used}</div>
                         </div>
                         <div>
-                            <div class="text-gray-400 text-[10px]">TIME</div>
+                            <div class="text-secondary-text text-[10px]">TIME</div>
                             <div>${time}</div>
                         </div>
                         <div>
-                            <div class="text-gray-400 text-[10px]">STATUS</div>
+                            <div class="text-secondary-text text-[10px]">STATUS</div>
                             <div class="${tx.code === 0 ? "text-green-400" : "text-red-400"} font-bold">
                                 ${tx.code === 0 ? "SUCCESS" : "FAILED"}
                             </div>
