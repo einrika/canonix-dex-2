@@ -11,40 +11,78 @@
                 theme: {
                     extend: {
                         colors: {
+                            // Primary 3-color palette
+                            'primary': '#0B0C0D',
+                            'secondary': '#161719',
+                            'accent': '#00D1FF',
+
+                            // Soft status colors
+                            'soft-success': '#4ADE80',
+                            'soft-failed': '#F87171',
+                            'soft-warning': '#FBBF24',
+                            'soft-info': '#60A5FA',
+
+                            // Legacy mappings for JS compatibility
                             'meme-black': '#0B0C0D',
-                            'meme-surface': '#121314',
-                            'meme-card': '#1A1B1C',
-                            'meme-green': '#00D685',
-                            'meme-pink': '#D60047',
-                            'meme-cyan': '#00B2D6',
-                            'meme-yellow': '#D6B500',
-                            // Map old names to new palette for JS compatibility
-                            up: '#00D685',
-                            down: '#D60047',
-                            accent: '#00B2D6',
+                            'meme-surface': '#161719',
+                            'meme-card': '#1C1D1F',
+                            'meme-green': '#4ADE80',
+                            'meme-pink': '#F87171',
+                            'meme-cyan': '#00D1FF',
+                            'meme-yellow': '#FBBF24',
+                            up: '#4ADE80',
+                            down: '#F87171',
                             bg: '#0B0C0D',
-                            surface: '#121314',
-                            card: '#1A1B1C',
-                            border: '#0B0C0D',
-                            // Text colors for dark background
+                            surface: '#161719',
+                            card: '#1C1D1F',
+                            border: '#1C1D1F',
                             'primary-text': '#FAFAFA',
                             'secondary-text': '#E5E5E5',
-                            'muted-text': '#B3B3B3',
+                            'muted-text': '#94A3B8',
                         },
                         fontFamily: {
-                            display: ['Bangers', 'system-ui'],
-                            mono: ['Space Mono', 'monospace'],
-                            sans: ['DM Sans', 'sans-serif'],
+                            display: ['Plus Jakarta Sans', 'sans-serif'],
+                            mono: ['JetBrains Mono', 'monospace'],
+                            sans: ['Plus Jakarta Sans', 'sans-serif'],
                         },
                         boxShadow: {
-                            'brutal-sm': '2px 2px 0px 0px rgba(11,12,13,1)',
-                            'brutal': '4px 4px 0px 0px rgba(11,12,13,1)',
-                            'brutal-lg': '6px 6px 0px 0px rgba(11,12,13,1)',
-                            'brutal-green': '4px 4px 0px 0px #00D685',
-                            'brutal-pink': '4px 4px 0px 0px #D60047',
-                            'brutal-cyan': '4px 4px 0px 0px #00B2D6',
-                            'brutal-yellow': '4px 4px 0px 0px #D6B500',
-                            'glow': '0 0 10px rgba(0, 255, 159, 0.2)',
+                            'minimal': '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+                            'accent-glow': '0 0 15px rgba(0, 209, 255, 0.3)',
+                            'brutal-sm': '2px 2px 0px 0px #000',
+                            'brutal': '3px 3px 0px 0px #000',
+                        },
+                        spacing: {
+                            '0.5': '0.1rem',
+                            '1': '0.2rem',
+                            '1.5': '0.3rem',
+                            '2': '0.4rem',
+                            '2.5': '0.5rem',
+                            '3': '0.6rem',
+                            '4': '0.8rem',
+                            '5': '1rem',
+                            '6': '1.2rem',
+                            '8': '1.5rem',
+                            '10': '2rem',
+                            '12': '2.4rem',
+                            '14': '2.8rem',
+                            '16': '3.2rem',
+                            '20': '4rem',
+                            '24': '4.8rem',
+                        },
+                        fontSize: {
+                            '7px': '7px',
+                            '8px': '8px',
+                            '9px': '9px',
+                            '10px': '10px',
+                            'xs': '0.7rem',
+                            'sm': '0.8rem',
+                            'base': '0.9rem',
+                            'lg': '1rem',
+                            'xl': '1.125rem',
+                            '2xl': '1.25rem',
+                            '3xl': '1.5rem',
+                            '4xl': '1.875rem',
+                            '5xl': '2.25rem',
                         },
                         animation: {
                             'marquee': 'marquee 25s linear infinite',
@@ -100,7 +138,7 @@
     <!-- FONTS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
     
     <link rel="apple-touch-icon" sizes="57x57" href="/assets/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="/assets/apple-icon-60x60.png">
@@ -144,75 +182,75 @@
     <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
 </head>
 
-<body class="bg-bg text-primary-text font-sans h-screen flex flex-col overflow-hidden selection:bg-meme-pink selection:text-primary-text">
+<body class="bg-bg text-primary-text font-sans h-screen flex flex-col overflow-hidden selection:bg-soft-failed selection:text-primary-text">
     <!-- ===== HEADER ===== -->
-    <header class="h-14 border-b-2 border-card hidden lg:flex items-center justify-between px-4 bg-bg z-50">
-        <div class="flex items-center gap-3">
-            <button onclick="toggleMobileSidebar()" class="lg:hidden text-primary-text p-1.5 border border-card bg-card"><i class="fas fa-bars"></i></button>
+    <header class="h-12 border-b border-secondary hidden lg:flex items-center justify-between px-3 bg-bg z-50">
+        <div class="flex items-center gap-2">
+            <button onclick="toggleMobileSidebar()" class="lg:hidden text-primary-text p-1 border border-secondary bg-secondary"><i class="fas fa-bars"></i></button>
             <a href="index.html" class="flex items-center group">
-                <div class="w-8 h-8 bg-meme-green border-2 border-card shadow-brutal-sm flex items-center justify-center rotate-[-3deg] group-hover:rotate-0 transition-transform mr-3">
-                    <i class="fas fa-exchange-alt text-black text-xs"></i>
+                <div class="w-7 h-7 bg-accent border border-secondary shadow-brutal-sm flex items-center justify-center rotate-[-3deg] group-hover:rotate-0 transition-transform mr-2">
+                    <i class="fas fa-exchange-alt text-black text-[10px]"></i>
                 </div>
-                <h1 class="text-xl font-display tracking-widest text-primary-text group-hover:text-meme-green transition-colors italic">
+                <h1 class="text-lg font-display tracking-tight text-primary-text group-hover:text-accent transition-colors">
                     CANONIX
-                    <span class="ml-2 text-[8px] px-1.5 py-0.5 bg-meme-yellow text-black border border-card font-mono font-bold uppercase tracking-tighter">MAINNET</span>
+                    <span class="ml-1 text-[7px] px-1 py-0.5 bg-soft-warning text-black border border-secondary font-mono font-bold uppercase tracking-tight">MAINNET</span>
                 </h1>
             </a>
         </div>
         
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2">
             <!-- Functional Icons -->
-            <div class="hidden xl:flex items-center gap-2 border-r-2 border-card pr-3 mr-1 h-full">
-                <button onclick="window.setSidebarTab('send')" title="Send Assets" class="w-8 h-8 flex items-center justify-center border border-card bg-meme-cyan text-black hover:bg-white transition-all shadow-brutal-sm"><i class="fas fa-paper-plane text-xs"></i></button>
-                <button onclick="window.setSidebarTab('lp')" title="Liquidity" class="w-8 h-8 flex items-center justify-center border border-card bg-meme-green text-black hover:bg-white transition-all shadow-brutal-sm"><i class="fas fa-layer-group text-xs"></i></button>
-                <button onclick="window.setSidebarTab('donate')" title="Donate" class="w-8 h-8 flex items-center justify-center border border-card bg-meme-pink text-primary-text hover:bg-white hover:text-black transition-all shadow-brutal-sm"><i class="fas fa-heart text-xs"></i></button>
-                <a href="faq.html" title="FAQ" class="w-8 h-8 flex items-center justify-center border border-card bg-white text-black hover:bg-meme-yellow transition-all shadow-brutal-sm"><i class="fas fa-question text-xs"></i></a>
-                <button onclick="toggleConsoleModal()" title="System Console" class="w-8 h-8 flex items-center justify-center border border-card bg-surface text-meme-green hover:bg-meme-green hover:text-black transition-all shadow-brutal-sm"><i class="fas fa-terminal text-xs"></i></button>
-                <button onclick="window.location.href='setting.html'" title="Settings" class="w-8 h-8 flex items-center justify-center border border-card bg-surface text-primary-text hover:bg-white hover:text-black transition-all shadow-brutal-sm"><i class="fas fa-cog text-xs"></i></button>
+            <div class="hidden xl:flex items-center gap-1.5 border-r border-secondary pr-2 mr-1 h-full">
+                <button onclick="window.setSidebarTab('send')" title="Send Assets" class="w-7 h-7 flex items-center justify-center border border-secondary bg-soft-info text-black hover:bg-secondary transition-all shadow-brutal-sm"><i class="fas fa-paper-plane text-[10px]"></i></button>
+                <button onclick="window.setSidebarTab('lp')" title="Liquidity" class="w-7 h-7 flex items-center justify-center border border-secondary bg-soft-success text-black hover:bg-secondary transition-all shadow-brutal-sm"><i class="fas fa-layer-group text-[10px]"></i></button>
+                <button onclick="window.setSidebarTab('donate')" title="Donate" class="w-7 h-7 flex items-center justify-center border border-secondary bg-soft-failed text-primary-text hover:bg-secondary hover:text-black transition-all shadow-brutal-sm"><i class="fas fa-heart text-[10px]"></i></button>
+                <a href="faq.html" title="FAQ" class="w-7 h-7 flex items-center justify-center border border-secondary bg-secondary text-black hover:bg-soft-warning transition-all shadow-brutal-sm"><i class="fas fa-question text-[10px]"></i></a>
+                <button onclick="toggleConsoleModal()" title="System Console" class="w-7 h-7 flex items-center justify-center border border-secondary bg-secondary text-soft-success hover:bg-soft-success hover:text-black transition-all shadow-brutal-sm"><i class="fas fa-terminal text-[10px]"></i></button>
+                <button onclick="window.location.href='setting.html'" title="Settings" class="w-7 h-7 flex items-center justify-center border border-secondary bg-secondary text-primary-text hover:bg-secondary hover:text-black transition-all shadow-brutal-sm"><i class="fas fa-cog text-[10px]"></i></button>
             </div>
             
-            <div id="walletInfo" class="hidden sm:flex items-center gap-3 px-3 py-1.5 bg-card border-2 border-card shadow-brutal-sm">
+            <div id="walletInfo" class="hidden sm:flex items-center gap-2 px-2 py-1 bg-secondary border border-secondary shadow-brutal-sm">
                 <div class="text-right">
-                    <div id="walletAddrShort" class="text-[8px] font-mono text-secondary-text font-bold uppercase tracking-tight">...</div>
-                    <div id="walletBalance" class="text-[10px] font-display text-meme-green italic">0.00 PAXI</div>
+                    <div id="walletAddrShort" class="text-[7px] font-mono text-muted-text font-bold uppercase">...</div>
+                    <div id="walletBalance" class="text-[9px] font-display text-accent italic">0.00 PAXI</div>
                 </div>
-                <div class="w-6 h-6 bg-meme-pink border border-card flex items-center justify-center text-primary-text rotate-[5deg]"><i class="fas fa-wallet text-[10px]"></i></div>
+                <div class="w-5 h-5 bg-secondary border border-secondary flex items-center justify-center text-primary-text rotate-[5deg]"><i class="fas fa-wallet text-[9px]"></i></div>
             </div>
-            <button id="connectBtn" onclick="showConnectModal()" class="bg-meme-pink text-primary-text font-display text-lg px-4 py-1.5 border-2 border-card shadow-brutal-sm hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all flex items-center gap-2">
-                <i class="fas fa-plug text-sm"></i><span class="hidden xs:inline uppercase">Connect</span>
+            <button id="connectBtn" onclick="showConnectModal()" class="bg-accent text-black font-display text-sm px-3 py-1 border border-secondary shadow-brutal-sm hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all flex items-center gap-2 uppercase">
+                <i class="fas fa-plug text-[10px]"></i><span class="hidden xs:inline">Connect</span>
             </button>
         </div>
     </header>
     
     <!-- Ticker News -->
-    <div class="bg-meme-yellow border-b-2 border-card py-1 overflow-hidden whitespace-nowrap z-[60] relative flex items-center min-h-[28px] md:min-h-[36px]">
+    <div class="bg-soft-warning border-b border-secondary py-0.5 overflow-hidden whitespace-nowrap z-[60] relative flex items-center min-h-[24px] md:min-h-[28px]">
         <div id="tickerContent" class="animate-marquee inline-block">
-            <span class="inline-block text-black font-display text-[10px] md:text-sm mx-4 md:mx-8 italic uppercase tracking-tighter">LOADING MARKET DATA...</span>
-            <span class="inline-block text-black font-display text-[10px] md:text-sm mx-4 md:mx-8 italic uppercase tracking-tighter">$$$ MOON SOON $$$</span>
-            <span class="inline-block text-black font-display text-[10px] md:text-sm mx-4 md:mx-8 italic uppercase tracking-tighter">PUMP IT HARDER</span>
+            <span class="inline-block text-black font-display text-[9px] md:text-xs mx-4 md:mx-6 italic uppercase tracking-tight">LOADING MARKET DATA...</span>
+            <span class="inline-block text-black font-display text-[9px] md:text-xs mx-4 md:mx-6 italic uppercase tracking-tight">$$$ MOON SOON $$$</span>
+            <span class="inline-block text-black font-display text-[9px] md:text-xs mx-4 md:mx-6 italic uppercase tracking-tight">PUMP IT HARDER</span>
         </div>
     </div>
     
     <div class="flex-1 flex overflow-hidden">
         <!-- ===== LEFT SIDEBAR: TOKEN LIST ===== -->
-        <aside id="tokenSidebar" class="w-[280px] border-r-2 border-card bg-bg flex flex-col lg:static fixed left-0 top-14 bottom-0 z-[110] transition-transform duration-300 -translate-x-full lg:translate-x-0 overflow-hidden">
-            <div class="p-3 bg-surface border-b-2 border-card">
-                <div class="relative mb-3">
-                    <i class="fas fa-search absolute left-2.5 top-1/2 -translate-y-1/2 text-meme-cyan text-xs"></i>
-                    <input type="text" id="tokenSidebarSearch" placeholder="SEARCH..." class="w-full pl-8 pr-3 py-2 bg-surface border border-card text-xs font-display outline-none focus:border-meme-cyan transition-all text-primary-text placeholder:text-muted-text italic uppercase" oninput="filterTokenSidebar()">
+        <aside id="tokenSidebar" class="w-[240px] border-r border-secondary bg-bg flex flex-col lg:static fixed left-0 top-12 bottom-0 z-[110] transition-transform duration-300 -translate-x-full lg:translate-x-0 overflow-hidden">
+            <div class="p-2 bg-secondary border-b border-secondary">
+                <div class="relative mb-2">
+                    <i class="fas fa-search absolute left-2 top-1/2 -translate-y-1/2 text-accent text-[10px]"></i>
+                    <input type="text" id="tokenSidebarSearch" placeholder="SEARCH..." class="w-full pl-7 pr-2 py-1.5 bg-secondary border border-secondary text-[10px] font-sans outline-none focus:border-accent transition-all text-primary-text placeholder:text-muted-text uppercase" oninput="filterTokenSidebar()">
                 </div>
-                <div class="flex gap-1.5 overflow-x-auto no-scrollbar pb-1">
-                    <button onclick="setSort('hot', event)" class="sort-btn px-3 py-1 border-2 border-card bg-meme-green text-black font-display text-[10px] shadow-brutal-sm hover:shadow-none hover:bg-meme-green hover:text-black transition-all uppercase italic">HOT</button>
-                    <button onclick="setSort('new', event)" class="sort-btn px-3 py-1 border-2 border-card bg-surface text-primary-text font-display text-[10px] shadow-brutal-sm hover:shadow-none hover:bg-meme-green hover:text-black transition-all uppercase italic">NEW</button>
-                    <button onclick="setSort('gainer', event)" class="sort-btn px-3 py-1 border-2 border-card bg-surface text-primary-text font-display text-[10px] shadow-brutal-sm hover:shadow-none hover:bg-meme-green hover:text-black transition-all uppercase italic">WIN</button>
-                    <button onclick="setSort('marketcap', event)" class="sort-btn px-3 py-1 border-2 border-card bg-surface text-primary-text font-display text-[10px] shadow-brutal-sm hover:shadow-none hover:bg-meme-green hover:text-black transition-all uppercase italic">MCAP</button>
-                    <button onclick="setSort('verified', event)" class="sort-btn px-3 py-1 border-2 border-card bg-surface text-primary-text font-display text-[10px] shadow-brutal-sm hover:shadow-none hover:bg-meme-green hover:text-black transition-all uppercase italic">VERIFIED</button>
-                    <button onclick="setSort('nonpump', event)" class="sort-btn px-3 py-1 border-2 border-card bg-surface text-primary-text font-display text-[10px] shadow-brutal-sm hover:shadow-none hover:bg-meme-green hover:text-black transition-all uppercase italic whitespace-nowrap">NON-PUMP</button>
+                <div class="flex gap-1 overflow-x-auto no-scrollbar pb-1">
+                    <button onclick="setSort('hot', event)" class="sort-btn px-2 py-0.5 border border-secondary bg-accent text-black font-display text-[9px] shadow-brutal-sm hover:shadow-none transition-all uppercase">HOT</button>
+                    <button onclick="setSort('new', event)" class="sort-btn px-2 py-0.5 border border-secondary bg-secondary text-primary-text font-display text-[9px] shadow-brutal-sm hover:shadow-none hover:bg-accent hover:text-black transition-all uppercase">NEW</button>
+                    <button onclick="setSort('gainer', event)" class="sort-btn px-2 py-0.5 border border-secondary bg-secondary text-primary-text font-display text-[9px] shadow-brutal-sm hover:shadow-none hover:bg-accent hover:text-black transition-all uppercase">WIN</button>
+                    <button onclick="setSort('marketcap', event)" class="sort-btn px-2 py-0.5 border border-secondary bg-secondary text-primary-text font-display text-[9px] shadow-brutal-sm hover:shadow-none hover:bg-accent hover:text-black transition-all uppercase">MCAP</button>
+                    <button onclick="setSort('verified', event)" class="sort-btn px-2 py-0.5 border border-secondary bg-secondary text-primary-text font-display text-[9px] shadow-brutal-sm hover:shadow-none hover:bg-accent hover:text-black transition-all uppercase">VERIFIED</button>
+                    <button onclick="setSort('nonpump', event)" class="sort-btn px-2 py-0.5 border border-secondary bg-secondary text-primary-text font-display text-[9px] shadow-brutal-sm hover:shadow-none hover:bg-accent hover:text-black transition-all uppercase whitespace-nowrap">NON-PUMP</button>
                 </div>
             </div>
             <div id="tokenSidebarList" class="flex-1 overflow-y-auto no-scrollbar bg-bg">
-                <div class="p-8 text-center text-secondary-text">
-                    <div class="w-8 h-8 border-2 border-meme-green border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+                <div class="p-8 text-center text-muted-text">
+                    <div class="w-8 h-8 border border-meme-green border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
                     <p class="font-mono text-[8px] font-bold uppercase tracking-widest italic">Scanning...</p>
                 </div>
             </div>
@@ -222,154 +260,151 @@
         <main class="flex-1 overflow-y-auto bg-bg relative no-scrollbar">
             
             <!-- Token Header / Stats -->
-            <div class="bg-meme-pink border-y-2 border-card px-4 py-3 mb-4 z-30">
-                <div class="flex flex-col lg:flex-row items-center justify-between gap-4">
-                    <div class="flex items-center gap-4">
-                        <div id="tokenLogo" class="w-12 h-12 bg-white border-2 border-card shadow-brutal-sm flex items-center justify-center rotate-[-5deg]">
-                            <i class="fas fa-coins text-black text-xl"></i>
+            <div class="bg-secondary border-y border-secondary px-3 py-2 mb-3 z-30">
+                <div class="flex flex-col lg:flex-row items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <div id="tokenLogo" class="w-10 h-10 bg-secondary border border-secondary shadow-brutal-sm flex items-center justify-center rotate-[-3deg]">
+                            <i class="fas fa-coins text-black text-lg"></i>
                         </div>
                         <div>
-                            <h2 id="selectedPair" class="text-2xl font-display text-black italic leading-none mb-0.5 uppercase tracking-tighter">SELECT TOKEN</h2>
-                            <div class="flex items-center gap-3">
-                                <span id="currentPrice" class="text-xs font-mono font-bold text-primary-text drop-shadow-[1px_1px_0_rgba(11,12,13,1)]">0.000000 PAXI</span>
-                                <span id="priceChange" class="text-[10px] font-display text-meme-green bg-surface px-1.5 border border-card italic">-0.00%</span>
+                            <h2 id="selectedPair" class="text-xl font-display text-primary-text italic leading-none mb-0.5 uppercase tracking-tight">SELECT TOKEN</h2>
+                            <div class="flex items-center gap-2">
+                                <span id="currentPrice" class="text-[11px] font-mono font-bold text-accent">0.000000 PAXI</span>
+                                <span id="priceChange" class="text-[9px] font-sans text-soft-success bg-primary px-1 border border-secondary">-0.00%</span>
                             </div>
                         </div>
-                        <button id="aiBtn" onclick="showAIAnalysis()" class="bg-meme-cyan text-black font-display text-lg px-3 py-1 border-2 border-card shadow-brutal-sm hover:shadow-none transition-all animate-bounce uppercase italic">
-                            <i class="fas fa-brain text-xs"></i> AI
+                        <button id="aiBtn" onclick="showAIAnalysis()" class="bg-accent text-black font-display text-base px-2 py-0.5 border border-secondary shadow-brutal-sm hover:shadow-none transition-all uppercase italic">
+                            <i class="fas fa-brain text-[10px]"></i> AI
                         </button>
                     </div>
                     
-                    <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 w-full lg:w-auto">
-                        <div class="bg-surface/20 p-1.5 border border-card overflow-hidden">
-                            <div class="text-[7px] text-black uppercase font-black tracking-widest font-mono italic truncate">Mcap</div>
+                    <div class="grid grid-cols-3 sm:grid-cols-6 gap-1.5 w-full lg:w-auto">
+                        <div class="bg-primary p-1 border border-secondary overflow-hidden">
+                            <div class="text-[6px] text-muted-text uppercase font-bold font-mono truncate">Mcap</div>
                             <div id="mcapVal" class="text-[8px] font-mono font-bold text-primary-text uppercase truncate">0 PAXI</div>
                         </div>
-                        <div class="bg-surface/20 p-1.5 border border-card overflow-hidden">
-                            <div class="text-[7px] text-black uppercase font-black tracking-widest font-mono italic truncate">Liq</div>
-                            <div id="liqVal" class="text-[8px] font-mono font-bold text-meme-cyan uppercase truncate">0 PAXI</div>
+                        <div class="bg-primary p-1 border border-secondary overflow-hidden">
+                            <div class="text-[6px] text-muted-text uppercase font-bold font-mono truncate">Liq</div>
+                            <div id="liqVal" class="text-[8px] font-mono font-bold text-accent uppercase truncate">0 PAXI</div>
                         </div>
-                        <div class="bg-surface/20 p-1.5 border border-card overflow-hidden">
-                            <div class="text-[7px] text-black uppercase font-black tracking-widest font-mono italic truncate">High</div>
-                            <div id="high24h" class="text-[8px] font-mono font-bold text-meme-green truncate">0.00</div>
+                        <div class="bg-primary p-1 border border-secondary overflow-hidden">
+                            <div class="text-[6px] text-muted-text uppercase font-bold font-mono truncate">High</div>
+                            <div id="high24h" class="text-[8px] font-mono font-bold text-soft-success truncate">0.00</div>
                         </div>
-                        <div class="bg-surface/20 p-1.5 border border-card overflow-hidden">
-                            <div class="text-[7px] text-black uppercase font-black tracking-widest font-mono italic truncate">Low</div>
-                            <div id="low24h" class="text-[8px] font-mono font-bold text-meme-pink truncate">0.00</div>
+                        <div class="bg-primary p-1 border border-secondary overflow-hidden">
+                            <div class="text-[6px] text-muted-text uppercase font-bold font-mono truncate">Low</div>
+                            <div id="low24h" class="text-[8px] font-mono font-bold text-soft-failed truncate">0.00</div>
                         </div>
-                        <div class="bg-surface/20 p-1.5 border border-card overflow-hidden">
-                            <div class="text-[7px] text-black uppercase font-black tracking-widest font-mono italic truncate">Vol</div>
-                            <div id="volVal" class="text-[8px] font-mono font-bold text-meme-yellow uppercase truncate">0 PAXI</div>
+                        <div class="bg-primary p-1 border border-secondary overflow-hidden">
+                            <div class="text-[6px] text-muted-text uppercase font-bold font-mono truncate">Vol</div>
+                            <div id="volVal" class="text-[8px] font-mono font-bold text-soft-warning uppercase truncate">0 PAXI</div>
                         </div>
-                        <div class="bg-surface/20 p-1.5 border border-card overflow-hidden">
-                            <div class="text-[7px] text-black uppercase font-black tracking-widest font-mono italic truncate">Signal</div>
-                            <div id="tradeSignal" class="text-[8px] font-display uppercase italic text-primary-text tracking-tighter truncate">Neutral</div>
+                        <div class="bg-primary p-1 border border-secondary overflow-hidden">
+                            <div class="text-[6px] text-muted-text uppercase font-bold font-mono truncate">Signal</div>
+                            <div id="tradeSignal" class="text-[8px] font-display uppercase text-primary-text truncate">Neutral</div>
                         </div>
                     </div>
                 </div>
             </div>
             
             <!-- Chart Container -->
-            <div class="p-3 md:p-4">
-                <div class="bg-surface border-2 border-card shadow-brutal overflow-hidden">
-                    <div class="p-2.5 border-b-2 border-card flex items-center justify-between bg-card">
-                        <div class="flex items-center gap-3 overflow-x-auto no-scrollbar">
-                            <div class="flex gap-1.5 pr-3 border-r border-card">
-                                <button onclick="setTimeframe('realtime', this)" class="tf-btn px-2 py-0.5 bg-meme-green text-black font-display text-[10px] border border-card shadow-brutal-sm hover:shadow-none transition-all uppercase italic">LIVE</button>
-                                <button onclick="setTimeframe('1h', this)" class="tf-btn px-2 py-0.5 bg-surface text-primary-text font-display text-[10px] border border-card shadow-brutal-sm hover:shadow-none transition-all uppercase italic">1H</button>
-                                <button onclick="setTimeframe('24h', this)" class="tf-btn px-2 py-0.5 bg-surface text-primary-text font-display text-[10px] border border-card shadow-brutal-sm hover:shadow-none transition-all uppercase italic">24H</button>
+            <div class="p-2 md:p-3">
+                <div class="bg-secondary border border-secondary shadow-minimal overflow-hidden">
+                    <div class="p-2 border-b border-secondary flex items-center justify-between bg-secondary">
+                        <div class="flex items-center gap-2 overflow-x-auto no-scrollbar">
+                            <div class="flex gap-1 pr-2 border-r border-secondary">
+                                <button onclick="setTimeframe('realtime', this)" class="tf-btn px-1.5 py-0.5 bg-accent text-black font-display text-[9px] border border-secondary shadow-brutal-sm hover:shadow-none transition-all uppercase">LIVE</button>
+                                <button onclick="setTimeframe('1h', this)" class="tf-btn px-1.5 py-0.5 bg-primary text-primary-text font-display text-[9px] border border-secondary shadow-brutal-sm hover:shadow-none hover:bg-accent hover:text-black transition-all uppercase">1H</button>
+                                <button onclick="setTimeframe('24h', this)" class="tf-btn px-1.5 py-0.5 bg-primary text-primary-text font-display text-[9px] border border-secondary shadow-brutal-sm hover:shadow-none hover:bg-accent hover:text-black transition-all uppercase">24H</button>
                             </div>
-                            <div class="flex gap-1.5">
-                                <button id="toggleMA7" onclick="toggleMA(7)" class="px-2 py-0.5 bg-surface text-muted-text font-display text-[10px] border border-card shadow-brutal-sm hover:text-meme-yellow transition-all uppercase italic">MA7</button>
-                                <button id="toggleMA25" onclick="toggleMA(25)" class="px-2 py-0.5 bg-surface text-muted-text font-display text-[10px] border border-card shadow-brutal-sm hover:text-meme-pink transition-all uppercase italic">MA25</button>
+                            <div class="flex gap-1">
+                                <button id="toggleMA7" onclick="toggleMA(7)" class="px-1.5 py-0.5 bg-primary text-muted-text font-display text-[9px] border border-secondary shadow-brutal-sm hover:text-accent transition-all uppercase">MA7</button>
+                                <button id="toggleMA25" onclick="toggleMA(25)" class="px-1.5 py-0.5 bg-primary text-muted-text font-display text-[9px] border border-secondary shadow-brutal-sm hover:text-soft-failed transition-all uppercase">MA25</button>
                             </div>
                         </div>
-                        <div id="chartStatus" class="font-mono text-[8px] text-meme-green font-bold uppercase tracking-widest animate-pulse">FEED ACTIVE</div>
+                        <div id="chartStatus" class="font-mono text-[7px] text-soft-success font-bold uppercase tracking-widest animate-pulse">FEED ACTIVE</div>
                     </div>
-                    <div class="h-[250px] md:h-[400px] w-full relative bg-surface" id="chartWrapper">
+                    <div class="h-[220px] md:h-[350px] w-full relative bg-primary" id="chartWrapper">
                         <div id="priceChart" class="w-full h-full"></div>
                     </div>
                 </div>
             </div>
             
             <!-- Swap Section (Visible only when connected) -->
-            <div id="mainSwapContainer" class="px-3 md:px-4 pb-4 hidden">
-                <div class="bg-surface border-2 border-card shadow-brutal p-4" id="mainSwapTerminal">
+            <div id="mainSwapContainer" class="px-2 md:px-3 pb-3 hidden">
+                <div class="bg-secondary border border-secondary shadow-minimal p-3" id="mainSwapTerminal">
                     <!-- Swap Content Injected by JS -->
                 </div>
             </div>
             
             <!-- Detailed Stats Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 px-3 md:px-4 pb-4">
-                <div class="bg-surface border-2 border-card p-4 shadow-brutal rotate-[-0.5deg]">
-                    <h4 class="text-lg font-display text-meme-green mb-4 flex items-center gap-2 italic uppercase tracking-tighter">
-                        <i class="fas fa-chart-pie text-sm"></i> TRADE STATS
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 px-2 md:px-3 pb-3">
+                <div class="bg-secondary border border-secondary p-3 shadow-minimal">
+                    <h4 class="text-base font-display text-soft-success mb-3 flex items-center gap-2 uppercase tracking-tight">
+                        <i class="fas fa-chart-pie text-xs"></i> TRADE STATS
                     </h4>
-                    <div class="space-y-3">
+                    <div class="space-y-2">
                         <div class="flex justify-between items-center">
-                            <span class="font-mono text-[9px] text-secondary-text font-bold uppercase tracking-widest">BUYS</span>
-                            <span id="buyCount" class="font-display text-xl text-meme-green italic">0</span>
+                            <span class="font-mono text-[8px] text-muted-text font-bold uppercase">BUYS</span>
+                            <span id="buyCount" class="font-display text-lg text-soft-success">0</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span class="font-mono text-[9px] text-secondary-text font-bold uppercase tracking-widest">SELLS</span>
-                            <span id="sellCount" class="font-display text-xl text-meme-pink italic">0</span>
+                            <span class="font-mono text-[8px] text-muted-text font-bold uppercase">SELLS</span>
+                            <span id="sellCount" class="font-display text-lg text-soft-failed">0</span>
                         </div>
-                        <div class="h-2 w-full bg-surface border border-card overflow-hidden flex shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)]">
-                            <div id="buyRatioBar" class="h-full bg-meme-green w-1/2"></div>
+                        <div class="h-1.5 w-full bg-primary border border-secondary overflow-hidden flex shadow-inner">
+                            <div id="buyRatioBar" class="h-full bg-soft-success w-1/2"></div>
                         </div>
-                        <div class="flex justify-between items-center pt-1.5">
-                            <span class="font-mono text-[9px] text-secondary-text font-bold uppercase tracking-widest">TOTAL</span>
-                            <span id="txCount" class="font-display text-xl text-primary-text italic">0</span>
+                        <div class="flex justify-between items-center pt-1">
+                            <span class="font-mono text-[8px] text-muted-text font-bold uppercase">TOTAL</span>
+                            <span id="txCount" class="font-display text-lg text-primary-text">0</span>
                         </div>
                     </div>
                 </div>
                 
-                <div class="bg-surface border-2 border-card p-4 shadow-brutal rotate-[0.5deg]">
-                    <h4 class="text-lg font-display text-meme-cyan mb-4 flex items-center gap-2 italic uppercase tracking-tighter">
-                        <i class="fas fa-droplet text-sm"></i> POOL DEPTH
+                <div class="bg-secondary border border-secondary p-3 shadow-minimal">
+                    <h4 class="text-base font-display text-accent mb-3 flex items-center gap-2 uppercase tracking-tight">
+                        <i class="fas fa-droplet text-xs"></i> POOL DEPTH
                     </h4>
-                    <div class="space-y-3">
+                    <div class="space-y-2">
                         <div class="flex justify-between items-center">
-                            <span class="font-mono text-[9px] text-secondary-text font-bold uppercase tracking-widest">PAXI</span>
-                            <span id="resPaxi" class="font-display text-xl text-primary-text italic">0.00</span>
+                            <span class="font-mono text-[8px] text-muted-text font-bold uppercase">PAXI</span>
+                            <span id="resPaxi" class="font-display text-lg text-primary-text">0.00</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span id="resTokenLabel" class="font-mono text-[9px] text-secondary-text font-bold uppercase tracking-widest truncate max-w-[80px]">PRC20</span>
-                            <span id="resToken" class="font-display text-xl text-primary-text italic">0.00</span>
+                            <span id="resTokenLabel" class="font-mono text-[8px] text-muted-text font-bold uppercase truncate max-w-[80px]">PRC20</span>
+                            <span id="resToken" class="font-display text-lg text-primary-text">0.00</span>
                         </div>
-                        <div class="flex justify-between items-center border-t border-card pt-3">
-                            <span class="font-mono text-[9px] text-secondary-text font-bold uppercase tracking-widest">APES</span>
-                            <span id="holderCount" class="font-display text-xl text-meme-cyan italic">0</span>
+                        <div class="flex justify-between items-center border-t border-secondary pt-2">
+                            <span class="font-mono text-[8px] text-muted-text font-bold uppercase">APES</span>
+                            <span id="holderCount" class="font-display text-lg text-accent">0</span>
                         </div>
                     </div>
                 </div>
                 
-                <div class="bg-surface border-2 border-card p-4 shadow-brutal rotate-[-0.3deg]">
-                    <h4 class="text-lg font-display text-meme-yellow mb-4 flex items-center gap-2 italic uppercase tracking-tighter">
-                        <i class="fas fa-info-circle text-sm"></i> TOKEN INFO
+                <div class="bg-secondary border border-secondary p-3 shadow-minimal">
+                    <h4 class="text-base font-display text-soft-warning mb-3 flex items-center gap-2 uppercase tracking-tight">
+                        <i class="fas fa-info-circle text-xs"></i> TOKEN INFO
                     </h4>
-                    <div class="space-y-3">
+                    <div class="space-y-2">
                         <div class="flex justify-between items-center">
-                            <span class="font-mono text-[9px] text-secondary-text font-bold uppercase tracking-widest">SUPPLY</span>
-                            <span id="totalSupply" class="font-mono text-[10px] font-bold text-primary-text uppercase italic">0</span>
+                            <span class="font-mono text-[8px] text-muted-text font-bold uppercase">SUPPLY</span>
+                            <span id="totalSupply" class="font-mono text-[9px] font-bold text-primary-text uppercase italic">0</span>
                         </div>
-                        <div class="flex flex-col gap-1.5">
-                            <span class="font-mono text-[8px] text-muted-text font-bold uppercase tracking-widest">CONTRACT CA</span>
-                            <div class="flex items-center gap-2 bg-surface p-2 border border-card shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)]">
-                                <code id="caAddr" class="text-[10px] font-mono text-meme-green flex-1 uppercase tracking-tighter break-all">paxi...</code>
-                                <button onclick="copyAddrText()" class="text-meme-yellow hover:scale-110 transition-transform"><i class="fas fa-copy text-sm"></i></button>
+                        <div class="flex flex-col gap-1">
+                            <span class="font-mono text-[7px] text-muted-text font-bold uppercase">CONTRACT CA</span>
+                            <div class="flex items-center gap-2 bg-primary p-1.5 border border-secondary shadow-inner">
+                                <code id="caAddr" class="text-[9px] font-mono text-soft-success flex-1 uppercase truncate tracking-tight">paxi...</code>
+                                <button onclick="copyAddrText()" class="text-soft-warning hover:scale-110 transition-transform"><i class="fas fa-copy text-xs"></i></button>
                             </div>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span class="font-mono text-[9px] text-secondary-text font-bold uppercase tracking-widest">MINTING</span>
-                            <span id="minterStatus" class="font-display text-base text-meme-green uppercase italic tracking-tighter">LOCKED</span>
+                            <span class="font-mono text-[8px] text-muted-text font-bold uppercase">MINTING</span>
+                            <span id="minterStatus" class="font-display text-sm text-soft-success uppercase italic">LOCKED</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span class="font-mono text-[9px] text-secondary-text font-bold uppercase tracking-widest">VERIFIED</span>
-                            <span id="verifyStatus" class="font-display text-base text-meme-cyan uppercase italic tracking-tighter">OFFICIAL</span>
-                        </div>
-                        <div id="socialLinks" class="flex gap-3 pt-1">
-                            <!-- Populated JS -->
+                            <span class="font-mono text-[8px] text-muted-text font-bold uppercase">VERIFIED</span>
+                            <span id="verifyStatus" class="font-display text-sm text-accent uppercase italic">OFFICIAL</span>
                         </div>
                     </div>
                 </div>
@@ -377,17 +412,17 @@
             
             <!-- Token Details (Desc & Marketing) -->
             <div id="tokenDetailsCard" class="px-3 md:px-4 pb-4 hidden">
-                <div class="bg-surface border-2 border-card p-4 shadow-brutal">
+                <div class="bg-secondary border border-secondary p-4 shadow-brutal">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <h4 class="text-lg font-display text-meme-cyan mb-2 italic uppercase tracking-tighter">ABOUT</h4>
-                            <p id="tokenDesc" class="font-mono text-[9px] text-secondary-text leading-relaxed uppercase italic">NO DESCRIPTION AVAILABLE.</p>
+                            <h4 class="text-lg font-display text-accent mb-2 italic uppercase tracking-tighter">ABOUT</h4>
+                            <p id="tokenDesc" class="font-mono text-[9px] text-muted-text leading-relaxed uppercase italic">NO DESCRIPTION AVAILABLE.</p>
                         </div>
                         <div>
-                            <h4 class="text-lg font-display text-meme-yellow mb-2 italic uppercase tracking-tighter">MARKETING</h4>
-                            <div class="flex items-center gap-2 bg-surface p-2 border border-card">
-                                <code id="mktAddr" class="text-[10px] font-mono text-secondary-text break-all flex-1 uppercase tracking-tighter italic">N/A</code>
-                                <button onclick="window.copyMktAddr()" class="text-meme-yellow hover:scale-110 transition-transform"><i class="fas fa-copy text-sm"></i></button>
+                            <h4 class="text-lg font-display text-soft-warning mb-2 italic uppercase tracking-tighter">MARKETING</h4>
+                            <div class="flex items-center gap-2 bg-secondary p-2 border border-secondary">
+                                <code id="mktAddr" class="text-[10px] font-mono text-muted-text break-all flex-1 uppercase tracking-tighter italic">N/A</code>
+                                <button onclick="window.copyMktAddr()" class="text-soft-warning hover:scale-110 transition-transform"><i class="fas fa-copy text-sm"></i></button>
                             </div>
                         </div>
                     </div>
@@ -395,21 +430,21 @@
             </div>
             
             <!-- Tabs Section (Holders) -->
-            <div class="px-3 md:px-4 pb-20">
-                <div class="flex gap-2 mb-4">
-                    <button onclick="window.setTab('holders')" id="tab-holders" class="tab-btn active px-6 py-2 bg-meme-green text-black font-display text-2xl border-2 border-card shadow-brutal hover:shadow-none transition-all uppercase italic tracking-tighter">Top Holders</button>
+            <div class="px-2 md:px-3 pb-16">
+                <div class="flex gap-1.5 mb-3">
+                    <button onclick="window.setTab('holders')" id="tab-holders" class="tab-btn active px-4 py-1.5 bg-accent text-black font-display text-xl border border-secondary shadow-brutal hover:shadow-none transition-all uppercase tracking-tight">Top Holders</button>
                 </div>
-                <div id="tabContent" class="bg-surface border-2 border-card shadow-brutal min-h-[200px] overflow-hidden">
+                <div id="tabContent" class="bg-secondary border border-secondary shadow-minimal min-h-[150px] overflow-hidden">
                     <!-- Table goes here -->
                 </div>
             </div>
         </main>
         
         <!-- ===== RIGHT SIDEBAR: UNIFIED WALLET TERMINAL ===== -->
-        <aside id="unifiedSidebar" class="w-[320px] border-l-2 border-card bg-bg flex flex-col lg:static fixed right-0 top-14 bottom-0 z-[110] transition-transform duration-300 translate-x-full lg:translate-x-0 overflow-hidden">
+        <aside id="unifiedSidebar" class="w-[280px] border-l border-secondary bg-bg flex flex-col lg:static fixed right-0 top-12 bottom-0 z-[110] transition-transform duration-300 translate-x-full lg:translate-x-0 overflow-hidden">
             <!-- Sidebar Navigation Tabs -->
-            <div class="flex bg-surface border-b-2 border-card p-1.5 gap-1.5">
-                <button onclick="setSidebarTab('wallet')" id="side-tab-wallet" class="flex-1 py-2 bg-surface border border-card text-meme-green font-display text-base shadow-brutal-sm hover:shadow-none transition-all uppercase italic tracking-tighter">Wallet</button>
+            <div class="flex bg-secondary border-b border-secondary p-1 gap-1">
+                <button onclick="setSidebarTab('wallet')" id="side-tab-wallet" class="flex-1 py-1.5 bg-secondary border border-secondary text-accent font-display text-sm shadow-brutal-sm hover:shadow-none transition-all uppercase italic tracking-tight">Wallet</button>
                 <button onclick="setSidebarTab('swap')" id="side-tab-swap" class="hidden"></button>
                 <button onclick="setSidebarTab('history')" id="side-tab-history" class="hidden"></button>
                 <button onclick="setSidebarTab('lp')" id="side-tab-lp" class="hidden"></button>
@@ -421,7 +456,7 @@
             <div id="sidebarContent" class="flex-1 overflow-y-auto p-4 no-scrollbar bg-bg">
                 <!-- Content will be injected by JS based on tab -->
                 <div class="text-center py-24 flex flex-col items-center">
-                    <div class="w-16 h-16 bg-card border-2 border-card shadow-brutal flex items-center justify-center text-muted-text text-3xl mb-6 rotate-[-10deg]">
+                    <div class="w-16 h-16 bg-secondary border border-secondary shadow-brutal flex items-center justify-center text-muted-text text-3xl mb-6 rotate-[-10deg]">
                         <i class="fas fa-lock"></i>
                     </div>
                     <p class="font-display text-xl text-muted-text uppercase italic tracking-tighter">Terminal Locked</p>
@@ -432,35 +467,26 @@
     </div>
     
     <!-- Mobile Navigation Bar -->
-    <div class="lg:hidden fixed bottom-0 left-0 right-0 h-20 bg-bg border-t-2 border-card z-[100] flex flex-col justify-between p-1.5">
-        <div class="flex items-center justify-between w-full mb-1 px-3">
-            <div class="flex items-center gap-2">
-                <h1 class="text-lg font-display text-meme-green italic tracking-tighter uppercase">CANONIX</h1>
-                <div id="mobileWalletInfo" class="hidden flex items-center px-2 py-0.5 bg-card border border-card">
-                    <div id="mobileWalletBalance" class="text-[8px] font-mono font-bold text-meme-pink uppercase tracking-tighter">0.00 PAXI</div>
-                </div>
-            </div>
-            <button id="mobileConnectBtn" onclick="showConnectModal()" class="px-3 py-0.5 bg-meme-pink text-primary-text border border-card font-display text-xs uppercase italic tracking-tighter shadow-brutal-sm">Connect</button>
-        </div>
+    <div class="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-bg border-t border-secondary z-[100] flex flex-col justify-center p-1">
         <div class="flex items-center justify-around w-full">
             <button onclick="toggleMobileSidebar()" class="flex flex-col items-center gap-0.5 text-muted-text">
-                <i class="fas fa-th-list text-lg"></i>
-                <span class="text-[8px] font-black uppercase font-mono italic tracking-tight">Market</span>
+                <i class="fas fa-th-list text-base"></i>
+                <span class="text-[7px] font-bold uppercase font-sans tracking-tight">Market</span>
             </button>
-            <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="flex flex-col items-center gap-0.5 text-meme-cyan">
-                <i class="fas fa-chart-line text-lg"></i>
-                <span class="text-[8px] font-black uppercase font-mono italic tracking-tight">Chart</span>
+            <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="flex flex-col items-center gap-0.5 text-accent">
+                <i class="fas fa-chart-line text-base"></i>
+                <span class="text-[7px] font-bold uppercase font-sans tracking-tight">Chart</span>
             </button>
-            <button onclick="toggleUnifiedSidebar()" class="w-12 h-12 -mt-10 bg-meme-green border-2 border-card shadow-brutal-green flex items-center justify-center text-black rotate-45">
-                <i class="fas fa-wallet text-xl -rotate-45"></i>
+            <button onclick="toggleUnifiedSidebar()" class="w-10 h-10 -mt-8 bg-accent border border-secondary shadow-brutal flex items-center justify-center text-black rotate-45">
+                <i class="fas fa-wallet text-lg -rotate-45"></i>
             </button>
-            <button onclick="showAIAnalysis()" class="flex flex-col items-center gap-0.5 text-meme-yellow">
-                <i class="fas fa-brain text-lg"></i>
-                <span class="text-[8px] font-black uppercase font-mono italic tracking-tight">AI Brain</span>
+            <button onclick="showAIAnalysis()" class="flex flex-col items-center gap-0.5 text-soft-warning">
+                <i class="fas fa-brain text-base"></i>
+                <span class="text-[7px] font-bold uppercase font-sans tracking-tight">AI Brain</span>
             </button>
-            <button onclick="toggleMoreMenu()" class="flex flex-col items-center gap-0.5 text-meme-pink">
-                <i class="fas fa-ellipsis-h text-lg"></i>
-                <span class="text-[8px] font-black uppercase font-mono italic tracking-tight">Apps</span>
+            <button onclick="toggleMoreMenu()" class="flex flex-col items-center gap-0.5 text-soft-failed">
+                <i class="fas fa-ellipsis-h text-base"></i>
+                <span class="text-[7px] font-bold uppercase font-sans tracking-tight">Apps</span>
             </button>
         </div>
     </div>
@@ -468,170 +494,170 @@
     <!-- ===== MODALS & BOTTOM SHEETS ===== -->
     
     <!-- More Menu Modal -->
-    <div id="moreMenuModal" class="hidden fixed inset-0 bg-surface/95 z-[200] flex flex-col animate-fade-in p-4">
-        <div class="flex justify-between items-center mb-8">
-            <h2 class="text-3xl font-display text-meme-cyan italic tracking-tighter uppercase">EXPLORER</h2>
-            <button onclick="toggleMoreMenu()" class="w-10 h-10 flex items-center justify-center border-2 border-card bg-meme-pink text-primary-text shadow-brutal hover:rotate-90 transition-transform">
-                <i class="fas fa-times text-lg"></i>
+    <div id="moreMenuModal" class="hidden fixed inset-0 bg-primary/95 z-[200] flex flex-col animate-fade-in p-4">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-display text-accent uppercase tracking-tight">EXPLORER</h2>
+            <button onclick="toggleMoreMenu()" class="w-8 h-8 flex items-center justify-center border border-secondary bg-soft-failed text-primary-text shadow-brutal hover:rotate-90 transition-transform">
+                <i class="fas fa-times text-base"></i>
             </button>
         </div>
         <div class="flex-1 overflow-y-auto no-scrollbar">
-            <div class="grid grid-cols-2 gap-4">
-                <a href="launchpad.html" class="flex flex-col items-center gap-3 p-6 bg-surface border-2 border-card shadow-brutal hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all group text-center">
-                    <div class="w-12 h-12 bg-meme-green border-2 border-card flex items-center justify-center text-black group-hover:rotate-12 transition-transform text-lg"><i class="fas fa-rocket"></i></div>
-                    <span class="font-display text-lg text-primary-text group-hover:text-meme-green transition-colors uppercase italic tracking-tighter">Launchpad</span>
+            <div class="grid grid-cols-2 gap-3">
+                <a href="launchpad.html" class="flex flex-col items-center gap-2 p-4 bg-secondary border border-secondary shadow-brutal hover:shadow-none transition-all group text-center">
+                    <div class="w-10 h-10 bg-soft-success border border-secondary flex items-center justify-center text-black group-hover:rotate-6 transition-transform text-base"><i class="fas fa-rocket"></i></div>
+                    <span class="font-display text-base text-primary-text group-hover:text-soft-success transition-colors uppercase">Launchpad</span>
                 </a>
-                <a href="pre-market.html" class="flex flex-col items-center gap-3 p-6 bg-surface border-2 border-card shadow-brutal hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all group text-center">
-                    <div class="w-12 h-12 bg-meme-pink border-2 border-card flex items-center justify-center text-primary-text group-hover:rotate-12 transition-transform text-lg"><i class="fas fa-clock"></i></div>
-                    <span class="font-display text-lg text-primary-text group-hover:text-meme-pink transition-colors uppercase italic tracking-tighter">Pre-Market</span>
+                <a href="pre-market.html" class="flex flex-col items-center gap-2 p-4 bg-secondary border border-secondary shadow-brutal hover:shadow-none transition-all group text-center">
+                    <div class="w-10 h-10 bg-soft-failed border border-secondary flex items-center justify-center text-primary-text group-hover:rotate-6 transition-transform text-base"><i class="fas fa-clock"></i></div>
+                    <span class="font-display text-base text-primary-text group-hover:text-soft-failed transition-colors uppercase">Pre-Market</span>
                 </a>
-                <a href="vesting.html" class="flex flex-col items-center gap-3 p-6 bg-surface border-2 border-card shadow-brutal hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all group text-center">
-                    <div class="w-12 h-12 bg-meme-cyan border-2 border-card flex items-center justify-center text-black group-hover:rotate-12 transition-transform text-lg"><i class="fas fa-layer-group"></i></div>
-                    <span class="font-display text-lg text-primary-text group-hover:text-meme-cyan transition-colors uppercase italic tracking-tighter">Vesting</span>
+                <a href="vesting.html" class="flex flex-col items-center gap-2 p-4 bg-secondary border border-secondary shadow-brutal hover:shadow-none transition-all group text-center">
+                    <div class="w-10 h-10 bg-accent border border-secondary flex items-center justify-center text-black group-hover:rotate-6 transition-transform text-base"><i class="fas fa-layer-group"></i></div>
+                    <span class="font-display text-base text-primary-text group-hover:text-accent transition-colors uppercase">Vesting</span>
                 </a>
-                <a href="locked-liquidity-pool.html" class="flex flex-col items-center gap-3 p-6 bg-surface border-2 border-card shadow-brutal hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all group text-center">
-                    <div class="w-12 h-12 bg-meme-yellow border-2 border-card flex items-center justify-center text-black group-hover:rotate-12 transition-transform text-lg"><i class="fas fa-lock"></i></div>
-                    <span class="font-display text-lg text-primary-text group-hover:text-meme-yellow transition-colors uppercase italic tracking-tighter">Lp Lock</span>
+                <a href="locked-liquidity-pool.html" class="flex flex-col items-center gap-2 p-4 bg-secondary border border-secondary shadow-brutal hover:shadow-none transition-all group text-center">
+                    <div class="w-10 h-10 bg-soft-warning border border-secondary flex items-center justify-center text-black group-hover:rotate-6 transition-transform text-base"><i class="fas fa-lock"></i></div>
+                    <span class="font-display text-base text-primary-text group-hover:text-soft-warning transition-colors uppercase">Lp Lock</span>
                 </a>
-                <a href="reward.html" class="flex flex-col items-center gap-3 p-6 bg-surface border-2 border-card shadow-brutal hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all group text-center">
-                    <div class="w-12 h-12 bg-meme-green border-2 border-card flex items-center justify-center text-black group-hover:rotate-12 transition-transform text-lg"><i class="fas fa-gift"></i></div>
-                    <span class="font-display text-lg text-primary-text group-hover:text-meme-green transition-colors uppercase italic tracking-tighter">Rewards</span>
+                <a href="reward.html" class="flex flex-col items-center gap-2 p-4 bg-secondary border border-secondary shadow-brutal hover:shadow-none transition-all group text-center">
+                    <div class="w-10 h-10 bg-soft-success border border-secondary flex items-center justify-center text-black group-hover:rotate-6 transition-transform text-base"><i class="fas fa-gift"></i></div>
+                    <span class="font-display text-base text-primary-text group-hover:text-soft-success transition-colors uppercase">Rewards</span>
                 </a>
-                <a href="daily.html" class="flex flex-col items-center gap-3 p-6 bg-surface border-2 border-card shadow-brutal hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all group text-center">
-                    <div class="w-12 h-12 bg-meme-cyan border-2 border-card flex items-center justify-center text-black group-hover:rotate-12 transition-transform text-lg"><i class="fas fa-calendar-check"></i></div>
-                    <span class="font-display text-lg text-primary-text group-hover:text-meme-cyan transition-colors uppercase italic tracking-tighter">Daily</span>
+                <a href="daily.html" class="flex flex-col items-center gap-2 p-4 bg-secondary border border-secondary shadow-brutal hover:shadow-none transition-all group text-center">
+                    <div class="w-10 h-10 bg-accent border border-secondary flex items-center justify-center text-black group-hover:rotate-6 transition-transform text-base"><i class="fas fa-calendar-check"></i></div>
+                    <span class="font-display text-base text-primary-text group-hover:text-accent transition-colors uppercase">Daily</span>
                 </a>
             </div>
         </div>
-        <div class="mt-8">
-            <button onclick="showConnectModal()" class="w-full py-4 bg-meme-pink text-primary-text font-display text-2xl border-2 border-card shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic tracking-tighter">Connect Wallet</button>
+        <div class="mt-6">
+            <button onclick="showConnectModal()" class="w-full py-3 bg-accent text-black font-display text-xl border border-secondary shadow-brutal hover:shadow-none transition-all uppercase italic">Connect Wallet</button>
         </div>
     </div>
     
     <!-- Token Selection Modal -->
-    <div id="tokenModal" class="hidden fixed inset-0 bg-surface/90 z-[333] flex items-center justify-center p-4">
-        <div class="bg-surface border-2 border-card shadow-brutal-lg w-full max-w-lg max-h-[80vh] overflow-hidden flex flex-col">
-            <div class="p-4 border-b-2 border-card flex justify-between items-center bg-meme-pink">
-                <h3 class="text-2xl font-display text-primary-text italic uppercase tracking-widest">Select Token</h3>
-                <button onclick="hideTokenSelector()" class="text-primary-text hover:rotate-90 transition-transform">
-                    <i class="fas fa-times text-xl"></i>
+    <div id="tokenModal" class="hidden fixed inset-0 bg-primary/95 z-[333] flex items-center justify-center p-4">
+        <div class="bg-secondary border border-secondary shadow-minimal w-full max-w-md max-h-[70vh] overflow-hidden flex flex-col">
+            <div class="p-3 border-b border-secondary flex justify-between items-center bg-accent">
+                <h3 class="text-xl font-display text-black uppercase tracking-tight">Select Token</h3>
+                <button onclick="hideTokenSelector()" class="text-black hover:rotate-90 transition-transform">
+                    <i class="fas fa-times text-lg"></i>
                 </button>
             </div>
-            <div class="p-4 bg-card border-b-2 border-card">
-                <input type="text" id="tokenSearch" placeholder="SEARCH..." class="w-full px-3 py-3 bg-surface border-2 border-card text-primary-text font-display text-lg outline-none focus:border-meme-green placeholder:text-muted-text uppercase italic" oninput="filterTokens()">
+            <div class="p-3 bg-primary border-b border-secondary">
+                <input type="text" id="tokenSearch" placeholder="SEARCH..." class="w-full px-3 py-2 bg-secondary border border-secondary text-primary-text font-sans text-sm outline-none focus:border-accent placeholder:text-muted-text uppercase" oninput="filterTokens()">
             </div>
             <div id="tokenList" class="flex-1 overflow-y-auto no-scrollbar bg-bg"></div>
         </div>
     </div>
     
     <!-- Connect Wallet Modal -->
-    <div id="connectModal" class="hidden fixed inset-0 bg-surface/95 z-[100] flex items-center justify-center p-4">
-        <div class="bg-surface border-2 border-card shadow-brutal w-full max-w-sm overflow-hidden">
-            <div class="p-4 border-b-2 border-card flex justify-between items-center bg-meme-cyan">
-                <h3 class="text-2xl font-display text-black italic uppercase tracking-tighter">Connect Wallet</h3>
-                <button onclick="hideConnectModal()" class="text-black hover:scale-125 transition-transform"><i class="fas fa-times text-lg"></i></button>
+    <div id="connectModal" class="hidden fixed inset-0 bg-primary/95 z-[100] flex items-center justify-center p-4">
+        <div class="bg-secondary border border-secondary shadow-minimal w-full max-w-xs overflow-hidden">
+            <div class="p-3 border-b border-secondary flex justify-between items-center bg-accent">
+                <h3 class="text-xl font-display text-black uppercase tracking-tight">Connect Wallet</h3>
+                <button onclick="hideConnectModal()" class="text-black hover:scale-110 transition-transform"><i class="fas fa-times text-base"></i></button>
             </div>
-            <div class="p-4 space-y-3 bg-surface">
-                <button onclick="connectWallet('internal')" class="w-full flex items-center justify-between p-4 bg-surface border-2 border-card shadow-brutal hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all group">
-                    <div class="flex items-center gap-3 text-left">
-                        <div class="w-10 h-10 bg-meme-green border-2 border-card flex items-center justify-center text-black text-lg group-hover:rotate-12 transition-transform"><i class="fas fa-shield-alt"></i></div>
+            <div class="p-3 space-y-2 bg-primary">
+                <button onclick="connectWallet('internal')" class="w-full flex items-center justify-between p-3 bg-secondary border border-secondary shadow-brutal-sm hover:shadow-none transition-all group">
+                    <div class="flex items-center gap-2.5 text-left">
+                        <div class="w-8 h-8 bg-soft-success border border-secondary flex items-center justify-center text-black text-base group-hover:rotate-6 transition-transform"><i class="fas fa-shield-alt"></i></div>
                         <div>
-                            <div class="text-lg font-display text-primary-text uppercase italic tracking-tighter leading-none">Internal</div>
-                            <div class="font-mono text-[7px] text-secondary-text font-bold uppercase tracking-widest italic">Secure & Encrypted</div>
+                            <div class="text-base font-display text-primary-text uppercase leading-none">Internal</div>
+                            <div class="font-mono text-[6px] text-muted-text font-bold uppercase">Secure & Encrypted</div>
                         </div>
                     </div>
-                    <i class="fas fa-chevron-right text-muted-text text-xs"></i>
+                    <i class="fas fa-chevron-right text-muted-text text-[10px]"></i>
                 </button>
-                <button onclick="connectWallet('paxihub')" class="w-full flex items-center justify-between p-4 bg-surface border-2 border-card shadow-brutal hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all group">
-                    <div class="flex items-center gap-3 text-left">
-                        <div class="w-10 h-10 bg-meme-pink border-2 border-card flex items-center justify-center text-primary-text text-lg group-hover:rotate-12 transition-transform"><i class="fas fa-wallet"></i></div>
+                <button onclick="connectWallet('paxihub')" class="w-full flex items-center justify-between p-3 bg-secondary border border-secondary shadow-brutal-sm hover:shadow-none transition-all group">
+                    <div class="flex items-center gap-2.5 text-left">
+                        <div class="w-8 h-8 bg-soft-failed border border-secondary flex items-center justify-center text-primary-text text-base group-hover:rotate-6 transition-transform"><i class="fas fa-wallet"></i></div>
                         <div>
-                            <div class="text-lg font-display text-primary-text uppercase italic tracking-tighter leading-none">PaxiHub</div>
-                            <div class="font-mono text-[7px] text-secondary-text font-bold uppercase tracking-widest italic">Mobile & Extension</div>
+                            <div class="text-base font-display text-primary-text uppercase leading-none">PaxiHub</div>
+                            <div class="font-mono text-[6px] text-muted-text font-bold uppercase">Mobile & Extension</div>
                         </div>
                     </div>
-                    <i class="fas fa-chevron-right text-muted-text text-xs"></i>
+                    <i class="fas fa-chevron-right text-muted-text text-[10px]"></i>
                 </button>
-                <button onclick="connectWallet('keplr')" class="w-full flex items-center justify-between p-4 bg-surface border-2 border-card shadow-brutal hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all group">
-                    <div class="flex items-center gap-3 text-left">
-                        <div class="w-10 h-10 bg-meme-cyan border-2 border-card flex items-center justify-center text-black text-lg group-hover:rotate-12 transition-transform"><i class="fas fa-rocket"></i></div>
+                <button onclick="connectWallet('keplr')" class="w-full flex items-center justify-between p-3 bg-secondary border border-secondary shadow-brutal-sm hover:shadow-none transition-all group">
+                    <div class="flex items-center gap-2.5 text-left">
+                        <div class="w-8 h-8 bg-accent border border-secondary flex items-center justify-center text-black text-base group-hover:rotate-6 transition-transform"><i class="fas fa-rocket"></i></div>
                         <div>
-                            <div class="text-lg font-display text-primary-text uppercase italic tracking-tighter leading-none">Keplr</div>
-                            <div class="font-mono text-[7px] text-secondary-text font-bold uppercase tracking-widest italic">Cosmos Extension</div>
+                            <div class="text-base font-display text-primary-text uppercase leading-none">Keplr</div>
+                            <div class="font-mono text-[6px] text-muted-text font-bold uppercase">Cosmos Extension</div>
                         </div>
                     </div>
-                    <i class="fas fa-chevron-right text-muted-text text-xs"></i>
+                    <i class="fas fa-chevron-right text-muted-text text-[10px]"></i>
                 </button>
             </div>
         </div>
     </div>
     
     <!-- PIN Bottom Sheet -->
-    <div id="pinSheet" class="hidden fixed inset-0 bg-surface/95 z-[100000] flex items-end justify-center">
-        <div class="bg-surface w-full max-w-md border-t-4 border-card animate-slide-up flex flex-col p-6 pb-12">
-            <div class="w-16 h-2 bg-surface rounded-full mx-auto mb-8 shrink-0"></div>
-            <h3 id="pinTitle" class="text-3xl font-display text-center mb-2 uppercase italic tracking-tighter text-meme-cyan">Unlock</h3>
-            <p id="pinMsg" class="font-mono text-[8px] text-secondary-text text-center mb-8 font-bold uppercase tracking-widest italic">Enter your 6-digit access code</p>
+    <div id="pinSheet" class="hidden fixed inset-0 bg-primary/95 z-[100000] flex items-end justify-center">
+        <div class="bg-secondary w-full max-w-md border-t-2 border-secondary animate-slide-up flex flex-col p-5 pb-8">
+            <div class="w-12 h-1 bg-primary rounded-full mx-auto mb-6 shrink-0"></div>
+            <h3 id="pinTitle" class="text-2xl font-display text-center mb-1 uppercase tracking-tight text-accent">Unlock</h3>
+            <p id="pinMsg" class="font-mono text-[7px] text-muted-text text-center mb-6 font-bold uppercase tracking-widest">Enter your 6-digit access code</p>
             
             <!-- Pin Dots -->
-            <div id="pinDots" class="flex justify-center gap-4 mb-10 shrink-0">
-                <div class="pin-dot w-5 h-5 bg-surface border-2 border-card shadow-brutal-sm"></div>
-                <div class="pin-dot w-5 h-5 bg-surface border-2 border-card shadow-brutal-sm"></div>
-                <div class="pin-dot w-5 h-5 bg-surface border-2 border-card shadow-brutal-sm"></div>
-                <div class="pin-dot w-5 h-5 bg-surface border-2 border-card shadow-brutal-sm"></div>
-                <div class="pin-dot w-5 h-5 bg-surface border-2 border-card shadow-brutal-sm"></div>
-                <div class="pin-dot w-5 h-5 bg-surface border-2 border-card shadow-brutal-sm"></div>
+            <div id="pinDots" class="flex justify-center gap-3 mb-8 shrink-0">
+                <div class="pin-dot w-4 h-4 bg-primary border border-secondary shadow-minimal"></div>
+                <div class="pin-dot w-4 h-4 bg-primary border border-secondary shadow-minimal"></div>
+                <div class="pin-dot w-4 h-4 bg-primary border border-secondary shadow-minimal"></div>
+                <div class="pin-dot w-4 h-4 bg-primary border border-secondary shadow-minimal"></div>
+                <div class="pin-dot w-4 h-4 bg-primary border border-secondary shadow-minimal"></div>
+                <div class="pin-dot w-4 h-4 bg-primary border border-secondary shadow-minimal"></div>
             </div>
             
             <!-- Keypad -->
-            <div class="grid grid-cols-3 gap-4 max-w-xs mx-auto">
-                <button onclick="pressPin(1)" class="w-14 h-14 bg-surface border-2 border-card shadow-brutal flex items-center justify-center text-xl font-display hover:bg-meme-green hover:text-black hover:shadow-none transition-all italic">1</button>
-                <button onclick="pressPin(2)" class="w-14 h-14 bg-surface border-2 border-card shadow-brutal flex items-center justify-center text-xl font-display hover:bg-meme-green hover:text-black hover:shadow-none transition-all italic">2</button>
-                <button onclick="pressPin(3)" class="w-14 h-14 bg-surface border-2 border-card shadow-brutal flex items-center justify-center text-xl font-display hover:bg-meme-green hover:text-black hover:shadow-none transition-all italic">3</button>
-                <button onclick="pressPin(4)" class="w-14 h-14 bg-surface border-2 border-card shadow-brutal flex items-center justify-center text-xl font-display hover:bg-meme-green hover:text-black hover:shadow-none transition-all italic">4</button>
-                <button onclick="pressPin(5)" class="w-14 h-14 bg-surface border-2 border-card shadow-brutal flex items-center justify-center text-xl font-display hover:bg-meme-green hover:text-black hover:shadow-none transition-all italic">5</button>
-                <button onclick="pressPin(6)" class="w-14 h-14 bg-surface border-2 border-card shadow-brutal flex items-center justify-center text-xl font-display hover:bg-meme-green hover:text-black hover:shadow-none transition-all italic">6</button>
-                <button onclick="pressPin(7)" class="w-14 h-14 bg-surface border-2 border-card shadow-brutal flex items-center justify-center text-xl font-display hover:bg-meme-green hover:text-black hover:shadow-none transition-all italic">7</button>
-                <button onclick="pressPin(8)" class="w-14 h-14 bg-surface border-2 border-card shadow-brutal flex items-center justify-center text-xl font-display hover:bg-meme-green hover:text-black hover:shadow-none transition-all italic">8</button>
-                <button onclick="pressPin(9)" class="w-14 h-14 bg-surface border-2 border-card shadow-brutal flex items-center justify-center text-xl font-display hover:bg-meme-green hover:text-black hover:shadow-none transition-all italic">9</button>
-                <button onclick="authenticateBiometric()" class="w-14 h-14 flex items-center justify-center text-meme-cyan hover:scale-110 transition-transform"><i class="fas fa-fingerprint text-3xl"></i></button>
-                <button onclick="pressPin(0)" class="w-14 h-14 bg-surface border-2 border-card shadow-brutal flex items-center justify-center text-xl font-display hover:bg-meme-green hover:text-black hover:shadow-none transition-all italic">0</button>
-                <button onclick="backspacePin()" class="w-14 h-14 flex items-center justify-center text-meme-pink hover:scale-110 transition-transform"><i class="fas fa-backspace text-2xl"></i></button>
+            <div class="grid grid-cols-3 gap-3 max-w-xs mx-auto">
+                <button onclick="pressPin(1)" class="w-12 h-12 bg-primary border border-secondary shadow-minimal flex items-center justify-center text-lg font-display hover:bg-accent hover:text-black transition-all">1</button>
+                <button onclick="pressPin(2)" class="w-12 h-12 bg-primary border border-secondary shadow-minimal flex items-center justify-center text-lg font-display hover:bg-accent hover:text-black transition-all">2</button>
+                <button onclick="pressPin(3)" class="w-12 h-12 bg-primary border border-secondary shadow-minimal flex items-center justify-center text-lg font-display hover:bg-accent hover:text-black transition-all">3</button>
+                <button onclick="pressPin(4)" class="w-12 h-12 bg-primary border border-secondary shadow-minimal flex items-center justify-center text-lg font-display hover:bg-accent hover:text-black transition-all">4</button>
+                <button onclick="pressPin(5)" class="w-12 h-12 bg-primary border border-secondary shadow-minimal flex items-center justify-center text-lg font-display hover:bg-accent hover:text-black transition-all">5</button>
+                <button onclick="pressPin(6)" class="w-12 h-12 bg-primary border border-secondary shadow-minimal flex items-center justify-center text-lg font-display hover:bg-accent hover:text-black transition-all">6</button>
+                <button onclick="pressPin(7)" class="w-12 h-12 bg-primary border border-secondary shadow-minimal flex items-center justify-center text-lg font-display hover:bg-accent hover:text-black transition-all">7</button>
+                <button onclick="pressPin(8)" class="w-12 h-12 bg-primary border border-secondary shadow-minimal flex items-center justify-center text-lg font-display hover:bg-accent hover:text-black transition-all">8</button>
+                <button onclick="pressPin(9)" class="w-12 h-12 bg-primary border border-secondary shadow-minimal flex items-center justify-center text-lg font-display hover:bg-accent hover:text-black transition-all">9</button>
+                <button onclick="authenticateBiometric()" class="w-12 h-12 flex items-center justify-center text-accent hover:scale-110 transition-transform"><i class="fas fa-fingerprint text-2xl"></i></button>
+                <button onclick="pressPin(0)" class="w-12 h-12 bg-primary border border-secondary shadow-minimal flex items-center justify-center text-lg font-display hover:bg-accent hover:text-black transition-all">0</button>
+                <button onclick="backspacePin()" class="w-12 h-12 flex items-center justify-center text-soft-failed hover:scale-110 transition-transform"><i class="fas fa-backspace text-xl"></i></button>
             </div>
-            <button onclick="hidePinSheet()" class="mt-8 font-display text-xl text-muted-text uppercase italic hover:text-primary-text transition-colors tracking-widest shrink-0">Abort</button>
+            <button onclick="hidePinSheet()" class="mt-6 font-display text-lg text-muted-text uppercase hover:text-primary-text transition-colors tracking-widest shrink-0">Abort</button>
         </div>
     </div>
     
     <!-- Internal Wallet Sheet -->
-    <div id="internalWalletSheet" class="fixed inset-0 bg-surface/80 z-[190] flex items-end justify-center transition-transform duration-300 translate-y-full">
-        <div class="bg-surface w-full max-w-md rounded-t-[3rem] border-t-4 border-card p-8 flex flex-col items-center">
-            <div class="w-16 h-2 bg-surface rounded-full mb-8"></div>
+    <div id="internalWalletSheet" class="fixed inset-0 bg-primary/80 z-[190] flex items-end justify-center transition-transform duration-300 translate-y-full">
+        <div class="bg-secondary w-full max-w-md rounded-t-[2rem] border-t-2 border-secondary p-6 flex flex-col items-center">
+            <div class="w-12 h-1 bg-primary rounded-full mb-6"></div>
             <div id="walletSheetContent" class="w-full">
                 <!-- Dynamically populated -->
             </div>
-            <button onclick="hideInternalWalletSheet()" class="mt-8 font-display text-xl text-muted-text uppercase italic tracking-widest hover:text-meme-pink transition-colors">Close</button>
+            <button onclick="hideInternalWalletSheet()" class="mt-6 font-display text-lg text-muted-text uppercase tracking-widest hover:text-soft-failed transition-colors">Close</button>
         </div>
     </div>
     
     <!-- Slippage Settings Modal -->
-    <div id="slippageModal" class="hidden fixed inset-0 bg-surface/95 z-[400] flex items-center justify-center p-4">
-        <div class="bg-surface border-2 border-card shadow-brutal w-full max-w-xs overflow-hidden">
-            <div class="p-3 border-b-2 border-card flex justify-between items-center bg-meme-yellow">
-                <h3 class="font-display text-xl text-black uppercase italic tracking-tighter">SLIPPAGE</h3>
-                <button onclick="window.addClass('slippageModal', 'hidden')" class="text-black hover:rotate-90 transition-transform"><i class="fas fa-times text-lg"></i></button>
+    <div id="slippageModal" class="hidden fixed inset-0 bg-primary/95 z-[400] flex items-center justify-center p-4">
+        <div class="bg-secondary border border-secondary shadow-minimal w-full max-w-[240px] overflow-hidden">
+            <div class="p-2.5 border-b border-secondary flex justify-between items-center bg-soft-warning">
+                <h3 class="font-display text-lg text-black uppercase">SLIPPAGE</h3>
+                <button onclick="window.addClass('slippageModal', 'hidden')" class="text-black hover:rotate-90 transition-transform"><i class="fas fa-times text-base"></i></button>
             </div>
-            <div class="p-4 space-y-4 bg-surface">
-                <div class="grid grid-cols-2 gap-2">
-                    <button onclick="setSlippage(0.1)" class="py-2 bg-surface border border-card text-primary-text font-display text-sm shadow-brutal-sm hover:shadow-none hover:bg-meme-green hover:text-black transition-all italic uppercase">0.1%</button>
-                    <button onclick="setSlippage(0.5)" class="py-2 bg-surface border border-card text-primary-text font-display text-sm shadow-brutal-sm hover:shadow-none hover:bg-meme-green hover:text-black transition-all italic uppercase">0.5%</button>
-                    <button onclick="setSlippage(1.0)" class="py-2 bg-surface border border-card text-primary-text font-display text-sm shadow-brutal-sm hover:shadow-none hover:bg-meme-green hover:text-black transition-all italic uppercase">1.0%</button>
-                    <button onclick="setSlippage(30.0)" class="py-2 bg-surface border border-card text-primary-text font-display text-sm shadow-brutal-sm hover:shadow-none hover:bg-meme-green hover:text-black transition-all italic uppercase">30.0%</button>
+            <div class="p-3 space-y-3 bg-primary">
+                <div class="grid grid-cols-2 gap-1.5">
+                    <button onclick="setSlippage(0.1)" class="py-1.5 bg-secondary border border-secondary text-primary-text font-display text-xs shadow-brutal-sm hover:shadow-none transition-all uppercase">0.1%</button>
+                    <button onclick="setSlippage(0.5)" class="py-1.5 bg-secondary border border-secondary text-primary-text font-display text-xs shadow-brutal-sm hover:shadow-none transition-all uppercase">0.5%</button>
+                    <button onclick="setSlippage(1.0)" class="py-1.5 bg-secondary border border-secondary text-primary-text font-display text-xs shadow-brutal-sm hover:shadow-none transition-all uppercase">1.0%</button>
+                    <button onclick="setSlippage(30.0)" class="py-1.5 bg-secondary border border-secondary text-primary-text font-display text-xs shadow-brutal-sm hover:shadow-none transition-all uppercase">30.0%</button>
                 </div>
                 <div class="relative">
-                    <input type="number" id="customSlippage" placeholder="CUSTOM" class="w-full pl-3 pr-8 py-3 bg-surface border-2 border-card text-primary-text font-display text-xl outline-none focus:border-meme-pink placeholder:text-muted-text italic uppercase" oninput="updateCustomSlippage()">
-                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-text font-display text-xl italic">%</span>
+                    <input type="number" id="customSlippage" placeholder="CUSTOM" class="w-full pl-3 pr-8 py-2 bg-secondary border border-secondary text-primary-text font-display text-lg outline-none focus:border-accent placeholder:text-muted-text uppercase" oninput="updateCustomSlippage()">
+                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-text font-display text-lg italic">%</span>
                 </div>
-                <button onclick="window.addClass('slippageModal', 'hidden')" class="w-full py-3 bg-meme-pink text-primary-text font-display text-2xl border-2 border-card shadow-brutal hover:shadow-none transition-all uppercase italic tracking-tighter">Save</button>
+                <button onclick="window.addClass('slippageModal', 'hidden')" class="w-full py-2.5 bg-accent text-black font-display text-xl border border-secondary shadow-brutal hover:shadow-none transition-all uppercase">Save</button>
             </div>
         </div>
     </div>
@@ -640,169 +666,165 @@
     <div id="notificationContainer" class="fixed top-16 right-4 z-[9999] flex flex-col gap-3"></div>
     
     <!-- Wallet Switcher Modal -->
-    <div id="walletSwitcherModal" class="hidden fixed inset-0 bg-surface/95 z-[60000] flex items-center justify-center p-4">
-        <div class="bg-surface border-2 border-card shadow-brutal w-full max-w-sm overflow-hidden">
-            <div class="p-4 border-b-2 border-card flex justify-between items-center bg-meme-green">
-                <h3 class="text-2xl font-display text-black italic uppercase tracking-tighter">Switch Wallet</h3>
-                <button onclick="window.WalletUI.hideWalletSwitcher()" class="text-black hover:scale-125 transition-transform"><i class="fas fa-times text-lg"></i></button>
+    <div id="walletSwitcherModal" class="hidden fixed inset-0 bg-primary/95 z-[60000] flex items-center justify-center p-4">
+        <div class="bg-secondary border border-secondary shadow-minimal w-full max-w-xs overflow-hidden">
+            <div class="p-3 border-b border-secondary flex justify-between items-center bg-soft-success">
+                <h3 class="text-xl font-display text-black uppercase tracking-tight">Switch Wallet</h3>
+                <button onclick="window.WalletUI.hideWalletSwitcher()" class="text-black hover:scale-110 transition-transform"><i class="fas fa-times text-base"></i></button>
             </div>
-            <div id="walletListContainer" class="p-4 space-y-3 bg-surface max-h-[60vh] overflow-y-auto no-scrollbar">
+            <div id="walletListContainer" class="p-3 space-y-2 bg-primary max-h-[50vh] overflow-y-auto no-scrollbar">
                 <!-- Populated by JS -->
             </div>
-            <div class="p-4 bg-card border-t-2 border-card">
-                <div class="flex flex-col gap-4 w-full">
-                    <button onclick="window.WalletUI.hideWalletSwitcher(); window.WalletUI.showCreateModal()" class="w-full py-4 bg-meme-green text-black font-display text-xl border-4 border-card shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">CREATE NEW WALLET</button>
-                    <button onclick="window.WalletUI.hideWalletSwitcher(); window.WalletUI.showImportModal()" class="w-full py-4 bg-surface border-4 border-card text-primary-text font-display text-xl shadow-brutal-cyan hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">IMPORT WALLET</button>
+            <div class="p-3 bg-secondary border-t border-secondary">
+                <div class="flex flex-col gap-3 w-full">
+                    <button onclick="window.WalletUI.hideWalletSwitcher(); window.WalletUI.showCreateModal()" class="w-full py-3 bg-soft-success text-black font-display text-lg border border-secondary shadow-brutal hover:shadow-none transition-all uppercase">CREATE NEW WALLET</button>
+                    <button onclick="window.WalletUI.hideWalletSwitcher(); window.WalletUI.showImportModal()" class="w-full py-3 bg-primary border border-secondary text-primary-text font-display text-lg shadow-minimal hover:shadow-none transition-all uppercase">IMPORT WALLET</button>
                 </div>
             </div>
         </div>
     </div>
     
     <!-- Transaction Confirmation Modal -->
-    <div id="txConfirmModal" class="hidden fixed inset-0 bg-surface/98 z-[70000] flex items-center justify-center p-4">
-        <div class="bg-surface border-2 border-card w-full max-w-xs rounded-[2rem] p-6 animate-slide-up shadow-brutal">
-            <div class="text-center mb-6">
-                <div class="w-14 h-14 bg-meme-green border-2 border-card shadow-brutal-sm flex items-center justify-center mx-auto mb-4 rotate-[-10deg]">
-                    <i class="fas fa-shield-check text-2xl text-black"></i>
+    <div id="txConfirmModal" class="hidden fixed inset-0 bg-primary/98 z-[70000] flex items-center justify-center p-4">
+        <div class="bg-secondary border border-secondary w-full max-w-[280px] rounded-[1.5rem] p-5 animate-slide-up shadow-minimal">
+            <div class="text-center mb-4">
+                <div class="w-10 h-10 bg-soft-success border border-secondary shadow-brutal-sm flex items-center justify-center mx-auto mb-3 rotate-[-5deg]">
+                    <i class="fas fa-shield-check text-xl text-black"></i>
                 </div>
-                <h3 class="text-2xl font-display uppercase italic tracking-widest mb-1 text-primary-text leading-none">CONFIRM</h3>
-                <p id="txConfirmMsg" class="font-mono text-[7px] text-secondary-text uppercase font-bold tracking-widest italic">VERIFY ACTION</p>
+                <h3 class="text-xl font-display uppercase tracking-tight mb-1 text-primary-text leading-none">CONFIRM</h3>
+                <p id="txConfirmMsg" class="font-mono text-[6px] text-muted-text uppercase font-bold tracking-widest">VERIFY ACTION</p>
             </div>
             
-            <div class="space-y-3 bg-surface border border-card p-4 mb-6 shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)]">
+            <div class="space-y-2.5 bg-primary border border-secondary p-3 mb-5 shadow-inner">
                 <div class="flex justify-between items-center gap-2">
-                    <span class="font-mono text-[7px] uppercase font-black text-muted-text italic shrink-0">ACTION</span>
-                    <span id="txConfirmAction" class="font-display text-base italic text-meme-cyan uppercase truncate text-right tracking-tighter">--</span>
+                    <span class="font-mono text-[6px] uppercase font-bold text-muted-text shrink-0">ACTION</span>
+                    <span id="txConfirmAction" class="font-display text-sm italic text-accent uppercase truncate text-right">--</span>
                 </div>
                 <div class="flex justify-between items-center">
-                    <span class="font-mono text-[7px] uppercase font-black text-muted-text italic">NET</span>
-                    <span id="txConfirmNetwork" class="font-display text-base text-meme-yellow italic tracking-tighter">PAXI NET</span>
+                    <span class="font-mono text-[6px] uppercase font-bold text-muted-text">NET</span>
+                    <span id="txConfirmNetwork" class="font-display text-sm text-soft-warning italic tracking-tight">PAXI NET</span>
                 </div>
-                <div id="txConfirmFeeRow" class="flex justify-between items-center pt-2 border-t border-meme-surface">
-                    <span class="font-mono text-[7px] uppercase font-black text-muted-text italic">FEE</span>
-                    <span id="txConfirmFee" class="font-mono text-[10px] font-bold text-meme-green">--</span>
+                <div id="txConfirmFeeRow" class="flex justify-between items-center pt-2 border-t border-secondary">
+                    <span class="font-mono text-[6px] uppercase font-bold text-muted-text">FEE</span>
+                    <span id="txConfirmFee" class="font-mono text-[9px] font-bold text-soft-success">--</span>
                 </div>
             </div>
             
-            <div class="grid grid-cols-2 gap-3">
-                <button id="txCancelBtn" class="py-3 bg-surface border-2 border-card text-muted-text font-display text-lg uppercase italic hover:text-primary-text transition-all shadow-brutal-sm hover:shadow-none tracking-tighter leading-none">Abort</button>
-                <button id="txConfirmBtn" class="py-3 bg-meme-green text-black font-display text-lg uppercase italic border-2 border-card shadow-brutal-sm hover:shadow-none tracking-tighter leading-none">CONFIRM</button>
+            <div class="grid grid-cols-2 gap-2">
+                <button id="txCancelBtn" class="py-2.5 bg-primary border border-secondary text-muted-text font-display text-base uppercase hover:text-primary-text transition-all shadow-brutal-sm hover:shadow-none">Abort</button>
+                <button id="txConfirmBtn" class="py-2.5 bg-soft-success text-black font-display text-base uppercase border border-secondary shadow-brutal-sm hover:shadow-none">CONFIRM</button>
             </div>
         </div>
     </div>
     
     <!-- Transaction Result Modal -->
-    <div id="txResultModal" class="hidden fixed inset-0 bg-surface/98 z-[80000] flex items-center justify-center p-4">
-        <div class="bg-surface border-2 border-card w-full max-w-sm rounded-[2rem] p-6 animate-slide-up overflow-y-auto max-h-[90vh] shadow-brutal no-scrollbar text-center">
-            <div id="txResultIcon" class="w-16 h-16 border-2 border-card shadow-brutal-sm flex items-center justify-center mx-auto mb-4 rotate-[8deg]">
+    <div id="txResultModal" class="hidden fixed inset-0 bg-primary/98 z-[80000] flex items-center justify-center p-4">
+        <div class="bg-secondary border border-secondary w-full max-w-xs rounded-[1.5rem] p-5 animate-slide-up overflow-y-auto max-h-[85vh] shadow-minimal no-scrollbar text-center">
+            <div id="txResultIcon" class="w-12 h-12 border border-secondary shadow-brutal-sm flex items-center justify-center mx-auto mb-3 rotate-[5deg]">
             </div>
-            <h3 id="txResultStatus" class="text-3xl font-display uppercase italic tracking-widest mb-1 leading-none">STATUS</h3>
-            <div id="txResultType" class="font-mono text-[7px] font-bold uppercase tracking-widest text-muted-text italic mb-6">LOG</div>
+            <h3 id="txResultStatus" class="text-2xl font-display uppercase tracking-tight mb-1 leading-none">STATUS</h3>
+            <div id="txResultType" class="font-mono text-[6px] font-bold uppercase tracking-widest text-muted-text italic mb-4">LOG</div>
             
-            <div class="space-y-3 bg-surface border border-card p-4 mb-6 shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)] text-left">
-                <div class="flex justify-between items-center border-b border-meme-surface pb-2 mb-2">
-                    <span class="font-mono text-[7px] uppercase font-black text-muted-text italic">TIME</span>
-                    <span id="txResultTime" class="font-mono text-[10px] text-meme-cyan uppercase">--:--</span>
+            <div class="space-y-2 bg-primary border border-secondary p-3 mb-5 shadow-inner text-left">
+                <div class="flex justify-between items-center border-b border-secondary pb-1.5 mb-1.5">
+                    <span class="font-mono text-[6px] uppercase font-bold text-muted-text">TIME</span>
+                    <span id="txResultTime" class="font-mono text-[9px] text-accent uppercase">--:--</span>
                 </div>
                 
-                <div class="space-y-2.5">
+                <div class="space-y-2">
                     <div class="flex justify-between items-center">
-                        <span class="font-mono text-[7px] uppercase font-bold text-muted-text italic">TYPE</span>
-                        <span id="logType" class="font-display text-base italic text-primary-text uppercase tracking-tighter">--</span>
+                        <span class="font-mono text-[6px] uppercase font-bold text-muted-text">TYPE</span>
+                        <span id="logType" class="font-display text-sm italic text-primary-text uppercase">--</span>
                     </div>
                     <div class="flex justify-between items-center gap-4">
-                        <span class="font-mono text-[7px] uppercase font-bold text-muted-text italic">ASSET</span>
-                        <span id="logAsset" class="font-display text-base text-meme-yellow uppercase text-right truncate tracking-tighter">--</span>
+                        <span class="font-mono text-[6px] uppercase font-bold text-muted-text">ASSET</span>
+                        <span id="logAsset" class="font-display text-sm text-soft-warning uppercase text-right truncate">--</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="font-mono text-[7px] uppercase font-bold text-muted-text italic">AMOUNT</span>
-                        <span id="logAmount" class="font-mono text-[10px] font-bold text-meme-green">0.00</span>
+                        <span class="font-mono text-[6px] uppercase font-bold text-muted-text">AMOUNT</span>
+                        <span id="logAmount" class="font-mono text-[9px] font-bold text-soft-success">0.00</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="font-mono text-[7px] uppercase font-bold text-muted-text italic">NETWORK</span>
-                        <span id="logNetwork" class="font-display text-base text-meme-yellow italic tracking-tighter">PAXI NET</span>
+                        <span class="font-mono text-[6px] uppercase font-bold text-muted-text">NETWORK</span>
+                        <span id="logNetwork" class="font-display text-sm text-soft-warning italic">PAXI NET</span>
                     </div>
-                    <div class="flex flex-col gap-1 mt-2">
-                        <span class="font-mono text-[7px] uppercase font-bold text-muted-text text-center italic">ADDRESS / RECIPIENT</span>
-                        <div class="flex items-center gap-2 p-2 bg-surface border border-gray-900">
-                            <code id="logAddress" class="font-mono text-[7px] text-secondary-text flex-1 truncate uppercase">--</code>
-                            <button id="copyAddressBtn" class="text-meme-cyan hover:scale-110 transition-all"><i class="fas fa-copy text-xs"></i></button>
-                        </div>
-                    </div>
-                    <div class="flex flex-col gap-1 mt-2">
-                        <span class="font-mono text-[7px] uppercase font-bold text-muted-text text-center italic">HASH</span>
-                        <div class="flex items-center gap-2 p-2 bg-surface border border-gray-900">
-                            <code id="logHash" class="font-mono text-[7px] text-muted-text flex-1 truncate uppercase">--</code>
-                            <button id="viewHashBtn" class="text-meme-green hover:scale-110 transition-all"><i class="fas fa-external-link-alt text-xs"></i></button>
+                    <div class="flex flex-col gap-1 mt-1.5">
+                        <span class="font-mono text-[6px] uppercase font-bold text-muted-text text-center">ADDRESS / RECIPIENT</span>
+                        <div class="flex items-center gap-1.5 p-1.5 bg-primary border border-secondary">
+                            <code id="logAddress" class="font-mono text-[6px] text-muted-text flex-1 truncate uppercase">--</code>
+                            <button id="copyAddressBtn" class="text-accent hover:scale-110 transition-all"><i class="fas fa-copy text-[10px]"></i></button>
                         </div>
                     </div>
-                    <div id="txExtraInfo" class="hidden flex flex-col gap-2 pt-2 border-t border-meme-surface mt-2">
+                    <div class="flex flex-col gap-1 mt-1.5">
+                        <span class="font-mono text-[6px] uppercase font-bold text-muted-text text-center">HASH</span>
+                        <div class="flex items-center gap-1.5 p-1.5 bg-primary border border-secondary">
+                            <code id="logHash" class="font-mono text-[6px] text-muted-text flex-1 truncate uppercase">--</code>
+                            <button id="viewHashBtn" class="text-soft-success hover:scale-110 transition-all"><i class="fas fa-external-link-alt text-[10px]"></i></button>
+                        </div>
+                    </div>
+                    <div id="txExtraInfo" class="hidden flex flex-col gap-1.5 pt-1.5 border-t border-secondary mt-1.5">
                         <div class="flex justify-between items-center">
-                            <span class="font-mono text-[7px] uppercase font-bold text-muted-text italic">HEIGHT</span>
-                            <span id="logHeight" class="font-mono text-[10px] text-primary-text">--</span>
+                            <span class="font-mono text-[6px] uppercase font-bold text-muted-text">HEIGHT</span>
+                            <span id="logHeight" class="font-mono text-[9px] text-primary-text">--</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span class="font-mono text-[7px] uppercase font-bold text-muted-text italic">GAS USED</span>
-                            <span id="logGasUsed" class="font-mono text-[10px] text-meme-cyan">--</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="font-mono text-[7px] uppercase font-bold text-muted-text italic">GAS WANTED</span>
-                            <span id="logGasWanted" class="font-mono text-[10px] text-secondary-text">--</span>
+                            <span class="font-mono text-[6px] uppercase font-bold text-muted-text">GAS USED</span>
+                            <span id="logGasUsed" class="font-mono text-[9px] text-accent">--</span>
                         </div>
                     </div>
                     <div id="logErrorContainer" class="hidden flex flex-col gap-1">
-                        <span class="font-mono text-[7px] uppercase font-bold text-meme-pink text-center italic">ERROR</span>
-                        <div class="p-3 bg-meme-pink/10 border border-meme-pink/30">
-                            <p id="logError" class="font-mono text-[7px] text-meme-pink leading-relaxed font-bold uppercase break-words italic">--</p>
+                        <span class="font-mono text-[6px] uppercase font-bold text-soft-failed text-center">ERROR</span>
+                        <div class="p-2 bg-soft-failed/10 border border-soft-failed/30">
+                            <p id="logError" class="font-mono text-[6px] text-soft-failed leading-tight font-bold uppercase break-words italic">--</p>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <button onclick="window.closeTxResult()" class="w-full py-4 bg-surface border-2 border-card text-primary-text font-display text-xl uppercase italic shadow-brutal hover:shadow-none hover:bg-surface transition-all tracking-tighter leading-none">CLOSE</button>
+            <button onclick="window.closeTxResult()" class="w-full py-3 bg-primary border border-secondary text-primary-text font-display text-lg uppercase shadow-minimal hover:bg-secondary transition-all">CLOSE</button>
         </div>
     </div>
     
     <!-- Global Feature Lock Overlay -->
-    <div id="featureLockOverlay" class="hidden fixed inset-0 bg-surface/60 z-[9999] backdrop-blur-md"></div>
+    <div id="featureLockOverlay" class="hidden fixed inset-0 bg-secondary/60 z-[9999] backdrop-blur-md"></div>
     
     <!-- Transaction Loader -->
-    <div id="txLoader" class="hidden fixed inset-0 bg-surface/90 z-[30000] flex items-center justify-center">
+    <div id="txLoader" class="hidden fixed inset-0 bg-secondary/90 z-[30000] flex items-center justify-center">
         <div class="text-center">
-            <div class="w-16 h-16 border-4 border-meme-green border-t-transparent rounded-full animate-spin mx-auto mb-6 shadow-brutal-green"></div>
+            <div class="w-16 h-16 border-4 border-meme-green border-t-transparent rounded-full animate-spin mx-auto mb-6 shadow-minimal"></div>
             <h3 class="text-3xl font-display uppercase italic tracking-tighter text-primary-text animate-glitch leading-none">SENDING...</h3>
-            <p class="font-mono text-[8px] text-meme-green font-bold uppercase mt-3 tracking-widest italic">WRITING TO BLOCKS</p>
+            <p class="font-mono text-[8px] text-soft-success font-bold uppercase mt-3 tracking-widest italic">WRITING TO BLOCKS</p>
         </div>
     </div>
     
-    <div id="sidebarOverlay" class="hidden fixed inset-0 bg-surface/80 z-[105] lg:hidden" onclick="window.closeAllSidebars()"></div>
-    <div id="sheetOverlay" class="hidden fixed inset-0 bg-surface/60 z-[180] backdrop-blur-sm transition-opacity duration-300" onclick="hideInternalWalletSheet()"></div>
+    <div id="sidebarOverlay" class="hidden fixed inset-0 bg-secondary/80 z-[105] lg:hidden" onclick="window.closeAllSidebars()"></div>
+    <div id="sheetOverlay" class="hidden fixed inset-0 bg-secondary/60 z-[180] backdrop-blur-sm transition-opacity duration-300" onclick="hideInternalWalletSheet()"></div>
     
     <!-- AI Modal -->
-    <div id="aiModal" class="hidden fixed inset-0 bg-surface/95 z-[120] flex items-center justify-center p-4">
-        <div class="bg-surface border-2 border-card shadow-brutal w-full max-w-xl max-h-[80vh] overflow-y-auto no-scrollbar relative">
-            <div class="p-4 border-b-2 border-card flex justify-between items-center sticky top-0 bg-surface z-10">
-                <h3 class="text-2xl font-display text-meme-green italic uppercase tracking-tighter"><i class="fas fa-brain mr-3 text-lg"></i>AI ORACLE</h3>
-                <button onclick="hideAI()" class="text-meme-pink hover:scale-125 transition-transform"><i class="fas fa-times text-xl"></i></button>
+    <div id="aiModal" class="hidden fixed inset-0 bg-primary/95 z-[120] flex items-center justify-center p-4">
+        <div class="bg-secondary border border-secondary shadow-minimal w-full max-w-lg max-h-[70vh] overflow-y-auto no-scrollbar relative">
+            <div class="p-3 border-b border-secondary flex justify-between items-center sticky top-0 bg-secondary z-10">
+                <h3 class="text-xl font-display text-soft-success uppercase"><i class="fas fa-brain mr-2 text-base"></i>AI ORACLE</h3>
+                <button onclick="hideAI()" class="text-soft-failed hover:scale-110 transition-transform"><i class="fas fa-times text-lg"></i></button>
             </div>
-            <div id="aiContent" class="p-6 font-mono text-[10px] text-secondary-text leading-relaxed uppercase tracking-wider italic"></div>
+            <div id="aiContent" class="p-4 font-mono text-[9px] text-muted-text leading-relaxed uppercase tracking-wide"></div>
         </div>
     </div>
     
     <!-- Console Log Modal -->
-    <div id="consoleModal" class="hidden fixed inset-0 bg-surface/98 z-[9999] flex items-center justify-center p-4">
-        <div class="bg-surface border-2 border-card w-full max-w-4xl h-[70vh] flex flex-col overflow-hidden shadow-brutal">
-            <div class="p-3 border-b-2 border-card flex justify-between items-center bg-surface">
-                <div class="flex items-center gap-3">
-                    <i class="fas fa-terminal text-meme-green text-lg"></i>
-                    <span class="font-display text-lg text-primary-text uppercase italic tracking-widest leading-none">SYSTEM CONSOLE</span>
+    <div id="consoleModal" class="hidden fixed inset-0 bg-primary/98 z-[9999] flex items-center justify-center p-4">
+        <div class="bg-secondary border border-secondary w-full max-w-3xl h-[60vh] flex flex-col overflow-hidden shadow-minimal">
+            <div class="p-2.5 border-b border-secondary flex justify-between items-center bg-secondary">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-terminal text-soft-success text-base"></i>
+                    <span class="font-display text-base text-primary-text uppercase">SYSTEM CONSOLE</span>
                 </div>
-                <button onclick="toggleConsoleModal()" class="text-meme-pink hover:scale-125 transition-transform"><i class="fas fa-times text-lg"></i></button>
+                <button onclick="toggleConsoleModal()" class="text-soft-failed hover:scale-110 transition-transform"><i class="fas fa-times text-base"></i></button>
             </div>
-            <div id="consoleContent" class="flex-1 overflow-y-auto p-4 font-mono text-[8px] text-meme-green bg-surface no-scrollbar selection:bg-meme-green selection:text-black italic"></div>
-            <div class="p-3 border-t-2 border-card bg-card flex justify-between items-center">
-                <span id="consoleStats" class="font-mono text-[8px] text-muted-text font-bold uppercase tracking-widest italic">0 LOGS</span>
-                <button onclick="clearConsoleLogs()" class="font-display text-base text-meme-pink hover:text-primary-text transition-colors uppercase italic border-b border-meme-pink tracking-tighter leading-none">PURGE</button>
+            <div id="consoleContent" class="flex-1 overflow-y-auto p-3 font-mono text-[7px] text-soft-success bg-primary no-scrollbar selection:bg-soft-success selection:text-black"></div>
+            <div class="p-2 border-t border-secondary bg-secondary flex justify-between items-center">
+                <span id="consoleStats" class="font-mono text-[7px] text-muted-text font-bold uppercase tracking-widest">0 LOGS</span>
+                <button onclick="clearConsoleLogs()" class="font-display text-sm text-soft-failed hover:text-primary-text transition-colors uppercase border-b border-soft-failed leading-none">PURGE</button>
             </div>
         </div>
     </div>
