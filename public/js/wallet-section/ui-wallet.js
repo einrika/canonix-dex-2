@@ -979,7 +979,7 @@ Object.assign(window.WalletUI, {
         // Always fetch fresh PAXI balance (no cache to avoid stale data)
         let paxiBalance = 0;
         try {
-            const response = await window.smartFetch(`${window.APP_CONFIG.LCD}/cosmos/bank/v1beta1/balances/${activeWallet.address}`);
+            const response = await window.fetchDirect(`${window.APP_CONFIG.BACKEND_API}/api/paxi-balance?address=${activeWallet.address}`);
             const balances = response.balances || [];
             const paxiBal = balances.find(b => b.denom === 'upaxi');
             paxiBalance = paxiBal ? parseInt(paxiBal.amount) / 1000000 : 0;
@@ -1686,8 +1686,8 @@ window.updateBalances = async function() {
 
     try {
         // Always fetch fresh PAXI balance (no cache)
-        const response = await window.smartFetch(
-            `${window.APP_CONFIG.LCD}/cosmos/bank/v1beta1/balances/${walletAddress}`
+        const response = await window.fetchDirect(
+            `${window.APP_CONFIG.BACKEND_API}/api/paxi-balance?address=${walletAddress}`
         );
         const balances = response.balances || [];
         const paxiBalance = balances.find(b => b.denom === 'upaxi');
@@ -1751,8 +1751,8 @@ window.updateLPBalances = async function() {
     try {
         // 1. Handle Wallet Balances if connected
         if (window.wallet) {
-            const response = await window.smartFetch(
-                `${window.APP_CONFIG.LCD}/cosmos/bank/v1beta1/balances/${window.wallet.address}`
+            const response = await window.fetchDirect(
+                `${window.APP_CONFIG.BACKEND_API}/api/paxi-balance?address=${window.wallet.address}`
             );
             const balances = response.balances || [];
             const paxiBalance = balances.find(b => b.denom === 'upaxi');
@@ -1766,8 +1766,8 @@ window.updateLPBalances = async function() {
             window.lpBalances.tokenRaw = tokenBalance.toString();
 
             try {
-                const posData = await window.smartFetch(
-                    `${window.APP_CONFIG.LCD}/paxi/swap/position/${window.wallet.address}/${window.currentPRC20}`
+                const posData = await window.fetchDirect(
+                    `${window.APP_CONFIG.BACKEND_API}/api/lp-position?address=${window.wallet.address}&token=${window.currentPRC20}`
                 );
                 const lpAmount = posData.position?.lp_amount || '0';
                 window.lpBalances.lpTokens = parseFloat(lpAmount) / 1000000;

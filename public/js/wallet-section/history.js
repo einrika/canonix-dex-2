@@ -193,17 +193,26 @@ window.openTxDetailModal = async function(hash, txType) {
     content.innerHTML = `
         <div class="text-center py-8">
             <div class="w-6 h-6 border-4 border-meme-green border-t-transparent rounded-full animate-spin mx-auto"></div>
+            <p class="text-[10px] text-gray-500 mt-2 font-mono uppercase">Fetching data...</p>
         </div>
     `;
     
     try {
         const detail = await window.fetchTxDetail(hash);
-        if (!detail || !detail.tx_response) {
-            content.innerHTML = `<div class="text-red-400 text-center">Failed</div>`;
+        console.log('TX Detail received:', detail);
+
+        if (!detail) {
+            content.innerHTML = `<div class="text-red-400 text-center uppercase font-bold">No data received</div>`;
             return;
         }
+
+        // Handle both wrapped and raw responses
+        const tx = detail.tx_response || detail;
         
-        const tx = detail.tx_response;
+        if (!tx || (!tx.txhash && !tx.hash)) {
+            content.innerHTML = `<div class="text-red-400 text-center uppercase font-bold">Invalid transaction data</div>`;
+            return;
+        }
         const meta = getTxMeta(txType);
         const time = tx.timestamp ? new Date(tx.timestamp).toLocaleString() : "-";
         
@@ -221,21 +230,21 @@ window.openTxDetailModal = async function(hash, txType) {
 
                     <div>
                         <div class="text-gray-400 text-[10px]">HASH</div>
-                        <a href="https://explorer.paxinet.io/txs/${tx.txhash}"
+                        <a href="https://explorer.paxinet.io/txs/${tx.txhash || tx.hash}"
                            target="_blank"
                            class="font-mono break-all text-blue-400 hover:underline">
-                           ${tx.txhash}
+                           ${tx.txhash || tx.hash}
                         </a>
                     </div>
 
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <div class="text-gray-400 text-[10px]">BLOCK</div>
-                            <div class="font-mono">${tx.height}</div>
+                            <div class="font-mono">${tx.height || tx.block || "-"}</div>
                         </div>
                         <div>
                             <div class="text-gray-400 text-[10px]">GAS USED</div>
-                            <div class="font-mono">${tx.gas_used}</div>
+                            <div class="font-mono">${tx.gas_used || tx.gasUsed || "-"}</div>
                         </div>
                         <div>
                             <div class="text-gray-400 text-[10px]">TIME</div>
@@ -253,8 +262,9 @@ window.openTxDetailModal = async function(hash, txType) {
 
             </div>
         `;
-    } catch {
-        content.innerHTML = `<div class="text-red-400 text-center">Failed</div>`;
+    } catch (e) {
+        console.error('Error opening tx modal:', e);
+        content.innerHTML = `<div class="text-red-400 text-center uppercase font-bold">Error: ${e.message}</div>`;
     }
 };
 

@@ -3,7 +3,7 @@
 // ============================================
 
 window.APP_CONFIG = {
-    // Direct API endpoints (no proxy needed)
+    // Direct API endpoints (no proxy needed) - Fallbacks
     RPC: 'https://mainnet-rpc.paxinet.io',
     LCD: 'https://mainnet-lcd.paxinet.io',
     EXPLORER_API: 'https://explorer.paxinet.io/api',
@@ -11,7 +11,7 @@ window.APP_CONFIG = {
 
     // Backend API - MUST BE FULL URL (not relative path)
     // Browser will auto-replace relative paths with current domain
-    BACKEND_API: 'https://stalwart-ganache-32b226.netlify.app',
+    BACKEND_API: window.location.origin,
     
     // Proxy servers for CORS bypass (when needed)
     PROXIES: [

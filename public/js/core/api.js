@@ -7,34 +7,21 @@ window.paxiPriceUSD = 0.00;
 window.lastPaxiFetch = 0;
 
 window.fetchPaxiPrice = async function() {
-  // Throttle to once per 30 seconds
-  if (Date.now() - window.lastPaxiFetch < 30000 && window.paxiPriceUSD > 0) {
-    return window.paxiPriceUSD;
-  }
-
   try {
-    const response = await fetch(
-      "https://api.coingecko.com/api/v3/simple/price?ids=paxi-network&vs_currencies=usd"
-    );
+    const data = await window.fetchDirect(`${window.APP_CONFIG.BACKEND_API}/api/paxi-price`);
     
-    if (!response.ok) throw new Error("Failed to fetch price");
-    
-    const data = await response.json();
-    const price = data["paxi-network"]?.usd;
-    
-    if (typeof price !== "number") throw new Error("Invalid price data");
+    if (typeof data !== "number") throw new Error("Invalid price data");
 
-    window.paxiPriceUSD = price;
+    window.paxiPriceUSD = data;
     window.lastPaxiFetch = Date.now();
 
     // Dispatch event to notify UI of price change
-    window.dispatchEvent(new CustomEvent('paxi_price_updated', { detail: price }));
+    window.dispatchEvent(new CustomEvent('paxi_price_updated', { detail: data }));
 
-    return price;
+    return data;
     
   } catch (e) {
-    console.error("CoinGecko fetch error:", e);
-    // If we have a cached price, return it even if old
+    console.error("Backend PAXI price fetch error:", e);
     return window.paxiPriceUSD || 0.00;
   }
 };
@@ -45,8 +32,8 @@ window.getPRC20Balance = async function(address, contract) {
     const query = { balance: { address } };
     const queryB64 = btoa(JSON.stringify(query));
     
-    const data = await window.smartFetch(
-      `${window.APP_CONFIG.LCD}/cosmwasm/wasm/v1/contract/${contract}/smart/${queryB64}`
+    const data = await window.fetchDirect(
+      `${window.APP_CONFIG.BACKEND_API}/api/smart-query?contract=${contract}&query=${queryB64}`
     );
     
     return parseInt(data.data.balance || 0);
@@ -60,7 +47,7 @@ window.fetchPoolData = async function() {
   if (!window.currentPRC20) return;
   
   try {
-    const data = await window.smartFetch(`${window.APP_CONFIG.LCD}/paxi/swap/pool/${window.currentPRC20}`);
+    const data = await window.fetchDirect(`${window.APP_CONFIG.BACKEND_API}/api/pool?address=${window.currentPRC20}`);
     const pool = data.pool || data;
 
     // Standard Paxi Network Price Calculation
@@ -122,7 +109,7 @@ window.loadTransactionHistory = async function(address, page = 1) {
 
 window.fetchTxDetail = async function(hash) {
   try {
-    const url = `${window.APP_CONFIG.LCD}/cosmos/tx/v1beta1/txs/${hash}`;
+    const url = `${window.APP_CONFIG.BACKEND_API}/api/tx-detail?hash=${hash}`;
     return await window.fetchDirect(url);
   } catch (e) {
     console.error('Failed to fetch tx detail:', e);
@@ -152,7 +139,7 @@ window.fetchGasEstimate = async function(msgCount = 1) {
 window.loadWalletTokens = async function(address) {
   if (!address) return [];
   try {
-    const url = `${window.APP_CONFIG.EXPLORER_API}/prc20/my_contract_accounts?address=${address}&page=0`;
+    const url = `${window.APP_CONFIG.BACKEND_API}/api/wallet-tokens?address=${address}`;
     const data = await window.fetchDirect(url);
 
     if (data && data.accounts) {
@@ -177,28 +164,28 @@ window.fetchUserLPPositions = async function(userAddress) {
   if (!userAddress) return [];
 
   try {
-    // 1. Fetch all pools from LCD
-    const data = await window.smartFetch(`${window.APP_CONFIG.LCD}/paxi/swap/pools`);
+    // 1. Fetch all pools from LCD via Backend
+    const data = await window.fetchDirect(`${window.APP_CONFIG.BACKEND_API}/api/pools`);
     const pools = data.pools || [];
 
-    // 2. Fetch user's token list to narrow down potential positions
-    const accountsData = await window.smartFetch(
-      `${window.APP_CONFIG.EXPLORER_API}/prc20/my_contract_accounts?address=${userAddress}&page=0`
+    // 2. Fetch user's token list to narrow down potential positions via Backend
+    const accountsData = await window.fetchDirect(
+      `${window.APP_CONFIG.BACKEND_API}/api/wallet-tokens?address=${userAddress}`
     );
     const userTokens = (accountsData.accounts || []).map(a => a.contract.contract_address);
 
     // 3. Filter pools where user might have assets
     const relevantPools = pools.filter(p => userTokens.includes(p.prc20));
 
-    // 4. Batch fetch positions from LCD
+    // 4. Batch fetch positions from Backend
     const positions = [];
     const batchSize = 5;
     for (let i = 0; i < relevantPools.length; i += batchSize) {
       const batch = relevantPools.slice(i, i + batchSize);
       const results = await Promise.all(batch.map(async pool => {
         try {
-          const pos = await window.smartFetch(
-            `${window.APP_CONFIG.LCD}/paxi/swap/position/${userAddress}/${pool.prc20}`
+          const pos = await window.fetchDirect(
+            `${window.APP_CONFIG.BACKEND_API}/api/lp-position?address=${userAddress}&token=${pool.prc20}`
           );
           if (pos.position && parseFloat(pos.position.lp_amount) > 0) {
             return { pool, position: pos.position };

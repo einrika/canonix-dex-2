@@ -10,6 +10,7 @@ window.currentPriceData = [];
 window.currentTimeframe = localStorage.getItem('chartTimeframe') || 'realtime';
 window.refreshCountdown = 10;
 window.countdownInterval = null;
+window.socket = null;
 
 window.initChart = function() {
     const container = document.getElementById('priceChart');
@@ -190,6 +191,10 @@ window.toggleMA = function(period) {
 window.setTimeframe = function(timeframe, btn) {
     if (!window.currentPRC20) return;
 
+    if (window.currentTimeframe === 'realtime' && timeframe !== 'realtime' && window.socket) {
+        window.socket.emit('unsubscribe', window.currentPRC20);
+    }
+
     window.currentTimeframe = timeframe;
     localStorage.setItem('chartTimeframe', timeframe);
 
@@ -320,24 +325,80 @@ window.loadPriceHistory = async function(contractAddress, timeframe) {
 
 window.chartUpdateInterval = null;
 
+window.initSocket = function() {
+    if (window.socket) return;
+
+    // Connect to the same host
+    window.socket = io();
+
+    window.socket.on('connect', () => {
+        window.log('WebSocket Connected', 'success');
+        if (window.currentPRC20 && window.currentTimeframe === 'realtime') {
+            window.socket.emit('subscribe', window.currentPRC20);
+        }
+    });
+
+    window.socket.on('price_update', (data) => {
+        if (window.currentTimeframe !== 'realtime') return;
+        if (data.address !== window.currentPRC20) return;
+
+        window.updateLivePrice(data);
+    });
+
+    window.socket.on('disconnect', () => {
+        window.log('WebSocket Disconnected', 'warn');
+    });
+};
+
+window.updateLivePrice = function(data) {
+    if (!window.lineSeries || !data.price) return;
+
+    const timestamp = Math.floor(data.timestamp / 1000);
+    const price = parseFloat(data.price);
+
+    // Update line series
+    window.lineSeries.update({
+        time: timestamp,
+        value: price
+    });
+
+    // Update MA if visible
+    // To update MA properly we might need to recalculate last few points,
+    // but for simple realtime update, we can just append if possible.
+    // Lightweight charts update() for line series handles this.
+
+    // Update UI labels
+    window.setText('currentPrice', price.toFixed(8) + ' PAXI');
+
+    const change = data.price_change !== undefined ? data.price_change * 100 : 0;
+    const changeEl = document.getElementById('priceChange');
+    if (changeEl) {
+        changeEl.textContent = `${change >= 0 ? '+' : ''}${change.toFixed(2)}%`;
+        changeEl.className = `text-[10px] font-bold ${change >= 0 ? 'text-up' : 'text-down'}`;
+    }
+
+    const statusEl = document.getElementById('chartStatus');
+    if (statusEl) {
+        window.setText(statusEl, `Live • WebSocket Active`);
+    }
+};
+
 window.startRealtimeUpdates = function() {
     if (window.countdownInterval) clearInterval(window.countdownInterval);
     if (window.chartUpdateInterval) clearInterval(window.chartUpdateInterval);
 
     if (window.currentTimeframe === 'realtime') {
-        window.refreshCountdown = 10;
-        window.countdownInterval = setInterval(() => {
-            window.refreshCountdown--;
-            const statusEl = document.getElementById('chartStatus');
-            if (statusEl) {
-                window.setText(statusEl, `Live • Realtime (${window.refreshCountdown}s)`);
-            }
+        // Switch to WebSocket for realtime
+        if (!window.socket) window.initSocket();
 
-            if (window.refreshCountdown <= 0) {
-                window.refreshCountdown = 10;
-                if (window.currentPRC20) window.loadPriceHistory(window.currentPRC20, 'realtime');
-            }
-        }, 1000);
+        if (window.socket && window.socket.connected) {
+            window.socket.emit('subscribe', window.currentPRC20);
+        }
+
+        const statusEl = document.getElementById('chartStatus');
+        if (statusEl) {
+            window.setText(statusEl, `Live • WebSocket Active`);
+        }
     } else {
         // Regular update for other timeframes (e.g., every 30s)
         window.chartUpdateInterval = setInterval(() => {

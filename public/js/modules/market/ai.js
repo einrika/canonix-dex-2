@@ -87,7 +87,7 @@ window.findSupportResistance = function(prices) {
 // ===== AI API CALLS =====
 window.callServerAI = async function(data) {
     try {
-        const response = await fetch('/api/ai_analysis', {
+        const response = await fetch(`${window.APP_CONFIG.BACKEND_API}/api/ai_analysis`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)

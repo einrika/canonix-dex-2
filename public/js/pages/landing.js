@@ -37,7 +37,7 @@ async function loadMarketData(type = 'all') {
         window.marketPage = 0;
         window.marketTokens = []; // ✅ FIX: Reset array saat load awal
 
-        const url = `${window.APP_CONFIG.EXPLORER_API}/prc20/contracts?page=${window.marketPage}&type=${type}&_t=${Date.now()}`;
+        const url = `${window.APP_CONFIG.BACKEND_API}/api/token-list?page=${window.marketPage}&type=${type}`;
         const data = await window.fetchDirect(url);
 
         if (data && data.contracts) {
@@ -133,8 +133,8 @@ window.filterMarket = function() {
             // Show loading state
             grid.innerHTML = '<div class="col-span-full text-center py-20 text-gray-600 font-bold uppercase tracking-widest"><i class="fas fa-circle-notch fa-spin mr-2"></i> Searching...</div>';
 
-            const url = `https://explorer.paxinet.io/api/prc20/search?name=${encodeURIComponent(query)}`;
-            const data = await window.smartFetch(url);
+            const url = `${window.APP_CONFIG.BACKEND_API}/api/token-list?query=${encodeURIComponent(query)}`;
+            const data = await window.fetchDirect(url);
 
             if (data && data.contracts) {
                 window.marketTokens = data.contracts.map(c => window.processTokenDetail(c.contract_address, c));
@@ -168,7 +168,7 @@ window.loadMoreMarket = async function() {
     try {
         const nextPage = window.marketPage + 1;
         const type = (window.marketFilter === 'nonpump') ? 'nonpump' : (window.marketFilter === 'pumping') ? 'pumping' : 'all';
-        const url = `${window.APP_CONFIG.EXPLORER_API}/prc20/contracts?page=${nextPage}&type=${type}&_t=${Date.now()}`;
+        const url = `${window.APP_CONFIG.BACKEND_API}/api/token-list?page=${nextPage}&type=${type}`;
         const data = await window.fetchDirect(url);
 
         if (data && data.contracts && data.contracts.length > 0) {
@@ -324,7 +324,7 @@ async function initGlobalMarketAI() {
 
     try {
         // 1. Get the top token by volume for real-time analysis
-        const url = `${window.APP_CONFIG.EXPLORER_API}/prc20/contracts?page=0&_t=${Date.now()}`;
+        const url = `${window.APP_CONFIG.BACKEND_API}/api/token-list?page=0`;
         const data = await window.fetchDirect(url);
 
         if (!data || !data.contracts || data.contracts.length === 0) {

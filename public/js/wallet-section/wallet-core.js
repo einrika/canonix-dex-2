@@ -417,10 +417,10 @@ class AssetManager {
 
     async fetchUserAssets(address) {
         try {
-            // Use smartFetch - will auto-fallback to proxy if CORS error
+            // Use Backend API
             const [data, paxiRes] = await Promise.all([
-                window.smartFetch(`https://explorer.paxinet.io/api/prc20/my_contract_accounts?address=${address}`),
-                window.smartFetch(`${window.APP_CONFIG.LCD}/cosmos/bank/v1beta1/balances/${address}`).catch(() => null)
+                window.fetchDirect(`${window.APP_CONFIG.BACKEND_API}/api/wallet-tokens?address=${address}`),
+                window.fetchDirect(`${window.APP_CONFIG.BACKEND_API}/api/paxi-balance?address=${address}`).catch(() => null)
             ]);
             
             if (paxiRes && paxiRes.balances) {
@@ -479,11 +479,10 @@ class AssetManager {
 
     async updateLPAssets(userAddress) {
         try {
-            // 1. Fetch all pools from LCD (direct on-chain truth)
-            // 2. Fetch user's token accounts from explorer
+            // Use Backend API
             const [poolData, userData] = await Promise.all([
-                window.smartFetch(`${window.APP_CONFIG.LCD}/paxi/swap/all_pools`).catch(() => null),
-                window.smartFetch(`https://explorer.paxinet.io/api/prc20/my_contract_accounts?address=${userAddress}`).catch(() => null)
+                window.fetchDirect(`${window.APP_CONFIG.BACKEND_API}/api/all-pools`).catch(() => null),
+                window.fetchDirect(`${window.APP_CONFIG.BACKEND_API}/api/wallet-tokens?address=${userAddress}`).catch(() => null)
             ]);
 
             if (!poolData || !poolData.pools || !userData || !userData.accounts) {
@@ -513,7 +512,7 @@ class AssetManager {
                     const pool = poolMap.get(contract.contract_address);
 
                     try {
-                        const posRes = await window.smartFetch(`${window.APP_CONFIG.LCD}/paxi/swap/position/${userAddress}/${contract.contract_address}`);
+                        const posRes = await window.fetchDirect(`${window.APP_CONFIG.BACKEND_API}/api/lp-position?address=${userAddress}&token=${contract.contract_address}`);
                         
                         // Handle both possible response formats
                         const lpData = posRes?.position || posRes;
@@ -581,8 +580,8 @@ window.simulateGas = async function(messages, memo = "", options = {}) {
 
         const { type = 'default' } = options;
 
-        // 1. Prepare dummy signer data for simulation
-        const accountRes = await window.fetchDirect(`${window.APP_CONFIG.LCD}/cosmos/auth/v1beta1/accounts/${window.wallet.address}`);
+        // 1. Prepare dummy signer data for simulation via Backend
+        const accountRes = await window.fetchDirect(`${window.APP_CONFIG.BACKEND_API}/api/account?address=${window.wallet.address}`);
         const account = accountRes.account.base_account || accountRes.account;
         const sequence = account.sequence;
 
@@ -780,10 +779,10 @@ window.buildAndSendTx = async function(messages, memo = "", options = {}) {
             }
         }
 
-        // 2. Fetch Chain ID & Account Info
+        // 2. Fetch Chain ID & Account Info via Backend
         const [chainRes, accountRes, gasEstimate] = await Promise.all([
-            window.fetchDirect(`${endpoints.rpc}/status`),
-            window.fetchDirect(`${endpoints.lcd}/cosmos/auth/v1beta1/accounts/${window.wallet.address}`),
+            window.fetchDirect(`${window.APP_CONFIG.BACKEND_API}/api/rpc-status`),
+            window.fetchDirect(`${window.APP_CONFIG.BACKEND_API}/api/account?address=${window.wallet.address}`),
             window.simulateGas(messages, memo, { type }) // Re-simulate to be sure
         ]);
 
@@ -901,9 +900,9 @@ window.buildAndSendTx = async function(messages, memo = "", options = {}) {
         const txBytes = PaxiCosmJS.TxRaw.encode(txRaw).finish();
         const txBytesBase64 = btoa(String.fromCharCode(...txBytes));
 
-        const broadcastRes = await window.fetchDirect(`${window.APP_CONFIG.LCD}/cosmos/tx/v1beta1/txs`, {
+        const broadcastRes = await window.fetchDirect(`${window.APP_CONFIG.BACKEND_API}/api/broadcast`, {
             method: 'POST',
-            body: JSON.stringify({ tx_bytes: txBytesBase64, mode: 'BROADCAST_MODE_SYNC' })
+            body: JSON.stringify({ tx_bytes: txBytesBase64 })
         });
 
         if (!broadcastRes.tx_response || broadcastRes.tx_response.code !== 0) {
@@ -924,8 +923,8 @@ window.buildAndSendTx = async function(messages, memo = "", options = {}) {
 
         while (attempts < maxAttempts) {
             try {
-                // Use Tendermint RPC for detailed result as requested
-                const pollRes = await window.fetchDirect(`${endpoints.rpc}/tx?hash=0x${hash}`);
+                // Use Backend API for polling
+                const pollRes = await window.fetchDirect(`${window.APP_CONFIG.BACKEND_API}/api/rpc-tx?hash=0x${hash}`);
                 if (pollRes && pollRes.result) {
                     result = pollRes.result;
                     break;

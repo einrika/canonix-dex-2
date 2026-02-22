@@ -681,12 +681,14 @@ window.updateTokenCard = function(address) {
 
 // ===== SHOW TRANSACTION DETAIL MODAL =====
 window.showTransactionDetailModal = async function(hash) {
-        const data = await window.fetchTxDetail(hash);
-    if (!data || !data.tx_response) {
-                return;
-    }
+    const data = await window.fetchTxDetail(hash);
+    console.log('TX Detail for Modal:', data);
 
-    const tx = data.tx_response;
+    if (!data) return;
+
+    // Handle both wrapped and raw responses
+    const tx = data.tx_response || data;
+    if (!tx || (!tx.txhash && !tx.hash)) return;
     const body = data.tx.body;
     const timeStr = new Date(tx.timestamp).toLocaleString();
     const statusColor = tx.code === 0 ? 'text-up' : 'text-down';
@@ -718,7 +720,7 @@ window.showTransactionDetailModal = async function(hash) {
                     </div>
                     <div class="p-4 bg-bg rounded-2xl border border-border">
                         <div class="text-[9px] text-gray-500 uppercase font-black mb-1">Block Height</div>
-                        <div class="text-sm font-black text-white">${tx.height}</div>
+                    <div class="text-sm font-black text-white">${tx.height || tx.block || "-"}</div>
                     </div>
                 </div>
 
@@ -742,7 +744,7 @@ window.showTransactionDetailModal = async function(hash) {
 
                 <div class="p-4 bg-bg rounded-2xl border border-border">
                     <div class="text-[9px] text-gray-500 uppercase font-black mb-1">Gas Used / Wanted</div>
-                    <div class="text-xs text-white">${tx.gas_used} / ${tx.gas_wanted}</div>
+                    <div class="text-xs text-white">${tx.gas_used || tx.gasUsed || "-"} / ${tx.gas_wanted || tx.gasWanted || "-"}</div>
                 </div>
 
                 ${tx.raw_log && tx.code !== 0 ? `

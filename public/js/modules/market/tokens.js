@@ -87,7 +87,7 @@ window.loadTokensOptimized = async function() {
 // ===== LOAD ALL TOKEN ADDRESSES =====
 window.loadAllTokenAddresses = async function() {
     try {
-        const url0 = `${window.APP_CONFIG.EXPLORER_API}/prc20/contracts?page=0&_t=${Date.now()}`;
+        const url0 = `${window.APP_CONFIG.BACKEND_API}/api/token-list?page=0`;
         const data0 = await window.fetchDirect(url0);
         
         if (!data0 || !data0.contracts) {
@@ -139,7 +139,7 @@ window.startTokenListPolling = function() {
 
         try {
             // We only refresh page 0 for price updates
-            const url = `${window.APP_CONFIG.EXPLORER_API}/prc20/contracts?page=0&_t=${Date.now()}`;
+                const url = `${window.APP_CONFIG.BACKEND_API}/api/token-list?page=0`;
             const data = await window.fetchDirect(url);
 
             if (data && data.contracts) {
@@ -179,7 +179,7 @@ window.fetchNextContractPage = async function() {
 
     try {
         const targetPage = window.currentContractPage + 1;
-        const url = `${window.APP_CONFIG.EXPLORER_API}/prc20/contracts?page=${targetPage}&_t=${Date.now()}`;
+        const url = `${window.APP_CONFIG.BACKEND_API}/api/token-list?page=${targetPage}`;
         const data = await window.fetchDirect(url);
 
         if (!data || !data.contracts || data.contracts.length === 0) {
@@ -214,7 +214,7 @@ window.fetchNextContractPage = async function() {
 // ===== LOAD TOKEN DETAIL =====
 window.loadTokenDetail = async function(contractAddress) {
     try {
-        const url = `${window.APP_CONFIG.EXPLORER_API}/prc20/contract?address=${contractAddress}&_t=${Date.now()}`;
+        const url = `${window.APP_CONFIG.BACKEND_API}/api/token-detail?address=${contractAddress}`;
         const data = await window.fetchDirect(url);
         
         if (data && data.contract) {
@@ -293,8 +293,7 @@ window.setSort = async function(sortType, event) {
 // ===== LOAD NON-PUMP TOKENS =====
 window.loadNonPumpTokens = async function() {
     try {
-        // Use EXPLORER_API for consistency with index.html (verified working)
-        const url = `${window.APP_CONFIG.EXPLORER_API}/prc20/contracts?page=0&type=nonpump&_t=${Date.now()}`;
+        const url = `${window.APP_CONFIG.BACKEND_API}/api/token-list?page=0&type=nonpump`;
         const data = await window.fetchDirect(url);
 
         if (data && data.contracts) {
@@ -337,7 +336,7 @@ window.filterTokenSidebar = function() {
 // ===== SEARCH TOKENS API =====
 window.searchTokensAPI = async function(query) {
     try {
-        const url = `${window.APP_CONFIG.EXPLORER_API}/prc20/search?name=${encodeURIComponent(query)}`;
+        const url = `${window.APP_CONFIG.BACKEND_API}/api/token-list?query=${encodeURIComponent(query)}`;
         const data = await window.fetchDirect(url);
         const contracts = data.contracts || (Array.isArray(data) ? data : []);
 

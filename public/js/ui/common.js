@@ -289,7 +289,7 @@ window.updateTradeBalances = async function() {
     if (!walletAddress) return;
 
     try {
-        const balData = await window.smartFetch(`${window.APP_CONFIG.LCD}/cosmos/bank/v1beta1/balances/${walletAddress}`);
+        const balData = await window.fetchDirect(`${window.APP_CONFIG.BACKEND_API}/api/paxi-balance?address=${walletAddress}`);
         const balances = balData.balances || [];
         const paxiBalance = balances.find(b => b.denom === 'upaxi');
         const paxiRaw = paxiBalance ? paxiBalance.amount : '0';
