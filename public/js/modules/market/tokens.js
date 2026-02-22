@@ -21,16 +21,13 @@ window.totalTokensAvailable = 0;
 window.processTokenDetail = function(contractAddress, data) {
     const c = data.contract || data;
     const decimals = c.decimals || 6;
-    const totalSupplyNum = parseFloat(c.total_supply || 0);
-    const totalSupply = totalSupplyNum / Math.pow(10, decimals);
 
-    let pricePaxi = 0;
-    if (c.reserve_prc20 > 0) {
-        pricePaxi = (parseFloat(c.reserve_paxi) / parseFloat(c.reserve_prc20)) * Math.pow(10, decimals - 6);
-    }
+    // Use pre-processed backend data if available, otherwise calculate fallback
+    const pricePaxi = c.processed ? c.price_paxi : (c.reserve_prc20 > 0 ? (parseFloat(c.reserve_paxi) / parseFloat(c.reserve_prc20)) * Math.pow(10, decimals - 6) : 0);
+    const mcapPaxi = c.processed ? c.market_cap : ((parseFloat(c.total_supply || 0) / Math.pow(10, decimals)) * pricePaxi);
+    const liqPaxi = c.processed ? c.liquidity : ((parseFloat(c.reserve_paxi || 0) * 2) / 1000000);
 
-    const marketCapPaxi = totalSupply * pricePaxi;
-    const marketCapUsd = marketCapPaxi * (window.paxiPriceUSD || 0.05);
+    const marketCapUsd = mcapPaxi * (window.paxiPriceUSD || 0.05);
     const logo = window.normalizeLogoUrl(c.logo);
     
     return {
@@ -40,14 +37,14 @@ window.processTokenDetail = function(contractAddress, data) {
         symbol: c.symbol || 'N/A',
         decimals: decimals,
         total_supply: c.total_supply,
-        total_supply_num: totalSupply,
+        total_supply_num: c.total_supply_num || (parseFloat(c.total_supply || 0) / Math.pow(10, decimals)),
         logo: logo,
         description: c.desc || '',
         project: c.project || '',
         marketing: c.marketing || '',
         holders: parseInt(c.holders || 0, 10),
-        liquidity: (parseFloat(c.reserve_paxi || 0) * 2) / 1000000,
-        liquidity_usd: (parseFloat(c.reserve_paxi || 0) * 2 * (window.paxiPriceUSD || 0.05)) / 1000000,
+        liquidity: liqPaxi,
+        liquidity_usd: liqPaxi * (window.paxiPriceUSD || 0.05),
         verified: c.official_verified === true,
         price_change_24h: parseFloat(c.price_change || 0),
         reserve_paxi: parseFloat(c.reserve_paxi || 0),
@@ -55,7 +52,7 @@ window.processTokenDetail = function(contractAddress, data) {
         price_paxi: pricePaxi,
         price_usd: pricePaxi * (window.paxiPriceUSD || 0.05),
         volume_24h: parseFloat(c.volume || 0),
-        market_cap: marketCapPaxi,
+        market_cap: mcapPaxi,
         market_cap_usd: marketCapUsd,
         buys: parseInt(c.buys || 0),
         sells: parseInt(c.sells || 0),
@@ -88,7 +85,7 @@ window.loadTokensOptimized = async function() {
 window.loadAllTokenAddresses = async function() {
     try {
         const url0 = `${window.APP_CONFIG.EXPLORER_API}/prc20/contracts?page=0&_t=${Date.now()}`;
-        const data0 = await window.fetchDirect(url0);
+        const data0 = await window.fetchDirect(url0, { cache: 'no-store' });
         
         if (!data0 || !data0.contracts) {
             throw new Error('Invalid response from Explorer API');
@@ -130,6 +127,9 @@ window.startTokenListPolling = function() {
     if (window.tokenPollingInterval) clearInterval(window.tokenPollingInterval);
 
     window.tokenPollingInterval = setInterval(async () => {
+        // Optimized: Only run when tab is visible
+        if (document.visibilityState !== 'visible') return;
+
         // Only poll if sidebar is visible or on trade page
         const sidebar = document.getElementById('tokenSidebar');
         if (!sidebar) return; // Exit if not on trade page
@@ -140,7 +140,7 @@ window.startTokenListPolling = function() {
         try {
             // We only refresh page 0 for price updates
             const url = `${window.APP_CONFIG.EXPLORER_API}/prc20/contracts?page=0&_t=${Date.now()}`;
-            const data = await window.fetchDirect(url);
+            const data = await window.fetchDirect(url, { cache: 'no-store' });
 
             if (data && data.contracts) {
                 data.contracts.forEach(c => {
@@ -215,7 +215,7 @@ window.fetchNextContractPage = async function() {
 window.loadTokenDetail = async function(contractAddress) {
     try {
         const url = `${window.APP_CONFIG.EXPLORER_API}/prc20/contract?address=${contractAddress}&_t=${Date.now()}`;
-        const data = await window.fetchDirect(url);
+        const data = await window.fetchDirect(url, { cache: 'no-store' });
         
         if (data && data.contract) {
             const detail = window.processTokenDetail(contractAddress, data);

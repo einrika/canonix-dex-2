@@ -261,7 +261,7 @@ window.patchTokenElement = function(el, addr) {
     const safeName = window.escapeHtml(detail.name || addr.slice(0, 8));
     if (nameEl.textContent !== safeName) nameEl.textContent = safeName;
 
-    // Update Price Change
+    // Update Price Change (Optimized: Stable binding)
     const changeEl = el.querySelector('.token-change');
     const priceChangeRaw = window.numtokenlist(detail.price_change_24h);
     const priceChangePct = priceChangeRaw * 100;
@@ -269,8 +269,8 @@ window.patchTokenElement = function(el, addr) {
 
     if (changeEl.textContent !== changeText) {
         changeEl.textContent = changeText;
-        changeEl.classList.remove('text-meme-green', 'text-meme-pink');
-        changeEl.classList.add(priceChangePct >= 0 ? 'text-meme-green' : 'text-meme-pink');
+        changeEl.classList.remove('text-soft-success', 'text-soft-failed');
+        changeEl.classList.add(priceChangePct >= 0 ? 'text-soft-success' : 'text-soft-failed');
     }
 
     // Update MCap

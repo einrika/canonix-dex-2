@@ -27,7 +27,34 @@ const myContractAccountsHandler = async (req, res) => {
 
         const data = await response.json();
 
-        setCached(cacheKey, data, 60);
+        // Optimized: Move processing and calculations to backend
+        if (data && data.accounts) {
+            data.accounts = data.accounts.map(item => {
+                const c = item.contract;
+                const decimals = c.decimals || 6;
+                const totalSupply = parseFloat(c.total_supply || 0) / Math.pow(10, decimals);
+                let pricePaxi = 0;
+                if (parseFloat(c.reserve_prc20) > 0) {
+                    pricePaxi = (parseFloat(c.reserve_paxi) / parseFloat(c.reserve_prc20)) * Math.pow(10, decimals - 6);
+                }
+                const marketCapPaxi = totalSupply * pricePaxi;
+                const liquidityPaxi = (parseFloat(c.reserve_paxi || 0) * 2) / 1000000;
+
+                return {
+                    ...item,
+                    contract: {
+                        ...c,
+                        processed: true,
+                        price_paxi: pricePaxi,
+                        market_cap: marketCapPaxi,
+                        liquidity: liquidityPaxi,
+                        total_supply_num: totalSupply
+                    }
+                };
+            });
+        }
+
+        setCached(cacheKey, data, 30); // Lower cache for user assets
         return sendResponse(res, true, data);
     } catch (error) {
         console.error('Error fetching user assets:', error);

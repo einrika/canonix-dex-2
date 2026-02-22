@@ -217,8 +217,8 @@ window.loadPriceHistory = async function(contractAddress, timeframe) {
 
     if (timeframe === 'realtime') {
         try {
-            // Fetch realtime data via Netlify function (routing through fetchDirect)
-            const data = await window.fetchDirect(`${window.APP_CONFIG.BACKEND_API}/api/token-price?address=${contractAddress}&timeframe=realtime&_t=${Date.now()}`);
+            // Fetch realtime data via backend endpoint (Optimized: disabled cache)
+            const data = await window.fetchDirect(`${window.APP_CONFIG.BACKEND_API}/api/token-price?address=${contractAddress}&timeframe=realtime&_t=${Date.now()}`, { cache: 'no-store' });
 
             if (!data.history || !data.history.length) {
                 window.setText(statusEl, 'No real-time data');
@@ -267,7 +267,7 @@ window.loadPriceHistory = async function(contractAddress, timeframe) {
 
     try {
         const url = `${window.APP_CONFIG.BACKEND_API}/api/token-price?address=${contractAddress}&timeframe=${timeframe}&_t=${Date.now()}`;
-        const data = await window.fetchDirect(url);
+        const data = await window.fetchDirect(url, { cache: 'no-store' });
         if (!data.history || !data.history.length) { window.setText(statusEl, 'No history'); return; }
 
         const rawPoints = data.history.map(item => ({
@@ -327,6 +327,9 @@ window.startRealtimeUpdates = function() {
     if (window.currentTimeframe === 'realtime') {
         window.refreshCountdown = 10;
         window.countdownInterval = setInterval(() => {
+            // Optimized: Pause countdown/refresh if tab not visible
+            if (document.visibilityState !== 'visible') return;
+
             window.refreshCountdown--;
             const statusEl = document.getElementById('chartStatus');
             if (statusEl) {
@@ -341,6 +344,9 @@ window.startRealtimeUpdates = function() {
     } else {
         // Regular update for other timeframes (e.g., every 30s)
         window.chartUpdateInterval = setInterval(() => {
+            // Optimized: Pause refresh if tab not visible
+            if (document.visibilityState !== 'visible') return;
+
             if (window.currentPRC20) window.loadPriceHistory(window.currentPRC20, window.currentTimeframe);
         }, 30000);
     }

@@ -128,7 +128,8 @@ window.fetchDirect = async function(url, options = {}) {
         const finalUrl = `${apiEndpoint}?${params.toString()}`;
         const fetchOptions = {
             method: options.method || 'GET',
-            headers: { 'Content-Type': 'application/json', ...options.headers }
+            headers: { 'Content-Type': 'application/json', ...options.headers },
+            cache: options.cache || 'default'
         };
         if (options.body) fetchOptions.body = options.body;
 

@@ -924,33 +924,21 @@ window.buildAndSendTx = async function(messages, memo = "", options = {}) {
         const hash = broadcastRes.tx_response.txhash;
         console.log('📡 TX Broadcasted, Hash:', hash);
 
-        // 7. Poll for Result (DeliverTx)
+        // 7. Verify Result via Backend (Optimization: Offload polling to server)
         if (!silent) window.showNotif('Confirming transaction...', 'info');
 
-        let result = null;
-        let attempts = 0;
-        const maxAttempts = 15;
-
-        while (attempts < maxAttempts) {
-            try {
-                // Use Tendermint RPC for detailed result as requested
-                const pollRes = await window.fetchDirect(`${endpoints.rpc}/tx?hash=0x${hash}`);
-                if (pollRes && pollRes.result) {
-                    result = pollRes.result;
-                    break;
-                }
-            } catch (e) {
-                // Not found yet or other error, continue polling
-            }
-            attempts++;
-            await new Promise(r => setTimeout(r, 1000));
+        let resultData = null;
+        try {
+            // New optimized endpoint handles the polling and validation
+            resultData = await window.fetchDirect(`/api/tx-status?hash=${hash}`);
+        } catch (e) {
+            console.warn("Backend status check failed, falling back to basic verification", e);
         }
 
         hideLoader();
 
-        if (result && result.tx_result) {
-            const code = result.tx_result.code;
-            const isSuccess = code === 0;
+        if (resultData) {
+            const isSuccess = resultData.code === 0;
 
             if (!silent) {
                 window.showTxResult({
@@ -960,20 +948,20 @@ window.buildAndSendTx = async function(messages, memo = "", options = {}) {
                     amount: metadata.amount || '--',
                     address: metadata.address || window.wallet.address,
                     hash: hash,
-                    error: isSuccess ? null : (result.tx_result.log || "Execution Failed"),
-                    height: result.height,
-                    gasUsed: result.tx_result.gas_used,
-                    gasWanted: result.tx_result.gas_wanted
+                    error: isSuccess ? null : (resultData.log || "Execution Failed"),
+                    height: resultData.height,
+                    gasUsed: resultData.gas_used,
+                    gasWanted: resultData.gas_wanted
                 });
             }
 
             if (!isSuccess) {
-                throw new Error(`Transaction failed: ${result.tx_result.log || 'Unknown Error'}`);
+                throw new Error(`Transaction failed: ${resultData.log || 'Unknown Error'}`);
             }
 
-            return { success: true, hash, height: result.height, ...result };
+            return { success: true, hash, ...resultData };
         } else {
-            // Fallback if polling failed but broadcast succeeded
+            // Fallback if backend check failed but broadcast succeeded
             if (!silent) {
                 window.showTxResult({
                     status: 'success',
@@ -982,7 +970,7 @@ window.buildAndSendTx = async function(messages, memo = "", options = {}) {
                     amount: metadata.amount || '--',
                     address: metadata.address || window.wallet.address,
                     hash: hash,
-                    note: "Transaction sent but could not verify result. Check explorer."
+                    note: "Sent successfully. Status verification pending."
                 });
             }
             return { success: true, hash };

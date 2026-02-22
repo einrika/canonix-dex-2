@@ -157,14 +157,18 @@ window.updateDashboard = function(detail) {
         const rawChange = detail.price_change_24h || 0;
         const valNum = rawChange * 100;
         const valText = (valNum >= 0 ? '+' : '') + valNum.toFixed(2) + '%';
-        window.setText(changeEl, valText);
 
-        // Use classList for safer class management
-        changeEl.classList.remove('bg-meme-green', 'bg-meme-pink', 'text-black', 'text-primary-text');
-        if (valNum >= 0) {
-            changeEl.classList.add('bg-meme-green', 'text-black');
-        } else {
-            changeEl.classList.add('bg-meme-pink', 'text-primary-text');
+        // Optimized: Only update if text actually changed to prevent flicker/re-render
+        if (changeEl.textContent !== valText) {
+            window.setText(changeEl, valText);
+
+            // Use classList for safer class management (Optimized: remove redundant classes)
+            changeEl.classList.remove('bg-soft-success', 'bg-soft-failed', 'text-black', 'text-primary-text', 'bg-primary');
+            if (valNum >= 0) {
+                changeEl.classList.add('bg-soft-success', 'text-black');
+            } else {
+                changeEl.classList.add('bg-soft-failed', 'text-primary-text');
+            }
         }
     }
 

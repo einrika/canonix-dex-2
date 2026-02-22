@@ -21,7 +21,31 @@ const tokenDetailHandler = async (req, res) => {
         }
 
         const data = await response.json();
-        return sendResponse(res, true, data);
+
+        // Optimized: Move processing and calculations to backend
+        const c = data.contract || data;
+        const decimals = c.decimals || 6;
+        const totalSupply = parseFloat(c.total_supply || 0) / Math.pow(10, decimals);
+        let pricePaxi = 0;
+        if (parseFloat(c.reserve_prc20) > 0) {
+            pricePaxi = (parseFloat(c.reserve_paxi) / parseFloat(c.reserve_prc20)) * Math.pow(10, decimals - 6);
+        }
+        const marketCapPaxi = totalSupply * pricePaxi;
+        const liquidityPaxi = (parseFloat(c.reserve_paxi || 0) * 2) / 1000000;
+
+        const processed = {
+            ...data,
+            contract: {
+                ...c,
+                processed: true,
+                price_paxi: pricePaxi,
+                market_cap: marketCapPaxi,
+                liquidity: liquidityPaxi,
+                total_supply_num: totalSupply
+            }
+        };
+
+        return sendResponse(res, true, processed);
     } catch (error) {
         console.error('Token detail fetch error:', error);
         return sendResponse(res, false, null, 'Failed to fetch contract details', 500);

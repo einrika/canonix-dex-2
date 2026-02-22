@@ -15,12 +15,10 @@ const tokenPriceHandler = async (req, res) => {
     const allowedTFs = ['realtime', '1h', '24h', '7d', '30d'];
     const tf = allowedTFs.includes(timeframe) ? timeframe : '24h';
 
-    const cacheKey = `price_${address}_${tf}`;
-
-    if (tf !== 'realtime') {
-        const cachedData = getCached(cacheKey);
-        if (cachedData) return sendResponse(res, true, cachedData);
-    }
+    // Optimized: Disable cache for price endpoints to ensure realtime data
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
 
     try {
         let apiUrl;
@@ -44,7 +42,6 @@ const tokenPriceHandler = async (req, res) => {
             const normalized = {
                 history: fallbackData.price_history || fallbackData.history || []
             };
-            if (tf !== 'realtime') setCached(cacheKey, normalized, 60);
             return sendResponse(res, true, normalized);
         }
 
@@ -68,7 +65,6 @@ const tokenPriceHandler = async (req, res) => {
             };
         }
 
-        if (tf !== 'realtime') setCached(cacheKey, normalized, 60);
         return sendResponse(res, true, normalized);
     } catch (error) {
         console.error('Price history fetch error:', error);

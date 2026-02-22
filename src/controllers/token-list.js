@@ -34,8 +34,29 @@ const tokenListHandler = async (req, res) => {
 
         const data = await response.json();
 
+        // Optimized: Move processing and calculations to backend
+        const processToken = (c) => {
+            const decimals = c.decimals || 6;
+            const totalSupply = parseFloat(c.total_supply || 0) / Math.pow(10, decimals);
+            let pricePaxi = 0;
+            if (parseFloat(c.reserve_prc20) > 0) {
+                pricePaxi = (parseFloat(c.reserve_paxi) / parseFloat(c.reserve_prc20)) * Math.pow(10, decimals - 6);
+            }
+            const marketCapPaxi = totalSupply * pricePaxi;
+            const liquidityPaxi = (parseFloat(c.reserve_paxi || 0) * 2) / 1000000;
+
+            return {
+                ...c,
+                processed: true,
+                price_paxi: pricePaxi,
+                market_cap: marketCapPaxi,
+                liquidity: liquidityPaxi,
+                total_supply_num: totalSupply
+            };
+        };
+
         if (type === 'nonpump' && data.tokens) {
-            data.contracts = data.tokens.map(t => ({
+            data.contracts = data.tokens.map(t => processToken({
                 contract_address: t.contract_address,
                 name: t.token_info.name,
                 symbol: t.token_info.symbol,
@@ -57,9 +78,11 @@ const tokenListHandler = async (req, res) => {
                 txs_count: t.txs_count,
                 created_at: t.timestamp
             }));
+        } else if (data.contracts) {
+            data.contracts = data.contracts.map(processToken);
         }
 
-        setCached(cacheKey, data, 120);
+        setCached(cacheKey, data, 60); // Reduce cache duration for better freshness
         return sendResponse(res, true, data);
     } catch (error) {
         console.error('Error fetching token list:', error);
