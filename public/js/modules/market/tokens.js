@@ -76,9 +76,61 @@ window.loadTokensOptimized = async function() {
         if (!window.isTokensLoaded) {
             window.isTokensLoaded = true;
             await window.loadAllTokenAddresses();
-            window.startTokenListPolling();
+            // Polling removed: WebSocket now handles updates via paxi_token_list_updated
+            window.setupTokenSocketListeners();
         }
     }
+};
+
+// ===== TOKEN SOCKET LISTENERS =====
+window.setupTokenSocketListeners = function() {
+    window.addEventListener('paxi_token_list_updated', (event) => {
+        const data = event.detail;
+        if (data && data.contracts) {
+            data.contracts.forEach(c => {
+                const detail = window.processTokenDetail(c.contract_address, c);
+                window.tokenDetails.set(c.contract_address, detail);
+                if (!window.tokenAddresses.includes(c.contract_address)) {
+                    window.tokenAddresses.push(c.contract_address);
+                }
+            });
+
+            if (window.renderTokenSidebar) {
+                window.renderTokenSidebar(window.currentTokenSearch || '');
+            }
+            if (window.updateTicker) window.updateTicker();
+            window.updateTokenCounter();
+        }
+    });
+
+    window.addEventListener('paxi_price_updated_socket', (event) => {
+        const data = event.detail;
+        const currentDetail = window.tokenDetails.get(data.address);
+        if (currentDetail) {
+            // Update detail with new socket data
+            const updated = {
+                ...currentDetail,
+                price_paxi: data.price_paxi,
+                price_change_24h: data.price_change,
+                reserve_paxi: data.reserve_paxi,
+                reserve_prc20: data.reserve_prc20,
+                volume_24h: data.volume_24h
+            };
+
+            // Re-process to update MCAP/LIQ based on new price
+            const processed = window.processTokenDetail(data.address, updated);
+            window.tokenDetails.set(data.address, processed);
+
+            // Update UI if this is the selected token
+            if (window.currentPRC20 === data.address) {
+                if (window.updateDashboard) window.updateDashboard(processed);
+                // Also trigger chart update if live
+                if (window.updateLivePrice) window.updateLivePrice(processed.price_paxi);
+            }
+
+            if (window.updateTokenCard) window.updateTokenCard(data.address);
+        }
+    });
 };
 
 // ===== LOAD ALL TOKEN ADDRESSES =====
@@ -121,44 +173,10 @@ window.loadAllTokenAddresses = async function() {
     }
 };
 
-// ===== START TOKEN LIST POLLING =====
+// ===== START TOKEN LIST POLLING ===== (DEPRECATED: Use WebSocket)
 window.tokenPollingInterval = null;
 window.startTokenListPolling = function() {
-    if (window.tokenPollingInterval) clearInterval(window.tokenPollingInterval);
-
-    window.tokenPollingInterval = setInterval(async () => {
-        // Optimized: Only run when tab is visible
-        if (document.visibilityState !== 'visible') return;
-
-        // Only poll if sidebar is visible or on trade page
-        const sidebar = document.getElementById('tokenSidebar');
-        if (!sidebar) return; // Exit if not on trade page
-
-        const isVisible = window.innerWidth >= 1024 || (!sidebar.classList.contains('-translate-x-full'));
-        if (!isVisible) return;
-
-        try {
-            // We only refresh page 0 for price updates
-            const url = `${window.APP_CONFIG.EXPLORER_API}/prc20/contracts?page=0&_t=${Date.now()}`;
-            const data = await window.fetchDirect(url, { cache: 'no-store' });
-
-            if (data && data.contracts) {
-                data.contracts.forEach(c => {
-                    const detail = window.processTokenDetail(c.contract_address, c);
-                    window.tokenDetails.set(c.contract_address, detail);
-                });
-
-                // Trigger dynamic patch (renderTokenSidebar handles diff/patch)
-                if (window.renderTokenSidebar) {
-                    window.renderTokenSidebar(window.currentTokenSearch || '');
-                }
-
-                if (window.updateTicker) window.updateTicker();
-            }
-        } catch (e) {
-            console.warn('Token polling failed:', e);
-        }
-    }, 30000); // 30 seconds
+    console.log('[Tokens] startTokenListPolling called but is deprecated. Using WebSocket.');
 };
 
 // ===== UPDATE TOKEN COUNTER =====
@@ -384,6 +402,11 @@ window.refreshAllUI = async function() {
 
 // ===== SELECT PRC20 =====
 window.selectPRC20 = async function(contractAddress) {
+    // WebSocket: Subscribe to token updates
+    if (window.PaxiSocket && window.PaxiSocket.subscribeToken) {
+        window.PaxiSocket.subscribeToken(contractAddress);
+    }
+
     window.currentPRC20 = contractAddress;
     window.holdersPage = 1;
 

@@ -11,6 +11,43 @@ window.currentTimeframe = localStorage.getItem('chartTimeframe') || 'realtime';
 window.refreshCountdown = 10;
 window.countdownInterval = null;
 
+// WebSocket listener for live price updates
+window.updateLivePrice = function(price) {
+    if (!window.lineSeries || window.currentTimeframe !== 'realtime') return;
+
+    const now = Math.floor(Date.now() / 1000);
+    const newPoint = { time: now, value: parseFloat(price) };
+
+    window.lineSeries.update(newPoint);
+
+    // Update local data array for indicators
+    const last = window.currentPriceData[window.currentPriceData.length - 1];
+    if (last && last.time === now) {
+        last.close = newPoint.value;
+        last.high = Math.max(last.high, newPoint.value);
+        last.low = Math.min(last.low, newPoint.value);
+    } else {
+        window.currentPriceData.push({
+            time: now,
+            open: newPoint.value,
+            high: newPoint.value,
+            low: newPoint.value,
+            close: newPoint.value,
+            volume: Math.floor(Math.random() * 100)
+        });
+    }
+
+    // Keep data size manageable
+    if (window.currentPriceData.length > 300) window.currentPriceData.shift();
+
+    // Re-calculate MA if visible
+    if (window.ma7Series.options().visible) window.ma7Series.setData(window.calculateMA(window.currentPriceData, 7));
+    if (window.ma25Series.options().visible) window.ma25Series.setData(window.calculateMA(window.currentPriceData, 25));
+
+    const statusEl = document.getElementById('chartStatus');
+    if (statusEl) window.setText(statusEl, 'Live • WebSocket Active');
+};
+
 window.initChart = function() {
     const container = document.getElementById('priceChart');
     if (!container) return;
@@ -251,10 +288,9 @@ window.loadPriceHistory = async function(contractAddress, timeframe) {
                 changeEl.className = `text-[10px] font-bold ${change >= 0 ? 'text-up' : 'text-down'}`;
             }
 
-            window.setText(statusEl, `Live • Realtime (${window.refreshCountdown}s)`);
+            window.setText(statusEl, 'Live • WebSocket Active');
 
-            // Start or restart countdown
-            window.startRealtimeUpdates();
+            // Polling removed: Using WebSocket for real-time updates
         } catch (e) {
             console.error('Real-time fetch error:', e);
             window.setText(statusEl, 'Error');
@@ -313,7 +349,7 @@ window.loadPriceHistory = async function(contractAddress, timeframe) {
         }
         window.setText(statusEl, `Live • ${timeframe}`);
 
-        // Ensure regular updates for other timeframes too
+        // Start polling for historical timeframes only (since WS only sends latest)
         window.startRealtimeUpdates();
     } catch (e) { window.setText(statusEl, 'Error'); }
 };
@@ -325,29 +361,14 @@ window.startRealtimeUpdates = function() {
     if (window.chartUpdateInterval) clearInterval(window.chartUpdateInterval);
 
     if (window.currentTimeframe === 'realtime') {
-        window.refreshCountdown = 10;
-        window.countdownInterval = setInterval(() => {
-            // Optimized: Pause countdown/refresh if tab not visible
-            if (document.visibilityState !== 'visible') return;
-
-            window.refreshCountdown--;
-            const statusEl = document.getElementById('chartStatus');
-            if (statusEl) {
-                window.setText(statusEl, `Live • Realtime (${window.refreshCountdown}s)`);
-            }
-
-            if (window.refreshCountdown <= 0) {
-                window.refreshCountdown = 10;
-                if (window.currentPRC20) window.loadPriceHistory(window.currentPRC20, 'realtime');
-            }
-        }, 1000);
+        const statusEl = document.getElementById('chartStatus');
+        if (statusEl) window.setText(statusEl, 'Live • WebSocket Active');
+        // No polling needed for realtime!
     } else {
-        // Regular update for other timeframes (e.g., every 30s)
+        // Regular update for other timeframes (e.g., every 60s - reduced frequency)
         window.chartUpdateInterval = setInterval(() => {
-            // Optimized: Pause refresh if tab not visible
             if (document.visibilityState !== 'visible') return;
-
             if (window.currentPRC20) window.loadPriceHistory(window.currentPRC20, window.currentTimeframe);
-        }, 30000);
+        }, 60000);
     }
 };

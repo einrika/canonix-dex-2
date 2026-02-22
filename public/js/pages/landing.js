@@ -24,6 +24,21 @@ window.addEventListener('load', async () => {
 
     // Initial Global Market Analysis
     initGlobalMarketAI();
+
+    // WebSocket: Handle live updates
+    window.addEventListener('paxi_token_list_updated', (event) => {
+        const data = event.detail;
+        if (data && data.contracts && window.marketTokens.length > 0) {
+            // Update existing tokens with new data
+            data.contracts.forEach(c => {
+                const index = window.marketTokens.findIndex(t => t.address === c.contract_address);
+                if (index !== -1) {
+                    window.marketTokens[index] = window.processTokenDetail(c.contract_address, c);
+                }
+            });
+            renderMarketGrid();
+        }
+    });
 });
 
 async function loadMarketData(type = 'all') {

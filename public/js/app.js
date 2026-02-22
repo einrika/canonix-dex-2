@@ -13,12 +13,8 @@ window.addEventListener('load', async () => {
     // Initialize chart
     window.initChart();
     
-    // Setup update interval (Optimized: Only run when tab is visible)
-    window.updateInterval = setInterval(() => {
-        if (document.visibilityState === 'visible') {
-            window.updateAppUI();
-        }
-    }, 30000);
+    // Setup update interval (DEPRECATED: Using WebSocket)
+    window.updateInterval = null;
 
     // Platform fee disabled
     window.feeEnabled = false;
@@ -71,14 +67,9 @@ window.addEventListener('load', async () => {
     if (window.setSwapMode) window.setSwapMode('buy');
     if (window.setSidebarTab) window.setSidebarTab('wallet');
 
-    // Update ticker periodically (Optimized: Only run when tab is visible)
+    // Update ticker periodically (WebSocket handles most updates now)
     if (window.updateTicker) {
         window.updateTicker();
-        setInterval(() => {
-            if (document.visibilityState === 'visible') {
-                window.updateTicker();
-            }
-        }, 30000);
     }
 
     // Diagnostic check for libraries
@@ -88,12 +79,11 @@ window.addEventListener('load', async () => {
 
     window.log('Canonix loaded', 'info');
 
-    // Handle tab visibility changes for optimized refreshes
+    // Handle tab visibility changes (WebSocket connection handled in socket.js)
     document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'visible') {
-            window.log('Tab visible: triggering immediate refresh', 'info');
+            window.log('Tab visible: refreshing data state', 'info');
             window.updateAppUI();
-            if (window.startTokenListPolling) window.startTokenListPolling();
             if (window.startRealtimeUpdates) window.startRealtimeUpdates();
         }
     });
