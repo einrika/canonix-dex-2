@@ -1,15 +1,13 @@
 const fetch = require('node-fetch');
 
-exports.handler = async (event, context) => {
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method Not Allowed' };
+const aiAnalysisHandler = async (req, res) => {
+  if (req.method !== 'POST') {
+    return res.status(405).send('Method Not Allowed');
   }
 
-  // 1. Get all available Gemini API Keys from environment
   const apiKeys = [];
   let keyIndex = 1;
-  
-  // Also check for the single GEMINI_API_KEY as primary/fallback
+
   if (process.env.GEMINI_API_KEY) {
       apiKeys.push(process.env.GEMINI_API_KEY);
   }
@@ -20,17 +18,12 @@ exports.handler = async (event, context) => {
   }
 
   if (apiKeys.length === 0) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: 'Server configuration error: No Gemini API keys found' })
-    };
+    return res.status(500).json({ error: 'Server configuration error: No Gemini API keys found' });
   }
 
   try {
-    const body = JSON.parse(event.body);
-    const { symbol, price, change24h, liquidity, volume, onChainActivity } = body;
+    const { symbol, price, change24h, liquidity, volume, onChainActivity } = req.body;
 
-    // 2. Input Sanitization
     const safeSymbol = String(symbol || 'Unknown').replace(/[^a-zA-Z0-9]/g, '');
     const safePrice = String(price || '0').replace(/[^0-9.]/g, '');
     const safeChange = String(change24h || '0').replace(/[^0-9.\-]/g, '');
@@ -38,7 +31,6 @@ exports.handler = async (event, context) => {
     const safeVolume = String(volume || '0').replace(/[^0-9.]/g, '');
     const safeActivity = String(onChainActivity || 'N/A').substring(0, 100);
 
-    // 3. Prompt engineering (Optimized for MEME market and Real-time data)
     const prompt = `You are a professional MEME coin analyst. Analyze this token strictly using real-time data:
 
 Token: ${safeSymbol}
@@ -57,7 +49,6 @@ Provide a structured output with:
 
 Format with <b> for emphasis. Use a punchy, trader-like tone. Return ONLY inner HTML content.`;
 
-    // 4. Try API Keys with rotation and retry
     let lastError = null;
     for (let i = 0; i < apiKeys.length; i++) {
         const apiKey = apiKeys[i];
@@ -74,7 +65,6 @@ Format with <b> for emphasis. Use a punchy, trader-like tone. Return ONLY inner 
 
             const data = await response.json();
 
-            // Handle quota limits (429) or other API errors
             if (response.status === 429) {
                 console.warn(`[AI] Key #${i + 1} hit quota limit. Rotating...`);
                 continue;
@@ -90,30 +80,23 @@ Format with <b> for emphasis. Use a punchy, trader-like tone. Return ONLY inner 
 
             const textResult = data.candidates[0].content.parts[0].text;
 
-            return {
-                statusCode: 200,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    analysis: textResult,
-                    keyUsed: i + 1
-                })
-            };
+            return res.json({
+                analysis: textResult,
+                keyUsed: i + 1
+            });
 
         } catch (error) {
             console.error(`[AI] Key #${i + 1} failed:`, error.message);
             lastError = error;
-            // Continue to next key
         }
     }
 
-    // If all keys failed
     throw new Error(`All available Gemini API keys failed. Last error: ${lastError?.message}`);
 
   } catch (error) {
     console.error('AI Rotation Error:', error);
-    return {
-        statusCode: 500,
-        body: JSON.stringify({ error: error.message || 'Failed to generate analysis' })
-    };
+    return res.status(500).json({ error: error.message || 'Failed to generate analysis' });
   }
 };
+
+module.exports = aiAnalysisHandler;

@@ -224,11 +224,11 @@ window.renderAnalysis = function(data) {
         if (content) {
             content.innerHTML = `
                 <div class="flex flex-col items-center py-20 text-center animate-fade-in">
-                    <div class="w-16 h-16 bg-meme-card border-4 border-black shadow-brutal flex items-center justify-center text-gray-700 text-3xl mb-8 rotate-[-10deg]">
+                    <div class="w-16 h-16 bg-card border-4 border-card shadow-brutal flex items-center justify-center text-muted-text text-3xl mb-8 rotate-[-10deg]">
                         <i class="fas fa-chart-line"></i>
                     </div>
-                    <h3 class="text-2xl font-display text-white italic uppercase tracking-tighter mb-4">INITIALIZING DATA...</h3>
-                    <p class="font-mono text-[8px] text-gray-600 font-bold uppercase tracking-widest italic max-w-[200px]">Select a token from the terminal to begin deep neural market analysis.</p>
+                    <h3 class="text-2xl font-display text-primary-text italic uppercase tracking-tighter mb-4">INITIALIZING DATA...</h3>
+                    <p class="font-mono text-[8px] text-muted-text font-bold uppercase tracking-widest italic max-w-[200px]">Select a token from the terminal to begin deep neural market analysis.</p>
                 </div>
             `;
         }
@@ -243,48 +243,48 @@ window.renderAnalysis = function(data) {
     if (!content) return;
 
     const badges = {
-        premium: '<span class="px-2 py-0.5 bg-meme-green text-black border border-black text-[8px] font-black italic uppercase">Bionic Premium</span>',
-        free: '<span class="px-2 py-0.5 bg-meme-cyan text-black border border-black text-[8px] font-black italic uppercase">Basic AI</span>',
-        manual: '<span class="px-2 py-0.5 bg-meme-pink text-white border border-black text-[8px] font-black italic uppercase">Algo Core</span>'
+        premium: '<span class="px-2 py-0.5 bg-meme-green text-black border border-card text-[8px] font-black italic uppercase">Bionic Premium</span>',
+        free: '<span class="px-2 py-0.5 bg-meme-cyan text-black border border-card text-[8px] font-black italic uppercase">Basic AI</span>',
+        manual: '<span class="px-2 py-0.5 bg-meme-pink text-primary-text border border-card text-[8px] font-black italic uppercase">Algo Core</span>'
     };
 
     content.innerHTML = `
         <div class="space-y-8 animate-fade-in">
             <!-- Metrics -->
-            <div class="bg-black border-4 border-black p-6 shadow-brutal rotate-[-0.5deg]">
-                <h4 class="font-display text-2xl text-meme-cyan mb-6 uppercase italic border-b-2 border-meme-surface pb-2">
+            <div class="bg-surface border-4 border-card p-6 shadow-brutal rotate-[-0.5deg]">
+                <h4 class="font-display text-2xl text-meme-cyan mb-6 uppercase italic border-b-2 border-card pb-2">
                     <i class="fas fa-chart-line mr-2"></i> TELEMETRY
                 </h4>
                 <div class="grid grid-cols-2 gap-6 font-mono text-[10px] font-bold uppercase tracking-widest">
-                    <div><span class="text-gray-600">VIBE:</span> <span class="${sentiment === 'Bullish' ? 'text-meme-green' : 'text-meme-pink'} font-black">${sentiment}</span></div>
-                    <div><span class="text-gray-600">SHIFT:</span> <span class="${change24h >= 0 ? 'text-meme-green' : 'text-meme-pink'} font-black">${change24h.toFixed(2)}%</span></div>
-                    <div><span class="text-gray-600">FLOW:</span> <span class="text-meme-cyan font-black">${trend}</span></div>
-                    <div><span class="text-gray-600">RSI:</span> <span class="${rsi > 70 ? 'text-meme-pink' : rsi < 30 ? 'text-meme-green' : 'text-white'} font-black">${rsi.toFixed(1)}</span></div>
-                    <div class="col-span-2 pt-4 border-t border-meme-surface">
-                        <span class="text-gray-600">DEPTH:</span> <span class="text-white font-black">${liquidity.toFixed(0)} PAXI</span>
+                    <div><span class="text-muted-text">VIBE:</span> <span class="${sentiment === 'Bullish' ? 'text-meme-green' : 'text-meme-pink'} font-black">${sentiment}</span></div>
+                    <div><span class="text-muted-text">SHIFT:</span> <span class="${change24h >= 0 ? 'text-meme-green' : 'text-meme-pink'} font-black">${change24h.toFixed(2)}%</span></div>
+                    <div><span class="text-muted-text">FLOW:</span> <span class="text-meme-cyan font-black">${trend}</span></div>
+                    <div><span class="text-muted-text">RSI:</span> <span class="${rsi > 70 ? 'text-meme-pink' : rsi < 30 ? 'text-meme-green' : 'text-primary-text'} font-black">${rsi.toFixed(1)}</span></div>
+                    <div class="col-span-2 pt-4 border-t border-card">
+                        <span class="text-muted-text">DEPTH:</span> <span class="text-primary-text font-black">${liquidity.toFixed(0)} PAXI</span>
                         <span class="text-[8px] ml-2 ${liquidityScore === 'High' ? 'text-meme-green' : 'text-meme-pink'} font-black">(${liquidityScore} CAP)</span>
                     </div>
-                    <div><span class="text-gray-600">HEAT:</span> <span class="text-meme-yellow font-black">${volatilityLabel}</span></div>
-                    <div><span class="text-gray-600">RISK:</span> <span class="${riskLevel === 'HIGH' ? 'text-meme-pink' : 'text-meme-green'} font-black">${riskLevel}</span></div>
+                    <div><span class="text-muted-text">HEAT:</span> <span class="text-meme-yellow font-black">${volatilityLabel}</span></div>
+                    <div><span class="text-muted-text">RISK:</span> <span class="${riskLevel === 'HIGH' ? 'text-meme-pink' : 'text-meme-green'} font-black">${riskLevel}</span></div>
                 </div>
             </div>
 
             <!-- AI Interpretation -->
-            <div class="bg-meme-surface border-4 border-black p-8 shadow-brutal rotate-[0.5deg] relative">
-                <div class="absolute -top-4 -right-4 w-12 h-12 bg-meme-pink border-4 border-black flex items-center justify-center text-white rotate-12"><i class="fas fa-robot"></i></div>
+            <div class="bg-surface border-4 border-card p-8 shadow-brutal rotate-[0.5deg] relative">
+                <div class="absolute -top-4 -right-4 w-12 h-12 bg-meme-pink border-4 border-card flex items-center justify-center text-primary-text rotate-12"><i class="fas fa-robot"></i></div>
                 <h4 class="font-display text-2xl text-meme-green mb-6 uppercase italic">${aiType === 'manual' ? 'ALGO STREAM' : 'NEURAL INTERPRETER'}</h4>
                 <div class="font-mono text-xs text-gray-300 leading-relaxed uppercase whitespace-pre-wrap selection:bg-meme-green selection:text-black">${window.escapeHtml(aiText)}</div>
             </div>
 
             <!-- Footer -->
             <div class="flex items-center justify-between">
-                <div class="font-mono text-[8px] text-gray-700 font-black uppercase tracking-[0.2em]">
+                <div class="font-mono text-[8px] text-muted-text font-black uppercase tracking-[0.2em]">
                     UPLINK: ${aiSource}
                 </div>
                 ${badges[aiType]}
             </div>
 
-            <div class="p-4 bg-black border-2 border-meme-pink/20 text-[9px] font-mono text-meme-pink/60 uppercase font-bold italic">
+            <div class="p-4 bg-surface border-2 border-meme-pink/20 text-[9px] font-mono text-meme-pink/60 uppercase font-bold italic">
                 <i class="fas fa-exclamation-triangle mr-2"></i> WARNING: PROBABILISTIC DATA. NOT ALPHA. DYOR OR GET REKT.
             </div>
         </div>

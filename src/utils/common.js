@@ -1,20 +1,14 @@
-// Standard Response Wrapper
-const sendResponse = (success, data = null, error = null, statusCode = 200) => {
-    const origin = process.env.ALLOWED_ORIGIN || '*';
-    return {
-        statusCode,
-        headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': origin,
-            'Access-Control-Allow-Headers': 'Content-Type',
-            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS'
-        },
-        body: JSON.stringify({
-            success,
-            data,
-            error
-        })
-    };
+// src/utils/common.js
+
+// Standard Response Wrapper for Express
+const sendResponse = (res, success, data = null, error = null, statusCode = 200) => {
+    // Note: CORS is handled by the 'cors' middleware in Express,
+    // but we can still set individual headers if needed.
+    return res.status(statusCode).json({
+        success,
+        data,
+        error
+    });
 };
 
 // Simple In-Memory Cache
@@ -60,7 +54,7 @@ const isValidPaxiAddress = (address) => {
     return /^paxi1[0-9a-z]{38,85}$/.test(address);
 };
 
-// Admin State (Ephemeral)
+// Admin State (Ephemeral but persists while server is running)
 let adminState = {
     isFrozen: false,
     blockedAddresses: []

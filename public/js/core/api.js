@@ -9,7 +9,6 @@ window.lastPaxiFetch = 0;
 window.fetchPaxiPrice = async function() {
   try {
     const data = await window.fetchDirect(`${window.APP_CONFIG.BACKEND_API}/api/paxi-price`);
-    
     if (typeof data !== "number") throw new Error("Invalid price data");
 
     window.paxiPriceUSD = data;
@@ -19,9 +18,8 @@ window.fetchPaxiPrice = async function() {
     window.dispatchEvent(new CustomEvent('paxi_price_updated', { detail: data }));
 
     return data;
-    
   } catch (e) {
-    console.error("Backend PAXI price fetch error:", e);
+    console.error("Backend price fetch error:", e);
     return window.paxiPriceUSD || 0.00;
   }
 };
@@ -164,11 +162,11 @@ window.fetchUserLPPositions = async function(userAddress) {
   if (!userAddress) return [];
 
   try {
-    // 1. Fetch all pools from LCD via Backend
-    const data = await window.fetchDirect(`${window.APP_CONFIG.BACKEND_API}/api/pools`);
+    // 1. Fetch all pools from backend
+    const data = await window.fetchDirect(`${window.APP_CONFIG.BACKEND_API}/api/all-pools`);
     const pools = data.pools || [];
 
-    // 2. Fetch user's token list to narrow down potential positions via Backend
+    // 2. Fetch user's token list to narrow down potential positions via backend
     const accountsData = await window.fetchDirect(
       `${window.APP_CONFIG.BACKEND_API}/api/wallet-tokens?address=${userAddress}`
     );
@@ -177,7 +175,7 @@ window.fetchUserLPPositions = async function(userAddress) {
     // 3. Filter pools where user might have assets
     const relevantPools = pools.filter(p => userTokens.includes(p.prc20));
 
-    // 4. Batch fetch positions from Backend
+    // 4. Batch fetch positions from backend
     const positions = [];
     const batchSize = 5;
     for (let i = 0; i < relevantPools.length; i += batchSize) {

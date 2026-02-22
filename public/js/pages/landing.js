@@ -24,6 +24,21 @@ window.addEventListener('load', async () => {
 
     // Initial Global Market Analysis
     initGlobalMarketAI();
+
+    // WebSocket: Handle live updates
+    window.addEventListener('paxi_token_list_updated', (event) => {
+        const data = event.detail;
+        if (data && data.contracts && window.marketTokens.length > 0) {
+            // Update existing tokens with new data
+            data.contracts.forEach(c => {
+                const index = window.marketTokens.findIndex(t => t.address === c.contract_address);
+                if (index !== -1) {
+                    window.marketTokens[index] = window.processTokenDetail(c.contract_address, c);
+                }
+            });
+            renderMarketGrid();
+        }
+    });
 });
 
 async function loadMarketData(type = 'all') {
@@ -32,7 +47,7 @@ async function loadMarketData(type = 'all') {
         if (!grid) return;
 
         // Show loading state
-        grid.innerHTML = '<div class="col-span-full text-center py-20 text-gray-600 font-bold uppercase tracking-widest"><div class="w-10 h-10 border-4 border-meme-green border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>SYNCING...</div>';
+        grid.innerHTML = '<div class="col-span-full text-center py-20 text-muted-text font-bold uppercase tracking-widest"><div class="w-10 h-10 border-4 border-meme-green border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>SYNCING...</div>';
 
         window.marketPage = 0;
         window.marketTokens = []; // ✅ FIX: Reset array saat load awal
@@ -57,17 +72,17 @@ window.setMarketFilter = function(type, btn) {
     // Update UI buttons - Brutal Style
     document.querySelectorAll('.market-filter-btn').forEach(b => {
         b.classList.remove('bg-meme-green', 'text-black');
-        b.classList.add('bg-black', 'text-white');
+        b.classList.add('bg-surface', 'text-primary-text');
     });
 
     if (btn) {
         btn.classList.add('bg-meme-green', 'text-black');
-        btn.classList.remove('bg-black', 'text-white');
+        btn.classList.remove('bg-surface', 'text-primary-text');
     } else {
         document.querySelectorAll('.market-filter-btn').forEach(b => {
             if (b.getAttribute('onclick')?.includes(`'${type}'`)) {
                 b.classList.add('bg-meme-green', 'text-black');
-                b.classList.remove('bg-black', 'text-white');
+                b.classList.remove('bg-surface', 'text-primary-text');
             }
         });
     }
@@ -106,8 +121,8 @@ function renderMarketSubTabs() {
     container.innerHTML = subTabs.map(tab => {
         const isActive = window.marketSubFilter === tab.id;
         return `<button onclick="window.setMarketSubFilter('${tab.id}', this)"
-            class="px-3 py-1 text-[10px] font-display border-2 border-black uppercase italic transition-all shadow-brutal-sm hover:shadow-none
-            ${isActive ? 'bg-meme-cyan text-black' : 'bg-black text-white hover:bg-meme-cyan/20'}">${tab.label}</button>`;
+            class="px-3 py-1 text-[10px] font-display border-2 border-card uppercase italic transition-all shadow-brutal-sm hover:shadow-none
+            ${isActive ? 'bg-meme-cyan text-black' : 'bg-surface text-primary-text hover:bg-meme-cyan/20'}">${tab.label}</button>`;
     }).join('');
 }
 
@@ -131,7 +146,7 @@ window.filterMarket = function() {
             if (!grid) return;
 
             // Show loading state
-            grid.innerHTML = '<div class="col-span-full text-center py-20 text-gray-600 font-bold uppercase tracking-widest"><i class="fas fa-circle-notch fa-spin mr-2"></i> Searching...</div>';
+            grid.innerHTML = '<div class="col-span-full text-center py-20 text-muted-text font-bold uppercase tracking-widest"><i class="fas fa-circle-notch fa-spin mr-2"></i> Searching...</div>';
 
             const url = `${window.APP_CONFIG.BACKEND_API}/api/token-list?query=${encodeURIComponent(query)}`;
             const data = await window.fetchDirect(url);
@@ -253,7 +268,7 @@ function renderMarketGrid() {
     const display = filtered;
 
     if (display.length === 0) {
-        grid.innerHTML = '<div class="col-span-full text-center py-20 text-gray-600 font-bold uppercase tracking-widest">No assets found</div>';
+        grid.innerHTML = '<div class="col-span-full text-center py-20 text-muted-text font-bold uppercase tracking-widest">No assets found</div>';
         // Sembunyikan tombol load more saat kosong
         const loadMoreBtn = document.getElementById('loadMoreMarket');
         if (loadMoreBtn) loadMoreBtn.classList.add('hidden');
@@ -262,23 +277,23 @@ function renderMarketGrid() {
 
     grid.innerHTML = display.map(t => {
         const change = (t.price_change_24h * 100).toFixed(2);
-        const colorClass = t.price_change_24h >= 0 ? 'bg-meme-green text-black' : 'bg-meme-pink text-white';
+        const colorClass = t.price_change_24h >= 0 ? 'bg-meme-green text-black' : 'bg-meme-pink text-primary-text';
         const vol = window.formatAmount(t.volume_24h);
         const logoUrl = window.normalizeLogoUrl(t.logo);
 
         return `
-            <a href="trade.html?token=${t.address}" class="bg-meme-surface border-4 border-black p-4 md:p-6 shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all group block relative overflow-hidden">
+            <a href="trade.html?token=${t.address}" class="bg-surface border-4 border-card p-4 md:p-6 shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all group block relative overflow-hidden">
                 <div class="flex items-center gap-3 md:gap-4 mb-6 md:mb-8">
                     <div class="relative flex-shrink-0">
                         ${logoUrl ?
-                            `<img src="${logoUrl}" class="w-10 h-10 md:w-12 md:h-12 border-2 border-black group-hover:rotate-6 transition-transform shadow-brutal-sm object-cover" onerror=\"this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');\">
-                             <div class="hidden w-10 h-10 md:w-12 md:h-12 bg-meme-yellow border-2 border-black flex items-center justify-center text-lg font-display text-black shadow-brutal-sm">${t.symbol.charAt(0)}</div>` :
-                            `<div class="w-10 h-10 md:w-12 md:h-12 bg-meme-yellow border-2 border-black flex items-center justify-center text-lg font-display text-black shadow-brutal-sm">${t.symbol.charAt(0)}</div>`
+                            `<img src="${logoUrl}" class="w-10 h-10 md:w-12 md:h-12 border-2 border-card group-hover:rotate-6 transition-transform shadow-brutal-sm object-cover" onerror=\"this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');\">
+                             <div class="hidden w-10 h-10 md:w-12 md:h-12 bg-meme-yellow border-2 border-card flex items-center justify-center text-lg font-display text-black shadow-brutal-sm">${t.symbol.charAt(0)}</div>` :
+                            `<div class="w-10 h-10 md:w-12 md:h-12 bg-meme-yellow border-2 border-card flex items-center justify-center text-lg font-display text-black shadow-brutal-sm">${t.symbol.charAt(0)}</div>`
                         }
                     </div>
                     <div class="flex-1 overflow-hidden">
                         <div class="flex items-center gap-1.5 flex-wrap">
-                            <span class="font-display text-lg md:text-2xl text-white tracking-tighter uppercase italic break-all">${t.symbol}</span>
+                            <span class="font-display text-lg md:text-2xl text-primary-text tracking-tighter uppercase italic break-all">${t.symbol}</span>
                             ${t.verified ? `<i class="fas fa-check-circle text-meme-cyan text-xs md:text-sm flex-shrink-0"></i>` : ''}
                         </div>
                         <div class="text-[8px] md:text-[10px] text-meme-cyan font-mono font-bold uppercase tracking-widest">PRC-20 ASSET</div>
@@ -287,20 +302,20 @@ function renderMarketGrid() {
 
                 <div class="space-y-3 md:space-y-4 relative z-10">
                     <div>
-                        <div class="text-[8px] md:text-xs text-gray-500 font-mono font-bold uppercase tracking-widest mb-1 italic">Price</div>
-                        <div class="text-lg md:text-2xl font-display text-white italic tracking-tight truncate">${t.price_paxi.toFixed(8)} <span class="text-meme-yellow text-xs">PAXI</span></div>
+                        <div class="text-[8px] md:text-xs text-secondary-text font-mono font-bold uppercase tracking-widest mb-1 italic">Price</div>
+                        <div class="text-lg md:text-2xl font-display text-primary-text italic tracking-tight truncate">${t.price_paxi.toFixed(8)} <span class="text-meme-yellow text-xs">PAXI</span></div>
                     </div>
 
-                    <div class="flex justify-between items-center pt-3 md:pt-4 border-t-2 border-black">
-                        <div class="px-2 md:px-3 py-0.5 md:py-1 border-2 border-black font-display text-[10px] md:text-base ${colorClass}">
+                    <div class="flex justify-between items-center pt-3 md:pt-4 border-t-2 border-card">
+                        <div class="px-2 md:px-3 py-0.5 md:py-1 border-2 border-card font-display text-[10px] md:text-base ${colorClass}">
                             ${t.price_change_24h >= 0 ? '+' : ''}${change}%
                         </div>
                         <div class="text-right">
-                            <div class="text-[7px] md:text-[8px] text-gray-600 font-mono font-bold uppercase tracking-widest italic">Volume</div>
+                            <div class="text-[7px] md:text-[8px] text-muted-text font-mono font-bold uppercase tracking-widest italic">Volume</div>
                             <div class="text-[10px] md:text-base font-display text-meme-cyan italic tracking-tight">${vol}</div>
                         </div>
                     </div>
-                    <div class="text-[8px] text-gray-500 font-mono mt-0.5" title="${t.address}">${t.address.slice(0, 6)}....${t.address.slice(-6)}</div>
+                    <div class="text-[8px] text-secondary-text font-mono mt-0.5" title="${t.address}">${t.address.slice(0, 6)}....${t.address.slice(-6)}</div>
                 </div>
             </a>
         `;
@@ -328,7 +343,7 @@ async function initGlobalMarketAI() {
         const data = await window.fetchDirect(url);
 
         if (!data || !data.contracts || data.contracts.length === 0) {
-            container.innerHTML = '<p class="text-gray-600 font-black uppercase tracking-widest text-sm">Market scan currently restricted</p>';
+            container.innerHTML = '<p class="text-muted-text font-black uppercase tracking-widest text-sm">Market scan currently restricted</p>';
             return;
         }
 
@@ -350,12 +365,12 @@ async function initGlobalMarketAI() {
         if (serverResult) {
             renderIndexAI(container, topToken, serverResult);
         } else {
-            container.innerHTML = '<p class="text-gray-600 font-black uppercase tracking-widest text-sm">AI pipeline offline</p>';
+            container.innerHTML = '<p class="text-muted-text font-black uppercase tracking-widest text-sm">AI pipeline offline</p>';
         }
 
     } catch (e) {
         console.error('Landing AI error:', e);
-        container.innerHTML = '<p class="text-gray-600 font-black uppercase tracking-widest text-sm">Scan failed</p>';
+        container.innerHTML = '<p class="text-muted-text font-black uppercase tracking-widest text-sm">Scan failed</p>';
     }
 }
 
@@ -368,46 +383,46 @@ function renderIndexAI(container, token, aiText) {
     container.innerHTML = `
         <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 md:gap-12 mb-6 md:mb-12">
             <div class="flex items-center gap-4 md:gap-6">
-                <div class="w-12 h-12 md:w-20 md:h-20 bg-meme-surface border-2 md:border-4 border-black flex items-center justify-center ${colorClass} text-xl md:text-4xl shadow-[4px_4px_0_0_#000] md:shadow-brutal rotate-[-5deg]">
+                <div class="w-12 h-12 md:w-20 md:h-20 bg-surface border-2 md:border-4 border-card flex items-center justify-center ${colorClass} text-xl md:text-4xl shadow-[4px_4px_0_0_#000] md:shadow-brutal rotate-[-5deg]">
                     <i class="fas fa-brain"></i>
                 </div>
                 <div>
                     <h3 class="font-display italic uppercase text-2xl md:text-4xl tracking-tighter">AI <span class="${colorClass}">ANALYSIS</span></h3>
-                    <p class="font-mono text-[8px] md:text-xs text-gray-600 font-bold uppercase tracking-[0.4em]">GEMINI PRO 1.5 VERIFIED</p>
+                    <p class="font-mono text-[8px] md:text-xs text-muted-text font-bold uppercase tracking-[0.4em]">GEMINI PRO 1.5 VERIFIED</p>
                 </div>
             </div>
-            <div class="px-4 md:px-8 py-1.5 md:py-3 bg-black border-2 md:border-4 border-current ${colorClass} font-display text-lg md:text-2xl shadow-[4px_4px_0_0_#000] md:shadow-brutal rotate-[2deg]">
+            <div class="px-4 md:px-8 py-1.5 md:py-3 bg-surface border-2 md:border-4 border-current ${colorClass} font-display text-lg md:text-2xl shadow-[4px_4px_0_0_#000] md:shadow-brutal rotate-[2deg]">
                 ${sentiment} VIBES
             </div>
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-12">
-            <div class="p-4 md:p-6 bg-meme-surface border-2 md:border-4 border-black shadow-[4px_4px_0_0_#000] md:shadow-brutal">
-                <div class="text-[8px] md:text-[10px] text-gray-500 font-mono font-bold uppercase tracking-widest mb-1 md:mb-2">TARGET</div>
-                <div class="text-lg md:text-2xl font-display text-white italic tracking-tight">${token.symbol}</div>
+            <div class="p-4 md:p-6 bg-surface border-2 md:border-4 border-card shadow-[4px_4px_0_0_#000] md:shadow-brutal">
+                <div class="text-[8px] md:text-[10px] text-secondary-text font-mono font-bold uppercase tracking-widest mb-1 md:mb-2">TARGET</div>
+                <div class="text-lg md:text-2xl font-display text-primary-text italic tracking-tight">${token.symbol}</div>
             </div>
-            <div class="p-4 md:p-6 bg-meme-surface border-2 md:border-4 border-black shadow-[4px_4px_0_0_#000] md:shadow-brutal">
-                <div class="text-[8px] md:text-[10px] text-gray-500 font-mono font-bold uppercase tracking-widest mb-1 md:mb-2">RISK LVL</div>
+            <div class="p-4 md:p-6 bg-surface border-2 md:border-4 border-card shadow-[4px_4px_0_0_#000] md:shadow-brutal">
+                <div class="text-[8px] md:text-[10px] text-secondary-text font-mono font-bold uppercase tracking-widest mb-1 md:mb-2">RISK LVL</div>
                 <div class="text-lg md:text-2xl font-display ${token.liquidity > 10000 ? 'text-meme-green' : 'text-meme-yellow'} italic tracking-tight">
                     ${token.liquidity > 20000 ? 'GIGA' : token.liquidity > 5000 ? 'MID' : 'REKT'}
                 </div>
             </div>
-            <div class="p-4 md:p-6 bg-meme-surface border-2 md:border-4 border-black shadow-[4px_4px_0_0_#000] md:shadow-brutal">
-                <div class="text-[8px] md:text-[10px] text-gray-500 font-mono font-bold uppercase tracking-widest mb-1 md:mb-2">TREND</div>
+            <div class="p-4 md:p-6 bg-surface border-2 md:border-4 border-card shadow-[4px_4px_0_0_#000] md:shadow-brutal">
+                <div class="text-[8px] md:text-[10px] text-secondary-text font-mono font-bold uppercase tracking-widest mb-1 md:mb-2">TREND</div>
                 <div class="text-lg md:text-2xl font-display text-meme-cyan italic tracking-tight">${token.price_change_24h > 0 ? 'MOON' : 'BLEED'}</div>
             </div>
-            <div class="p-4 md:p-6 bg-meme-surface border-2 md:border-4 border-black shadow-[4px_4px_0_0_#000] md:shadow-brutal">
-                <div class="text-[8px] md:text-[10px] text-gray-500 font-mono font-bold uppercase tracking-widest mb-1 md:mb-2">BRAIN</div>
-                <div class="text-lg md:text-2xl font-display text-white italic tracking-tight">9.8/10</div>
+            <div class="p-4 md:p-6 bg-surface border-2 md:border-4 border-card shadow-[4px_4px_0_0_#000] md:shadow-brutal">
+                <div class="text-[8px] md:text-[10px] text-secondary-text font-mono font-bold uppercase tracking-widest mb-1 md:mb-2">BRAIN</div>
+                <div class="text-lg md:text-2xl font-display text-primary-text italic tracking-tight">9.8/10</div>
             </div>
         </div>
 
-        <div class="bg-meme-surface border-2 md:border-4 border-black p-4 md:p-10 relative overflow-hidden group shadow-[4px_4px_0_0_#000] md:shadow-brutal">
+        <div class="bg-surface border-2 md:border-4 border-card p-4 md:p-10 relative overflow-hidden group shadow-[4px_4px_0_0_#000] md:shadow-brutal">
             <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/micro-carbon.png')] opacity-10"></div>
             <div class="relative z-10">
                 <div class="flex items-center gap-3 mb-6">
                     <div class="w-4 h-4 bg-meme-green animate-ping"></div>
-                    <div class="font-mono text-sm font-bold text-gray-500 uppercase tracking-widest">AI INTERPRETATION OUTPUT</div>
+                    <div class="font-mono text-sm font-bold text-secondary-text uppercase tracking-widest">AI INTERPRETATION OUTPUT</div>
                 </div>
                 <div class="text-2xl text-gray-300 leading-tight italic font-mono">
                     "${aiText}"
@@ -416,7 +431,7 @@ function renderIndexAI(container, token, aiText) {
         </div>
 
         <div class="mt-8 md:mt-10 flex justify-end">
-            <a href="trade.html?token=${token.address}" class="px-8 md:px-10 py-3 md:py-4 bg-meme-green text-black font-display text-xl md:text-3xl border-2 md:border-4 border-black shadow-[4px_4px_0_0_#000] md:shadow-brutal hover:translate-x-[2px] md:hover:translate-x-[4px] hover:translate-y-[2px] md:hover:translate-y-[4px] hover:shadow-none transition-all flex items-center gap-3 md:gap-5 rotate-[-1deg]">
+            <a href="trade.html?token=${token.address}" class="px-8 md:px-10 py-3 md:py-4 bg-meme-green text-black font-display text-xl md:text-3xl border-2 md:border-4 border-card shadow-[4px_4px_0_0_#000] md:shadow-brutal hover:translate-x-[2px] md:hover:translate-x-[4px] hover:translate-y-[2px] md:hover:translate-y-[4px] hover:shadow-none transition-all flex items-center gap-3 md:gap-5 rotate-[-1deg]">
                 TRADE NOW <i class="fas fa-arrow-right"></i>
             </a>
         </div>

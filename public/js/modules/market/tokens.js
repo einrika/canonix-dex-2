@@ -21,16 +21,13 @@ window.totalTokensAvailable = 0;
 window.processTokenDetail = function(contractAddress, data) {
     const c = data.contract || data;
     const decimals = c.decimals || 6;
-    const totalSupplyNum = parseFloat(c.total_supply || 0);
-    const totalSupply = totalSupplyNum / Math.pow(10, decimals);
 
-    let pricePaxi = 0;
-    if (c.reserve_prc20 > 0) {
-        pricePaxi = (parseFloat(c.reserve_paxi) / parseFloat(c.reserve_prc20)) * Math.pow(10, decimals - 6);
-    }
+    // Use pre-processed backend data if available, otherwise calculate fallback
+    const pricePaxi = c.processed ? c.price_paxi : (c.reserve_prc20 > 0 ? (parseFloat(c.reserve_paxi) / parseFloat(c.reserve_prc20)) * Math.pow(10, decimals - 6) : 0);
+    const mcapPaxi = c.processed ? c.market_cap : ((parseFloat(c.total_supply || 0) / Math.pow(10, decimals)) * pricePaxi);
+    const liqPaxi = c.processed ? c.liquidity : ((parseFloat(c.reserve_paxi || 0) * 2) / 1000000);
 
-    const marketCapPaxi = totalSupply * pricePaxi;
-    const marketCapUsd = marketCapPaxi * (window.paxiPriceUSD || 0.05);
+    const marketCapUsd = mcapPaxi * (window.paxiPriceUSD || 0.05);
     const logo = window.normalizeLogoUrl(c.logo);
     
     return {
@@ -40,14 +37,14 @@ window.processTokenDetail = function(contractAddress, data) {
         symbol: c.symbol || 'N/A',
         decimals: decimals,
         total_supply: c.total_supply,
-        total_supply_num: totalSupply,
+        total_supply_num: c.total_supply_num || (parseFloat(c.total_supply || 0) / Math.pow(10, decimals)),
         logo: logo,
         description: c.desc || '',
         project: c.project || '',
         marketing: c.marketing || '',
         holders: parseInt(c.holders || 0, 10),
-        liquidity: (parseFloat(c.reserve_paxi || 0) * 2) / 1000000,
-        liquidity_usd: (parseFloat(c.reserve_paxi || 0) * 2 * (window.paxiPriceUSD || 0.05)) / 1000000,
+        liquidity: liqPaxi,
+        liquidity_usd: liqPaxi * (window.paxiPriceUSD || 0.05),
         verified: c.official_verified === true,
         price_change_24h: parseFloat(c.price_change || 0),
         reserve_paxi: parseFloat(c.reserve_paxi || 0),
@@ -55,7 +52,7 @@ window.processTokenDetail = function(contractAddress, data) {
         price_paxi: pricePaxi,
         price_usd: pricePaxi * (window.paxiPriceUSD || 0.05),
         volume_24h: parseFloat(c.volume || 0),
-        market_cap: marketCapPaxi,
+        market_cap: mcapPaxi,
         market_cap_usd: marketCapUsd,
         buys: parseInt(c.buys || 0),
         sells: parseInt(c.sells || 0),
@@ -79,16 +76,68 @@ window.loadTokensOptimized = async function() {
         if (!window.isTokensLoaded) {
             window.isTokensLoaded = true;
             await window.loadAllTokenAddresses();
-            window.startTokenListPolling();
+            // Polling removed: WebSocket now handles updates via paxi_token_list_updated
+            window.setupTokenSocketListeners();
         }
     }
+};
+
+// ===== TOKEN SOCKET LISTENERS =====
+window.setupTokenSocketListeners = function() {
+    window.addEventListener('paxi_token_list_updated', (event) => {
+        const data = event.detail;
+        if (data && data.contracts) {
+            data.contracts.forEach(c => {
+                const detail = window.processTokenDetail(c.contract_address, c);
+                window.tokenDetails.set(c.contract_address, detail);
+                if (!window.tokenAddresses.includes(c.contract_address)) {
+                    window.tokenAddresses.push(c.contract_address);
+                }
+            });
+
+            if (window.renderTokenSidebar) {
+                window.renderTokenSidebar(window.currentTokenSearch || '');
+            }
+            if (window.updateTicker) window.updateTicker();
+            window.updateTokenCounter();
+        }
+    });
+
+    window.addEventListener('paxi_price_updated_socket', (event) => {
+        const data = event.detail;
+        const currentDetail = window.tokenDetails.get(data.address);
+        if (currentDetail) {
+            // Update detail with new socket data
+            const updated = {
+                ...currentDetail,
+                price_paxi: data.price_paxi,
+                price_change_24h: data.price_change,
+                reserve_paxi: data.reserve_paxi,
+                reserve_prc20: data.reserve_prc20,
+                volume_24h: data.volume_24h
+            };
+
+            // Re-process to update MCAP/LIQ based on new price
+            const processed = window.processTokenDetail(data.address, updated);
+            window.tokenDetails.set(data.address, processed);
+
+            // Update UI if this is the selected token
+            if (window.currentPRC20 === data.address) {
+                if (window.updateDashboard) window.updateDashboard(processed);
+                // Also trigger chart update if live
+                if (window.updateLivePrice) window.updateLivePrice(processed.price_paxi);
+            }
+
+            if (window.updateTokenCard) window.updateTokenCard(data.address);
+        }
+    });
 };
 
 // ===== LOAD ALL TOKEN ADDRESSES =====
 window.loadAllTokenAddresses = async function() {
     try {
         const url0 = `${window.APP_CONFIG.BACKEND_API}/api/token-list?page=0`;
-        const data0 = await window.fetchDirect(url0);
+        const data0 = await window.fetchDirect(url0, { cache: 'no-store' });
         
         if (!data0 || !data0.contracts) {
             throw new Error('Invalid response from Explorer API');
@@ -124,41 +173,10 @@ window.loadAllTokenAddresses = async function() {
     }
 };
 
-// ===== START TOKEN LIST POLLING =====
+// ===== START TOKEN LIST POLLING ===== (DEPRECATED: Use WebSocket)
 window.tokenPollingInterval = null;
 window.startTokenListPolling = function() {
-    if (window.tokenPollingInterval) clearInterval(window.tokenPollingInterval);
-
-    window.tokenPollingInterval = setInterval(async () => {
-        // Only poll if sidebar is visible or on trade page
-        const sidebar = document.getElementById('tokenSidebar');
-        if (!sidebar) return; // Exit if not on trade page
-
-        const isVisible = window.innerWidth >= 1024 || (!sidebar.classList.contains('-translate-x-full'));
-        if (!isVisible) return;
-
-        try {
-            // We only refresh page 0 for price updates
-                const url = `${window.APP_CONFIG.BACKEND_API}/api/token-list?page=0`;
-            const data = await window.fetchDirect(url);
-
-            if (data && data.contracts) {
-                data.contracts.forEach(c => {
-                    const detail = window.processTokenDetail(c.contract_address, c);
-                    window.tokenDetails.set(c.contract_address, detail);
-                });
-
-                // Trigger dynamic patch (renderTokenSidebar handles diff/patch)
-                if (window.renderTokenSidebar) {
-                    window.renderTokenSidebar(window.currentTokenSearch || '');
-                }
-
-                if (window.updateTicker) window.updateTicker();
-            }
-        } catch (e) {
-            console.warn('Token polling failed:', e);
-        }
-    }, 30000); // 30 seconds
+    console.log('[Tokens] startTokenListPolling called but is deprecated. Using WebSocket.');
 };
 
 // ===== UPDATE TOKEN COUNTER =====
@@ -215,7 +233,7 @@ window.fetchNextContractPage = async function() {
 window.loadTokenDetail = async function(contractAddress) {
     try {
         const url = `${window.APP_CONFIG.BACKEND_API}/api/token-detail?address=${contractAddress}`;
-        const data = await window.fetchDirect(url);
+        const data = await window.fetchDirect(url, { cache: 'no-store' });
         
         if (data && data.contract) {
             const detail = window.processTokenDetail(contractAddress, data);
@@ -266,19 +284,19 @@ window.setSort = async function(sortType, event) {
     window.currentSort = sortType;
     document.querySelectorAll('.sort-btn').forEach(btn => {
         btn.classList.remove('bg-meme-green', 'text-black');
-        btn.classList.add('bg-black', 'text-white');
+        btn.classList.add('bg-surface', 'text-primary-text');
     });
 
     if (event && event.currentTarget) {
         event.currentTarget.classList.add('bg-meme-green', 'text-black');
-        event.currentTarget.classList.remove('bg-black', 'text-white');
+        event.currentTarget.classList.remove('bg-surface', 'text-primary-text');
     } else {
         // Fallback search by sortType if event is missing (e.g. initial load)
         const allBtns = document.querySelectorAll('.sort-btn');
         allBtns.forEach(btn => {
             if (btn.getAttribute('onclick')?.includes(`'${sortType}'`)) {
                 btn.classList.add('bg-meme-green', 'text-black');
-                btn.classList.remove('bg-black', 'text-white');
+                btn.classList.remove('bg-surface', 'text-primary-text');
             }
         });
     }
@@ -383,6 +401,11 @@ window.refreshAllUI = async function() {
 
 // ===== SELECT PRC20 =====
 window.selectPRC20 = async function(contractAddress) {
+    // WebSocket: Subscribe to token updates
+    if (window.PaxiSocket && window.PaxiSocket.subscribeToken) {
+        window.PaxiSocket.subscribeToken(contractAddress);
+    }
+
     window.currentPRC20 = contractAddress;
     window.holdersPage = 1;
 
