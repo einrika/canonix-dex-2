@@ -1,77 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Settings – Canonix DEX</title>
+    <!-- TAILWIND -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind = {
             config: {
-            theme: {
-                extend: {
-                    colors: {
-                        'meme-black': '#0B0C0D',
-                        'meme-surface': '#121314',
-                        'meme-card': '#1A1B1C',
-                        'meme-green': '#00D685',
-                        'meme-pink': '#D60047',
-                        'meme-cyan': '#00B2D6',
-                        'meme-yellow': '#D6B500',
-                        up: '#00D685',
-                        down: '#D60047',
-                        accent: '#00B2D6',
-                        bg: '#0B0C0D',
-                        surface: '#121314',
-                        card: '#1A1B1C',
-                        border: '#0B0C0D',
-                        // Text colors for dark background
-                        'primary-text': '#FAFAFA',
-                        'secondary-text': '#E5E5E5',
-                        'muted-text': '#B3B3B3',
-                    },
-                    fontFamily: {
-                        display: ['Bangers', 'system-ui'],
-                        mono: ['Space Mono', 'monospace'],
-                        sans: ['DM Sans', 'sans-serif'],
-                    },
-                    boxShadow: {
-                        'brutal-sm': '2px 2px 0px 0px rgba(11,12,13,1)',
-                        'brutal': '4px 4px 0px 0px rgba(11,12,13,1)',
-                        'brutal-lg': '6px 6px 0px 0px rgba(11,12,13,1)',
-                        'brutal-green': '4px 4px 0px 0px #00D685',
-                        'brutal-pink': '4px 4px 0px 0px #D60047',
-                        'brutal-cyan': '4px 4px 0px 0px #00B2D6',
-                        'brutal-yellow': '4px 4px 0px 0px #D6B500',
-                    },
-                    animation: {
-                        'float': 'float 6s ease-in-out infinite',
-                        'marquee': 'marquee 25s linear infinite',
-                    },
-                    keyframes: {
-                        float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } },
-                        marquee: { '0%': { transform: 'translateX(0%)' }, '100%': { transform: 'translateX(-50%)' } }
+                theme: {
+                    extend: {
+                        colors: {
+                            'meme-black': '#0B0C0D',
+                            'meme-surface': '#121314',
+                            'meme-card': '#1A1B1C',
+                            'meme-green': '#00D685',
+                            'meme-pink': '#D60047',
+                            'meme-cyan': '#00B2D6',
+                            'meme-yellow': '#D6B500',
+                            up: '#00D685',
+                            down: '#D60047',
+                            accent: '#00B2D6',
+                            bg: '#0B0C0D',
+                            surface: '#121314',
+                            card: '#1A1B1C',
+                            border: '#0B0C0D',
+                            // Text colors for dark background
+                            'primary-text': '#FAFAFA',
+                            'secondary-text': '#E5E5E5',
+                            'muted-text': '#B3B3B3',
+                        },
+                        fontFamily: {
+                            display: ['Bangers', 'system-ui'],
+                            mono: ['Space Mono', 'monospace'],
+                            sans: ['DM Sans', 'sans-serif'],
+                        },
+                        boxShadow: {
+                            'brutal-sm': '2px 2px 0px 0px rgba(11,12,13,1)',
+                            'brutal': '4px 4px 0px 0px rgba(11,12,13,1)',
+                            'brutal-lg': '6px 6px 0px 0px rgba(11,12,13,1)',
+                            'brutal-green': '4px 4px 0px 0px #00D685',
+                            'brutal-pink': '4px 4px 0px 0px #D60047',
+                            'brutal-cyan': '4px 4px 0px 0px #00B2D6',
+                            'brutal-yellow': '4px 4px 0px 0px #D6B500',
+                        },
+                        animation: {
+                            'float': 'float 6s ease-in-out infinite',
+                            'marquee': 'marquee 25s linear infinite',
+                        },
+                        keyframes: {
+                            float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } },
+                            marquee: { '0%': { transform: 'translateX(0%)' }, '100%': { transform: 'translateX(-50%)' } }
+                        }
                     }
                 }
             }
         }
-        }
     </script>
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Settings – Canonix DEX</title>
-
+    
     <!-- FONTS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
-
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- TAILWIND -->
-
+    
 </head>
-<body class="bg-bg text-primary-text font-sans min-h-screen selection:bg-meme-pink selection:text-primary-text">
 
+<body class="bg-bg text-primary-text font-sans min-h-screen selection:bg-meme-pink selection:text-primary-text">
+    
     <!-- HEADER -->
     <header class="h-16 border-b-2 border-card flex items-center justify-between px-4 md:px-8 bg-surface sticky top-0 z-50">
         <div class="flex items-center gap-3">
@@ -88,9 +87,9 @@
             <div class="w-10 h-10 bg-surface border-2 border-card flex items-center justify-center text-meme-cyan rotate-[-5deg]"><i class="fas fa-cog"></i></div>
         </div>
     </header>
-
+    
     <main class="max-w-2xl mx-auto p-4 md:p-8 space-y-8">
-
+        
         <!-- UI Settings -->
         <section class="bg-surface border-2 border-card p-6 shadow-brutal rotate-[-0.5deg]">
             <h3 class="text-3xl font-display text-meme-pink mb-6 italic uppercase tracking-tighter leading-none"><i class="fas fa-desktop mr-3 text-xl"></i>Interface</h3>
@@ -106,7 +105,7 @@
                         <div class="absolute left-1 top-1 w-4 h-4 bg-white border-2 border-card transition-transform peer-checked:translate-x-6"></div>
                     </label>
                 </div>
-
+                
                 <div class="flex items-center justify-between p-4 bg-surface border border-card group">
                     <div>
                         <div class="text-xl font-display text-primary-text uppercase italic tracking-tighter">Result Modal</div>
@@ -118,7 +117,7 @@
                         <div class="absolute left-1 top-1 w-4 h-4 bg-white border-2 border-card transition-transform peer-checked:translate-x-6"></div>
                     </label>
                 </div>
-
+                
                 <div class="flex items-center justify-between p-4 bg-surface border border-card group">
                     <div>
                         <div class="text-xl font-display text-primary-text uppercase italic tracking-tighter">Compact View</div>
@@ -132,7 +131,7 @@
                 </div>
             </div>
         </section>
-
+        
         <!-- Trading Settings -->
         <section class="bg-surface border-2 border-card p-6 shadow-brutal rotate-[0.5deg]">
             <h3 class="text-3xl font-display text-meme-green mb-6 italic uppercase tracking-tighter leading-none"><i class="fas fa-bolt mr-3 text-xl"></i>Execution</h3>
@@ -146,7 +145,7 @@
                         <input type="number" placeholder="Custom" class="py-2 bg-surface border-2 border-card text-primary-text font-display text-base outline-none focus:border-meme-pink text-center placeholder:text-muted-text italic">
                     </div>
                 </div>
-
+                
                 <div class="flex items-center justify-between p-4 bg-surface border border-card group">
                     <div>
                         <div class="text-xl font-display text-primary-text uppercase italic tracking-tighter">Expert Mode</div>
@@ -160,7 +159,7 @@
                 </div>
             </div>
         </section>
-
+        
         <!-- Security -->
         <section class="bg-surface border-2 border-card p-6 shadow-brutal rotate-[-0.3deg]">
             <h3 class="text-3xl font-display text-meme-cyan mb-6 italic uppercase tracking-tighter leading-none"><i class="fas fa-shield-alt mr-3 text-xl"></i>Security</h3>
@@ -172,7 +171,7 @@
                     </div>
                     <i class="fas fa-chevron-right text-muted-text group-hover:text-meme-pink transition-colors"></i>
                 </button>
-
+                
                 <button class="w-full flex items-center justify-between p-4 bg-surface border border-card hover:border-meme-pink group transition-colors">
                     <div class="text-left">
                         <div class="text-xl font-display text-primary-text uppercase italic tracking-tighter leading-none mb-1">Change Access PIN</div>
@@ -180,22 +179,22 @@
                     </div>
                     <i class="fas fa-chevron-right text-muted-text group-hover:text-meme-pink transition-colors"></i>
                 </button>
-
+                
                 <button class="w-full py-4 bg-meme-pink/10 border-2 border-meme-pink text-meme-pink font-display text-2xl shadow-brutal-sm hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all uppercase italic tracking-tighter">DESTROY WALLET</button>
             </div>
         </section>
-
+        
         <div class="text-center pt-8">
-            <p class="font-mono text-[8px] text-muted-text font-bold uppercase tracking-[0.3em] italic">Canonix Protocol v1.0.4-Alpha | Paxi Mainnet</p>
+            <p class="font-mono text-[8px] text-muted-text font-bold uppercase tracking-[0.3em] italic">Canonix | Paxi Mainnet</p>
         </div>
     </main>
-
+    
     <script>
         function updateSetting(key, value) {
             localStorage.setItem(key, value);
             console.log(`Setting updated: ${key} = ${value}`);
         }
-
+        
         function loadSettings() {
             const enableModal = localStorage.getItem('paxi_enable_result_modal');
             const toggle = document.getElementById('toggleResultModal');
@@ -204,8 +203,9 @@
                 toggle.checked = enableModal === null ? true : enableModal === 'true';
             }
         }
-
+        
         window.onload = loadSettings;
     </script>
 </body>
+
 </html>
