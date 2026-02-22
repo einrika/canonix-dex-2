@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'meme-black': '#000000',
+                        'meme-surface': '#050505',
+                        'meme-card': '#0D0D0D',
+                        'meme-green': '#00D685',
+                        'meme-pink': '#D60047',
+                        'meme-cyan': '#00B2D6',
+                        'meme-yellow': '#D6B500',
+                    },
+                    fontFamily: {
+                        display: ['Bangers', 'system-ui'],
+                        mono: ['Space Mono', 'monospace'],
+                        sans: ['DM Sans', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'brutal-sm': '2px 2px 0px 0px rgba(0,0,0,1)',
+                        'brutal': '4px 4px 0px 0px rgba(0,0,0,1)',
+                        'brutal-lg': '6px 6px 0px 0px rgba(0,0,0,1)',
+                    }
+                }
+            }
+        }
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOKEN DETAIL - CANONIX PRESALE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-black text-white font-sans min-h-screen flex flex-col">
+    <nav class="sticky top-0 z-[90] bg-black border-b-4 border-black">
+        <div class="max-w-[1400px] mx-auto px-6 h-16 md:h-20 flex items-center justify-between">
+            <a href="pre-market.html" class="flex items-center gap-4 group">
+                <i class="fas fa-arrow-left text-2xl"></i>
+                <span class="text-2xl font-display tracking-widest uppercase">BACK</span>
+            </a>
+            <div id="walletInfo" class="flex items-center gap-4">
+                <span id="userAddress" class="hidden md:block font-mono text-xs text-gray-400 uppercase">Not Connected</span>
+                <i class="fas fa-wallet text-meme-green"></i>
+            </div>
+        </div>
+    </nav>
+
+    <main id="tokenDetailView" class="flex-1 max-w-[1000px] mx-auto px-6 py-12 w-full">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <!-- Left: Info -->
+            <div class="space-y-8">
+                <header>
+                    <div class="w-20 h-20 bg-meme-cyan border-4 border-black shadow-brutal flex items-center justify-center font-display text-5xl mb-6 rotate-[-5deg]">
+                        <span id="tokenInitial">?</span>
+                    </div>
+                    <h1 id="tokenName" class="text-5xl font-display uppercase italic tracking-tighter mb-2">LOADING...</h1>
+                    <p id="tokenSymbol" class="font-mono text-meme-cyan uppercase tracking-[0.3em]">SYMBOL</p>
+                </header>
+
+                <div class="bg-meme-surface border-4 border-black p-6 space-y-4">
+                    <div class="flex justify-between items-center border-b border-black/20 pb-2">
+                        <span class="font-mono text-xs text-gray-500 uppercase">Presale Price</span>
+                        <span id="tokenPrice" class="font-display text-2xl text-meme-yellow">-- PAXI</span>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-black/20 pb-2">
+                        <span class="font-mono text-xs text-gray-500 uppercase">Hardcap</span>
+                        <span id="tokenHardcap" class="font-display text-2xl">-- PAXI</span>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="flex justify-between font-display text-xl uppercase italic">
+                        <span>Sale Progress</span>
+                        <span id="progressText" class="text-meme-green">0%</span>
+                    </div>
+                    <div class="h-8 bg-meme-card border-4 border-black shadow-brutal-sm overflow-hidden">
+                        <div id="progressBar" class="h-full bg-meme-green transition-all duration-1000" style="width: 0%"></div>
+                    </div>
+                    <div class="flex justify-between font-mono text-[10px] uppercase text-gray-500">
+                        <span>Raised: <span id="totalRaised" class="text-white">0 PAXI</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Buy -->
+            <div class="bg-meme-card border-4 border-black shadow-brutal p-8 flex flex-col gap-8">
+                <h2 class="font-display text-3xl uppercase italic border-b-4 border-black pb-4">BUY TOKENS</h2>
+
+                <div class="space-y-4">
+                    <label class="block font-mono text-xs uppercase text-gray-400">Amount to pay (PAXI)</label>
+                    <div class="relative">
+                        <input id="paxiAmount" type="number" placeholder="0.00" class="w-full bg-black border-4 border-black p-4 font-display text-3xl focus:outline-none focus:border-meme-pink transition-colors">
+                        <span class="absolute right-4 top-1/2 -translate-y-1/2 font-display text-xl text-gray-500 uppercase">PAXI</span>
+                    </div>
+                </div>
+
+                <div class="flex flex-col items-center justify-center p-4 bg-black/50 border-2 border-dashed border-black/30">
+                    <span class="font-mono text-[10px] uppercase text-gray-500 mb-2">You will receive</span>
+                    <div class="flex items-baseline gap-2">
+                        <span id="tokenAmount" class="font-display text-4xl text-meme-green">0.00</span>
+                        <span class="font-display text-xl uppercase">TOKENS</span>
+                    </div>
+                </div>
+
+                <button id="buyBtn" class="w-full py-5 bg-meme-pink text-white font-display text-3xl border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">
+                    PURCHASE NOW
+                </button>
+
+                <p class="font-mono text-[10px] text-gray-500 text-center uppercase leading-relaxed">
+                    Tokens will be automatically distributed to your wallet after transaction verification (approx. 1-2 minutes).
+                </p>
+            </div>
+        </div>
+
+        <!-- History -->
+        <div class="mt-20">
+            <h2 class="font-display text-3xl uppercase italic mb-8">Your Purchase History</h2>
+            <div class="bg-meme-surface border-4 border-black overflow-hidden">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-black border-b-4 border-black">
+                        <tr>
+                            <th class="p-4 font-display text-xl uppercase">Token</th>
+                            <th class="p-4 font-display text-xl uppercase">Paid</th>
+                            <th class="p-4 font-display text-xl uppercase">Received</th>
+                            <th class="p-4 font-display text-xl uppercase text-right">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyContainer">
+                        <!-- Loaded via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- UI Scripts -->
+    <script src="./js/core/config.js"></script>
+    <script src="./js/core/utils.js"></script>
+    <script src="./js/wallet-section/wallet-core.js"></script>
+    <script src="./js/presale.js"></script>
+</body>
+</html>
