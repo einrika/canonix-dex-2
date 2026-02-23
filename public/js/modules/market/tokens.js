@@ -124,8 +124,6 @@ window.setupTokenSocketListeners = function() {
             // Update UI if this is the selected token
             if (window.currentPRC20 === data.address) {
                 if (window.updateDashboard) window.updateDashboard(processed);
-                // Also trigger chart update if live
-                if (window.updateLivePrice) window.updateLivePrice(processed.price_paxi);
             }
 
             if (window.updateTokenCard) window.updateTokenCard(data.address);

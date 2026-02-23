@@ -73,10 +73,11 @@ window.formatPrice = function(price) {
 window.fetchDirect = async function(url, options = {}) {
     const BACKEND_API = window.APP_CONFIG.BACKEND_API;
     
-    // 1. Handle already full backend API URLs
-    if (url.startsWith(BACKEND_API)) {
+    // 1. Handle backend API URLs (full or relative)
+    if (url.startsWith(BACKEND_API) || url.startsWith('/api/')) {
         try {
-            const res = await fetch(url, {
+            const fullUrl = url.startsWith('/api/') ? `${BACKEND_API}${url}` : url;
+            const res = await fetch(fullUrl, {
                 method: options.method || 'GET',
                 headers: { 'Content-Type': 'application/json', ...options.headers },
                 body: options.body

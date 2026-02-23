@@ -206,14 +206,14 @@ window.openTxDetailModal = async function(hash, txType) {
 
         // Handle both wrapped and raw responses
         const tx = detail.tx_response || detail;
+        const txHash = tx.txhash || tx.hash || hash;
         
-        if (!tx || (!tx.txhash && !tx.hash)) {
-            content.innerHTML = `<div class="text-red-400 text-center uppercase font-bold">Invalid transaction data</div>`;
-            return;
-        }
         const meta = getTxMeta(txType);
         const time = tx.timestamp ? new Date(tx.timestamp).toLocaleString() : "-";
         
+        // Success code in Cosmos is 0 (number or string)
+        const isSuccess = tx.code === 0 || tx.code === "0" || (tx.tx_result && (tx.tx_result.code === 0 || tx.tx_result.code === "0"));
+
         content.innerHTML = `
             <div class="flex flex-col gap-4">
 
@@ -228,21 +228,21 @@ window.openTxDetailModal = async function(hash, txType) {
 
                     <div>
                         <div class="text-secondary-text text-[10px]">HASH</div>
-                        <a href="https://explorer.paxinet.io/txs/${tx.txhash || tx.hash}"
+                        <a href="https://explorer.paxinet.io/txs/${txHash}"
                            target="_blank"
                            class="font-mono break-all text-blue-400 hover:underline">
-                           ${tx.txhash || tx.hash}
+                           ${txHash}
                         </a>
                     </div>
 
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <div class="text-secondary-text text-[10px]">BLOCK</div>
-                            <div class="font-mono">${tx.height || tx.block || "-"}</div>
+                            <div class="font-mono">${tx.height || tx.block || (tx.tx_result ? tx.tx_result.height : "-")}</div>
                         </div>
                         <div>
                             <div class="text-secondary-text text-[10px]">GAS USED</div>
-                            <div class="font-mono">${tx.gas_used || tx.gasUsed || "-"}</div>
+                            <div class="font-mono">${tx.gas_used || tx.gasUsed || (tx.tx_result ? tx.tx_result.gas_used : "-")}</div>
                         </div>
                         <div>
                             <div class="text-secondary-text text-[10px]">TIME</div>
@@ -250,12 +250,22 @@ window.openTxDetailModal = async function(hash, txType) {
                         </div>
                         <div>
                             <div class="text-secondary-text text-[10px]">STATUS</div>
-                            <div class="${tx.code === 0 ? "text-green-400" : "text-red-400"} font-bold">
-                                ${tx.code === 0 ? "SUCCESS" : "FAILED"}
+                            <div class="${isSuccess ? "text-green-400" : "text-red-400"} font-bold">
+                                ${isSuccess ? "SUCCESS" : "FAILED"}
                             </div>
                         </div>
                     </div>
 
+                </div>
+
+                <div class="mt-2">
+                    <button onclick="document.getElementById('tx-raw-data').classList.toggle('hidden')"
+                            class="text-secondary-text hover:text-meme-cyan text-[9px] font-mono uppercase underline">
+                        Toggle Raw Data
+                    </button>
+                    <pre id="tx-raw-data" class="hidden mt-2 p-3 bg-black/50 border border-gray-800 rounded-lg overflow-x-auto text-[8px] text-gray-400 font-mono">
+${JSON.stringify(detail, null, 2)}
+                    </pre>
                 </div>
 
             </div>

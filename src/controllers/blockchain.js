@@ -117,9 +117,14 @@ const txDetailHandler = async (req, res) => {
         const url = `${LCD_URL}/cosmos/tx/v1beta1/txs/${hash}`;
         const response = await fetch(url, { timeout: 10000 });
         const data = await response.json();
+
+        if (!response.ok) {
+            return sendResponse(res, false, data, data.message || 'Tx detail fetch failed', response.status);
+        }
+
         return sendResponse(res, true, data);
     } catch (error) {
-        return sendResponse(res, false, null, 'Tx detail failed', 500);
+        return sendResponse(res, false, null, 'Tx detail failed: ' + error.message, 500);
     }
 };
 

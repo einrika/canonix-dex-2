@@ -121,13 +121,13 @@ const updatePriceData = async () => {
     const rooms = Array.from(ioInstance.sockets.adapter.rooms.keys())
         .filter(room => room.startsWith('token_'));
 
-    for (const room of rooms) {
+    await Promise.all(rooms.map(async (room) => {
         const address = room.replace('token_', '');
         const data = await fetchTokenPrice(address);
         if (data) {
             ioInstance.to(room).emit('price_update', data);
         }
-    }
+    }));
 };
 
 const fetchTokenPrice = async (address) => {
