@@ -193,90 +193,86 @@ window.openTxDetailModal = async function(hash, txType) {
     content.innerHTML = `
         <div class="text-center py-8">
             <div class="w-6 h-6 border-4 border-meme-green border-t-transparent rounded-full animate-spin mx-auto"></div>
-            <p class="text-[10px] text-gray-500 mt-2 font-mono uppercase italic tracking-widest">DECODING LEDGER...</p>
+            <p class="text-[10px] text-gray-500 mt-2 font-mono uppercase">Fetching data...</p>
         </div>
     `;
     
     try {
         const detail = await window.fetchTxDetail(hash);
         if (!detail) {
-            content.innerHTML = `<div class="text-red-400 text-center uppercase font-bold p-8 border-2 border-meme-pink/20 bg-meme-pink/5">Data Link Severed</div>`;
+            content.innerHTML = `<div class="text-red-400 text-center uppercase font-bold">No data received</div>`;
             return;
         }
 
-        // Use normalized data from backend
-        const isSuccess = detail.status === 'success';
+        // Handle both wrapped and raw responses
+        const tx = detail.tx_response || detail;
+        const txHash = tx.txhash || tx.hash || hash;
+        
         const meta = getTxMeta(txType);
-        const time = detail.timestamp ? new Date(detail.timestamp).toLocaleString() : "-";
-        const txHash = detail.hash || hash;
+        const time = tx.timestamp ? new Date(tx.timestamp).toLocaleString() : "-";
+        
+        // Success code in Cosmos is 0 (number or string)
+        const isSuccess = tx.code === 0 || tx.code === "0" || (tx.tx_result && (tx.tx_result.code === 0 || tx.tx_result.code === "0"));
 
         content.innerHTML = `
-            <div class="flex flex-col gap-5">
-                <!-- Header -->
-                <div class="flex items-center justify-between border-b-2 border-gray-800 pb-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-surface border-2 border-card flex items-center justify-center shadow-brutal-sm">
-                            <i class="fa-solid ${meta.icon} ${meta.color} text-lg"></i>
-                        </div>
-                        <div>
-                            <div class="font-display text-lg uppercase italic ${meta.color}">${meta.label}</div>
-                            <div class="text-[8px] text-secondary-text font-mono uppercase tracking-widest">TRANSACTION DETAILS</div>
-                        </div>
-                    </div>
-                    <div class="px-3 py-1 border-2 border-card font-display text-sm italic ${isSuccess ? 'bg-meme-green text-black' : 'bg-meme-pink text-white'}">
-                        ${isSuccess ? 'CONFIRMED' : 'REJECTED'}
+            <div class="flex flex-col gap-4">
+
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid ${meta.icon} ${meta.color}"></i>
+                    <div class="font-bold ${meta.color}">
+                        ${meta.label} DETAILS
                     </div>
                 </div>
 
-                <!-- Info Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="bg-surface/50 border-2 border-card p-3 shadow-brutal-sm">
-                        <div class="text-secondary-text text-[9px] font-mono uppercase tracking-widest mb-1 italic">Signature Hash</div>
-                        <a href="https://explorer.paxinet.io/txs/${txHash}" target="_blank"
-                           class="font-mono text-meme-cyan hover:underline break-all block text-[10px]">
+                <div class="border border-gray-800 rounded-lg p-3 bg-surface/30 flex flex-col gap-2">
+
+                    <div>
+                        <div class="text-secondary-text text-[10px]">HASH</div>
+                        <a href="https://explorer.paxinet.io/txs/${txHash}"
+                           target="_blank"
+                           class="font-mono break-all text-blue-400 hover:underline">
                            ${txHash}
                         </a>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-surface/50 border-2 border-card p-3 shadow-brutal-sm">
-                            <div class="text-secondary-text text-[9px] font-mono uppercase tracking-widest mb-1 italic">Block</div>
-                            <div class="font-display text-lg text-primary-text italic">${detail.height || '-'}</div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <div class="text-secondary-text text-[10px]">BLOCK</div>
+                            <div class="font-mono">${tx.height || tx.block || (tx.tx_result ? tx.tx_result.height : "-")}</div>
                         </div>
-                        <div class="bg-surface/50 border-2 border-card p-3 shadow-brutal-sm">
-                            <div class="text-secondary-text text-[9px] font-mono uppercase tracking-widest mb-1 italic">Gas Load</div>
-                            <div class="font-display text-lg text-primary-text italic">${detail.gas_used || '0'}</div>
+                        <div>
+                            <div class="text-secondary-text text-[10px]">GAS USED</div>
+                            <div class="font-mono">${tx.gas_used || tx.gasUsed || (tx.tx_result ? tx.tx_result.gas_used : "-")}</div>
+                        </div>
+                        <div>
+                            <div class="text-secondary-text text-[10px]">TIME</div>
+                            <div>${time}</div>
+                        </div>
+                        <div>
+                            <div class="text-secondary-text text-[10px]">STATUS</div>
+                            <div class="${isSuccess ? "text-green-400" : "text-red-400"} font-bold">
+                                ${isSuccess ? "SUCCESS" : "FAILED"}
+                            </div>
                         </div>
                     </div>
+
                 </div>
 
-                <!-- Footer Info -->
-                <div class="flex justify-between items-center text-[10px] font-mono text-muted-text bg-card/30 p-2 border-l-4 border-meme-cyan">
-                    <span>RECORDED: ${time}</span>
-                    <span class="uppercase italic">SOURCE: ${detail.source || 'LCD-NODE'}</span>
-                </div>
-
-                <!-- Raw Data -->
                 <div class="mt-2">
-                    <button onclick="this.nextElementSibling.classList.toggle('hidden')"
-                            class="text-secondary-text hover:text-meme-cyan text-[9px] font-mono uppercase underline italic">
-                        [ VIEW RAW DATA STREAM ]
+                    <button onclick="document.getElementById('tx-raw-data').classList.toggle('hidden')"
+                            class="text-secondary-text hover:text-meme-cyan text-[9px] font-mono uppercase underline">
+                        Toggle Raw Data
                     </button>
-                    <pre class="hidden mt-3 p-4 bg-black/80 border-2 border-card rounded-lg overflow-x-auto text-[9px] text-meme-green/80 font-mono scrollbar-thin">
-${JSON.stringify(detail.raw || detail, null, 2)}
+                    <pre id="tx-raw-data" class="hidden mt-2 p-3 bg-black/50 border border-gray-800 rounded-lg overflow-x-auto text-[8px] text-gray-400 font-mono">
+${JSON.stringify(detail, null, 2)}
                     </pre>
                 </div>
+
             </div>
         `;
     } catch (e) {
         console.error('Error opening tx modal:', e);
-        content.innerHTML = `
-            <div class="p-8 border-4 border-meme-pink bg-meme-pink/10 text-center">
-                <i class="fas fa-exclamation-triangle text-3xl text-meme-pink mb-4"></i>
-                <div class="font-display text-xl text-meme-pink uppercase italic mb-2">Signal Lost</div>
-                <div class="text-[10px] text-secondary-text font-mono uppercase">${e.message}</div>
-            </div>
-        `;
+        content.innerHTML = `<div class="text-red-400 text-center uppercase font-bold">Error: ${e.message}</div>`;
     }
 };
 

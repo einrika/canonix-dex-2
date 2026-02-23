@@ -26,7 +26,6 @@ const {
     rpcStatusHandler,
     rpcTxHandler,
     txDetailHandler,
-    getWalletDataHandler,
     broadcastHandler
 } = require('../controllers/blockchain');
 
@@ -55,7 +54,6 @@ router.get('/paxi-balance', paxiBalanceHandler);
 router.get('/rpc-status', rpcStatusHandler);
 router.get('/rpc-tx', rpcTxHandler);
 router.get('/tx-detail', txDetailHandler);
-router.get('/wallet-data', getWalletDataHandler);
 router.post('/broadcast', broadcastHandler);
 router.get('/wallet-tokens', myContractAccounts);
 router.get('/holders', holders);
