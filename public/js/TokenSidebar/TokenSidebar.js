@@ -1,0 +1,290 @@
+// ============================================
+// TOKENSIDEBAR LOGIC
+// ============================================
+
+import {
+    escapeHtml, numtokenlist, formatAmount, normalizeLogoUrl
+} from '../core/utils.js';
+
+export let currentSubSort = 'all';
+export let isTokenSidebarLoading = false;
+export let tokenElementMap = new Map();
+
+export const TokenSidebarLogic = (container) => {
+    container.querySelector('#tokenSidebarSearch')?.addEventListener('input', () => window.filterTokenSidebar());
+    container.querySelectorAll('#token-sort-btns button').forEach(btn => {
+        btn.addEventListener('click', (e) => window.setSort(btn.dataset.sort, e));
+    });
+
+    // Initial render if tokens are already loaded
+    if (window.tokenAddresses && window.tokenAddresses.length > 0) {
+        renderTokenSidebar();
+    }
+};
+
+export const renderTokenSidebar = function(filter = '', isAppend = false) {
+  const container = document.getElementById('tokenSidebarList');
+  if (!container) return;
+
+  let filtered = [...(window.tokenAddresses || [])];
+
+  Array.from(container.children).forEach(child => {
+      if (child.id !== 'tokenSubTabs' && !child.classList.contains('token-sidebar-item') &&
+          child.id !== 'tokenPager' && child.id !== 'tokenEndMarker') {
+          child.remove();
+      }
+  });
+
+  if (!filter) {
+      switch (window.currentSort) {
+        case 'nonpump':
+          filtered = filtered.filter(addr => window.tokenDetails.get(addr)?.is_pump === false);
+          break;
+        case 'verified':
+          filtered = filtered.filter(addr => window.tokenDetails.get(addr)?.verified === true);
+          break;
+      }
+  } else {
+    const lowerFilter = filter.toLowerCase();
+    filtered = filtered.filter(addr => {
+      const detail = window.tokenDetails.get(addr);
+      return addr.toLowerCase().includes(lowerFilter) ||
+        (detail && (detail.name?.toLowerCase().includes(lowerFilter) ||
+          detail.symbol?.toLowerCase().includes(lowerFilter)));
+    });
+  }
+
+  filtered.sort((a, b) => {
+    const aDetail = window.tokenDetails.get(a);
+    const bDetail = window.tokenDetails.get(b);
+    if (!aDetail && !bDetail) return 0;
+    if (!aDetail) return 1;
+    if (!bDetail) return -1;
+
+    const aVer = aDetail.verified ? 1 : 0;
+    const bVer = bDetail.verified ? 1 : 0;
+    if (aVer !== bVer) return bVer - aVer;
+
+    if (filter) {
+        const lowerFilter = filter.toLowerCase();
+        const aSym = aDetail.symbol?.toLowerCase() || '';
+        const bSym = bDetail.symbol?.toLowerCase() || '';
+        if (aSym === lowerFilter && bSym !== lowerFilter) return -1;
+        if (bSym === lowerFilter && aSym !== lowerFilter) return 1;
+    }
+
+    const sortType = (window.currentSort === 'nonpump' && currentSubSort !== 'all') ? currentSubSort : window.currentSort;
+    switch (sortType) {
+      case 'new':
+        if (aDetail.id && bDetail.id) return bDetail.id - aDetail.id;
+        return new Date(bDetail.created_at) - new Date(aDetail.created_at);
+      case 'marketcap':
+        return numtokenlist(bDetail.market_cap) - numtokenlist(aDetail.market_cap);
+      case 'gainer':
+        return numtokenlist(bDetail.price_change_24h) - numtokenlist(aDetail.price_change_24h);
+      case 'hot':
+      default:
+        return numtokenlist(bDetail.volume_24h) - numtokenlist(aDetail.volume_24h);
+    }
+  });
+
+  let subTabs = document.getElementById('tokenSubTabs');
+  if (window.currentSort === 'nonpump') {
+      if (!subTabs) {
+          subTabs = document.createElement('div');
+          subTabs.id = 'tokenSubTabs';
+          subTabs.className = 'flex gap-1 p-2 overflow-x-auto no-scrollbar bg-card/50 border-b border-border/50 mb-2 sticky top-0 z-10 backdrop-blur-sm';
+          container.prepend(subTabs);
+      }
+      const subTabsHtml = `
+            <button onclick="window.setSubSort('all')" class="px-3 py-1 text-[9px] font-display border-2 border-card uppercase italic transition-all shadow-brutal-sm hover:shadow-none ${currentSubSort === 'all' ? 'bg-meme-cyan text-black' : 'bg-surface text-primary-text hover:bg-meme-cyan/20'}">ALL NON-PUMP</button>
+            <button onclick="window.setSubSort('new')" class="px-3 py-1 text-[9px] font-display border-2 border-card uppercase italic transition-all shadow-brutal-sm hover:shadow-none ${currentSubSort === 'new' ? 'bg-meme-cyan text-black' : 'bg-surface text-primary-text hover:bg-meme-cyan/20'}">NEW</button>
+            <button onclick="window.setSubSort('gainer')" class="px-3 py-1 text-[9px] font-display border-2 border-card uppercase italic transition-all shadow-brutal-sm hover:shadow-none ${currentSubSort === 'gainer' ? 'bg-meme-cyan text-black' : 'bg-surface text-primary-text hover:bg-meme-cyan/20'}">GAINER</button>
+            <button onclick="window.setSubSort('hot')" class="px-3 py-1 text-[9px] font-display border-2 border-card uppercase italic transition-all shadow-brutal-sm hover:shadow-none ${currentSubSort === 'hot' ? 'bg-meme-cyan text-black' : 'bg-surface text-primary-text hover:bg-meme-cyan/20'}">HOT</button>
+            <button onclick="window.setSubSort('marketcap')" class="px-3 py-1 text-[9px] font-display border-2 border-card uppercase italic transition-all shadow-brutal-sm hover:shadow-none ${currentSubSort === 'marketcap' ? 'bg-meme-cyan text-black' : 'bg-surface text-primary-text hover:bg-meme-cyan/20'}">MCAP</button>
+            <button onclick="window.setSubSort('verified')" class="px-3 py-1 text-[9px] font-display border-2 border-card uppercase italic transition-all shadow-brutal-sm hover:shadow-none ${currentSubSort === 'verified' ? 'bg-meme-cyan text-black' : 'bg-surface text-primary-text hover:bg-meme-cyan/20'}">VERIFIED</button>
+      `;
+      if (subTabs.innerHTML !== subTabsHtml) subTabs.innerHTML = subTabsHtml;
+  } else if (subTabs) {
+      subTabs.remove();
+  }
+
+  if (!filtered.length) {
+    Array.from(container.children).forEach(child => {
+        if (child.id !== 'tokenSubTabs') child.remove();
+    });
+    tokenElementMap.clear();
+    const empty = document.createElement('div');
+    empty.className = 'text-center text-secondary-text py-8 empty-state';
+    empty.textContent = 'No tokens found';
+    container.appendChild(empty);
+    return;
+  } else {
+      const emptyState = container.querySelector('.empty-state');
+      if (emptyState) emptyState.remove();
+  }
+
+  const displayList = filtered.slice(0, window.displayLimit);
+  const targetIds = new Set(displayList);
+
+  tokenElementMap.forEach((el, id) => {
+      if (!targetIds.has(id)) {
+          el.remove();
+          tokenElementMap.delete(id);
+      }
+  });
+
+  displayList.forEach((addr, index) => {
+      let el = tokenElementMap.get(addr);
+      if (!el) {
+          el = createTokenElement(addr);
+          tokenElementMap.set(addr, el);
+      }
+      patchTokenElement(el, addr);
+      const currentChildren = Array.from(container.children).filter(c => c.classList.contains('token-sidebar-item'));
+      const expectedIndex = index;
+      if (currentChildren[expectedIndex] !== el) {
+          const offset = subTabs ? 1 : 0;
+          const refNode = container.children[expectedIndex + offset];
+          if (refNode) {
+              container.insertBefore(el, refNode);
+          } else {
+              container.appendChild(el);
+          }
+      }
+  });
+
+  let pager = document.getElementById('tokenPager');
+  const hasMoreLocal = filtered.length > window.displayLimit;
+  const mightHaveMoreAPI = !filter && window.hasMoreTokens;
+  if (hasMoreLocal || mightHaveMoreAPI) {
+      if (!pager) {
+          pager = document.createElement('div');
+          pager.id = 'tokenPager';
+          pager.className = 'p-6 flex justify-center w-full';
+          container.appendChild(pager);
+      }
+      const pagerHtml = `<button id="loadMoreTokensBtn" onclick="window.loadMoreTokens('${filter}')" class="px-6 py-2 bg-card border border-border rounded-xl text-[10px] font-black uppercase tracking-widest hover:border-up transition-all">Load More Tokens</button>`;
+      if (pager.innerHTML !== pagerHtml) pager.innerHTML = pagerHtml;
+  } else {
+      if (pager) pager.remove();
+      let endMarker = document.getElementById('tokenEndMarker');
+      if (filtered.length > 0) {
+          if (!endMarker) {
+              endMarker = document.createElement('div');
+              endMarker.id = 'tokenEndMarker';
+              endMarker.className = 'py-4 text-center text-[8px] text-muted-text uppercase font-black tracking-widest';
+              endMarker.textContent = 'End of Token List';
+              container.appendChild(endMarker);
+          }
+      } else if (endMarker) {
+          endMarker.remove();
+      }
+  }
+};
+
+export const createTokenElement = function(addr) {
+    const el = document.createElement('div');
+    el.className = 'token-sidebar-item p-3 flex items-center gap-3 cursor-pointer border-b border-card hover:bg-surface transition-all group';
+    el.setAttribute('data-token', addr);
+    el.onclick = () => window.selectPRC20(addr);
+    el.innerHTML = `
+        <div class="relative flex-shrink-0">
+            <div class="token-logo-container w-10 h-10 border-2 border-card bg-surface flex items-center justify-center text-[10px] font-black text-muted-text shadow-brutal-sm">?</div>
+            <div class="pump-indicator absolute -top-1 -right-1 w-3 h-3 bg-meme-green border border-card shadow-brutal-sm animate-pulse hidden"></div>
+            <div class="verified-indicator absolute -bottom-1 -right-1 text-[8px] text-meme-cyan bg-surface border border-card shadow-brutal-sm hidden"><i class="fas fa-check-circle"></i></div>
+        </div>
+        <div class="flex-1 min-w-0 overflow-hidden">
+            <div class="flex items-center justify-between gap-2 mb-0.5">
+                <span class="token-symbol font-display text-base text-primary-text truncate italic uppercase tracking-tighter flex-1">...</span>
+                <span class="token-change font-mono text-[10px] font-black uppercase text-secondary-text shrink-0">0.00%</span>
+            </div>
+            <div class="flex items-center justify-between text-[8px] font-mono font-bold text-muted-text uppercase italic">
+                <span class="token-name truncate flex-1">Loading...</span>
+                <div class="flex flex-col items-end">
+                    <span class="token-mcap text-secondary-text">MCap -</span>
+                    <span class="token-liq text-muted-text text-[6px]">Liq -</span>
+                </div>
+            </div>
+        </div>
+        <button class="info-btn p-1 text-muted-text hover:text-meme-green transition-colors">
+            <i class="fas fa-info-circle text-xs"></i>
+        </button>
+    `;
+    el.querySelector('.info-btn').onclick = (e) => {
+        e.stopPropagation();
+        window.showTokenDetail(e, addr);
+    };
+    return el;
+};
+
+export const patchTokenElement = function(el, addr) {
+    const detail = window.tokenDetails.get(addr);
+    if (!detail) return;
+    const isActive = window.currentPRC20 === addr;
+    if (isActive) el.classList.add('active', 'bg-meme-green/10', 'border-l-4', 'border-l-meme-green');
+    else el.classList.remove('active', 'bg-meme-green/10', 'border-l-4', 'border-l-meme-green');
+    const symbolEl = el.querySelector('.token-symbol');
+    const safeSymbol = escapeHtml(detail.symbol || '?');
+    if (symbolEl.textContent !== safeSymbol) symbolEl.textContent = safeSymbol;
+    const nameEl = el.querySelector('.token-name');
+    const safeName = escapeHtml(detail.name || addr.slice(0, 8));
+    if (nameEl.textContent !== safeName) nameEl.textContent = safeName;
+    const changeEl = el.querySelector('.token-change');
+    const priceChangeRaw = numtokenlist(detail.price_change_24h);
+    const priceChangePct = priceChangeRaw * 100;
+    const changeText = `${priceChangePct >= 0 ? '+' : ''}${priceChangePct.toFixed(2)}%`;
+    if (changeEl.textContent !== changeText) {
+        changeEl.textContent = changeText;
+        changeEl.classList.remove('text-soft-success', 'text-soft-failed');
+        changeEl.classList.add(priceChangePct >= 0 ? 'text-soft-success' : 'text-soft-failed');
+    }
+    const mcapEl = el.querySelector('.token-mcap');
+    const mcapUsd = numtokenlist(detail.market_cap_usd);
+    const mcapText = `MCap $${formatAmount(mcapUsd)}`;
+    if (mcapEl.textContent !== mcapText) mcapEl.textContent = mcapText;
+    const liqEl = el.querySelector('.token-liq');
+    const liqUsd = numtokenlist(detail.liquidity_usd);
+    const liqText = `Liq $${formatAmount(liqUsd)}`;
+    if (liqEl.textContent !== liqText) liqEl.textContent = liqText;
+    const pumpInd = el.querySelector('.pump-indicator');
+    if (detail.is_pump) pumpInd.classList.remove('hidden'); else pumpInd.classList.add('hidden');
+    const verInd = el.querySelector('.verified-indicator');
+    if (detail.verified) verInd.classList.remove('hidden'); else verInd.classList.add('hidden');
+    const logoContainer = el.querySelector('.token-logo-container');
+    const logoUrl = normalizeLogoUrl(detail.logo);
+    if (logoUrl) {
+        let img = logoContainer.querySelector('img');
+        if (!img) {
+            logoContainer.innerHTML = '';
+            img = document.createElement('img');
+            img.className = 'w-10 h-10 border-2 border-card group-hover:rotate-6 transition-transform object-cover';
+            img.loading = 'lazy';
+            img.onerror = () => { img.classList.add('hidden'); logoContainer.textContent = safeSymbol.charAt(0); };
+            logoContainer.appendChild(img);
+        }
+        if (img.src !== logoUrl) img.src = logoUrl;
+        img.classList.remove('hidden');
+    } else {
+        logoContainer.innerHTML = safeSymbol.charAt(0);
+    }
+};
+
+export const setSubSort = function(subSort) { currentSubSort = subSort; renderTokenSidebar(); };
+
+export const loadMoreTokens = async function(filter) {
+    if (isTokenSidebarLoading) return;
+    isTokenSidebarLoading = true;
+    const btn = document.getElementById('loadMoreTokensBtn');
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Loading...'; }
+    try {
+        if (!filter) { await window.fetchNextContractPage(); window.displayLimit = window.tokenAddresses.length; }
+        else { window.displayLimit += 20; }
+        renderTokenSidebar(filter, true);
+    } catch (e) { console.error('Load more error:', e); } finally { isTokenSidebarLoading = false; }
+};
+
+export const updateTokenCard = function(address) {
+    const el = tokenElementMap.get(address) || document.querySelector(`[data-token="${address}"]`);
+    if (el) patchTokenElement(el, address);
+};

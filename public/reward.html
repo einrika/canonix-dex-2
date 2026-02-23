@@ -2,6 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Rewards – Canonix DEX</title>
+
+    <!-- TAILWIND -->
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -10,9 +14,9 @@
             theme: {
                 extend: {
                     colors: {
-                        'meme-black': '#191922',
-                        'meme-surface': '#191922',
-                        'meme-card': '#21212e',
+                        'meme-black': '#0B0C0D',
+                        'meme-surface': '#121314',
+                        'meme-card': '#1A1B1C',
                         'meme-green': '#00D685',
                         'meme-pink': '#D60047',
                         'meme-cyan': '#00B2D6',
@@ -21,10 +25,10 @@
                         up: '#00D685',
                         down: '#D60047',
                         accent: '#00B2D6',
-                        bg: '#191922',
-                        surface: '#191922',
-                        card: '#21212e',
-                        border: '#000000',
+                        bg: '#0B0C0D',
+                        surface: '#121314',
+                        card: '#1A1B1C',
+                        border: '#0B0C0D',
                     },
                     fontFamily: {
                         display: ['Bangers', 'system-ui'],
@@ -32,9 +36,9 @@
                         sans: ['DM Sans', 'sans-serif'],
                     },
                     boxShadow: {
-                        'brutal-sm': '2px 2px 0px 0px rgba(0,0,0,1)',
-                        'brutal': '4px 4px 0px 0px rgba(0,0,0,1)',
-                        'brutal-lg': '6px 6px 0px 0px rgba(0,0,0,1)',
+                        'brutal-sm': '2px 2px 0px 0px rgba(11,12,13,1)',
+                        'brutal': '4px 4px 0px 0px rgba(11,12,13,1)',
+                        'brutal-lg': '6px 6px 0px 0px rgba(11,12,13,1)',
                         'brutal-green': '4px 4px 0px 0px #00D685',
                         'brutal-pink': '4px 4px 0px 0px #D60047',
                         'brutal-yellow': '4px 4px 0px 0px #D6B500',
@@ -59,58 +63,51 @@
         }
         }
     </script>
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Rewards – Canonix DEX</title>
-
     <!-- FONTS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- TAILWIND -->
-
 </head>
-<body class="bg-bg text-white font-sans selection:bg-meme-yellow selection:text-black">
+<body class="bg-bg text-primary-text font-sans selection:bg-meme-yellow selection:text-black">
 
     <!-- HEADER -->
-    <nav class="sticky top-0 z-50 bg-bg border-b-2 border-black h-16 flex items-center px-4 md:px-8 justify-between">
+    <nav class="sticky top-0 z-50 bg-bg border-b-2 border-card h-16 flex items-center px-4 md:px-8 justify-between">
         <a href="index.html" class="flex items-center group">
-            <div class="w-8 h-8 bg-meme-yellow border-2 border-black shadow-brutal-sm flex items-center justify-center rotate-[3deg] group-hover:rotate-0 transition-transform mr-3">
+            <div class="w-8 h-8 bg-meme-yellow border-2 border-card shadow-brutal-sm flex items-center justify-center rotate-[3deg] group-hover:rotate-0 transition-transform mr-3">
                 <i class="fas fa-gift text-black text-xs"></i>
             </div>
-            <h1 class="text-xl md:text-2xl font-display tracking-widest text-white italic">CANONIX</h1>
+            <h1 class="text-xl md:text-2xl font-display tracking-widest text-primary-text italic">CANONIX</h1>
         </a>
         <div class="hidden md:flex items-center gap-6">
             <a href="trade.html" class="font-display text-lg hover:text-meme-yellow transition-colors uppercase italic tracking-tighter">Trade</a>
             <a href="launchpad.html" class="font-display text-lg hover:text-meme-yellow transition-colors uppercase italic tracking-tighter">Launchpad</a>
             <a href="reward.html" class="font-display text-lg text-meme-yellow uppercase italic tracking-tighter">Rewards</a>
-            <button onclick="window.location.href='trade.html'" class="bg-meme-green text-black font-display text-lg px-6 py-1 border-2 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic tracking-tighter">Connect</button>
+            <button onclick="window.location.href='trade.html'" class="bg-meme-green text-black font-display text-lg px-6 py-1 border-2 border-card shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic tracking-tighter">Connect</button>
         </div>
         <button onclick="toggleMobileMenu()" class="md:hidden text-2xl text-meme-yellow"><i class="fas fa-bars"></i></button>
     </nav>
 
     <!-- HERO SECTION -->
-    <section class="relative py-12 md:py-12 px-4 overflow-hidden border-b-2 border-black bg-meme-surface">
+    <section class="relative py-12 md:py-12 px-4 overflow-hidden border-b-2 border-card bg-meme-surface">
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-meme-yellow/5 rounded-full blur-[120px] animate-pulse-glow"></div>
 
         <div class="max-w-6xl mx-auto text-center relative z-10">
-            <div class="inline-block px-4 py-1.5 bg-meme-green text-black font-display text-base border-2 border-black shadow-brutal-sm rotate-[-2deg] mb-6 uppercase italic tracking-widest animate-bounce">CLAIM YOUR LOOT</div>
+            <div class="inline-block px-4 py-1.5 bg-meme-green text-black font-display text-base border-2 border-card shadow-brutal-sm rotate-[-2deg] mb-6 uppercase italic tracking-widest animate-bounce">CLAIM YOUR LOOT</div>
             <h2 class="text-3xl md:text-6xl font-display italic leading-none mb-6 uppercase tracking-tighter">
-                DEGEN <span class="text-meme-yellow drop-shadow-[4px_4px_0_rgba(0,0,0,1)]">REWARDS</span>
+                DEGEN <span class="text-meme-yellow drop-shadow-[4px_4px_0_rgba(11,12,13,1)]">REWARDS</span>
             </h2>
-            <p class="max-w-2xl mx-auto font-mono text-xs md:text-sm text-gray-500 mb-8 uppercase font-bold tracking-widest italic leading-relaxed">
+            <p class="max-w-2xl mx-auto font-mono text-xs md:text-sm text-secondary-text mb-8 uppercase font-bold tracking-widest italic leading-relaxed">
                 Stake your tokens, provide liquidity, and complete daily missions to earn exclusive rewards, multipliers, and ecosystem points.
             </p>
             <div class="flex flex-wrap justify-center gap-4">
-                <div class="bg-black border-2 border-black p-4 shadow-brutal-yellow rotate-[-1deg]">
-                    <div class="text-[10px] font-mono font-bold text-gray-500 uppercase tracking-widest mb-1 italic">Total Distributed</div>
+                <div class="bg-surface border-2 border-card p-4 shadow-brutal-yellow rotate-[-1deg]">
+                    <div class="text-[10px] font-mono font-bold text-secondary-text uppercase tracking-widest mb-1 italic">Total Distributed</div>
                     <div class="text-3xl font-display text-meme-green italic tracking-tighter">$1,240,582</div>
                 </div>
-                <div class="bg-black border-2 border-black p-4 shadow-brutal-pink rotate-[1deg]">
-                    <div class="text-[10px] font-mono font-bold text-gray-500 uppercase tracking-widest mb-1 italic">Active Degens</div>
+                <div class="bg-surface border-2 border-card p-4 shadow-brutal-pink rotate-[1deg]">
+                    <div class="text-[10px] font-mono font-bold text-secondary-text uppercase tracking-widest mb-1 italic">Active Degens</div>
                     <div class="text-3xl font-display text-meme-pink italic tracking-tighter">12,842</div>
                 </div>
             </div>
@@ -122,22 +119,22 @@
         <div class="max-w-6xl mx-auto">
 
             <!-- User Status Card -->
-            <div class="bg-meme-surface border-2 border-black shadow-brutal p-6 mb-12 flex flex-col md:flex-row items-center justify-between gap-8 rotate-[-0.5deg]">
+            <div class="bg-meme-surface border-2 border-card shadow-brutal p-6 mb-12 flex flex-col md:flex-row items-center justify-between gap-8 rotate-[-0.5deg]">
                 <div class="flex items-center gap-6">
-                    <div class="w-16 h-16 bg-meme-yellow border-2 border-black shadow-brutal-sm flex items-center justify-center text-black rotate-[-10deg]">
+                    <div class="w-16 h-16 bg-meme-yellow border-2 border-card shadow-brutal-sm flex items-center justify-center text-black rotate-[-10deg]">
                         <i class="fas fa-crown text-3xl"></i>
                     </div>
                     <div>
-                        <h3 class="text-3xl font-display text-white uppercase italic tracking-tighter leading-none mb-1">YOUR REWARD STATUS</h3>
+                        <h3 class="text-3xl font-display text-primary-text uppercase italic tracking-tighter leading-none mb-1">YOUR REWARD STATUS</h3>
                         <p class="font-mono text-[10px] text-meme-green font-bold uppercase tracking-widest italic">Rank: Diamond Hands #420</p>
                     </div>
                 </div>
                 <div class="flex gap-8 items-center text-center">
                     <div>
-                        <div class="text-[10px] font-mono font-bold text-gray-600 uppercase tracking-widest mb-1 italic">UNCLAIMED POINTS</div>
+                        <div class="text-[10px] font-mono font-bold text-muted-text uppercase tracking-widest mb-1 italic">UNCLAIMED POINTS</div>
                         <div class="text-4xl font-display text-meme-cyan italic tracking-tighter">12,500</div>
                     </div>
-                    <button class="bg-meme-yellow text-black font-display text-xl px-8 py-3 border-2 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic tracking-tighter">CLAIM ALL</button>
+                    <button class="bg-meme-yellow text-black font-display text-xl px-8 py-3 border-2 border-card shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic tracking-tighter">CLAIM ALL</button>
                 </div>
             </div>
 
@@ -145,86 +142,86 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 
                 <!-- Staking Card -->
-                <div class="bg-meme-card border-2 border-black shadow-brutal-green flex flex-col group hover:scale-[1.02] transition-transform">
-                    <div class="p-6 border-b-2 border-black bg-meme-surface">
+                <div class="bg-meme-card border-2 border-card shadow-brutal-green flex flex-col group hover:scale-[1.02] transition-transform">
+                    <div class="p-6 border-b-2 border-card bg-meme-surface">
                         <div class="flex justify-between items-center mb-6">
-                            <h4 class="text-2xl font-display text-white italic uppercase tracking-tighter leading-none">PAXI STAKING</h4>
-                            <div class="w-10 h-10 bg-meme-green border-2 border-black flex items-center justify-center text-black text-xl rotate-12 group-hover:rotate-0 transition-transform"><i class="fas fa-coins"></i></div>
+                            <h4 class="text-2xl font-display text-primary-text italic uppercase tracking-tighter leading-none">PAXI STAKING</h4>
+                            <div class="w-10 h-10 bg-meme-green border-2 border-card flex items-center justify-center text-black text-xl rotate-12 group-hover:rotate-0 transition-transform"><i class="fas fa-coins"></i></div>
                         </div>
                         <div class="flex justify-between items-end">
                             <div>
-                                <div class="text-[9px] font-mono font-bold text-gray-500 uppercase tracking-widest mb-1 italic">ESTIMATED APY</div>
+                                <div class="text-[9px] font-mono font-bold text-secondary-text uppercase tracking-widest mb-1 italic">ESTIMATED APY</div>
                                 <div class="text-4xl font-display text-meme-green italic tracking-tighter">124.5%</div>
                             </div>
-                            <span class="px-2 py-0.5 bg-black border border-black text-meme-cyan font-mono text-[8px] font-black uppercase italic tracking-widest">BOOSTED</span>
+                            <span class="px-2 py-0.5 bg-surface border border-card text-meme-cyan font-mono text-[8px] font-black uppercase italic tracking-widest">BOOSTED</span>
                         </div>
                     </div>
                     <div class="p-6 space-y-4">
                         <div class="flex justify-between items-center font-mono text-[10px] uppercase font-bold italic tracking-widest">
-                            <span class="text-gray-500">Staked:</span>
-                            <span class="text-white">0.00 PAXI</span>
+                            <span class="text-secondary-text">Staked:</span>
+                            <span class="text-primary-text">0.00 PAXI</span>
                         </div>
                         <div class="flex justify-between items-center font-mono text-[10px] uppercase font-bold italic tracking-widest">
-                            <span class="text-gray-500">Earned:</span>
+                            <span class="text-secondary-text">Earned:</span>
                             <span class="text-meme-green">0.00 PAXI</span>
                         </div>
-                        <button onclick="window.location.href='trade.html'" class="w-full py-3 bg-black border-2 border-black text-white font-display text-lg shadow-brutal-sm hover:shadow-none hover:bg-meme-green hover:text-black transition-all uppercase italic tracking-tighter">START STAKING</button>
+                        <button onclick="window.location.href='trade.html'" class="w-full py-3 bg-surface border-2 border-card text-primary-text font-display text-lg shadow-brutal-sm hover:shadow-none hover:bg-meme-green hover:text-black transition-all uppercase italic tracking-tighter">START STAKING</button>
                     </div>
                 </div>
 
                 <!-- Liquidity Rewards -->
-                <div class="bg-meme-card border-2 border-black shadow-brutal-pink flex flex-col group hover:scale-[1.02] transition-transform">
-                    <div class="p-6 border-b-2 border-black bg-meme-surface">
+                <div class="bg-meme-card border-2 border-card shadow-brutal-pink flex flex-col group hover:scale-[1.02] transition-transform">
+                    <div class="p-6 border-b-2 border-card bg-meme-surface">
                         <div class="flex justify-between items-center mb-6">
-                            <h4 class="text-2xl font-display text-white italic uppercase tracking-tighter leading-none">LP FARMING</h4>
-                            <div class="w-10 h-10 bg-meme-pink border-2 border-black flex items-center justify-center text-white text-xl rotate-[-12deg] group-hover:rotate-0 transition-transform"><i class="fas fa-tint"></i></div>
+                            <h4 class="text-2xl font-display text-primary-text italic uppercase tracking-tighter leading-none">LP FARMING</h4>
+                            <div class="w-10 h-10 bg-meme-pink border-2 border-card flex items-center justify-center text-primary-text text-xl rotate-[-12deg] group-hover:rotate-0 transition-transform"><i class="fas fa-tint"></i></div>
                         </div>
                         <div class="flex justify-between items-end">
                             <div>
-                                <div class="text-[9px] font-mono font-bold text-gray-500 uppercase tracking-widest mb-1 italic">AVG APR</div>
+                                <div class="text-[9px] font-mono font-bold text-secondary-text uppercase tracking-widest mb-1 italic">AVG APR</div>
                                 <div class="text-4xl font-display text-meme-pink italic tracking-tighter">248.9%</div>
                             </div>
-                            <span class="px-2 py-0.5 bg-black border border-black text-meme-yellow font-mono text-[8px] font-black uppercase italic tracking-widest">HOT POOLS</span>
+                            <span class="px-2 py-0.5 bg-surface border border-card text-meme-yellow font-mono text-[8px] font-black uppercase italic tracking-widest">HOT POOLS</span>
                         </div>
                     </div>
                     <div class="p-6 space-y-4">
                         <div class="flex justify-between items-center font-mono text-[10px] uppercase font-bold italic tracking-widest">
-                            <span class="text-gray-500">LP Positions:</span>
-                            <span class="text-white">0 ACTIVE</span>
+                            <span class="text-secondary-text">LP Positions:</span>
+                            <span class="text-primary-text">0 ACTIVE</span>
                         </div>
                         <div class="flex justify-between items-center font-mono text-[10px] uppercase font-bold italic tracking-widest">
-                            <span class="text-gray-500">Daily Rewards:</span>
+                            <span class="text-secondary-text">Daily Rewards:</span>
                             <span class="text-meme-pink">0.00 USD</span>
                         </div>
-                        <button onclick="window.location.href='trade.html'" class="w-full py-3 bg-black border-2 border-black text-white font-display text-lg shadow-brutal-sm hover:shadow-none hover:bg-meme-pink hover:text-white transition-all uppercase italic tracking-tighter">FARM NOW</button>
+                        <button onclick="window.location.href='trade.html'" class="w-full py-3 bg-surface border-2 border-card text-primary-text font-display text-lg shadow-brutal-sm hover:shadow-none hover:bg-meme-pink hover:text-primary-text transition-all uppercase italic tracking-tighter">FARM NOW</button>
                     </div>
                 </div>
 
                 <!-- Referrals -->
-                <div class="bg-meme-card border-2 border-black shadow-brutal-cyan flex flex-col group hover:scale-[1.02] transition-transform">
-                    <div class="p-6 border-b-2 border-black bg-meme-surface">
+                <div class="bg-meme-card border-2 border-card shadow-brutal-cyan flex flex-col group hover:scale-[1.02] transition-transform">
+                    <div class="p-6 border-b-2 border-card bg-meme-surface">
                         <div class="flex justify-between items-center mb-6">
-                            <h4 class="text-2xl font-display text-white italic uppercase tracking-tighter leading-none">REFERRALS</h4>
-                            <div class="w-10 h-10 bg-meme-cyan border-2 border-black flex items-center justify-center text-black text-xl rotate-[5deg] group-hover:rotate-0 transition-transform"><i class="fas fa-users"></i></div>
+                            <h4 class="text-2xl font-display text-primary-text italic uppercase tracking-tighter leading-none">REFERRALS</h4>
+                            <div class="w-10 h-10 bg-meme-cyan border-2 border-card flex items-center justify-center text-black text-xl rotate-[5deg] group-hover:rotate-0 transition-transform"><i class="fas fa-users"></i></div>
                         </div>
                         <div class="flex justify-between items-end">
                             <div>
-                                <div class="text-[9px] font-mono font-bold text-gray-500 uppercase tracking-widest mb-1 italic">COMMISSION</div>
+                                <div class="text-[9px] font-mono font-bold text-secondary-text uppercase tracking-widest mb-1 italic">COMMISSION</div>
                                 <div class="text-4xl font-display text-meme-cyan italic tracking-tighter">20.0%</div>
                             </div>
-                            <span class="px-2 py-0.5 bg-black border border-black text-meme-green font-mono text-[8px] font-black uppercase italic tracking-widest">UNLIMITED</span>
+                            <span class="px-2 py-0.5 bg-surface border border-card text-meme-green font-mono text-[8px] font-black uppercase italic tracking-widest">UNLIMITED</span>
                         </div>
                     </div>
                     <div class="p-6 space-y-4">
                         <div class="flex justify-between items-center font-mono text-[10px] uppercase font-bold italic tracking-widest">
-                            <span class="text-gray-500">Referrals:</span>
-                            <span class="text-white">0 PEERS</span>
+                            <span class="text-secondary-text">Referrals:</span>
+                            <span class="text-primary-text">0 PEERS</span>
                         </div>
                         <div class="flex justify-between items-center font-mono text-[10px] uppercase font-bold italic tracking-widest">
-                            <span class="text-gray-500">Lifetime Earn:</span>
+                            <span class="text-secondary-text">Lifetime Earn:</span>
                             <span class="text-meme-cyan">0.00 PAXI</span>
                         </div>
-                        <button class="w-full py-3 bg-black border-2 border-black text-white font-display text-lg shadow-brutal-sm hover:shadow-none hover:bg-meme-cyan hover:text-black transition-all uppercase italic tracking-tighter">COPY LINK</button>
+                        <button class="w-full py-3 bg-surface border-2 border-card text-primary-text font-display text-lg shadow-brutal-sm hover:shadow-none hover:bg-meme-cyan hover:text-black transition-all uppercase italic tracking-tighter">COPY LINK</button>
                     </div>
                 </div>
             </div>
@@ -232,92 +229,92 @@
     </section>
 
     <!-- MISSIONS LIST -->
-    <section class="py-16 md:py-24 px-4 bg-meme-surface border-t-2 border-black">
+    <section class="py-16 md:py-24 px-4 bg-meme-surface border-t-2 border-card">
         <div class="max-w-4xl mx-auto">
             <div class="text-center mb-12">
                 <h3 class="text-3xl md:text-3xl font-display italic uppercase tracking-tighter leading-none mb-4">DAILY <span class="text-meme-green">TASKS</span></h3>
-                <p class="font-mono text-[10px] md:text-xs text-gray-500 font-bold uppercase tracking-widest italic">Complete tasks to earn multipliers and points</p>
+                <p class="font-mono text-[10px] md:text-xs text-secondary-text font-bold uppercase tracking-widest italic">Complete tasks to earn multipliers and points</p>
             </div>
 
             <div class="space-y-4">
                 <!-- Task 1 -->
-                <div class="bg-black border-2 border-black p-5 flex items-center justify-between group hover:border-meme-green transition-colors">
+                <div class="bg-surface border-2 border-card p-5 flex items-center justify-between group hover:border-meme-green transition-colors">
                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-meme-card border-2 border-black flex items-center justify-center text-gray-700 text-xl group-hover:text-meme-green transition-colors"><i class="fas fa-exchange-alt"></i></div>
+                        <div class="w-12 h-12 bg-meme-card border-2 border-card flex items-center justify-center text-muted-text text-xl group-hover:text-meme-green transition-colors"><i class="fas fa-exchange-alt"></i></div>
                         <div>
-                            <h5 class="text-xl font-display text-white uppercase italic tracking-tighter leading-none mb-1">Make 5 Swaps Today</h5>
-                            <p class="font-mono text-[8px] text-gray-500 font-bold uppercase tracking-widest italic">Reward: +200 Points + 1.2x Multiplier</p>
+                            <h5 class="text-xl font-display text-primary-text uppercase italic tracking-tighter leading-none mb-1">Make 5 Swaps Today</h5>
+                            <p class="font-mono text-[8px] text-secondary-text font-bold uppercase tracking-widest italic">Reward: +200 Points + 1.2x Multiplier</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-4">
                         <div class="text-right hidden sm:block">
-                            <div class="text-[8px] font-mono font-bold text-gray-600 uppercase italic">Progress</div>
-                            <div class="text-xl font-display text-white italic">2/5</div>
+                            <div class="text-[8px] font-mono font-bold text-muted-text uppercase italic">Progress</div>
+                            <div class="text-xl font-display text-primary-text italic">2/5</div>
                         </div>
-                        <button class="px-6 py-2 bg-meme-green text-black font-display text-base border-2 border-black shadow-brutal-sm opacity-50 cursor-not-allowed uppercase italic tracking-tighter">CLAIM</button>
+                        <button class="px-6 py-2 bg-meme-green text-black font-display text-base border-2 border-card shadow-brutal-sm opacity-50 cursor-not-allowed uppercase italic tracking-tighter">CLAIM</button>
                     </div>
                 </div>
 
                 <!-- Task 2 -->
-                <div class="bg-black border-2 border-black p-5 flex items-center justify-between group hover:border-meme-pink transition-colors">
+                <div class="bg-surface border-2 border-card p-5 flex items-center justify-between group hover:border-meme-pink transition-colors">
                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-meme-card border-2 border-black flex items-center justify-center text-gray-700 text-xl group-hover:text-meme-pink transition-colors"><i class="fas fa-heart"></i></div>
+                        <div class="w-12 h-12 bg-meme-card border-2 border-card flex items-center justify-center text-muted-text text-xl group-hover:text-meme-pink transition-colors"><i class="fas fa-heart"></i></div>
                         <div>
-                            <h5 class="text-xl font-display text-white uppercase italic tracking-tighter leading-none mb-1">Follow us on Twitter</h5>
-                            <p class="font-mono text-[8px] text-gray-500 font-bold uppercase tracking-widest italic">Reward: +500 Points (One time)</p>
+                            <h5 class="text-xl font-display text-primary-text uppercase italic tracking-tighter leading-none mb-1">Follow us on Twitter</h5>
+                            <p class="font-mono text-[8px] text-secondary-text font-bold uppercase tracking-widest italic">Reward: +500 Points (One time)</p>
                         </div>
                     </div>
-                    <button class="px-6 py-2 bg-meme-pink text-white font-display text-base border-2 border-black shadow-brutal-sm hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all uppercase italic tracking-tighter">GO TO X</button>
+                    <button class="px-6 py-2 bg-meme-pink text-primary-text font-display text-base border-2 border-card shadow-brutal-sm hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all uppercase italic tracking-tighter">GO TO X</button>
                 </div>
 
                 <!-- Task 3 -->
-                <div class="bg-black border-2 border-black p-5 flex items-center justify-between group hover:border-meme-cyan transition-colors">
+                <div class="bg-surface border-2 border-card p-5 flex items-center justify-between group hover:border-meme-cyan transition-colors">
                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-meme-card border-2 border-black flex items-center justify-center text-gray-700 text-xl group-hover:text-meme-cyan transition-colors"><i class="fas fa-rocket"></i></div>
+                        <div class="w-12 h-12 bg-meme-card border-2 border-card flex items-center justify-center text-muted-text text-xl group-hover:text-meme-cyan transition-colors"><i class="fas fa-rocket"></i></div>
                         <div>
-                            <h5 class="text-xl font-display text-white uppercase italic tracking-tighter leading-none mb-1">Join a Launchpad Mission</h5>
-                            <p class="font-mono text-[8px] text-gray-500 font-bold uppercase tracking-widest italic">Reward: +1000 Points + Badge</p>
+                            <h5 class="text-xl font-display text-primary-text uppercase italic tracking-tighter leading-none mb-1">Join a Launchpad Mission</h5>
+                            <p class="font-mono text-[8px] text-secondary-text font-bold uppercase tracking-widest italic">Reward: +1000 Points + Badge</p>
                         </div>
                     </div>
-                    <button onclick="window.location.href='launchpad.html'" class="px-6 py-2 bg-meme-cyan text-black font-display text-base border-2 border-black shadow-brutal-sm hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all uppercase italic tracking-tighter">BROWSE</button>
+                    <button onclick="window.location.href='launchpad.html'" class="px-6 py-2 bg-meme-cyan text-black font-display text-base border-2 border-card shadow-brutal-sm hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all uppercase italic tracking-tighter">BROWSE</button>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- FOOTER -->
-    <footer class="py-12 px-4 bg-bg border-t-2 border-black">
+    <footer class="py-12 px-4 bg-bg border-t-2 border-card">
         <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
             <div class="col-span-1 md:col-span-2">
                 <h1 class="text-3xl font-display text-meme-yellow mb-6 italic uppercase tracking-tighter">CANONIX</h1>
-                <p class="font-mono text-[10px] text-gray-500 mb-8 max-w-sm uppercase font-bold italic tracking-widest leading-relaxed">The ultimate decentralized meme playground on Paxi Network. Built by degens, for degens. No VCs, no gatekeepers, just pure moon fuel.</p>
+                <p class="font-mono text-[10px] text-secondary-text mb-8 max-w-sm uppercase font-bold italic tracking-widest leading-relaxed">The ultimate decentralized meme playground on Paxi Network. Built by degens, for degens. No VCs, no gatekeepers, just pure moon fuel.</p>
                 <div class="flex gap-4">
-                    <a href="#" class="w-10 h-10 border-2 border-black bg-meme-surface flex items-center justify-center text-white hover:bg-meme-cyan hover:text-black transition-all shadow-brutal-sm hover:shadow-none"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="w-10 h-10 border-2 border-black bg-meme-surface flex items-center justify-center text-white hover:bg-meme-pink hover:text-black transition-all shadow-brutal-sm hover:shadow-none"><i class="fab fa-telegram"></i></a>
-                    <a href="#" class="w-10 h-10 border-2 border-black bg-meme-surface flex items-center justify-center text-white hover:bg-meme-green hover:text-black transition-all shadow-brutal-sm hover:shadow-none"><i class="fab fa-discord"></i></a>
+                    <a href="#" class="w-10 h-10 border-2 border-card bg-meme-surface flex items-center justify-center text-primary-text hover:bg-meme-cyan hover:text-black transition-all shadow-brutal-sm hover:shadow-none"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="w-10 h-10 border-2 border-card bg-meme-surface flex items-center justify-center text-primary-text hover:bg-meme-pink hover:text-black transition-all shadow-brutal-sm hover:shadow-none"><i class="fab fa-telegram"></i></a>
+                    <a href="#" class="w-10 h-10 border-2 border-card bg-meme-surface flex items-center justify-center text-primary-text hover:bg-meme-green hover:text-black transition-all shadow-brutal-sm hover:shadow-none"><i class="fab fa-discord"></i></a>
                 </div>
             </div>
             <div>
                 <h4 class="font-display text-xl text-meme-yellow mb-6 uppercase italic tracking-tighter">QUICK LINKS</h4>
-                <ul class="space-y-3 font-mono text-[10px] text-gray-400 font-black uppercase italic tracking-widest">
-                    <li><a href="trade.html" class="hover:text-white transition-colors">DEX Terminal</a></li>
-                    <li><a href="launchpad.html" class="hover:text-white transition-colors">Launchpad</a></li>
-                    <li><a href="reward.html" class="hover:text-white transition-colors">Yield Farming</a></li>
-                    <li><a href="#" class="hover:text-white transition-colors">Audit Report</a></li>
+                <ul class="space-y-3 font-mono text-[10px] text-secondary-text font-black uppercase italic tracking-widest">
+                    <li><a href="trade.html" class="hover:text-primary-text transition-colors">DEX Terminal</a></li>
+                    <li><a href="launchpad.html" class="hover:text-primary-text transition-colors">Launchpad</a></li>
+                    <li><a href="reward.html" class="hover:text-primary-text transition-colors">Yield Farming</a></li>
+                    <li><a href="#" class="hover:text-primary-text transition-colors">Audit Report</a></li>
                 </ul>
             </div>
             <div>
                 <h4 class="font-display text-xl text-meme-pink mb-6 uppercase italic tracking-tighter">GOVERNANCE</h4>
-                <ul class="space-y-3 font-mono text-[10px] text-gray-400 font-black uppercase italic tracking-widest">
-                    <li><a href="#" class="hover:text-white transition-colors">DAO Voting</a></li>
-                    <li><a href="#" class="hover:text-white transition-colors">Proposals</a></li>
-                    <li><a href="#" class="hover:text-white transition-colors">Treasury</a></li>
-                    <li><a href="faq.html" class="hover:text-white transition-colors">Support</a></li>
+                <ul class="space-y-3 font-mono text-[10px] text-secondary-text font-black uppercase italic tracking-widest">
+                    <li><a href="#" class="hover:text-primary-text transition-colors">DAO Voting</a></li>
+                    <li><a href="#" class="hover:text-primary-text transition-colors">Proposals</a></li>
+                    <li><a href="#" class="hover:text-primary-text transition-colors">Treasury</a></li>
+                    <li><a href="faq.html" class="hover:text-primary-text transition-colors">Support</a></li>
                 </ul>
             </div>
         </div>
         <div class="max-w-6xl mx-auto mt-12 pt-8 border-t border-gray-900 text-center">
-            <p class="font-mono text-[8px] text-gray-700 font-bold uppercase tracking-[0.2em] italic">© 2024 CANONIX PROTOCOL | BEYOND THE MOON</p>
+            <p class="font-mono text-[8px] text-muted-text font-bold uppercase tracking-[0.2em] italic">© 2024 CANONIX PROTOCOL | BEYOND THE MOON</p>
         </div>
     </footer>
 

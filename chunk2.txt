@@ -1,0 +1,100 @@
+                                '0%, 100%': { transform: 'translateY(0)' },
+                                '50%': { transform: 'translateY(-10px)' },
+                            },
+                            glitch: {
+                                '0%': { transform: 'translate(0)' },
+                                '20%': { transform: 'translate(-1px, 1px)' },
+                                '40%': { transform: 'translate(-1px, -1px)' },
+                                '60%': { transform: 'translate(1px, 1px)' },
+                                '80%': { transform: 'translate(1px, -1px)' },
+                                '100%': { transform: 'translate(0)' },
+                            },
+                            shake: {
+                                '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
+                                '20%, 80%': { transform: 'translate3d(1px, 0, 0)' },
+                                '30%, 50%, 70%': { transform: 'translate3d(-2px, 0, 0)' },
+                                '40%, 60%': { transform: 'translate3d(2px, 0, 0)' },
+                            },
+                            slideUp: {
+                                '0%': { transform: 'translateY(100%)' },
+                                '100%': { transform: 'translateY(0)' },
+                            },
+                            fadeIn: {
+                                '0%': { opacity: '0' },
+                                '100%': { opacity: '1' },
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <!-- ===== PRIMARY META TAGS ===== -->
+    <title>Canonix – Paxi Pumpfun Trade</title>
+
+    <!-- FONTS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/assets/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="msapplication-TileColor" content="#0B0C0D">
+    <meta name="msapplication-TileImage" content="/assets/ms-icon-144x144.png">
+    <meta name="theme-color" content="#0B0C0D">
+    <meta name="title" content="Canonix – Paxi Pumpfun Trade">
+    <meta name="description" content="Trade PRC20 tokens instantly on Paxinet blockchain with AI market analysis, real-time charts, and lightning-fast swaps. Zero KYC, full decentralization.">
+    <meta name="keywords" content="Canonix, PRC20 tokens, Paxinet, decentralized exchange, crypto trading, AI analysis, DeFi, blockchain, instant swap, liquidity pool, meme coins">
+    <meta name="author" content="Canonix Team">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="language" content="English">
+
+    <!-- ===== EXTERNAL CSS ===== -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- TAILWIND -->
+
+    <script src="https://mainnet-api.paxinet.io/resources/js/paxi-cosmjs.umd.js"></script>
+    <script type="module">
+        import { DirectSecp256k1HdWallet, DirectSecp256k1Wallet } from 'https://esm.sh/@cosmjs/proto-signing@0.32.3';
+        window.DirectSecp256k1HdWallet = DirectSecp256k1HdWallet;
+        window.DirectSecp256k1Wallet = DirectSecp256k1Wallet;
+        if (window.PaxiCosmJS) {
+            window.PaxiCosmJS.DirectSecp256k1HdWallet = DirectSecp256k1HdWallet;
+            window.PaxiCosmJS.DirectSecp256k1Wallet = DirectSecp256k1Wallet;
+        }
+    </script>
+    <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+
+<body class="bg-bg text-primary-text font-sans h-screen flex flex-col overflow-hidden">
+    <!-- ROOT MOUNT POINT -->
+    <div id="app"></div>
+
+    <!-- ===== MODULAR JAVASCRIPT FILES ===== -->
+    <script src="./js/core/config.js"></script>
+    <script src="./js/core/utils.js"></script>
+    <script src="./js/core/socket.js"></script>
+    <script src="./js/core/api.js"></script>
+
+    <!-- UI SYSTEM -->
+    <script src="./js/ui/manager.js"></script>
+    <script src="./ui/Header/Header.js"></script>
+    <script src="./js/Header/Header.js"></script>
+    <script src="./ui/Ticker/Ticker.js"></script>

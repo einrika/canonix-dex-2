@@ -2,15 +2,17 @@
 // LIQUIDITY.JS - Liquidity Pool Management
 // ============================================
 
+import { setValue, setText } from '../../core/utils.js';
+
 // ===== GLOBAL LP STATE =====
-window.lpBalances = {
+export let lpBalances = {
     paxi: 0,
     token: 0,
     lpTokens: 0
 };
 
 // ===== UPDATE SLIDER GRADIENT =====
-window.updateSliderGradient = function(sliderId, percent) {
+export const updateSliderGradient = function(sliderId, percent) {
     const slider = document.getElementById(sliderId);
     if (!slider) return;
     
@@ -20,27 +22,27 @@ window.updateSliderGradient = function(sliderId, percent) {
     if (slider.classList.contains('accent-up')) color = '#00B2D6';
     if (slider.classList.contains('accent-down')) color = '#D60047';
 
-    slider.className = `w-full h-3 bg-[linear-gradient(to_right,${color}_0%,${color}_${Math.round(value)}%,#050505_${Math.round(value)}%,#050505_100%)] rounded-none appearance-none cursor-pointer border-2 border-black shadow-brutal-sm`;
+    slider.className = `w-full h-3 bg-[linear-gradient(to_right,${color}_0%,${color}_${Math.round(value)}%,#121314_${Math.round(value)}%,#121314_100%)] rounded-none appearance-none cursor-pointer border-2 border-card shadow-brutal-sm`;
 };
 
 // ===== UPDATE LP FROM SLIDER =====
-window.updateLPFromSlider = function(type, percent) {
-    const balance = type === 'paxi' ? window.lpBalances.paxi : window.lpBalances.token;
+export const updateLPFromSlider = function(type, percent) {
+    const balance = type === 'paxi' ? lpBalances.paxi : lpBalances.token;
     const amount = (balance * percent / 100).toFixed(6);
     
     if (type === 'paxi') {
-        window.setValue('lpPaxiAmount', amount);
-        window.updateLPFromInput('paxi');
+        setValue('lpPaxiAmount', amount);
+        updateLPFromInput('paxi');
     } else {
-        window.setValue('lpTokenAmount', amount);
-        window.updateLPFromInput('token');
+        setValue('lpTokenAmount', amount);
+        updateLPFromInput('token');
     }
     
-    window.updateSliderGradient(type === 'paxi' ? 'lpPaxiSlider' : 'lpTokenSlider', percent);
+    updateSliderGradient(type === 'paxi' ? 'lpPaxiSlider' : 'lpTokenSlider', percent);
 };
 
 // ===== UPDATE LP FROM INPUT =====
-window.updateLPFromInput = function(type) {
+export const updateLPFromInput = function(type) {
     if (!window.poolData) return;
     
     const tokenDecimals = window.currentTokenInfo?.decimals || 6;
@@ -63,48 +65,48 @@ window.updateLPFromInput = function(type) {
         const tokenAmount = (paxiAmount * ratio).toFixed(6);
         tokenInput.value = tokenAmount;
         
-        const paxiPercent = window.lpBalances.paxi > 0 ? 
-            Math.min(100, (paxiAmount / window.lpBalances.paxi * 100)) : 0;
+        const paxiPercent = lpBalances.paxi > 0 ?
+            Math.min(100, (paxiAmount / lpBalances.paxi * 100)) : 0;
         paxiSlider.value = paxiPercent;
-        window.updateSliderGradient('lpPaxiSlider', paxiPercent);
+        updateSliderGradient('lpPaxiSlider', paxiPercent);
         
-        const tokenPercent = window.lpBalances.token > 0 ? 
-            Math.min(100, (parseFloat(tokenAmount) / window.lpBalances.token * 100)) : 0;
+        const tokenPercent = lpBalances.token > 0 ?
+            Math.min(100, (parseFloat(tokenAmount) / lpBalances.token * 100)) : 0;
         tokenSlider.value = tokenPercent;
-        window.updateSliderGradient('lpTokenSlider', tokenPercent);
+        updateSliderGradient('lpTokenSlider', tokenPercent);
         
     } else {
         const tokenAmount = parseFloat(tokenInput.value) || 0;
         const paxiAmount = (tokenAmount / ratio).toFixed(6);
         paxiInput.value = paxiAmount;
         
-        const tokenPercent = window.lpBalances.token > 0 ? 
-            Math.min(100, (tokenAmount / window.lpBalances.token * 100)) : 0;
+        const tokenPercent = lpBalances.token > 0 ?
+            Math.min(100, (tokenAmount / lpBalances.token * 100)) : 0;
         tokenSlider.value = tokenPercent;
-        window.updateSliderGradient('lpTokenSlider', tokenPercent);
+        updateSliderGradient('lpTokenSlider', tokenPercent);
         
-        const paxiPercent = window.lpBalances.paxi > 0 ? 
-            Math.min(100, (parseFloat(paxiAmount) / window.lpBalances.paxi * 100)) : 0;
+        const paxiPercent = lpBalances.paxi > 0 ?
+            Math.min(100, (parseFloat(paxiAmount) / lpBalances.paxi * 100)) : 0;
         paxiSlider.value = paxiPercent;
-        window.updateSliderGradient('lpPaxiSlider', paxiPercent);
+        updateSliderGradient('lpPaxiSlider', paxiPercent);
     }
     
-    window.calculateEstimatedLP();
+    calculateEstimatedLP();
 };
 
 // ===== SET LP PERCENT =====
-window.setLPPercent = function(type, percent) {
+export const setLPPercent = function(type, percent) {
     const slider = type === 'paxi' ? 
         document.getElementById('lpPaxiSlider') : 
         document.getElementById('lpTokenSlider');
     if (slider) {
         slider.value = percent;
-        window.updateLPFromSlider(type, percent);
+        updateLPFromSlider(type, percent);
     }
 };
 
 // ===== CALCULATE ESTIMATED LP =====
-window.calculateEstimatedLP = function() {
+export const calculateEstimatedLP = function() {
     const paxiAmount = parseFloat(document.getElementById('lpPaxiAmount')?.value) || 0;
     const tokenAmount = parseFloat(document.getElementById('lpTokenAmount')?.value) || 0;
     
@@ -114,107 +116,90 @@ window.calculateEstimatedLP = function() {
     
     if (paxiAmount > 0 && tokenAmount > 0 && window.poolData) {
         const tokenDecimals = window.currentTokenInfo?.decimals || 6;
-        // Approximate LP calculation: sqrt(x * y)
-        // x = paxiAmount * 10^6, y = tokenAmount * 10^decimals
         const lpTokens = Math.sqrt(paxiAmount * 1e6 * tokenAmount * Math.pow(10, tokenDecimals)) / 1e6;
-        window.setText(estimatedEl, `Est. LP: ${lpTokens.toFixed(6)}`);
+        setText(estimatedEl, `Est. LP: ${lpTokens.toFixed(6)}`);
     } else {
-        window.setText(estimatedEl, '');
+        setText(estimatedEl, '');
     }
 };
 
 // ===== UPDATE REMOVE LP FROM SLIDER =====
-window.updateRemoveLPFromSlider = function(percent) {
-    const amount = (window.lpBalances.lpTokens * percent / 100).toFixed(6);
+export const updateRemoveLPFromSlider = function(percent) {
+    const amount = (lpBalances.lpTokens * percent / 100).toFixed(6);
     const input = document.getElementById('lpRemoveAmount');
     if (input) {
         input.value = amount;
-        window.updateSliderGradient('lpRemoveSlider', percent);
+        updateSliderGradient('lpRemoveSlider', percent);
     }
 };
 
-window.updateRemoveLPFromInput = function() {
+export const updateRemoveLPFromInput = function() {
     const input = document.getElementById('lpRemoveAmount');
     const slider = document.getElementById('lpRemoveSlider');
     if (!input || !slider) return;
 
     const amount = parseFloat(input.value) || 0;
-    const percent = window.lpBalances.lpTokens > 0 ? Math.min(100, (amount / window.lpBalances.lpTokens * 100)) : 0;
+    const percent = lpBalances.lpTokens > 0 ? Math.min(100, (amount / lpBalances.lpTokens * 100)) : 0;
 
     slider.value = percent;
-    window.updateSliderGradient('lpRemoveSlider', percent);
+    updateSliderGradient('lpRemoveSlider', percent);
 };
 
 // ===== SET REMOVE LP PERCENT =====
-window.setRemoveLPPercent = function(percent) {
+export const setRemoveLPPercent = function(percent) {
     const slider = document.getElementById('lpRemoveSlider');
     if (slider) {
         slider.value = percent;
-        window.updateRemoveLPFromSlider(percent);
+        updateRemoveLPFromSlider(percent);
     }
 };
 
 // ===== EXECUTE ADD LP =====
-window.executeAddLP = async function() {
-    if (!window.wallet) {
-                return;
-    }
-    
-    if (!window.currentPRC20) {
-                return;
-    }
+export const executeAddLP = async function() {
+    if (!window.wallet) return;
+    if (!window.currentPRC20) return;
     
     const paxiAmount = parseFloat(document.getElementById('lpPaxiAmount')?.value);
     const tokenAmount = parseFloat(document.getElementById('lpTokenAmount')?.value);
     
-    if (!paxiAmount || paxiAmount <= 0 || !tokenAmount || tokenAmount <= 0) {
-                return;
-    }
+    if (!paxiAmount || paxiAmount <= 0 || !tokenAmount || tokenAmount <= 0) return;
     
     try {
         await window.executeAddLPTransaction(window.currentPRC20, paxiAmount, tokenAmount);
-        window.hideLPModal();
+        if (window.hideLPModal) window.hideLPModal();
     } catch (e) {
         console.error(e);
     }
 };
 
 // ===== EXECUTE REMOVE LP =====
-window.executeRemoveLP = async function() {
-    if (!window.wallet) {
-                return;
-    }
-    
-    if (!window.currentPRC20) {
-                return;
-    }
+export const executeRemoveLP = async function() {
+    if (!window.wallet) return;
+    if (!window.currentPRC20) return;
     
     const lpAmount = parseFloat(document.getElementById('lpRemoveAmount')?.value);
-    
-    if (!lpAmount || lpAmount <= 0) {
-                return;
-    }
+    if (!lpAmount || lpAmount <= 0) return;
     
     try {
         await window.executeRemoveLPTransaction(window.currentPRC20, lpAmount);
-        window.hideLPModal();
+        if (window.hideLPModal) window.hideLPModal();
     } catch (e) {
         console.error(e);
     }
 };
 
 // ===== BURN FEATURES =====
-window.setBurnPercent = function(percent) {
+export const setBurnPercent = function(percent) {
     if (!window.currentPRC20 || !window.wallet) return;
 
     const balance = window.myTokenBalances.get(window.currentPRC20) || 0;
     const amount = (balance * percent / 100).toFixed(6);
 
-    window.setValue('burnAmount', amount > 0 ? amount : '');
-    window.updateSliderGradient('burnSlider', percent);
+    setValue('burnAmount', amount > 0 ? amount : '');
+    updateSliderGradient('burnSlider', percent);
 };
 
-window.updateBurnSliderFromInput = function() {
+export const updateBurnSliderFromInput = function() {
     if (!window.currentPRC20) return;
 
     const balance = window.myTokenBalances.get(window.currentPRC20) || 0;
@@ -224,11 +209,11 @@ window.updateBurnSliderFromInput = function() {
     const slider = document.getElementById('burnSlider');
     if (slider) {
         slider.value = percent;
-        window.updateSliderGradient('burnSlider', percent);
+        updateSliderGradient('burnSlider', percent);
     }
 };
 
-window.updateBurnBalanceDisplay = async function() {
+export const updateBurnBalanceDisplay = async function() {
     if (!window.currentPRC20 || !window.wallet) return;
 
     const balEl = document.getElementById('burnBalance');
@@ -238,38 +223,41 @@ window.updateBurnBalanceDisplay = async function() {
     const balance = await window.getPRC20Balance(window.wallet.address, window.currentPRC20);
     const amount = balance / Math.pow(10, tokenDecimals);
     window.myTokenBalances.set(window.currentPRC20, amount);
-    window.setText(balEl, `Bal: ${amount.toFixed(2)}`);
+    setText(balEl, `Bal: ${amount.toFixed(2)}`);
 };
 
-window.executeBurn = async function() {
-    if (!window.wallet) {
-                return;
-    }
-
-    if (!window.currentPRC20) {
-                return;
-    }
+export const executeBurn = async function() {
+    if (!window.wallet) return;
+    if (!window.currentPRC20) return;
 
     const amount = parseFloat(document.getElementById('burnAmount')?.value);
-
-    if (!amount || amount <= 0) {
-                return;
-    }
+    if (!amount || amount <= 0) return;
 
     try {
         await window.executeBurnTransaction(window.currentPRC20, amount);
-
-        // Close bottom sheet if open
         document.getElementById('actionBottomSheet')?.remove();
-
-        // Refresh balances
         setTimeout(async () => {
             if (window.updateBalances) await window.updateBalances();
-            if (window.updateBurnBalanceDisplay) await window.updateBurnBalanceDisplay();
+            await updateBurnBalanceDisplay();
             if (window.WalletUI && window.WalletUI.renderAssets) window.WalletUI.renderAssets();
         }, 3000);
-
     } catch (e) {
         console.error("Burn failed:", e);
     }
 };
+
+window.lpBalances = lpBalances;
+window.updateSliderGradient = updateSliderGradient;
+window.updateLPFromSlider = updateLPFromSlider;
+window.updateLPFromInput = updateLPFromInput;
+window.setLPPercent = setLPPercent;
+window.calculateEstimatedLP = calculateEstimatedLP;
+window.updateRemoveLPFromSlider = updateRemoveLPFromSlider;
+window.updateRemoveLPFromInput = updateRemoveLPFromInput;
+window.setRemoveLPPercent = setRemoveLPPercent;
+window.executeAddLP = executeAddLP;
+window.executeRemoveLP = executeRemoveLP;
+window.setBurnPercent = setBurnPercent;
+window.updateBurnSliderFromInput = updateBurnSliderFromInput;
+window.updateBurnBalanceDisplay = updateBurnBalanceDisplay;
+window.executeBurn = executeBurn;

@@ -2,16 +2,16 @@
 // CONFIG.JS - Global Configuration & Constants
 // ============================================
 
-window.APP_CONFIG = {
+export const APP_CONFIG = {
     // Direct API endpoints (no proxy needed)
     RPC: 'https://mainnet-rpc.paxinet.io',
     LCD: 'https://mainnet-lcd.paxinet.io',
     EXPLORER_API: 'https://explorer.paxinet.io/api',
     WINSCAN_API: 'https://winscan.winsnip.xyz/api',
 
-    // Backend API - MUST BE FULL URL (not relative path)
-    // Browser will auto-replace relative paths with current domain
-    BACKEND_API: 'https://stalwart-ganache-32b226.netlify.app',
+    // Backend API - Pointing to local node server
+    BACKEND_API: window.location.origin,
+    EXPLORER_API: window.location.origin + '/api',
     
     // Proxy servers for CORS bypass (when needed)
     PROXIES: [
@@ -36,7 +36,7 @@ window.APP_CONFIG = {
 };
 
 // Notification messages config
-window.NOTIF_CONFIG = {
+export const NOTIF_CONFIG = {
     WALLET_CONNECT_SUCCESS: 'Wallet connected!',
     WALLET_CONNECT_FAILED: 'Failed to connect',
     SELECT_TOKEN_FIRST: 'Select a token first',

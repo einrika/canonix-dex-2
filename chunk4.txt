@@ -1,0 +1,63 @@
+            if (isOpen) {
+                sidebar.classList.add('translate-x-full');
+                window.hideSidebarOverlay();
+            } else {
+                const tokenSidebar = document.getElementById('tokenSidebar');
+                if (tokenSidebar) tokenSidebar.classList.add('-translate-x-full');
+                sidebar.classList.remove('translate-x-full');
+                window.showSidebarOverlay();
+            }
+        };
+
+        window.toggleMoreMenu = function() {
+            const modal = document.getElementById('moreMenuModal');
+            if (!modal) return;
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                document.body.classList.add('overflow-hidden');
+            } else {
+                modal.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+            }
+        };
+
+        window.closeAllSidebars = function() {
+            const tokenSidebar = document.getElementById('tokenSidebar');
+            const unifiedSidebar = document.getElementById('unifiedSidebar');
+            if (tokenSidebar) tokenSidebar.classList.add('-translate-x-full');
+            if (unifiedSidebar) unifiedSidebar.classList.add('translate-x-full');
+            window.hideSidebarOverlay();
+        };
+
+        window.showSidebarOverlay = function() {
+            if (window.innerWidth < 1024) {
+                const overlay = document.getElementById('sidebarOverlay');
+                if (overlay) overlay.classList.remove('hidden');
+            }
+        };
+
+        window.hideSidebarOverlay = function() {
+            const overlay = document.getElementById('sidebarOverlay');
+            if (overlay) overlay.classList.add('hidden');
+        };
+
+        // Ensure UI stays responsive
+        let lastWidth = window.innerWidth;
+        window.addEventListener('resize', () => {
+            const newWidth = window.innerWidth;
+            if ((lastWidth < 1024 && newWidth >= 1024) || (lastWidth >= 1024 && newWidth < 1024)) {
+                const tokenSidebar = document.getElementById('tokenSidebar');
+                if (newWidth >= 1024) {
+                    if (tokenSidebar) tokenSidebar.classList.remove('-translate-x-full');
+                    window.hideSidebarOverlay();
+                } else {
+                    if (tokenSidebar) tokenSidebar.classList.add('-translate-x-full');
+                    window.hideSidebarOverlay();
+                }
+            }
+            lastWidth = newWidth;
+        });
+    </script>
+</body>
+
+</html>

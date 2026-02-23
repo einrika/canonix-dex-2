@@ -1,0 +1,99 @@
+    <script src="./js/Ticker/Ticker.js"></script>
+    <script src="./ui/Footer/Footer.js"></script>
+    <script src="./js/Footer/Footer.js"></script>
+    <script src="./ui/TokenSidebar/TokenSidebar.js"></script>
+    <script src="./js/TokenSidebar/TokenSidebar.js"></script>
+    <script src="./ui/UnifiedSidebar/UnifiedSidebar.js"></script>
+    <script src="./js/UnifiedSidebar/UnifiedSidebar.js"></script>
+    <script src="./ui/MobileNav/MobileNav.js"></script>
+    <script src="./js/MobileNav/MobileNav.js"></script>
+    <script src="./ui/MoreMenu/MoreMenu.js"></script>
+    <script src="./js/MoreMenu/MoreMenu.js"></script>
+    <script src="./ui/TokenModal/TokenModal.js"></script>
+    <script src="./js/TokenModal/TokenModal.js"></script>
+    <script src="./ui/ConnectModal/ConnectModal.js"></script>
+    <script src="./js/ConnectModal/ConnectModal.js"></script>
+    <script src="./ui/PINSheet/PINSheet.js"></script>
+    <script src="./js/PINSheet/PINSheet.js"></script>
+    <script src="./ui/InternalWalletSheet/InternalWalletSheet.js"></script>
+    <script src="./js/InternalWalletSheet/InternalWalletSheet.js"></script>
+    <script src="./ui/SlippageModal/SlippageModal.js"></script>
+    <script src="./js/SlippageModal/SlippageModal.js"></script>
+    <script src="./ui/WalletSwitcher/WalletSwitcher.js"></script>
+    <script src="./js/WalletSwitcher/WalletSwitcher.js"></script>
+    <script src="./ui/TxConfirmModal/TxConfirmModal.js"></script>
+    <script src="./js/TxConfirmModal/TxConfirmModal.js"></script>
+    <script src="./ui/TxResultModal/TxResultModal.js"></script>
+    <script src="./js/TxResultModal/TxResultModal.js"></script>
+    <script src="./ui/AIModal/AIModal.js"></script>
+    <script src="./js/AIModal/AIModal.js"></script>
+    <script src="./ui/FAQModal/FAQModal.js"></script>
+    <script src="./js/FAQModal/FAQModal.js"></script>
+    <script src="./ui/ConsoleModal/ConsoleModal.js"></script>
+    <script src="./js/ConsoleModal/ConsoleModal.js"></script>
+    <script src="./ui/TradeHeaderStats/TradeHeaderStats.js"></script>
+    <script src="./js/TradeHeaderStats/TradeHeaderStats.js"></script>
+    <script src="./ui/PriceChart/PriceChart.js"></script>
+    <script src="./js/PriceChart/PriceChart.js"></script>
+    <script src="./ui/SwapTerminal/SwapTerminal.js"></script>
+    <script src="./js/SwapTerminal/SwapTerminal.js"></script>
+    <script src="./ui/TradeStats/TradeStats.js"></script>
+    <script src="./js/TradeStats/TradeStats.js"></script>
+    <script src="./ui/PoolDepth/PoolDepth.js"></script>
+    <script src="./js/PoolDepth/PoolDepth.js"></script>
+    <script src="./ui/TokenInfo/TokenInfo.js"></script>
+    <script src="./js/TokenInfo/TokenInfo.js"></script>
+    <script src="./ui/AboutToken/AboutToken.js"></script>
+    <script src="./js/AboutToken/AboutToken.js"></script>
+    <script src="./ui/HoldersTab/HoldersTab.js"></script>
+    <script src="./js/HoldersTab/HoldersTab.js"></script>
+    <script src="./ui/LandingHero/LandingHero.js"></script>
+    <script src="./js/LandingHero/LandingHero.js"></script>
+    <script src="./ui/EventBanner/EventBanner.js"></script>
+    <script src="./js/EventBanner/EventBanner.js"></script>
+    <script src="./ui/MarketRadar/MarketRadar.js"></script>
+    <script src="./js/MarketRadar/MarketRadar.js"></script>
+    <script src="./ui/LandingAIScan/LandingAIScan.js"></script>
+    <script src="./js/LandingAIScan/LandingAIScan.js"></script>
+    <script src="./ui/LandingFeatures/LandingFeatures.js"></script>
+    <script src="./js/LandingFeatures/LandingFeatures.js"></script>
+
+    <!-- New Wallet Section -->
+    <script src="./js/wallet-section/wallet-core.js"></script>
+    <script src="./js/wallet-section/history.js"></script>
+    <script src="./js/wallet-section/ui-wallet.js"></script>
+
+    <!-- Other Modules -->
+    <script src="./js/modules/market/tokens.js"></script>
+    <script src="./js/modules/trade/liquidity.js"></script>
+    <script src="./js/ui/common.js"></script>
+    <script src="./js/modules/market/holders.js"></script>
+    <script src="./js/modules/market/ai.js"></script>
+    <script src="./js/app.js"></script>
+
+    <script>
+        // Initialize the Trade Page UI
+        window.UIManager.init('trade', ['FAQModal']);
+
+        // REDESIGN SPECIFIC UI FUNCTIONS (Moved from static HTML)
+        window.toggleMobileSidebar = function() {
+            const sidebar = document.getElementById('tokenSidebar');
+            if (!sidebar) return;
+            const isOpen = !sidebar.classList.contains('-translate-x-full');
+
+            if (isOpen) {
+                sidebar.classList.add('-translate-x-full');
+                window.hideSidebarOverlay();
+            } else {
+                const unifiedSidebar = document.getElementById('unifiedSidebar');
+                if (unifiedSidebar) unifiedSidebar.classList.add('translate-x-full');
+                sidebar.classList.remove('-translate-x-full');
+                window.showSidebarOverlay();
+                if (window.loadTokensOptimized) window.loadTokensOptimized();
+            }
+        };
+
+        window.toggleUnifiedSidebar = function() {
+            const sidebar = document.getElementById('unifiedSidebar');
+            if (!sidebar) return;
+            const isOpen = !sidebar.classList.contains('translate-x-full');
