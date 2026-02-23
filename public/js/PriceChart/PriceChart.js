@@ -37,34 +37,50 @@ window.UIManager.registerLogic('PriceChart', (container) => {
 
 // WebSocket logic for live price updates
 window.updateLivePrice = function(price) {
-    if (!window.lineSeries || window.currentTimeframe !== 'realtime') return;
+    if (!window.lineSeries) return;
 
     const now = Math.floor(Date.now() / 1000);
-    const newPoint = { time: now, value: parseFloat(price) };
+    const newPrice = parseFloat(price);
 
-    window.lineSeries.update(newPoint);
+    // Update global text if exists
+    window.setText('currentPrice', newPrice.toFixed(8) + ' PAXI');
 
-    // Update local data array for indicators
-    const last = window.currentPriceData[window.currentPriceData.length - 1];
-    if (last && last.time === now) {
-        last.close = newPoint.value;
-        last.value = newPoint.value;
-        last.high = Math.max(last.high, newPoint.value);
-        last.low = Math.min(last.low, newPoint.value);
+    if (window.currentTimeframe === 'realtime') {
+        const newPoint = { time: now, value: newPrice };
+        window.lineSeries.update(newPoint);
+
+        // Update local data array for indicators
+        const last = window.currentPriceData[window.currentPriceData.length - 1];
+        if (last && last.time === now) {
+            last.close = newPrice;
+            last.value = newPrice;
+            last.high = Math.max(last.high, newPrice);
+            last.low = Math.min(last.low, newPrice);
+        } else {
+            window.currentPriceData.push({
+                time: now,
+                open: newPrice,
+                high: newPrice,
+                low: newPrice,
+                close: newPrice,
+                value: newPrice,
+                volume: Math.floor(Math.random() * 100)
+            });
+        }
     } else {
-        window.currentPriceData.push({
-            time: now,
-            open: newPoint.value,
-            high: newPoint.value,
-            low: newPoint.value,
-            close: newPoint.value,
-            value: newPoint.value,
-            volume: Math.floor(Math.random() * 100)
-        });
+        // For bucketed timeframes, update the last candle
+        const last = window.currentPriceData[window.currentPriceData.length - 1];
+        if (last) {
+            last.close = newPrice;
+            last.value = newPrice;
+            last.high = Math.max(last.high, newPrice);
+            last.low = Math.min(last.low, newPrice);
+            window.lineSeries.update(last);
+        }
     }
 
     // Keep data size manageable
-    if (window.currentPriceData.length > 300) window.currentPriceData.shift();
+    if (window.currentPriceData.length > 500) window.currentPriceData.shift();
 
     // Re-calculate MA if visible
     if (window.ma7Series.options().visible) window.ma7Series.setData(window.calculateMA(window.currentPriceData, 7));
