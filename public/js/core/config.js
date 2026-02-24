@@ -9,9 +9,9 @@ window.APP_CONFIG = {
     EXPLORER_API: 'https://explorer.paxinet.io/api',
     WINSCAN_API: 'https://winscan.winsnip.xyz/api',
 
-    // Backend API - MUST BE FULL URL (not relative path)
-    // Browser will auto-replace relative paths with current domain
-    BACKEND_API: 'https://stalwart-ganache-32b226.netlify.app',
+    // Backend API - Pointing to local node server
+    BACKEND_API: window.location.origin,
+    EXPLORER_API: window.location.origin + '/api',
     
     // Proxy servers for CORS bypass (when needed)
     PROXIES: [

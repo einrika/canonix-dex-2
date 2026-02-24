@@ -1,0 +1,11 @@
+[dotenv@17.3.1] injecting env (0) from .env -- tip: ⚙️  suppress all logs with { quiet: true }
+[Monitor] WebSocket initialized
+[Monitor] Data monitoring service started
+Server is running on port 3000
+Local: http://localhost:3000
+[Monitor] New client connected: kn1jHuDDhqp-in4HAAAB
+[Monitor] Client disconnected: kn1jHuDDhqp-in4HAAAB
+[Monitor] New client connected: rM97Owc2QOo8gwXEAAAD
+[Monitor] Client disconnected: rM97Owc2QOo8gwXEAAAD
+[Monitor] New client connected: NlLanXuMNDYDTYsqAAAF
+[Monitor] Client disconnected: NlLanXuMNDYDTYsqAAAF

@@ -73,10 +73,11 @@ window.formatPrice = function(price) {
 window.fetchDirect = async function(url, options = {}) {
     const BACKEND_API = window.APP_CONFIG.BACKEND_API;
     
-    // 1. Handle already full backend API URLs
-    if (url.startsWith(BACKEND_API)) {
+    // 1. Handle backend API URLs (full or relative)
+    if (url.startsWith(BACKEND_API) || url.startsWith('/api/')) {
         try {
-            const res = await fetch(url, {
+            const fullUrl = url.startsWith('/api/') ? `${BACKEND_API}${url}` : url;
+            const res = await fetch(fullUrl, {
                 method: options.method || 'GET',
                 headers: { 'Content-Type': 'application/json', ...options.headers },
                 body: options.body
@@ -128,7 +129,8 @@ window.fetchDirect = async function(url, options = {}) {
         const finalUrl = `${apiEndpoint}?${params.toString()}`;
         const fetchOptions = {
             method: options.method || 'GET',
-            headers: { 'Content-Type': 'application/json', ...options.headers }
+            headers: { 'Content-Type': 'application/json', ...options.headers },
+            cache: options.cache || 'default'
         };
         if (options.body) fetchOptions.body = options.body;
 
@@ -391,6 +393,13 @@ window.setCachedData = function(key, value) {
 
 // ===== NOTIFICATION SYSTEM =====
 window.showTxResult = function(data) {
+    const enableModal = localStorage.getItem('paxi_enable_result_modal') !== 'false';
+
+    if (!enableModal) {
+        window.renderCompactNotif(data);
+        return;
+    }
+
     const modal = document.getElementById('txResultModal');
     if (!modal) return;
 
@@ -405,7 +414,7 @@ window.showTxResult = function(data) {
     statusEl.textContent = isSuccess ? 'Success' : 'Failed';
     statusEl.className = `text-xl md:text-2xl font-black uppercase italic tracking-widest mb-1 ${isSuccess ? 'text-meme-green' : 'text-meme-pink'}`;
 
-    iconEl.className = `w-12 h-12 md:w-16 md:h-16 rounded-full border-2 border-black flex items-center justify-center mx-auto mb-3 ${isSuccess ? 'bg-meme-green text-black' : 'bg-meme-pink text-white'} shadow-brutal-sm`;
+    iconEl.className = `w-12 h-12 md:w-16 md:h-16 rounded-full border-2 border-card flex items-center justify-center mx-auto mb-3 ${isSuccess ? 'bg-meme-green text-black' : 'bg-meme-pink text-primary-text'} shadow-brutal-sm`;
     iconEl.innerHTML = `<i class="fas ${isSuccess ? 'fa-check-circle' : 'fa-times-circle'} text-2xl"></i>`;
 
     typeEl.textContent = `${type} Details`;
@@ -415,7 +424,7 @@ window.showTxResult = function(data) {
     document.getElementById('logType').textContent = type || '--';
     document.getElementById('logAsset').textContent = asset || '--';
     document.getElementById('logAmount').textContent = amount || '0.00';
-    document.getElementById('logAmount').className = `text-[10px] font-mono font-bold ${isSuccess ? 'text-meme-green' : 'text-gray-400'}`;
+    document.getElementById('logAmount').className = `text-[10px] font-mono font-bold ${isSuccess ? 'text-meme-green' : 'text-secondary-text'}`;
 
     const activeNet = window.NetworkManager?.getActiveNetwork();
     const netEl = document.getElementById('logNetwork');
@@ -438,7 +447,7 @@ window.showTxResult = function(data) {
         if (hashEl) hashEl.textContent = hash;
         const explorer = activeNet?.explorer || 'https://explorer.paxinet.io';
         const viewBtn = document.getElementById('viewHashBtn');
-        if (viewBtn) viewBtn.onclick = () => window.open(`${explorer}/tx/${hash}`, '_blank');
+        if (viewBtn) viewBtn.onclick = () => window.open(`${explorer}/txs/${hash}`, '_blank');
     } else {
         if (hashContainer) hashContainer.classList.add('hidden');
     }
@@ -482,6 +491,57 @@ window.closeTxResult = function() {
     }
 };
 
+window.renderCompactNotif = function(data) {
+    const container = document.getElementById('notificationContainer');
+    if (!container) return;
+
+    const { status, type, action, from, receive, error } = data;
+    const isSuccess = status === 'success';
+
+    const notif = document.createElement('div');
+    notif.className = `p-3 border-2 border-card shadow-brutal-sm flex flex-col gap-1 min-w-[240px] animate-slide-up ${isSuccess ? 'bg-meme-green text-black' : 'bg-meme-pink text-primary-text'}`;
+
+    const actionType = action || type || 'Transaction';
+
+    notif.innerHTML = `
+        <div class="flex justify-between items-center border-b border-card/20 pb-1 mb-1">
+            <span class="font-display text-sm uppercase italic tracking-tighter">${actionType} Result</span>
+            <i class="fas ${isSuccess ? 'fa-check-circle' : 'fa-times-circle'}"></i>
+        </div>
+        <div class="font-mono text-[9px] grid grid-cols-[60px_1fr] gap-x-2 leading-tight">
+            <span class="opacity-70 uppercase font-black">Status</span>
+            <span class="font-bold uppercase tracking-tight">: ${isSuccess ? 'Success' : 'Failed'}</span>
+
+            <span class="opacity-70 uppercase font-black">Action</span>
+            <span class="font-bold uppercase tracking-tight">: ${actionType}</span>
+
+            ${from ? `
+            <span class="opacity-70 uppercase font-black">From</span>
+            <span class="font-bold uppercase tracking-tight truncate">: ${from}</span>
+            ` : ''}
+
+            ${receive ? `
+            <span class="opacity-70 uppercase font-black">Receive</span>
+            <span class="font-bold uppercase tracking-tight truncate">: ${receive}</span>
+            ` : ''}
+
+            ${!isSuccess && error ? `
+            <span class="opacity-70 uppercase font-black">Error</span>
+            <span class="font-bold uppercase tracking-tight italic">: ${error.substring(0, 30)}${error.length > 30 ? '...' : ''}</span>
+            ` : ''}
+        </div>
+    `;
+
+    container.appendChild(notif);
+
+    // Auto remove
+    setTimeout(() => {
+        notif.classList.add('opacity-0', 'translate-x-full');
+        notif.style.transition = 'all 0.4s ease-in';
+        setTimeout(() => notif.remove(), 400);
+    }, 6000);
+};
+
 window.activeNotifs = [];
 window.showNotif = function(msg, type = 'info') {
   if (!msg) return;
@@ -504,16 +564,16 @@ window.showNotif = function(msg, type = 'info') {
 
   const icons = { success: 'check-circle', error: 'exclamation-circle', info: 'info-circle' };
   const typeColors = {
-      success: 'border-meme-green text-meme-green bg-black/90',
-      error: 'border-meme-pink text-meme-pink bg-black/90',
-      info: 'border-meme-cyan text-meme-cyan bg-black/90'
+      success: 'border-meme-green text-meme-green bg-surface/90',
+      error: 'border-meme-pink text-meme-pink bg-surface/90',
+      info: 'border-meme-cyan text-meme-cyan bg-surface/90'
   };
 
   const notif = document.createElement('div');
-  notif.className = `fixed right-4 z-[10000] p-4 border-4 border-black shadow-brutal flex items-center gap-4 min-w-[200px] max-w-[320px] transition-all duration-300 translate-x-[120%] overflow-hidden ${typeColors[type] || typeColors.info}`;
+  notif.className = `fixed right-4 z-[10000] p-4 border-4 border-card shadow-brutal flex items-center gap-4 min-w-[200px] max-w-[320px] transition-all duration-300 translate-x-[120%] overflow-hidden ${typeColors[type] || typeColors.info}`;
 
   notif.innerHTML = `
-    <div class="flex-shrink-0 w-8 h-8 flex items-center justify-center border-2 border-black bg-black"><i class="fas fa-${icons[type] || icons.info}"></i></div>
+    <div class="flex-shrink-0 w-8 h-8 flex items-center justify-center border-2 border-card bg-surface"><i class="fas fa-${icons[type] || icons.info}"></i></div>
     <div class="font-display text-lg uppercase italic tracking-tighter">${finalMsg}</div>
     <div class="absolute bottom-0 left-0 h-1 bg-current transition-all duration-[3000ms] ease-linear w-full progress-bar"></div>
   `;
