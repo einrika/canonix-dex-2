@@ -17,30 +17,16 @@ export const escapeHtml = function(unsafe) {
 
 export const toMicroAmount = function(amount, decimals) {
     if (amount === undefined || amount === null || amount === '') return "0";
-
-    // Use string to avoid float precision issues as much as possible
     let str = String(amount).trim();
-
-    // Handle scientific notation
     if (str.includes('e')) {
         str = Number(amount).toFixed(decimals);
     }
-
-    // Clean up negative signs and leading zeros
     const isNegative = str.startsWith('-');
     if (isNegative) str = str.slice(1);
-
     let [int, frac = ""] = str.split('.');
-
-    // TRUNCATE extra decimals instead of rounding to prevent "Cannot Sub" errors
     frac = frac.padEnd(decimals, '0').slice(0, decimals);
-
-    // Combine into a large integer string
     let combined = (int.replace(/^0+/, '') || "0") + frac;
-
-    // Remove leading zeros for BigInt (except if the whole thing is 0)
     combined = combined.replace(/^0+/, '') || "0";
-
     return combined;
 };
 
@@ -48,8 +34,6 @@ export const formatAmount = function(num, decimals = 2) {
     if (num === undefined || num === null) return '-';
     const val = typeof num === 'string' ? parseFloat(num) : num;
     if (isNaN(val)) return '-';
-
-    // Rule: No abbreviations (K, M, B). Use full numeric with commas.
     return val.toLocaleString('en-US', {
         minimumFractionDigits: 0,
         maximumFractionDigits: decimals,
@@ -57,13 +41,10 @@ export const formatAmount = function(num, decimals = 2) {
     });
 };
 
-// Standard Price Formatter (Paxi Network Standard)
-// Rule: Exactly 8 decimal places, rounded, no abbreviations or scientific notation
 export const formatPrice = function(price) {
     if (price === undefined || price === null) return '-';
     const num = typeof price === 'string' ? parseFloat(price) : price;
     if (isNaN(num)) return '-';
-
     return num.toLocaleString('en-US', {
         minimumFractionDigits: 8,
         maximumFractionDigits: 8,
@@ -74,8 +55,6 @@ export const formatPrice = function(price) {
 // ===== SERVERLESS SECURE FETCH =====
 export const fetchDirect = async function(url, options = {}) {
     const BACKEND_API = APP_CONFIG.BACKEND_API;
-    
-    // 1. Handle backend API URLs (full or relative)
     if (url.startsWith(BACKEND_API) || url.startsWith('/api/')) {
         try {
             const fullUrl = url.startsWith('/api/') ? `${BACKEND_API}${url}` : url;
@@ -93,13 +72,10 @@ export const fetchDirect = async function(url, options = {}) {
         }
     }
 
-    // 2. Routing to specialized serverless functions
     let apiEndpoint = '';
     const params = new URLSearchParams();
-
     try {
         const parsedUrl = new URL(url, window.location.origin);
-
         if (url.includes('prc20/get_contract_prices')) {
             const addr = parsedUrl.searchParams.get('address');
             apiEndpoint = `${BACKEND_API}/api/token-price`;
@@ -119,11 +95,9 @@ export const fetchDirect = async function(url, options = {}) {
             apiEndpoint = `${BACKEND_API}/api/token-detail`;
             params.append('address', addr);
         } else if (url.startsWith('http')) {
-            // Generic proxy for other external domains (whitelisted in backend)
             apiEndpoint = `${BACKEND_API}/api/proxy`;
             params.append('url', url);
         } else {
-            // Regular local fetch for static files or other local routes
             const res = await fetch(url, options);
             return await res.json();
         }
@@ -135,217 +109,18 @@ export const fetchDirect = async function(url, options = {}) {
             cache: options.cache || 'default'
         };
         if (options.body) fetchOptions.body = options.body;
-
         const response = await fetch(finalUrl, fetchOptions);
         const result = await response.json();
-
-        if (result.success) {
-            return result.data;
-        } else {
-            throw new Error(result.error || 'Serverless error');
-        }
+        if (result.success) return result.data;
+        else throw new Error(result.error || 'Serverless error');
     } catch (error) {
         console.error(`❌ fetchDirect failed for ${url}:`, error);
         throw error;
     }
 };
 
-// ===== PROXY FETCH WITH FALLBACK =====
-export const fetchWithProxy = async function(url, options = {}) {
-    const PROXIES = APP_CONFIG.PROXIES || [];
-    if (PROXIES.length === 0) {
-        // No proxies configured, try direct fetch
-        const response = await fetch(url, {
-            method: options.method || 'GET',
-            headers: options.headers || {},
-            body: options.body
-        });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        return await response.json();
-    }
-
-    let lastError = null;
-
-    // Try each proxy in order
-    for (let i = 0; i < PROXIES.length; i++) {
-        try {
-            const proxyUrl = PROXIES[i] + encodeURIComponent(url);
-            console.log(`🔄 Trying proxy ${i + 1}/${PROXIES.length}: ${PROXIES[i]}`);
-            
-            const response = await fetch(proxyUrl, {
-                method: options.method || 'GET',
-                headers: options.headers || {},
-                body: options.body,
-                signal: options.signal
-            });
-
-            if (!response.ok) {
-                throw new Error(`Proxy returned status ${response.status}`);
-            }
-
-            const data = await response.json();
-            console.log(`✅ Proxy ${i + 1} succeeded`);
-            return data;
-
-        } catch (error) {
-            console.warn(`❌ Proxy ${i + 1} failed:`, error.message);
-            lastError = error;
-            
-            // If this is not the last proxy, continue to next one
-            if (i < PROXIES.length - 1) {
-                console.log(`⏭️ Trying next proxy...`);
-                continue;
-            }
-        }
-    }
-
-    // If all proxies failed, try direct fetch as last resort
-    try {
-        console.log('🔄 All proxies failed, trying direct fetch...');
-        const response = await fetch(url, {
-            method: options.method || 'GET',
-            headers: options.headers || {},
-            body: options.body,
-            signal: options.signal
-        });
-
-        if (!response.ok) {
-            throw new Error(`Direct fetch returned status ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log('✅ Direct fetch succeeded');
-        return data;
-
-    } catch (directError) {
-        console.error('❌ Direct fetch also failed:', directError.message);
-        throw new Error(`All proxies and direct fetch failed. Last error: ${lastError?.message || directError.message}`);
-    }
-};
-
-// ===== SIMPLE PROXY FETCH (Single Attempt) =====
-export const fetchViaProxy = async function(url, proxyIndex = 0, options = {}) {
-    const PROXIES = APP_CONFIG.PROXIES || [];
-    if (PROXIES.length === 0) throw new Error('No proxies configured');
-    
-    const proxy = PROXIES[proxyIndex] || PROXIES[0];
-    const proxyUrl = proxy + encodeURIComponent(url);
-    
-    try {
-        const response = await fetch(proxyUrl, {
-            method: options.method || 'GET',
-            headers: options.headers || {},
-            body: options.body
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
-        }
-
-        return await response.json();
-    } catch (error) {
-        console.error(`Proxy fetch failed (${proxy}):`, error);
-        throw error;
-    }
-};
-
-// ===== RANDOM PROXY FETCH =====
-export const fetchWithRandomProxy = async function(url, options = {}) {
-    const PROXIES = APP_CONFIG.PROXIES || [];
-    if (PROXIES.length === 0) throw new Error('No proxies configured');
-    
-    const randomIndex = Math.floor(Math.random() * PROXIES.length);
-    const proxy = PROXIES[randomIndex];
-    const proxyUrl = proxy + encodeURIComponent(url);
-    
-    console.log(`🎲 Using random proxy ${randomIndex + 1}: ${proxy}`);
-    
-    try {
-        const response = await fetch(proxyUrl, {
-            method: options.method || 'GET',
-            headers: options.headers || {},
-            body: options.body
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log(`✅ Random proxy fetch succeeded`);
-        return data;
-
-    } catch (error) {
-        console.error(`❌ Random proxy fetch failed:`, error);
-        throw error;
-    }
-};
-
-// ===== FETCH WITH TIMEOUT & PROXY FALLBACK =====
-export const fetchWithTimeout = async function(url, timeoutMs = 10000, useProxy = false) {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-
-    try {
-        let response;
-        
-        if (useProxy) {
-            // Use proxy with fallback
-            response = await fetchWithProxy(url, { signal: controller.signal });
-        } else {
-            // Direct fetch
-            const res = await fetch(url, { signal: controller.signal });
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            response = await res.json();
-        }
-
-        clearTimeout(timeoutId);
-        return response;
-
-    } catch (error) {
-        clearTimeout(timeoutId);
-        
-        if (error.name === 'AbortError') {
-            console.error(`⏱️ Request timeout after ${timeoutMs}ms`);
-            throw new Error(`Request timeout (${timeoutMs}ms)`);
-        }
-        
-        throw error;
-    }
-};
-
-// ===== SMART FETCH (Auto-detect CORS and use proxy if needed) =====
-export const smartFetch = async function(url, options = {}) {
-    try {
-        // Try direct fetch first
-        const response = await fetch(url, {
-            method: options.method || 'GET',
-            headers: options.headers || {},
-            body: options.body
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
-        }
-
-        return await response.json();
-
-    } catch (error) {
-        // If CORS error or network error, try with proxy
-        if (error.message.includes('CORS') || error.message.includes('NetworkError') || error.message.includes('Failed to fetch')) {
-            console.warn('⚠️ CORS/Network error detected, switching to proxy...');
-            return await fetchWithProxy(url, options);
-        }
-        
-        throw error;
-    }
-};
-
-// ===== FORMATTING FUNCTIONS =====
 export const formatBalance = function(balance, decimals = 6) {
-  if (balance === undefined || balance === null || balance === '-' || balance === 'Loading...') {
-    return balance;
-  }
+  if (balance === undefined || balance === null || balance === '-' || balance === 'Loading...') return balance;
   const raw = typeof balance === 'string' ? Number(balance) : balance;
   if (!Number.isFinite(raw)) return '-';
   const value = raw / Math.pow(10, decimals);
@@ -355,296 +130,9 @@ export const formatBalance = function(balance, decimals = 6) {
   }).replace(/\.?0+$/, '');
 };
 
-export const formatBalanceFull = function(balance, decimals = 6) {
-  if (balance === undefined || balance === null || balance === '-') return balance;
-  const raw = typeof balance === 'string' ? Number(balance) : balance;
-  if (!Number.isFinite(raw)) return '-';
-  const value = raw / Math.pow(10, decimals);
-  return value.toLocaleString('en-US', {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals
-  });
-};
-
-// ===== CACHE FUNCTIONS =====
-export const getCachedData = function(key) {
-  try {
-    const cached = localStorage.getItem(key);
-    if (!cached) return null;
-    const data = JSON.parse(cached);
-    if (Date.now() - data.timestamp > APP_CONFIG.CACHE_DURATION) {
-      localStorage.removeItem(key);
-      return null;
-    }
-    return data.value;
-  } catch (e) {
-    return null;
-  }
-};
-
-export const setCachedData = function(key, value) {
-  try {
-    localStorage.setItem(key, JSON.stringify({
-      value: value,
-      timestamp: Date.now()
-    }));
-  } catch (e) {
-    console.error('Cache storage failed:', e);
-  }
-};
-
-// ===== NOTIFICATION SYSTEM =====
-export const showTxResult = function(data) {
-    const enableModal = localStorage.getItem('paxi_enable_result_modal') !== 'false';
-
-    if (!enableModal) {
-        renderCompactNotif(data);
-        return;
-    }
-
-    const modal = document.getElementById('txResultModal');
-    if (!modal) return;
-
-    const { status, type, asset, amount, network, address, hash, error, height, gasUsed, gasWanted } = data;
-    const isSuccess = status === 'success';
-
-    // Status UI
-    const statusEl = document.getElementById('txResultStatus');
-    const iconEl = document.getElementById('txResultIcon');
-    const typeEl = document.getElementById('txResultType');
-
-    statusEl.textContent = isSuccess ? 'Success' : 'Failed';
-    statusEl.className = `text-xl md:text-2xl font-black uppercase italic tracking-widest mb-1 ${isSuccess ? 'text-meme-green' : 'text-meme-pink'}`;
-
-    iconEl.className = `w-12 h-12 md:w-16 md:h-16 rounded-full border-2 border-card flex items-center justify-center mx-auto mb-3 ${isSuccess ? 'bg-meme-green text-black' : 'bg-meme-pink text-primary-text'} shadow-brutal-sm`;
-    iconEl.innerHTML = `<i class="fas ${isSuccess ? 'fa-check-circle' : 'fa-times-circle'} text-2xl"></i>`;
-
-    typeEl.textContent = `${type} Details`;
-
-    // Log Details
-    document.getElementById('txResultTime').textContent = new Date().toLocaleTimeString();
-    document.getElementById('logType').textContent = type || '--';
-    document.getElementById('logAsset').textContent = asset || '--';
-    document.getElementById('logAmount').textContent = amount || '0.00';
-    document.getElementById('logAmount').className = `text-[10px] font-mono font-bold ${isSuccess ? 'text-meme-green' : 'text-secondary-text'}`;
-
-    // Note: NetworkManager should be imported if we want to be strictly modular
-    // For now we might keep some window usage if it's too complex to untangle immediately
-    // or just assume it's available globally until we refactor everything.
-    // Better: use window.NetworkManager for now if not refactored yet.
-    const activeNet = window.NetworkManager?.getActiveNetwork();
-    const netEl = document.getElementById('logNetwork');
-    if (netEl) netEl.textContent = network || (activeNet?.name || 'Paxi Mainnet');
-
-    const addrEl = document.getElementById('logAddress');
-    if (addrEl) addrEl.textContent = address || '--';
-
-    const copyBtn = document.getElementById('copyAddressBtn');
-    if (copyBtn) {
-        copyBtn.onclick = () => {
-            if (address) navigator.clipboard.writeText(address);
-        };
-    }
-
-    const hashEl = document.getElementById('logHash');
-    const hashContainer = document.getElementById('logHashContainer');
-    if (hash) {
-        if (hashContainer) hashContainer.classList.remove('hidden');
-        if (hashEl) hashEl.textContent = hash;
-        const explorer = activeNet?.explorer || 'https://explorer.paxinet.io';
-        const viewBtn = document.getElementById('viewHashBtn');
-        if (viewBtn) viewBtn.onclick = () => window.open(`${explorer}/txs/${hash}`, '_blank');
-    } else {
-        if (hashContainer) hashContainer.classList.add('hidden');
-    }
-
-    // New Fields: Height & Gas
-    const extraInfo = document.getElementById('txExtraInfo');
-    if (isSuccess && height && extraInfo) {
-        extraInfo.classList.remove('hidden');
-        extraInfo.classList.add('flex');
-
-        const hEl = document.getElementById('logHeight');
-        const guEl = document.getElementById('logGasUsed');
-        const gwEl = document.getElementById('logGasWanted');
-
-        if (hEl) hEl.textContent = height;
-        if (guEl) guEl.textContent = gasUsed || '0';
-        if (gwEl) gwEl.textContent = gasWanted || '0';
-    } else if (extraInfo) {
-        extraInfo.classList.add('hidden');
-        extraInfo.classList.remove('flex');
-    }
-
-    // Error
-    const errorContainer = document.getElementById('logErrorContainer');
-    if (!isSuccess && error) {
-        errorContainer.classList.remove('hidden');
-        document.getElementById('logError').textContent = error;
-    } else {
-        errorContainer.classList.add('hidden');
-    }
-
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-};
-
-export const closeTxResult = function() {
-    const modal = document.getElementById('txResultModal');
-    if (modal) {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-    }
-};
-
-export const renderCompactNotif = function(data) {
-    const container = document.getElementById('notificationContainer');
-    if (!container) return;
-
-    const { status, type, action, from, receive, error } = data;
-    const isSuccess = status === 'success';
-
-    const notif = document.createElement('div');
-    notif.className = `p-3 border-2 border-card shadow-brutal-sm flex flex-col gap-1 min-w-[240px] animate-slide-up ${isSuccess ? 'bg-meme-green text-black' : 'bg-meme-pink text-primary-text'}`;
-
-    const actionType = action || type || 'Transaction';
-
-    notif.innerHTML = `
-        <div class="flex justify-between items-center border-b border-card/20 pb-1 mb-1">
-            <span class="font-display text-sm uppercase italic tracking-tighter">${actionType} Result</span>
-            <i class="fas ${isSuccess ? 'fa-check-circle' : 'fa-times-circle'}"></i>
-        </div>
-        <div class="font-mono text-[9px] grid grid-cols-[60px_1fr] gap-x-2 leading-tight">
-            <span class="opacity-70 uppercase font-black">Status</span>
-            <span class="font-bold uppercase tracking-tight">: ${isSuccess ? 'Success' : 'Failed'}</span>
-
-            <span class="opacity-70 uppercase font-black">Action</span>
-            <span class="font-bold uppercase tracking-tight">: ${actionType}</span>
-
-            ${from ? `
-            <span class="opacity-70 uppercase font-black">From</span>
-            <span class="font-bold uppercase tracking-tight truncate">: ${from}</span>
-            ` : ''}
-
-            ${receive ? `
-            <span class="opacity-70 uppercase font-black">Receive</span>
-            <span class="font-bold uppercase tracking-tight truncate">: ${receive}</span>
-            ` : ''}
-
-            ${!isSuccess && error ? `
-            <span class="opacity-70 uppercase font-black">Error</span>
-            <span class="font-bold uppercase tracking-tight italic">: ${error.substring(0, 30)}${error.length > 30 ? '...' : ''}</span>
-            ` : ''}
-        </div>
-    `;
-
-    container.appendChild(notif);
-
-    // Auto remove
-    setTimeout(() => {
-        notif.classList.add('opacity-0', 'translate-x-full');
-        notif.style.transition = 'all 0.4s ease-in';
-        setTimeout(() => notif.remove(), 400);
-    }, 6000);
-};
-
-export let activeNotifs = [];
-export const showNotif = function(msg, type = 'info') {
-  if (!msg) return;
-  const lowerMsg = msg.toLowerCase();
-
-  // Strict Implementation: Only Loading, Success, Failed allowed.
-  let finalMsg = '';
-  if (lowerMsg.includes('loading') || lowerMsg.includes('process') || lowerMsg.includes('broadcasting') || lowerMsg.includes('building')) {
-      finalMsg = 'Loading';
-      type = 'info';
-  } else if (lowerMsg.includes('success') || lowerMsg.includes('sent') || lowerMsg.includes('confirmed') || lowerMsg.includes('completed')) {
-      finalMsg = 'Success';
-      type = 'success';
-  } else if (lowerMsg.includes('fail') || lowerMsg.includes('error') || lowerMsg.includes('reject')) {
-      finalMsg = 'Failed';
-      type = 'error';
-  }
-
-  if (!finalMsg) return; // Block all other notifications (Address copied, etc. per strict requirements)
-
-  const icons = { success: 'check-circle', error: 'exclamation-circle', info: 'info-circle' };
-  const typeColors = {
-      success: 'border-meme-green text-meme-green bg-surface/90',
-      error: 'border-meme-pink text-meme-pink bg-surface/90',
-      info: 'border-meme-cyan text-meme-cyan bg-surface/90'
-  };
-
-  const notif = document.createElement('div');
-  notif.className = `fixed right-4 z-[10000] p-4 border-4 border-card shadow-brutal flex items-center gap-4 min-w-[200px] max-w-[320px] transition-all duration-300 translate-x-[120%] overflow-hidden ${typeColors[type] || typeColors.info}`;
-
-  notif.innerHTML = `
-    <div class="flex-shrink-0 w-8 h-8 flex items-center justify-center border-2 border-card bg-surface"><i class="fas fa-${icons[type] || icons.info}"></i></div>
-    <div class="font-display text-lg uppercase italic tracking-tighter">${finalMsg}</div>
-    <div class="absolute bottom-0 left-0 h-1 bg-current transition-all duration-[3000ms] ease-linear w-full progress-bar"></div>
-  `;
-
-  document.body.appendChild(notif);
-  activeNotifs.push(notif);
-
-  const updatePositions = () => {
-    let currentTop = 16;
-    activeNotifs.forEach((el) => {
-      // Remove any existing top-[...] classes
-      el.classList.forEach(cls => { if (cls.startsWith('top-[')) el.classList.remove(cls); });
-      el.classList.add(`top-[${Math.round(currentTop)}px]`);
-      currentTop += el.offsetHeight + 12;
-    });
-  };
-
-  // Trigger animations
-  requestAnimationFrame(() => {
-    updatePositions();
-    notif.classList.remove('translate-x-[120%]');
-    notif.classList.add('translate-x-0');
-    const progress = notif.querySelector('.progress-bar');
-    if (progress) {
-        requestAnimationFrame(() => {
-            progress.classList.add('w-0');
-        });
-    }
-  });
-
-  // Remove
-  setTimeout(() => {
-    notif.classList.remove('translate-x-0');
-    notif.classList.add('translate-x-[120%]');
-    setTimeout(() => {
-      notif.remove();
-      activeNotifs = activeNotifs.filter(n => n !== notif);
-      updatePositions();
-    }, 400);
-  }, 3000);
-};
-
-// ===== LOGGER =====
-export const log = function(msg, type = 'info') {
-  const colors = {
-    success: '✅',
-    error: '❌',
-    info: 'ℹ️',
-    warn: '⚠️'
-  };
-  const time = new Date().toLocaleTimeString();
-  
-  if (msg instanceof Error) {
-    console.error(`${colors[type] || 'ℹ️'} [${time}] ${msg.message}\nStack: ${msg.stack}`);
-  } else {
-    console.log(`${colors[type] || 'ℹ️'} [${time}] ${msg}`);
-  }
-};
-
-// ===== URL HELPERS =====
 export const normalizeLogoUrl = function(url) {
     if (!url || typeof url !== 'string') return '';
     url = url.trim();
-
-    // IPFS Handling
     if (url.startsWith('ipfs://')) return `https://ipfs.io/ipfs/${url.replace('ipfs://', '')}`;
     if (url.startsWith('https://ipfs//')) return `https://ipfs.io/ipfs/${url.replace('https://ipfs//', '')}`;
     if (url.includes('pinata.cloud/ipfs/')) return url;
@@ -652,56 +140,12 @@ export const normalizeLogoUrl = function(url) {
         if (url.startsWith('/ipfs/')) return `https://ipfs.io${url}`;
         return url;
     }
-
-    // Arweave Handling
     if (url.startsWith('ar://')) return `https://arweave.net/${url.replace('ar://', '')}`;
-
-    // CID only (Experimental)
     if (url.match(/^[a-zA-Z0-9]{46,}$/)) return `https://ipfs.io/ipfs/${url}`;
-
-    // HTTP/S
     if (url.startsWith('http://') || url.startsWith('https://')) return url;
-
-    // Default fallback to https
     return 'https://' + url;
 };
 
-// ===== COPY TO CLIPBOARD =====
-export const copyAddress = function(event, address) {
-  event.stopPropagation();
-  navigator.clipboard.writeText(address);
-};
-
-// ===== SHARE TOKEN =====
-export const shareToken = function(address) {
-  const url = window.location.origin + window.location.pathname + '?token=' + address;
-  navigator.clipboard.writeText(url);
-};
-
-// ===== HELPER NUMERIC =====
-export const numtokenlist = function(v, d = 0) {
-  return typeof v === 'number' && !isNaN(v) ? v : d;
-};
-
-// ===== WAIT FOR LIBRARY =====
-export const waitForLibrary = function(globalName, timeout = 10000) {
-    return new Promise((resolve, reject) => {
-        if (window[globalName]) return resolve(window[globalName]);
-        let elapsed = 0;
-        const interval = setInterval(() => {
-            elapsed += 100;
-            if (window[globalName]) {
-                clearInterval(interval);
-                resolve(window[globalName]);
-            } else if (elapsed >= timeout) {
-                clearInterval(interval);
-                reject(new Error(`Library ${globalName} failed to load after ${timeout}ms`));
-            }
-        }, 100);
-    });
-};
-
-// ===== SAFE DOM MANIPULATION =====
 export const setText = function(idOrEl, text) {
     const el = typeof idOrEl === 'string' ? document.getElementById(idOrEl) : idOrEl;
     if (el) el.textContent = text;
@@ -735,54 +179,37 @@ export const removeClass = function(idOrEl, className) {
     if (el && el.classList) el.classList.remove(className);
 };
 
-export const toggleClass = function(idOrEl, className) {
-    const el = typeof idOrEl === 'string' ? document.getElementById(idOrEl) : idOrEl;
-    if (el && el.classList) el.classList.toggle(className);
+export const numtokenlist = function(v, d = 0) {
+  return typeof v === 'number' && !isNaN(v) ? v : d;
 };
 
-export const hasClass = function(idOrEl, className) {
-    const el = typeof idOrEl === 'string' ? document.getElementById(idOrEl) : idOrEl;
-    return el && el.classList ? el.classList.contains(className) : false;
+export const waitForLibrary = function(globalName, timeout = 10000) {
+    return new Promise((resolve, reject) => {
+        if (window[globalName]) return resolve(window[globalName]);
+        let elapsed = 0;
+        const interval = setInterval(() => {
+            elapsed += 100;
+            if (window[globalName]) {
+                clearInterval(interval);
+                resolve(window[globalName]);
+            } else if (elapsed >= timeout) {
+                clearInterval(interval);
+                reject(new Error(`Library ${globalName} failed to load after ${timeout}ms`));
+            }
+        }, 100);
+    });
 };
 
-// ===== CRYPTO UTILITIES =====
-export const cryptoUtils = {
-    deriveKey: async function(pin, salt) {
-        const encoder = new TextEncoder();
-        const pinData = encoder.encode(pin);
-        const baseKey = await crypto.subtle.importKey('raw', pinData, 'PBKDF2', false, ['deriveKey']);
-        return crypto.subtle.deriveKey(
-            { name: 'PBKDF2', salt: salt, iterations: 100000, hash: 'SHA-256' },
-            baseKey,
-            { name: 'AES-GCM', length: 256 },
-            true,
-            ['encrypt', 'decrypt']
-        );
-    },
-    encrypt: async function(text, pin) {
-        const encoder = new TextEncoder();
-        const data = encoder.encode(text);
-        const salt = crypto.getRandomValues(new Uint8Array(16));
-        const iv = crypto.getRandomValues(new Uint8Array(12));
-        const key = await this.deriveKey(pin, salt);
-        const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, key, data);
-        const combined = new Uint8Array(salt.length + iv.length + encrypted.byteLength);
-        combined.set(salt, 0);
-        combined.set(iv, salt.length);
-        combined.set(new Uint8Array(encrypted), salt.length + iv.length);
-        return btoa(String.fromCharCode(...combined));
-    },
-    decrypt: async function(encodedData, pin) {
-        try {
-            const combined = Uint8Array.from(atob(encodedData), c => c.charCodeAt(0));
-            const salt = combined.slice(0, 16);
-            const iv = combined.slice(16, 28);
-            const data = combined.slice(28);
-            const key = await this.deriveKey(pin, salt);
-            const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: iv }, key, data);
-            return new TextDecoder().decode(decrypted);
-        } catch (e) {
-            throw new Error('Invalid PIN or corrupted data');
-        }
-    }
+export const log = (msg, type = 'info') => console.log(`[${type}] ${msg}`);
+export const copyAddress = (event, addr) => { event.stopPropagation(); navigator.clipboard.writeText(addr); };
+export const shareToken = (addr) => { navigator.clipboard.writeText(window.location.origin + window.location.pathname + '?token=' + addr); };
+
+// Notification system helpers
+export const showNotif = function(msg, type = 'info') {
+    const container = document.getElementById('notificationContainer') || document.body;
+    const notif = document.createElement('div');
+    notif.className = `fixed right-4 top-4 p-4 border-2 border-black shadow-brutal z-[10000] bg-white ${type === 'error' ? 'text-red-500' : 'text-green-500'}`;
+    notif.textContent = msg;
+    container.appendChild(notif);
+    setTimeout(() => notif.remove(), 3000);
 };

@@ -1,121 +1,54 @@
 // ============================================
-// SOCKET.JS - WebSocket Client Manager
+// SOCKET.JS - Real-time Updates via Socket.IO
 // ============================================
+
+import { APP_CONFIG } from './config.js';
+import { State } from './state.js';
 
 export const PaxiSocket = {
     socket: null,
-    currentRoom: null,
-    isConnected: false,
+    connected: false,
 
     init: function() {
-        if (this.socket) return;
-
-        console.log('[Socket] Initializing connection...');
-
-        // Check if socket.io is already loaded from script tag
-        if (window.io) {
-            this.connect();
-        } else {
-            // Fallback: load dynamically if missing
-            const script = document.createElement('script');
-            script.src = "https://cdn.socket.io/4.7.2/socket.io.min.js";
-            script.onload = () => {
-                this.connect();
-            };
-            document.head.appendChild(script);
+        if (!window.io) {
+            console.warn('[Socket] Socket.IO not found on window');
+            return;
         }
-
-        this.setupVisibilityHandler();
+        this.connect();
     },
 
     connect: function() {
-        // Connect to same origin
-        // Note: io is assumed to be global from the script tag
-        if (typeof io === 'undefined') {
-            console.error('[Socket] socket.io not loaded');
-            return;
-        }
-
-        this.socket = io();
+        this.socket = window.io(APP_CONFIG.BACKEND_API);
 
         this.socket.on('connect', () => {
-            console.log('[Socket] Connected to backend, ID:', this.socket.id);
-            this.isConnected = true;
+            console.log('[Socket] Connected, ID:', this.socket.id);
+            this.connected = true;
+            const token = State.get('currentToken');
+            if (token) this.subscribeToken(token.address);
+        });
 
-            // Re-subscribe if we were in a room
-            if (this.currentRoom) {
-                this.socket.emit('subscribe_token', this.currentRoom);
+        this.socket.on('price_update', (data) => {
+            const currentToken = State.get('currentToken');
+            if (currentToken && data.address === currentToken.address) {
+                State.set('currentToken', { ...currentToken, ...data });
             }
-
-            window.dispatchEvent(new CustomEvent('paxi_socket_connected'));
+            window.dispatchEvent(new CustomEvent('paxi_price_update', { detail: data }));
         });
 
         this.socket.on('disconnect', () => {
-            console.log('[Socket] Disconnected');
-            this.isConnected = false;
-            window.dispatchEvent(new CustomEvent('paxi_socket_disconnected'));
-        });
-
-        // Global token list updates
-        this.socket.on('token_list_update', (data) => {
-            window.dispatchEvent(new CustomEvent('paxi_token_list_updated', { detail: data }));
-        });
-
-        // Specific price updates
-        this.socket.on('price_update', (data) => {
-            window.dispatchEvent(new CustomEvent('paxi_price_updated_socket', { detail: data }));
-        });
-
-        // Global PAXI USD price update
-        this.socket.on('paxi_price_usd_update', (data) => {
-            if (data.usd) {
-                window.paxiPriceUSD = data.usd;
-                window.lastPaxiFetch = Date.now();
-                window.dispatchEvent(new CustomEvent('paxi_price_updated', { detail: data.usd }));
-            }
+            this.connected = false;
         });
     },
 
     subscribeToken: function(address) {
-        if (!this.socket) return;
-
-        if (this.currentRoom && this.currentRoom !== address) {
-            this.unsubscribeToken(this.currentRoom);
+        if (this.socket?.connected) {
+            this.socket.emit('subscribe', { address });
         }
-
-        this.currentRoom = address;
-        this.socket.emit('subscribe_token', address);
-        console.log('[Socket] Subscribed to token:', address);
     },
 
     unsubscribeToken: function(address) {
-        if (!this.socket || !address) return;
-        this.socket.emit('unsubscribe_token', address);
-        if (this.currentRoom === address) this.currentRoom = null;
-        console.log('[Socket] Unsubscribed from token:', address);
-    },
-
-    setupVisibilityHandler: function() {
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') {
-                console.log('[Socket] Tab visible, ensuring connection...');
-                if (this.socket && this.socket.disconnected) {
-                    this.socket.connect();
-                }
-            } else {
-                console.log('[Socket] Tab hidden, disconnecting to save resources...');
-                if (this.socket && this.socket.connected) {
-                    this.socket.disconnect();
-                }
-            }
-        });
-    },
-
-    disconnect: function() {
-        if (this.socket) {
-            this.socket.disconnect();
+        if (this.socket?.connected) {
+            this.socket.emit('unsubscribe', { address });
         }
     }
 };
-
-// Initialization moved to main.js entry point

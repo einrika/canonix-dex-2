@@ -1,7 +1,1 @@
-// ============================================
-// EVENTBANNER LOGIC
-// ============================================
-
-export const EventBannerLogic = (container) => {
-    // Static banner logic if needed
-};
+export const EventBannerLogic = (container) => {};

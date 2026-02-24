@@ -1,23 +1,17 @@
-export const SlippageModalUI = () => {
+export const SlippageModalUI = (props) => {
     return `
-        <div id="slippageModal" class="hidden fixed inset-0 bg-primary/95 z-[400] flex items-center justify-center p-4">
-            <div class="bg-secondary border border-secondary shadow-minimal w-full max-w-[240px] overflow-hidden">
-                <div class="p-2.5 border-b border-secondary flex justify-between items-center bg-soft-warning">
-                    <h3 class="font-display text-lg text-black uppercase">SLIPPAGE</h3>
-                    <button id="close-slippage-modal" class="text-black hover:rotate-90 transition-transform"><i class="fas fa-times text-base"></i></button>
+        <div id="slippageModal" class="hidden fixed inset-0 bg-black/90 z-[300] flex items-center justify-center p-4">
+            <div class="bg-meme-surface border-2 border-black shadow-brutal w-full max-w-xs">
+                <div class="p-3 border-b-2 border-black bg-meme-yellow flex justify-between items-center">
+                    <span class="font-display text-lg text-black uppercase italic">SLIPPAGE SETTINGS</span>
+                    <button id="closeSlippage" class="text-black"><i class="fas fa-times"></i></button>
                 </div>
-                <div class="p-3 space-y-3 bg-primary">
-                    <div class="grid grid-cols-2 gap-1.5" id="slippage-presets">
-                        <button data-val="0.1" class="py-1.5 bg-secondary border border-secondary text-primary-text font-display text-xs shadow-brutal-sm hover:shadow-none transition-all uppercase">0.1%</button>
-                        <button data-val="0.5" class="py-1.5 bg-secondary border border-secondary text-primary-text font-display text-xs shadow-brutal-sm hover:shadow-none transition-all uppercase">0.5%</button>
-                        <button data-val="1.0" class="py-1.5 bg-secondary border border-secondary text-primary-text font-display text-xs shadow-brutal-sm hover:shadow-none transition-all uppercase">1.0%</button>
-                        <button data-val="30.0" class="py-1.5 bg-secondary border border-secondary text-primary-text font-display text-xs shadow-brutal-sm hover:shadow-none transition-all uppercase">30.0%</button>
+                <div class="p-4 space-y-4">
+                    <div class="grid grid-cols-4 gap-2">
+                        ${[0.5, 1.0, 3.0, 5.0].map(s => `<button data-slip="${s}" class="slip-btn py-2 bg-black border border-black text-white font-mono text-[10px] hover:bg-meme-green hover:text-black transition-all">${s}%</button>`).join('')}
                     </div>
-                    <div class="relative">
-                        <input type="number" id="customSlippage" placeholder="CUSTOM" class="w-full pl-3 pr-8 py-2 bg-secondary border border-secondary text-primary-text font-display text-lg outline-none focus:border-accent placeholder:text-muted-text uppercase">
-                        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-text font-display text-lg italic">%</span>
-                    </div>
-                    <button id="save-slippage" class="w-full py-2.5 bg-accent text-black font-display text-xl border border-secondary shadow-brutal hover:shadow-none transition-all uppercase">Save</button>
+                    <input type="number" id="customSlippage" placeholder="CUSTOM %" class="w-full p-2 bg-black border border-black text-white font-mono text-xs outline-none focus:border-meme-green uppercase italic">
+                    <button id="saveSlippage" class="w-full py-3 bg-meme-green text-black font-display text-xl border-2 border-black shadow-brutal-sm hover:shadow-none transition-all uppercase italic">SAVE SETTINGS</button>
                 </div>
             </div>
         </div>

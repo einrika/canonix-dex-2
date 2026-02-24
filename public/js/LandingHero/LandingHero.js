@@ -1,7 +1,15 @@
 // ============================================
-// LANDINGHERO LOGIC
+// LANDING HERO LOGIC
 // ============================================
 
 export const LandingHeroLogic = (container) => {
-    // Hero usually just static or simple animations handled by CSS classes
+    container.querySelector('#trade-now-btn')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.location.href = 'trade.html';
+    });
+
+    container.querySelector('#explore-btn')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        document.getElementById('market-radar')?.scrollIntoView({ behavior: 'smooth' });
+    });
 };

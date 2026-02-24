@@ -1,9 +1,17 @@
-export const TokenModalUI = () => {
+export const TokenModalUI = (props) => {
     return `
-        <div id="tokenDetailModal" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4">
-            <div class="absolute inset-0 bg-bg/90 backdrop-blur-md" onclick="window.hideTokenDetail()"></div>
-            <div id="tokenDetailContent" class="relative w-full max-w-2xl bg-secondary border-4 border-card shadow-brutal-lg overflow-hidden animate-fade-in">
-                <!-- Content injected by JS -->
+        <div id="tokenModal" class="hidden fixed inset-0 bg-black/90 z-[333] flex items-center justify-center p-4">
+            <div class="bg-meme-surface border-2 border-black shadow-brutal-lg w-full max-w-lg max-h-[80vh] overflow-hidden flex flex-col">
+                <div class="p-4 border-b-2 border-black flex justify-between items-center bg-meme-pink">
+                    <h3 class="text-2xl font-display text-white italic uppercase tracking-widest">Select Token</h3>
+                    <button id="hideTokenSelector" class="text-white hover:rotate-90 transition-transform">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <div class="p-4 bg-meme-card border-b-2 border-black">
+                    <input type="text" id="tokenSearch" placeholder="SEARCH..." class="w-full px-3 py-3 bg-black border-2 border-black text-white font-display text-lg outline-none focus:border-meme-green placeholder:text-gray-800 uppercase italic">
+                </div>
+                <div id="tokenList" class="flex-1 overflow-y-auto no-scrollbar bg-bg"></div>
             </div>
         </div>
     `;

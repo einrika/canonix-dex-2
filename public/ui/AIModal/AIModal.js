@@ -1,12 +1,15 @@
-export const AIModalUI = () => {
+export const AIModalUI = (props) => {
     return `
-        <div id="aiModal" class="hidden fixed inset-0 bg-primary/95 z-[120] flex items-center justify-center p-4">
-            <div class="bg-secondary border border-secondary shadow-minimal w-full max-w-lg max-h-[70vh] overflow-y-auto no-scrollbar relative">
-                <div class="p-3 border-b border-secondary flex justify-between items-center sticky top-0 bg-secondary z-10">
-                    <h3 class="text-xl font-display text-soft-success uppercase"><i class="fas fa-brain mr-2 text-base"></i>AI ORACLE</h3>
-                    <button id="close-ai-modal" class="text-soft-failed hover:scale-110 transition-transform"><i class="fas fa-times text-lg"></i></button>
+        <div id="aiModal" class="hidden fixed inset-0 bg-black/95 z-[444] flex items-center justify-center p-4">
+            <div class="bg-meme-surface border-4 border-black shadow-brutal w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+                <div class="p-4 border-b-4 border-black flex justify-between items-center bg-meme-cyan">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-brain text-black text-xl"></i>
+                        <h3 class="text-2xl font-display text-black italic uppercase tracking-tighter">AI Analysis</h3>
+                    </div>
+                    <button id="closeAI" class="text-black hover:rotate-90 transition-transform"><i class="fas fa-times text-xl"></i></button>
                 </div>
-                <div id="aiContent" class="p-4 font-mono text-[9px] text-muted-text leading-relaxed uppercase tracking-wide"></div>
+                <div id="aiContent" class="flex-1 overflow-y-auto p-6 space-y-6 no-scrollbar"></div>
             </div>
         </div>
     `;

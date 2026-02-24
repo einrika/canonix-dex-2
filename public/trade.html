@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Canonix Trade – Advanced Terminal</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -46,20 +47,15 @@
                             'brutal-sm': '2px 2px 0px 0px #000',
                             'brutal': '3px 3px 0px 0px #000',
                         },
-                        spacing: {
-                            '0.5': '0.1rem', '1': '0.2rem', '1.5': '0.3rem', '2': '0.4rem', '2.5': '0.5rem', '3': '0.6rem', '4': '0.8rem', '5': '1rem', '6': '1.2rem', '8': '1.5rem', '10': '2rem', '12': '2.4rem', '14': '2.8rem', '16': '3.2rem', '20': '4rem', '24': '4.8rem',
-                        },
-                        fontSize: {
-                            '7px': '7px', '8px': '8px', '9px': '9px', '10px': '10px', 'xs': '0.7rem', 'sm': '0.8rem', 'base': '0.9rem', 'lg': '1rem', 'xl': '1.125rem', '2xl': '1.25rem', '3xl': '1.5rem', '4xl': '1.875rem', '5xl': '2.25rem',
-                        },
                         animation: {
-                            'marquee': 'marquee 25s linear infinite', 'float': 'float 6s ease-in-out infinite', 'glitch': 'glitch 1s linear infinite', 'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both', 'slide-up': 'slideUp 0.3s ease-out', 'fade-in': 'fadeIn 0.2s ease-out',
+                            'marquee': 'marquee 25s linear infinite',
+                            'glitch': 'glitch 1s linear infinite',
+                            'slide-up': 'slideUp 0.3s ease-out',
+                            'fade-in': 'fadeIn 0.2s ease-out',
                         },
                         keyframes: {
                             marquee: { '0%': { transform: 'translateX(0%)' }, '100%': { transform: 'translateX(-50%)' } },
-                            float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } },
                             glitch: { '0%': { transform: 'translate(0)' }, '20%': { transform: 'translate(-1px, 1px)' }, '40%': { transform: 'translate(-1px, -1px)' }, '60%': { transform: 'translate(1px, 1px)' }, '80%': { transform: 'translate(1px, -1px)' }, '100%': { transform: 'translate(0)' } },
-                            shake: { '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' }, '20%, 80%': { transform: 'translate3d(1px, 0, 0)' }, '30%, 50%, 70%': { transform: 'translate3d(-2px, 0, 0)' }, '40%, 60%': { transform: 'translate3d(2px, 0, 0)' } },
                             slideUp: { '0%': { transform: 'translateY(100%)' }, '100%': { transform: 'translateY(0)' } },
                             fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } }
                         }
@@ -68,41 +64,22 @@
             }
         }
     </script>
-    
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Canonix – Paxi Pumpfun Trade</title>
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <script src="https://mainnet-api.paxinet.io/resources/js/paxi-cosmjs.umd.js"></script>
-    <script type="module">
-        import { DirectSecp256k1HdWallet, DirectSecp256k1Wallet } from 'https://esm.sh/@cosmjs/proto-signing@0.32.3';
-        window.DirectSecp256k1HdWallet = DirectSecp256k1HdWallet;
-        window.DirectSecp256k1Wallet = DirectSecp256k1Wallet;
-        if (window.PaxiCosmJS) {
-            window.PaxiCosmJS.DirectSecp256k1HdWallet = DirectSecp256k1HdWallet;
-            window.PaxiCosmJS.DirectSecp256k1Wallet = DirectSecp256k1Wallet;
-        }
-    </script>
-    <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
-    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <link rel="icon" type="image/png" sizes="192x192" href="/assets/android-icon-192x192.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0B0C0D">
 </head>
-
 <body class="bg-bg text-primary-text font-sans h-screen flex flex-col overflow-hidden">
     <div id="app"></div>
-    
-    <!-- MAIN ENTRY POINT -->
+    <!-- Core External Libraries -->
+    <script src="https://mainnet-api.paxinet.io/resources/js/paxi-cosmjs.umd.js"></script>
+    <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script type="module" src="./js/main.js"></script>
-    
-    <script>
-        // UI Helpers moved to main.js or kept here if they only touch DOM directly and don't need module state
-        // but it's better if main.js handles them.
-        // I'll move them to main.js to be safe.
-    </script>
 </body>
-
 </html>

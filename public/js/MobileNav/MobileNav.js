@@ -1,41 +1,29 @@
+// ============================================
+// MOBILE NAV LOGIC
+// ============================================
+
 export const MobileNavLogic = (container) => {
-    container.querySelector('#mobile-nav-market')?.addEventListener('click', () => {
-        window.toggleMobileSidebar();
-        setActiveNav('market');
-    });
-    container.querySelector('#mobile-nav-trade')?.addEventListener('click', () => {
-        window.setSidebarTab('swap');
-        window.toggleUnifiedSidebar();
-        setActiveNav('trade');
-    });
-    container.querySelector('#mobile-nav-wallet')?.addEventListener('click', () => {
-        window.setSidebarTab('wallet');
-        window.toggleUnifiedSidebar();
-        setActiveNav('wallet');
-    });
-    container.querySelector('#mobile-nav-lp')?.addEventListener('click', () => {
-        window.setSidebarTab('lp');
-        window.toggleUnifiedSidebar();
-        setActiveNav('lp');
-    });
-    container.querySelector('#mobile-nav-more')?.addEventListener('click', () => {
-        window.toggleMoreMenu();
-    });
-};
-
-export const setActiveNav = (tab) => {
-    const ids = ['market', 'trade', 'lp'];
-    ids.forEach(id => {
-        const el = document.getElementById(`mobile-nav-${id}`);
-        if (el) {
-            el.classList.remove('text-accent');
-            el.classList.add('text-muted-text');
-        }
+    container.querySelector('#mobileConnectBtn')?.addEventListener('click', () => {
+        window.dispatchEvent(new CustomEvent('paxi_show_connect_modal'));
     });
 
-    const active = document.getElementById(`mobile-nav-${tab}`);
-    if (active) {
-        active.classList.add('text-accent');
-        active.classList.remove('text-muted-text');
-    }
+    container.querySelector('#mobile-market-btn')?.addEventListener('click', () => {
+        window.dispatchEvent(new CustomEvent('paxi_toggle_token_sidebar'));
+    });
+
+    container.querySelector('#mobile-chart-btn')?.addEventListener('click', () => {
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    });
+
+    container.querySelector('#mobile-wallet-btn')?.addEventListener('click', () => {
+        window.dispatchEvent(new CustomEvent('paxi_toggle_sidebar'));
+    });
+
+    container.querySelector('#mobile-ai-btn')?.addEventListener('click', () => {
+        window.dispatchEvent(new CustomEvent('paxi_show_ai_modal'));
+    });
+
+    container.querySelector('#mobile-more-btn')?.addEventListener('click', () => {
+        window.dispatchEvent(new CustomEvent('paxi_show_more_menu'));
+    });
 };

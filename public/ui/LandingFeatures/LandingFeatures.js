@@ -1,22 +1,28 @@
-export const LandingFeaturesUI = () => {
+export const LandingFeaturesUI = (props) => {
     return `
-        <section class="py-16 bg-meme-yellow border-y-4 border-card px-4">
+        <section class="py-20 bg-meme-black border-t-4 border-black px-4">
             <div class="max-w-7xl mx-auto">
-                <div class="text-center mb-16 reveal active opacity-100 translate-y-0 transition-all duration-[800ms] ease-[cubic-bezier(0.4,0,0.2,1)]">
-                    <h2 class="text-4xl font-display text-black italic uppercase tracking-tighter leading-none mb-4 drop-shadow-[4px_4px_0_rgba(255,255,255,1)]">Degen Protocols</h2>
-                    <p class="font-mono text-black font-black uppercase tracking-widest text-sm italic">Cutting-edge tech for bottom-feeding traders.</p>
-                </div>
-
-                <div class="grid md:grid-cols-3 gap-6">
-                    <div class="reveal active opacity-100 translate-y-0 transition-all duration-[800ms] ease-[cubic-bezier(0.4,0,0.2,1)] p-6 bg-surface border-4 border-card shadow-brutal hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all">
-                        <div class="w-12 h-12 bg-meme-green border-2 border-card flex items-center justify-center text-black text-xl mb-6"><i class="fas fa-bolt"></i></div>
-                        <h4 class="text-3xl font-display text-primary-text mb-4 italic uppercase tracking-tighter">Speed</h4>
-                        <p class="font-mono text-secondary-text text-[10px] font-bold uppercase tracking-wide leading-relaxed italic">Paxi Network native settlement. Front-run the rugs with sub-second execution latency.</p>
+                <div class="grid md:grid-cols-3 gap-12">
+                    <div class="reveal">
+                        <div class="w-16 h-16 bg-meme-green border-2 border-black shadow-brutal flex items-center justify-center rotate-[-5deg] mb-8">
+                            <i class="fas fa-bolt text-black text-2xl"></i>
+                        </div>
+                        <h3 class="font-display text-3xl text-white italic uppercase mb-4 tracking-tighter">Instant Swaps</h3>
+                        <p class="font-mono text-gray-500 text-sm font-bold uppercase leading-relaxed">Lightning fast execution on Paxi Network. No front-running, no BS.</p>
                     </div>
-                    <div class="reveal active opacity-100 translate-y-0 transition-all duration-[800ms] ease-[cubic-bezier(0.4,0,0.2,1)] p-6 bg-surface border-4 border-card shadow-brutal hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all delay-[100ms]">
-                        <div class="w-12 h-12 bg-meme-pink border-2 border-card flex items-center justify-center text-primary-text text-xl mb-6"><i class="fas fa-brain"></i></div>
-                        <h4 class="text-3xl font-display text-primary-text mb-4 italic uppercase tracking-tighter">AI Oracle</h4>
-                        <p class="font-mono text-secondary-text text-[10px] font-bold uppercase tracking-wide leading-relaxed italic">Gemini AI scanning every transaction. Real-time alpha from pure noise.</p>
+                    <div class="reveal delay-[200ms]">
+                        <div class="w-16 h-16 bg-meme-cyan border-2 border-black shadow-brutal flex items-center justify-center rotate-[3deg] mb-8">
+                            <i class="fas fa-shield-alt text-black text-2xl"></i>
+                        </div>
+                        <h3 class="font-display text-3xl text-white italic uppercase mb-4 tracking-tighter">Safe Harbor</h3>
+                        <p class="font-mono text-gray-500 text-sm font-bold uppercase leading-relaxed">Locked liquidity and verified contracts. We hunt rugs so you don't have to.</p>
+                    </div>
+                    <div class="reveal delay-[400ms]">
+                        <div class="w-16 h-16 bg-meme-pink border-2 border-black shadow-brutal flex items-center justify-center rotate-[-2deg] mb-8">
+                            <i class="fas fa-rocket text-white text-2xl"></i>
+                        </div>
+                        <h3 class="font-display text-3xl text-white italic uppercase mb-4 tracking-tighter">Moon Missions</h3>
+                        <p class="font-mono text-gray-500 text-sm font-bold uppercase leading-relaxed">Launch your own token in seconds. Bonding curve mechanics for fair starts.</p>
                     </div>
                 </div>
             </div>

@@ -1,175 +1,48 @@
 // ============================================
-// WALLET-HISTORY LOGIC
+// HISTORY.JS - Transaction History
 // ============================================
 
-import { loadTransactionHistory, fetchTxDetail } from '../core/api.js';
+import { State } from '../core/state.js';
+import { APP_CONFIG } from '../core/config.js';
+import { fetchDirect, shortenAddress } from '../core/utils.js';
 
 export const WalletHistory = {
-    init: function() {},
-    loadHistory: function() {
-        renderTransactionHistory();
-    }
-};
+    loadHistory: async function() {
+        const wallet = State.get('wallet');
+        if (!wallet) return;
 
-export let txHistory = [];
+        const container = document.getElementById('history-container');
+        if (!container) return;
 
-export function detectTxType(tx) {
-    const type = (tx.type || "").toLowerCase();
-    if (type.includes("send") || type.includes("transfer")) return "send";
-    if (type.includes("burn")) return "burn";
-    if (type.includes("swap")) return "swap";
-    if (type.includes("add") && type.includes("lp")) return "add_lp";
-    if (type.includes("withdraw") || type.includes("remove")) return "wd_lp";
-    return "other";
-}
+        container.innerHTML = '<div class="text-center py-8"><div class="w-8 h-8 border-4 border-meme-cyan border-t-transparent rounded-full animate-spin mx-auto"></div></div>';
 
-export function getTxMeta(type) {
-    const map = {
-        send: { icon: "fa-paper-plane", color: "text-blue-400", label: "SEND" },
-        burn: { icon: "fa-fire", color: "text-red-500", label: "BURN" },
-        swap: { icon: "fa-right-left", color: "text-purple-400", label: "SWAP" },
-        add_lp: { icon: "fa-plus-circle", color: "text-green-400", label: "ADD LP" },
-        wd_lp: { icon: "fa-minus-circle", color: "text-yellow-400", label: "WITHDRAW LP" },
-        other: { icon: "fa-receipt", color: "text-secondary-text", label: "TRANSACTION" }
-    };
-    return map[type] || map.other;
-}
+        try {
+            const data = await fetchDirect(`${APP_CONFIG.BACKEND_API}/api/tx-history?address=${wallet.address}`);
+            if (!data || !data.txs || data.txs.length === 0) {
+                container.innerHTML = '<div class="text-center py-8 text-gray-600 uppercase font-black text-[10px]">No Transactions Found</div>';
+                return;
+            }
 
-export const renderTransactionHistory = async function(page = 1) {
-    const container = document.getElementById("history-container");
-    if (!container) return;
-    
-    if (!window.wallet || !window.wallet.address) {
-        container.innerHTML = `<div class="text-center py-20 font-bold text-secondary-text uppercase text-sm">Wallet Not Connected</div>`;
-        return;
-    }
-    
-    container.innerHTML = `<div class="text-center py-20"><div class="w-8 h-8 border-4 border-meme-green border-t-transparent rounded-full animate-spin mx-auto"></div></div>`;
-    
-    try {
-        const history = await loadTransactionHistory(window.wallet.address, page);
-        if (!history || history.length === 0) {
-            container.innerHTML = `<div class="text-center py-20 text-secondary-text font-bold uppercase text-sm">No transaction history found</div>`;
-            return;
+            container.innerHTML = data.txs.map(tx => this.renderTxItem(tx)).join('');
+        } catch (e) {
+            console.error("Failed to load history", e);
+            container.innerHTML = '<div class="text-center py-8 text-down uppercase font-black text-[10px]">Failed to Load History</div>';
         }
-        container.innerHTML = `<div class="flex flex-col gap-2">${history.map(tx => renderTxCard(tx)).join("")}</div>`;
-    } catch {
-        container.innerHTML = `<div class="text-center py-20 text-red-500 font-bold text-sm">Failed to load transaction history</div>`;
-    }
-};
+    },
 
-export function renderTxCard(tx) {
-    const txType = detectTxType(tx);
-    const meta = getTxMeta(txType);
-    const time = tx.timestamp ? new Date(tx.timestamp).toLocaleString() : "-";
-    const statusColor = tx.status === "success" ? "text-green-400" : "text-red-400";
-    
-    return `
-        <div onclick="window.openTxDetailModal('${tx.hash}','${txType}')"
-            class="bg-card border border-gray-800 rounded-lg p-3 hover:bg-card/70 transition cursor-pointer">
-            <div class="flex justify-between items-center">
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-full bg-surface/40 flex items-center justify-center">
-                        <i class="fa-solid ${meta.icon} ${meta.color} text-xs"></i>
-                    </div>
-                    <div>
-                        <div class="text-xs font-bold ${meta.color}">${meta.label}</div>
-                        <div class="text-[10px] text-secondary-text font-mono">Block ${tx.block || "-"}</div>
-                    </div>
+    renderTxItem: function(tx) {
+        const isSuccess = tx.code === 0;
+        return `
+            <div class="p-3 bg-meme-surface border-2 border-black shadow-brutal-sm mb-2">
+                <div class="flex justify-between items-center">
+                    <span class="text-[10px] font-black uppercase text-white">${tx.type || 'Transaction'}</span>
+                    <span class="text-[8px] font-mono text-gray-500">${shortenAddress(tx.hash, 8)}</span>
                 </div>
-                <div class="text-right">
-                    <div class="text-[10px] text-secondary-text">${time}</div>
-                    <div class="text-[10px] font-bold ${statusColor}">${tx.status || "-"}</div>
-                </div>
-            </div>
-        </div>
-    `;
-}
-
-export const initTxModal = function() {
-    if (document.getElementById("tx-detail-modal")) return;
-    
-    const modal = document.createElement("div");
-    modal.id = "tx-detail-modal";
-    modal.className = "fixed inset-0 bg-surface/70 backdrop-blur-sm hidden items-center justify-center";
-    modal.style.zIndex = "9999";
-    
-    modal.innerHTML = `
-        <div class="bg-card border border-gray-800 rounded-xl w-full max-w-2xl p-4 relative m-6 max-h-[85vh] overflow-y-auto text-xs">
-            <button id="tx-modal-close" class="absolute top-3 right-3 text-secondary-text hover:text-primary-text text-sm"><i class="fa-solid fa-xmark"></i></button>
-            <div id="tx-modal-content"></div>
-        </div>
-    `;
-    
-    document.body.appendChild(modal);
-    document.getElementById("tx-modal-close").onclick = () => { modal.classList.add("hidden"); };
-    modal.addEventListener("click", (e) => { if (e.target.id === "tx-detail-modal") { modal.classList.add("hidden"); } });
-};
-
-export const openTxDetailModal = async function(hash, txType) {
-    const modal = document.getElementById('tx-detail-modal');
-    const content = document.getElementById('tx-modal-content');
-    if (!modal || !content) return;
-    
-    modal.classList.remove("hidden");
-    modal.classList.add("flex");
-    
-    content.innerHTML = `
-        <div class="text-center py-8">
-            <div class="w-6 h-6 border-4 border-meme-green border-t-transparent rounded-full animate-spin mx-auto"></div>
-            <p class="text-[10px] text-gray-500 mt-2 font-mono uppercase">Fetching data...</p>
-        </div>
-    `;
-    
-    try {
-        const detail = await fetchTxDetail(hash);
-        if (!detail) {
-            content.innerHTML = `<div class="text-red-400 text-center uppercase font-bold">No data received</div>`;
-            return;
-        }
-
-        const tx = detail.tx_response || detail;
-        const txHash = tx.txhash || tx.hash || hash;
-        const meta = getTxMeta(txType);
-        const time = tx.timestamp ? new Date(tx.timestamp).toLocaleString() : "-";
-        const isSuccess = tx.code === 0 || tx.code === "0" || (tx.tx_result && (tx.tx_result.code === 0 || tx.tx_result.code === "0"));
-
-        content.innerHTML = `
-            <div class="flex flex-col gap-4">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid ${meta.icon} ${meta.color}"></i>
-                    <div class="font-bold ${meta.color}">${meta.label} DETAILS</div>
-                </div>
-                <div class="border border-gray-800 rounded-lg p-3 bg-surface/30 flex flex-col gap-2">
-                    <div>
-                        <div class="text-secondary-text text-[10px]">HASH</div>
-                        <a href="https://explorer.paxinet.io/txs/${txHash}" target="_blank" class="font-mono break-all text-blue-400 hover:underline">${txHash}</a>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div><div class="text-secondary-text text-[10px]">BLOCK</div><div class="font-mono">${tx.height || tx.block || (tx.tx_result ? tx.tx_result.height : "-")}</div></div>
-                        <div><div class="text-secondary-text text-[10px]">GAS USED</div><div class="font-mono">${tx.gas_used || tx.gasUsed || (tx.tx_result ? tx.tx_result.gas_used : "-")}</div></div>
-                        <div><div class="text-secondary-text text-[10px]">TIME</div><div>${time}</div></div>
-                        <div><div class="text-secondary-text text-[10px]">STATUS</div><div class="${isSuccess ? "text-green-400" : "text-red-400"} font-bold">${isSuccess ? "SUCCESS" : "FAILED"}</div></div>
-                    </div>
-                </div>
-                <div class="mt-2">
-                    <button onclick="document.getElementById('tx-raw-data').classList.toggle('hidden')" class="text-secondary-text hover:text-meme-cyan text-[9px] font-mono uppercase underline">Toggle Raw Data</button>
-                    <pre id="tx-raw-data" class="hidden mt-2 p-3 bg-black/50 border border-gray-800 rounded-lg overflow-x-auto text-[8px] text-gray-400 font-mono">${JSON.stringify(detail, null, 2)}</pre>
+                <div class="flex justify-between items-end mt-1">
+                    <span class="text-[8px] text-gray-600">${new Date(tx.timestamp).toLocaleString()}</span>
+                    <span class="text-[10px] font-black ${isSuccess ? 'text-meme-green' : 'text-meme-pink'} uppercase italic">${isSuccess ? 'Success' : 'Failed'}</span>
                 </div>
             </div>
         `;
-    } catch (e) {
-        console.error('Error opening tx modal:', e);
-        content.innerHTML = `<div class="text-red-400 text-center uppercase font-bold">Error: ${e.message}</div>`;
     }
 };
-
-window.renderTransactionHistory = renderTransactionHistory;
-window.openTxDetailModal = openTxDetailModal;
-window.initTxModal = initTxModal;
-
-if (window.WalletUI) {
-    window.WalletUI.loadHistory = function() {
-        renderTransactionHistory();
-    };
-}

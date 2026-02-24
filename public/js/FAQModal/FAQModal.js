@@ -1,50 +1,22 @@
 // ============================================
-// FAQMODAL LOGIC
+// FAQ MODAL LOGIC
 // ============================================
 
 export const FAQModalLogic = (container) => {
-    // FAQ handlers
-};
+    const modal = container.querySelector('#faqModal');
 
-export const showFAQ = function() {
-    const modal = document.getElementById('faqModal');
-    if (modal) {
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-    }
-};
-
-export const hideFAQ = function() {
-    const modal = document.getElementById('faqModal');
-    if (modal) {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-    }
-};
-
-export const toggleFAQ = function(element) {
-    if (!element) return;
-    const answer = element.nextElementSibling;
-    if (!answer) return;
-
-    document.querySelectorAll('.faq-answer').forEach(el => {
-        if (el !== answer) {
-            el.classList.add('hidden');
-            if (el.previousElementSibling) {
-                el.previousElementSibling.classList.remove('active');
-            }
-        }
+    window.addEventListener('paxi_show_faq', () => {
+        modal?.classList.remove('hidden');
     });
 
-    if (!answer.classList.contains('hidden')) {
-        answer.classList.add('hidden');
-        element.classList.remove('active');
-    } else {
-        answer.classList.remove('hidden');
-        element.classList.add('active');
-    }
-};
+    container.querySelector('#closeFaqModal')?.addEventListener('click', () => {
+        modal?.classList.add('hidden');
+    });
 
-window.showFAQ = showFAQ;
-window.hideFAQ = hideFAQ;
-window.toggleFAQ = toggleFAQ;
+    container.querySelectorAll('.faq-question').forEach(q => {
+        q.addEventListener('click', () => {
+            const answer = q.nextElementSibling;
+            answer?.classList.toggle('hidden');
+        });
+    });
+};

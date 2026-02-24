@@ -1,4 +1,3 @@
-export const TickerLogic = (container, props) => {
-    // Ticker update logic is handled globally
-    if (window.updateTicker) window.updateTicker();
+export const TickerLogic = (container) => {
+    // Marquee logic is CSS based, nothing here for now
 };

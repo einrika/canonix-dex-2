@@ -1,7 +1,1 @@
-// ============================================
-// LANDINGFEATURES LOGIC
-// ============================================
-
-export const LandingFeaturesLogic = (container) => {
-    // Mostly static
-};
+export const LandingFeaturesLogic = (container) => {};
