@@ -263,7 +263,8 @@ window.updateDashboard = function(detail) {
     }
 
     window.setText('recvTokenSymbol', detail.symbol);
-    window.updateTradeBalances();
+    // Removed automatic wallet refresh on price change to optimize performance
+    // window.updateTradeBalances();
 };
 
 // ===== SWAP UI HELPERS =====

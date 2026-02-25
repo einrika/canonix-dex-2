@@ -322,12 +322,31 @@ window.loadMoreTokens = async function(filter) {
     if (window.isTokenSidebarLoading) return;
     window.isTokenSidebarLoading = true;
     const btn = document.getElementById('loadMoreTokensBtn');
-    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Loading...'; }
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-circle-notch fa-spin mr-2"></i> Loading...';
+    }
     try {
-        if (!filter) { await window.fetchNextContractPage(); window.displayLimit = window.tokenAddresses.length; }
-        else { window.displayLimit += 20; }
+        if (!filter) {
+            // Check if we have more tokens already in memory but not displayed
+            const currentTotal = window.tokenAddresses.length;
+            if (window.displayLimit < currentTotal) {
+                window.displayLimit += 20;
+                if (window.displayLimit > currentTotal) window.displayLimit = currentTotal;
+            } else if (window.hasMoreTokens) {
+                // Fetch next page from API
+                await window.fetchNextContractPage();
+                window.displayLimit = window.tokenAddresses.length;
+            }
+        } else {
+            window.displayLimit += 20;
+        }
         window.renderTokenSidebar(filter, true);
-    } catch (e) { console.error('Load more error:', e); } finally { window.isTokenSidebarLoading = false; }
+    } catch (e) {
+        console.error('Load more error:', e);
+    } finally {
+        window.isTokenSidebarLoading = false;
+    }
 };
 
 // ===== TICKER NEWS LOGIC =====
