@@ -11,14 +11,43 @@ window.currentTimeframe = localStorage.getItem('chartTimeframe') || 'realtime';
 window.refreshCountdown = 10;
 window.countdownInterval = null;
 
-// WebSocket listener for live price updates
+// WebSocket listener for live price updates (Instant feedback)
 window.updateLivePrice = function(price) {
-    // Only update from official poll/stream to avoid "fake" price points
-    // This function can be kept for UI updates but shouldn't inject data into the series
-    // if we want to stick strictly to the 5s polling data.
     const priceLabel = document.getElementById('currentPrice');
     if (priceLabel) window.setText(priceLabel, parseFloat(price).toFixed(8) + ' PAXI');
+
+    // Smoothly update the chart if in realtime mode
+    if (window.currentTimeframe === 'realtime' && window.lineSeries) {
+        // Use 5s bucket alignment consistent with backend
+        const now = Math.floor(Date.now() / 5000) * 5;
+        const p = parseFloat(price);
+
+        const lastPoint = window.currentPriceData[window.currentPriceData.length - 1];
+        // Only update if it's the current or new bucket. Never update history.
+        if (!lastPoint || now >= lastPoint.time) {
+            window.lineSeries.update({ time: now, value: p });
+
+            if (lastPoint && lastPoint.time === now) {
+                lastPoint.close = p;
+                lastPoint.high = Math.max(lastPoint.high, p);
+                lastPoint.low = Math.min(lastPoint.low, p);
+            } else {
+                window.currentPriceData.push({
+                    time: now, open: p, high: p, low: p, close: p, volume: 0
+                });
+                if (window.currentPriceData.length > 300) window.currentPriceData.shift();
+            }
+        }
+    }
 };
+
+// Global socket listener integration
+window.addEventListener('paxi_price_updated_socket', (event) => {
+    const data = event.detail;
+    if (data && data.address === window.currentPRC20) {
+        window.updateLivePrice(data.price);
+    }
+});
 
 window.initChart = function() {
     const container = document.getElementById('priceChart');
@@ -329,6 +358,7 @@ window.loadPriceHistory = async function(contractAddress, timeframe) {
 };
 
 window.chartUpdateInterval = null;
+window.isRefreshingChart = false;
 
 window.startRealtimeUpdates = function() {
     if (window.countdownInterval) {
@@ -359,8 +389,9 @@ window.startRealtimeUpdates = function() {
 };
 
 window.refreshRealtimeChart = async function() {
-    if (!window.currentPRC20 || window.currentTimeframe !== 'realtime' || !window.lineSeries) return;
+    if (!window.currentPRC20 || window.currentTimeframe !== 'realtime' || !window.lineSeries || window.isRefreshingChart) return;
 
+    window.isRefreshingChart = true;
     try {
         // Optimized: Disable cache, use timestamp to ensure fresh data
         const url = `${window.APP_CONFIG.BACKEND_API}/api/token-price?address=${window.currentPRC20}&timeframe=realtime&_t=${Date.now()}`;
@@ -375,29 +406,39 @@ window.refreshRealtimeChart = async function() {
         })).sort((a, b) => a.time - b.time);
 
         let hasNewData = false;
+        const nowBucket = Math.floor(Date.now() / 5000) * 5;
+
         candles.forEach(point => {
             const lastPoint = window.currentPriceData[window.currentPriceData.length - 1];
 
-            // Only update if it's newer OR same timestamp but different price
-            if (!lastPoint || point.time > lastPoint.time || (point.time === lastPoint.time && point.value !== (lastPoint.close || lastPoint.value))) {
-                window.lineSeries.update({ time: point.time, value: point.value });
+            // BOUNCE PROTECTION:
+            // 1. Never update points older than our current last point (prevents stale history from reverting the chart)
+            // 2. If it's the same time, only update if the value is different.
+            if (!lastPoint || point.time >= lastPoint.time) {
 
-                if (lastPoint && lastPoint.time === point.time) {
-                    lastPoint.close = point.value;
-                    lastPoint.high = Math.max(lastPoint.high, point.value);
-                    lastPoint.low = Math.min(lastPoint.low, point.value);
-                } else {
-                    window.currentPriceData.push({
-                        time: point.time,
-                        open: point.value,
-                        high: point.value,
-                        low: point.value,
-                        close: point.value,
-                        volume: parseFloat(point.volume || 0)
-                    });
-                    if (window.currentPriceData.length > 300) window.currentPriceData.shift();
+                // If the backend returns a price for a bucket we've already "surpassed" in our local 5s clock,
+                // we should be careful. But generally, the backend alignment we added should keep them in sync.
+
+                if (!lastPoint || point.time > lastPoint.time || point.value !== lastPoint.close) {
+                    window.lineSeries.update({ time: point.time, value: point.value });
+
+                    if (lastPoint && lastPoint.time === point.time) {
+                        lastPoint.close = point.value;
+                        lastPoint.high = Math.max(lastPoint.high, point.value);
+                        lastPoint.low = Math.min(lastPoint.low, point.value);
+                    } else {
+                        window.currentPriceData.push({
+                            time: point.time,
+                            open: point.value,
+                            high: point.value,
+                            low: point.value,
+                            close: point.value,
+                            volume: parseFloat(point.volume || 0)
+                        });
+                        if (window.currentPriceData.length > 300) window.currentPriceData.shift();
+                    }
+                    hasNewData = true;
                 }
-                hasNewData = true;
             }
         });
 
@@ -406,7 +447,7 @@ window.refreshRealtimeChart = async function() {
             if (window.ma7Series.options().visible) window.ma7Series.setData(window.calculateMA(window.currentPriceData, 7));
             if (window.ma25Series.options().visible) window.ma25Series.setData(window.calculateMA(window.currentPriceData, 25));
 
-            const lastPrice = candles[candles.length - 1].value;
+            const lastPrice = window.currentPriceData[window.currentPriceData.length - 1].close;
             const priceEl = document.getElementById('currentPrice');
             if (priceEl) window.setText(priceEl, lastPrice.toFixed(8) + ' PAXI');
 
@@ -419,5 +460,7 @@ window.refreshRealtimeChart = async function() {
         }
     } catch (e) {
         console.warn('[Chart] Refresh failed:', e);
+    } finally {
+        window.isRefreshingChart = false;
     }
 };

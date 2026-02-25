@@ -50,7 +50,8 @@ const tokenPriceHandler = async (req, res) => {
         let normalized;
         if (tf === 'realtime') {
             const prices = data.prices || [];
-            const now = Date.now();
+            // Align 'now' to the nearest 5-second bucket to prevent timestamp shifting on every poll
+            const now = Math.floor(Date.now() / 5000) * 5000;
             normalized = {
                 price_change: data.price_change || 0,
                 history: prices.map((p, i) => ({

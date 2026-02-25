@@ -477,14 +477,18 @@ const txHistoryHandler = async (req, res) => {
         
         const p = parseInt(page);
         const l = parseInt(limit);
-        const from = (p - 1) * l;
+
+        // Since we are fetching from RPC with pagination already applied,
+        // and we combined multiple queries, we should return the combined result.
+        // If we want exact pagination, we'd need to fetch more and deduplicate,
+        // but for now, just returning the deduplicated paged results is enough.
         
         return sendResponse(res, true, {
-            total_count: normalized.length,
-            transactions: normalized.slice(from, from + l),
+            total_count: normalized.length, // This is count for the CURRENT page
+            transactions: normalized,
             page: p,
             limit: l,
-            has_next: from + l < normalized.length
+            has_next: normalized.length >= l
         });
         
     } catch (err) {
