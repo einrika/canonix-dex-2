@@ -938,7 +938,7 @@ window.buildAndSendTx = async function(messages, memo = "", options = {}) {
         hideLoader();
 
         if (resultData) {
-            const isSuccess = resultData.code === 0;
+            const isSuccess = resultData.data.code === 0;
 
             if (!silent) {
                 window.showTxResult({
@@ -949,14 +949,14 @@ window.buildAndSendTx = async function(messages, memo = "", options = {}) {
                     address: metadata.address || window.wallet.address,
                     hash: hash,
                     error: isSuccess ? null : (resultData.log || "Execution Failed"),
-                    height: resultData.height,
-                    gasUsed: resultData.gas_used,
-                    gasWanted: resultData.gas_wanted
+                    height: resultData.data.height,
+                    gasUsed: resultData.data.gas_used,
+                    gasWanted: resultData.data.gas_wanted
                 });
             }
 
             if (!isSuccess) {
-                throw new Error(`Transaction failed: ${resultData.log || 'Unknown Error'}`);
+                throw new Error(`Transaction failed: ${resultData.data.log || 'Unknown Error'}`);
             }
 
             return { success: true, hash, ...resultData };
