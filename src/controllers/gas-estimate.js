@@ -11,7 +11,7 @@ const gasEstimateHandler = async (req, res) => {
     if (cached) return sendResponse(res, true, cached);
 
     // Paxi Network Constants
-    const GAS_PRICE = 0.025;
+    const GAS_PRICE = 0.05;
     const BASE_GAS = 500000;
     const ADDITIONAL_MSG_GAS = 300000;
 

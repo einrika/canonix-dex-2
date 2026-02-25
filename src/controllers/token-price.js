@@ -29,7 +29,7 @@ const tokenPriceHandler = async (req, res) => {
         }
 
         const response = await fetch(apiUrl, {
-            timeout: 10000,
+            timeout: 5000,
             headers: tf === 'realtime' ? { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' } : {}
         });
 
@@ -54,7 +54,7 @@ const tokenPriceHandler = async (req, res) => {
             normalized = {
                 price_change: data.price_change || 0,
                 history: prices.map((p, i) => ({
-                    timestamp: now - (prices.length - 1 - i) * 10000,
+                    timestamp: now - (prices.length - 1 - i) * 5000,
                     price_paxi: p
                 }))
             };

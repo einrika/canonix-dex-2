@@ -63,7 +63,7 @@ const startMonitoring = () => {
 
     console.log('[Monitor] Data monitoring service started');
 
-    // Poll every 10 seconds (aggressive but single point of entry)
+    // Poll every 3000 seconds (aggressive but single point of entry)
     monitorInterval = setInterval(async () => {
         // Only fetch if there are active connections
         const connections = await ioInstance.fetchSockets();
@@ -78,7 +78,7 @@ const startMonitoring = () => {
         } catch (e) {
             console.error('[Monitor] Loop error:', e.message);
         }
-    }, 10000);
+    }, 5000);
 };
 
 const updateTokenList = async () => {
