@@ -13,39 +13,11 @@ window.countdownInterval = null;
 
 // WebSocket listener for live price updates
 window.updateLivePrice = function(price) {
-    if (!window.lineSeries || window.currentTimeframe !== 'realtime') return;
-
-    const now = Math.floor(Date.now() / 1000);
-    const newPoint = { time: now, value: parseFloat(price) };
-
-    window.lineSeries.update(newPoint);
-
-    // Update local data array for indicators
-    const last = window.currentPriceData[window.currentPriceData.length - 1];
-    if (last && last.time === now) {
-        last.close = newPoint.value;
-        last.high = Math.max(last.high, newPoint.value);
-        last.low = Math.min(last.low, newPoint.value);
-    } else {
-        window.currentPriceData.push({
-            time: now,
-            open: newPoint.value,
-            high: newPoint.value,
-            low: newPoint.value,
-            close: newPoint.value,
-            volume: Math.floor(Math.random() * 100)
-        });
-    }
-
-    // Keep data size manageable
-    if (window.currentPriceData.length > 300) window.currentPriceData.shift();
-
-    // Re-calculate MA if visible
-    if (window.ma7Series.options().visible) window.ma7Series.setData(window.calculateMA(window.currentPriceData, 7));
-    if (window.ma25Series.options().visible) window.ma25Series.setData(window.calculateMA(window.currentPriceData, 25));
-
-    const statusEl = document.getElementById('chartStatus');
-    if (statusEl) window.setText(statusEl, 'Live • Active');
+    // Only update from official poll/stream to avoid "fake" price points
+    // This function can be kept for UI updates but shouldn't inject data into the series
+    // if we want to stick strictly to the 5s polling data.
+    const priceLabel = document.getElementById('currentPrice');
+    if (priceLabel) window.setText(priceLabel, parseFloat(price).toFixed(8) + ' PAXI');
 };
 
 window.initChart = function() {
@@ -269,7 +241,7 @@ window.loadPriceHistory = async function(contractAddress, timeframe) {
                 high: parseFloat(item.price_paxi),
                 low: parseFloat(item.price_paxi),
                 close: parseFloat(item.price_paxi),
-                volume: Math.floor(Math.random() * 500)
+                volume: parseFloat(item.volume || 0)
             }));
 
             window.currentPriceData = candles;
@@ -329,8 +301,7 @@ window.loadPriceHistory = async function(contractAddress, timeframe) {
         if (currentBucket) candles.push(currentBucket);
 
         candles.forEach((c, idx) => {
-            const prev = candles[idx-1] || c;
-            c.volume = Math.floor(Math.abs(c.close - prev.close) * 1000000 + Math.random() * 500);
+            if (c.volume === undefined) c.volume = 0;
         });
 
         window.currentPriceData = candles;
@@ -407,8 +378,8 @@ window.refreshRealtimeChart = async function() {
         candles.forEach(point => {
             const lastPoint = window.currentPriceData[window.currentPriceData.length - 1];
 
-            // Only update if it's newer or same timestamp (for price update)
-            if (!lastPoint || point.time >= lastPoint.time) {
+            // Only update if it's newer OR same timestamp but different price
+            if (!lastPoint || point.time > lastPoint.time || (point.time === lastPoint.time && point.value !== (lastPoint.close || lastPoint.value))) {
                 window.lineSeries.update({ time: point.time, value: point.value });
 
                 if (lastPoint && lastPoint.time === point.time) {
@@ -422,7 +393,7 @@ window.refreshRealtimeChart = async function() {
                         high: point.value,
                         low: point.value,
                         close: point.value,
-                        volume: Math.floor(Math.random() * 50)
+                        volume: parseFloat(point.volume || 0)
                     });
                     if (window.currentPriceData.length > 300) window.currentPriceData.shift();
                 }
