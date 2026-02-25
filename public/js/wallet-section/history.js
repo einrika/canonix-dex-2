@@ -4,15 +4,21 @@ window.WalletHistory = {
     init() {},
     async loadHistory() {
         const addr = window.selectedAddress || window.currentAddress || (window.wallet && window.wallet.address);
-        if (addr && window.txHistory.length === 0 && !window.historyIsEnd) {
-            try {
-                // Trigger initial fetch if empty
-                const result = await window.loadTransactionHistory(addr, 1);
-                if (Array.isArray(result)) {
-                    window.txHistory = result;
+        if (addr && !window.historyIsLoading) {
+            if (window.txHistory.length === 0 && !window.historyIsEnd) {
+                window.historyIsLoading = true;
+                window.renderTransactionHistory?.();
+                try {
+                    const result = await window.loadTransactionHistory(addr, 1);
+                    if (Array.isArray(result)) {
+                        window.txHistory = result;
+                        window.historyPage = 1;
+                    }
+                } catch (e) {
+                    console.error('[History] Load failed:', e);
+                } finally {
+                    window.historyIsLoading = false;
                 }
-            } catch (e) {
-                console.error('[History] Load failed:', e);
             }
         }
         window.renderTransactionHistory?.();
@@ -23,6 +29,7 @@ window.txHistory = [];
 window._txCache = window._txCache || [];
 window.historyPage = 1;
 window.historyIsEnd = false;
+window.historyIsLoading = false;
 
 (function() {
     const _orig = window.loadTransactionHistory;
@@ -224,11 +231,11 @@ window.renderTransactionHistory = function(customContainerId) {
     let cont = customContainerId ? document.getElementById(customContainerId) : (document.getElementById('history-container') || document.getElementById('transaction-history-container'));
     if (!cont) return;
     
-    if (window.txHistory.length === 0 && !window.historyIsEnd) {
+    if (window.historyIsLoading && window.txHistory.length === 0) {
         cont.innerHTML = `
         <div class="flex flex-col items-center justify-center py-16 px-4 text-center">
-            <div style="color:#5a6070" class="text-[13px] mb-3">Loading history...</div>
-            <div class="w-6 h-6 border-[2.5px] border-meme-green border-t-transparent rounded-full animate-spin"></div>
+            <div style="color:#5a6070" class="text-[13px] mb-3 font-medium">Fetching transactions...</div>
+            <div class="w-7 h-7 border-[2.5px] border-meme-green border-t-transparent rounded-full animate-spin"></div>
         </div>`;
         return;
     }
@@ -259,14 +266,15 @@ window.renderTransactionHistory = function(customContainerId) {
 
 window.loadMoreHistory = async function() {
     const addr = window.selectedAddress || window.currentAddress;
-    if (!addr || window.historyIsEnd) return;
+    if (!addr || window.historyIsEnd || window.historyIsLoading) return;
     
-    const btn = event?.target;
+    const btn = (window.event && window.event.target) || document.querySelector('[onclick="window.loadMoreHistory()"]');
     if (btn) {
         btn.disabled = true;
-        btn.innerHTML = 'Loading...';
+        btn.innerHTML = '<i class="fas fa-circle-notch animate-spin mr-2"></i>Loading...';
     }
     
+    window.historyIsLoading = true;
     window.historyPage++;
     try {
         const result = await window.loadTransactionHistory(addr, window.historyPage);
@@ -276,6 +284,8 @@ window.loadMoreHistory = async function() {
         }
     } catch (e) {
         console.error('loadMoreHistory', e);
+    } finally {
+        window.historyIsLoading = false;
     }
     
     if (btn) {
