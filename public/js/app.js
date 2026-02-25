@@ -32,6 +32,11 @@ window.addEventListener('load', async () => {
         window.setupTokenSocketListeners();
     }
 
+    // Initialize Sidebar Monitoring if open (Desktop)
+    if (window.innerWidth >= 1024 && window.PaxiSocket && window.PaxiSocket.joinSidebar) {
+        window.PaxiSocket.joinSidebar();
+    }
+
     // Upgraded Wallet: Auto-connect if active wallet exists
     if (window.WalletManager) {
         const active = window.WalletManager.getActiveWallet();

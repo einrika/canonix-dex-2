@@ -7,48 +7,13 @@ let monitorInterval = null;
 const cache = {
     tokenList: null,
     paxiPrice: null,
-    tokenPrices: new Map(), // address -> data
-    tokenHistory: new Map() // address -> { realtime: [], "1h": [], ... }
+    tokenPrices: new Map() // address -> data
 };
 
 const API_ENDPOINTS = {
     TOKEN_LIST: 'https://explorer.paxinet.io/api/prc20/contracts?page=0',
     LCD: 'https://mainnet-lcd.paxinet.io',
     COINGECKO_PAXI: 'https://api.coingecko.com/api/v3/simple/price?ids=paxi-network&vs_currencies=usd'
-};
-
-/**
- * Validates and appends a new price point to the history.
- * Ensures ascending order and prevents duplicates/older data.
- */
-const updateTokenHistoryCache = (address, timeframe, newPoints) => {
-    if (!cache.tokenHistory.has(address)) {
-        cache.tokenHistory.set(address, {});
-    }
-    const tokenHistory = cache.tokenHistory.get(address);
-    if (!tokenHistory[timeframe]) {
-        tokenHistory[timeframe] = [];
-    }
-
-    const currentHistory = tokenHistory[timeframe];
-
-    newPoints.forEach(point => {
-        const lastPoint = currentHistory[currentHistory.length - 1];
-
-        // VALIDATION: Only add if timestamp is strictly newer
-        // This prevents "bouncing" back to old price data
-        if (!lastPoint || point.timestamp > lastPoint.timestamp) {
-            currentHistory.push(point);
-        } else if (lastPoint && point.timestamp === lastPoint.timestamp) {
-            // If same timestamp, update value (useful for same-second updates)
-            lastPoint.price_paxi = point.price_paxi;
-        }
-    });
-
-    // Keep only last 300 points to prevent memory leak
-    if (currentHistory.length > 300) {
-        tokenHistory[timeframe] = currentHistory.slice(-300);
-    }
 };
 
 const init = (io) => {
@@ -66,9 +31,6 @@ const init = (io) => {
             if (tokenAddress) {
                 socket.join(`token_${tokenAddress}`);
                 console.log(`[Monitor] Client ${socket.id} subscribed to token: ${tokenAddress}`);
-
-                // Fetch full history upon subscription to ensure client has data
-                await fetchTokenPriceHistory(tokenAddress, 'realtime');
 
                 // Immediate delivery of token price if cached
                 if (cache.tokenPrices.has(tokenAddress)) {
@@ -88,6 +50,16 @@ const init = (io) => {
             }
         });
 
+        socket.on('subscribe_sidebar', () => {
+            socket.join('sidebar');
+            console.log(`[Monitor] Client ${socket.id} joined sidebar`);
+        });
+
+        socket.on('unsubscribe_sidebar', () => {
+            socket.leave('sidebar');
+            console.log(`[Monitor] Client ${socket.id} left sidebar`);
+        });
+
         socket.on('disconnect', () => {
             console.log('[Monitor] Client disconnected:', socket.id);
         });
@@ -101,18 +73,27 @@ const startMonitoring = () => {
 
     console.log('[Monitor] Data monitoring service started');
 
-    // Poll every 3000 seconds (aggressive but single point of entry)
+    // Poll every 5 seconds
     monitorInterval = setInterval(async () => {
         // Only fetch if there are active connections
         const connections = await ioInstance.fetchSockets();
         if (connections.length === 0) return;
 
+        // Check if anyone is viewing the sidebar
+        const sidebarRoom = ioInstance.sockets.adapter.rooms.get('sidebar');
+        const isSidebarActive = sidebarRoom && sidebarRoom.size > 0;
+
         try {
-            await Promise.all([
-                updateTokenList(),
-                updatePriceData(),
-                updateGlobalPaxiPrice()
-            ]);
+            const tasks = [updateGlobalPaxiPrice()];
+
+            // Only update list and price data if sidebar is open
+            // as requested by the user.
+            if (isSidebarActive) {
+                tasks.push(updateTokenList());
+                tasks.push(updatePriceData());
+            }
+
+            await Promise.all(tasks);
         } catch (e) {
             console.error('[Monitor] Loop error:', e.message);
         }
@@ -179,14 +160,6 @@ const fetchTokenPrice = async (address) => {
                 volume_24h: data.contract.volume
             };
             cache.tokenPrices.set(address, payload);
-
-            // Also update history cache for realtime
-            const now = Math.floor(Date.now() / 5000) * 5000;
-            updateTokenHistoryCache(address, 'realtime', [{
-                timestamp: now,
-                price_paxi: parseFloat(payload.price_paxi)
-            }]);
-
             return payload;
         }
     } catch (e) {
@@ -195,74 +168,4 @@ const fetchTokenPrice = async (address) => {
     return null;
 };
 
-const fetchTokenPriceHistory = async (address, timeframe) => {
-    try {
-        let apiUrl;
-        if (timeframe === 'realtime') {
-            apiUrl = `https://mainnet-api.paxinet.io/prc20/get_contract_prices?address=${address}`;
-        } else {
-            apiUrl = `https://paxi-pumpfun.winsnip.xyz/api/prc20-price-history/${address}?timeframe=${timeframe}`;
-        }
-
-        let response = await fetch(apiUrl, { timeout: 5000 });
-
-        // Fallback logic from token-price.js
-        if (!response.ok) {
-            const winscanUrl = `https://winscan.winsnip.xyz/api/prc20-price-history/${address}?timeframe=${timeframe}`;
-            response = await fetch(winscanUrl, { timeout: 5000 });
-            if (!response.ok) return null;
-        }
-
-        const data = await response.json();
-        let points = [];
-
-        if (timeframe === 'realtime') {
-            const prices = data.prices || [];
-            const now = Math.floor(Date.now() / 5000) * 5000;
-            points = prices.map((p, i) => ({
-                timestamp: now - (prices.length - 1 - i) * 5000,
-                price_paxi: parseFloat(p)
-            }));
-        } else {
-            const history = data.price_history || data.history || [];
-            points = history.map(item => ({
-                timestamp: typeof item.timestamp === 'string' ? new Date(item.timestamp).getTime() : item.timestamp,
-                price_paxi: parseFloat(item.price_paxi)
-            }));
-        }
-
-        // Update local cache with fetched points
-        updateTokenHistoryCache(address, timeframe, points);
-        return data;
-    } catch (error) {
-        console.error(`[Monitor] History fetch error (${address}):`, error.message);
-        return null;
-    }
-};
-
-/**
- * Service function to be called by controllers.
- * Always returns the latest stateful history.
- */
-const getTokenPriceHistory = async (address, timeframe) => {
-    const tokenHistory = cache.tokenHistory.get(address);
-
-    // Check if we need to refresh (e.g. if cache empty)
-    const isCacheEmpty = !tokenHistory || !tokenHistory[timeframe] || tokenHistory[timeframe].length === 0;
-
-    if (isCacheEmpty) {
-        const rawData = await fetchTokenPriceHistory(address, timeframe);
-        if (!rawData) return null;
-    }
-
-    const currentHistory = cache.tokenHistory.get(address);
-    const tokenPrices = cache.tokenPrices.get(address);
-
-    return {
-        success: true,
-        history: currentHistory ? currentHistory[timeframe] || [] : [],
-        price_change: tokenPrices ? tokenPrices.price_change : 0
-    };
-};
-
-module.exports = { init, getTokenPriceHistory };
+module.exports = { init };

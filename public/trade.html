@@ -867,11 +867,13 @@
             if (isOpen) {
                 sidebar.classList.add('-translate-x-full');
                 window.hideSidebarOverlay();
+                if (window.PaxiSocket && window.PaxiSocket.leaveSidebar) window.PaxiSocket.leaveSidebar();
             } else {
                 const unifiedSidebar = document.getElementById('unifiedSidebar');
                 if (unifiedSidebar) unifiedSidebar.classList.add('translate-x-full');
                 sidebar.classList.remove('-translate-x-full');
                 window.showSidebarOverlay();
+                if (window.PaxiSocket && window.PaxiSocket.joinSidebar) window.PaxiSocket.joinSidebar();
                 if (window.loadTokensOptimized) window.loadTokensOptimized();
             }
         };
