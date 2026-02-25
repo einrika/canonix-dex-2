@@ -2,59 +2,13 @@
 
 // Standard Response Wrapper for Express
 const sendResponse = (res, success, data = null, error = null, statusCode = 200) => {
-    const response = { success };
-
-    if (success) {
-        response.data = data;
-    } else {
-        // Support structured blockchain error objects or generic error string
-        if (typeof error === 'object' && error !== null) {
-            response.error = {
-                code: error.code || 'UNKNOWN_ERROR',
-                message: error.message || 'An error occurred',
-                txHash: error.txHash || data?.hash || null,
-                status: error.status || 'failed'
-            };
-        } else {
-            response.error = {
-                code: 'ERROR',
-                message: error || 'An error occurred'
-            };
-        }
-    }
-
-    return res.status(statusCode).json(response);
-};
-
-// Secure Logger (Sanitizes sensitive data)
-const secureLogger = {
-    sanitize: (obj) => {
-        if (!obj || typeof obj !== 'object') return obj;
-        const SENSITIVE_KEYS = ['privateKey', 'mnemonic', 'seed', 'token', 'key', 'password', 'secret', 'encryptedData'];
-
-        const sanitized = Array.isArray(obj) ? [...obj] : { ...obj };
-
-        for (let key in sanitized) {
-            if (SENSITIVE_KEYS.some(k => key.toLowerCase().includes(k.toLowerCase()))) {
-                sanitized[key] = '[REDACTED]';
-            } else if (typeof sanitized[key] === 'object') {
-                sanitized[key] = secureLogger.sanitize(sanitized[key]);
-            }
-        }
-        return sanitized;
-    },
-    log: (message, ...args) => {
-        const sanitizedArgs = args.map(arg => secureLogger.sanitize(arg));
-        console.log(`[LOG] ${message}`, ...sanitizedArgs);
-    },
-    error: (message, ...args) => {
-        const sanitizedArgs = args.map(arg => secureLogger.sanitize(arg));
-        console.error(`[ERROR] ${message}`, ...sanitizedArgs);
-    },
-    warn: (message, ...args) => {
-        const sanitizedArgs = args.map(arg => secureLogger.sanitize(arg));
-        console.warn(`[WARN] ${message}`, ...sanitizedArgs);
-    }
+    // Note: CORS is handled by the 'cors' middleware in Express,
+    // but we can still set individual headers if needed.
+    return res.status(statusCode).json({
+        success,
+        data,
+        error
+    });
 };
 
 // Simple In-Memory Cache
@@ -114,7 +68,6 @@ const updateAdminState = (newState) => {
 
 module.exports = {
     sendResponse,
-    secureLogger,
     getCached,
     setCached,
     checkRateLimit,

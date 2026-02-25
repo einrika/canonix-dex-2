@@ -1,5 +1,5 @@
 const fetch = require('node-fetch');
-const { sendResponse, checkRateLimit, secureLogger } = require('../utils/common');
+const { sendResponse, checkRateLimit } = require('../utils/common');
 
 const txStatusHandler = async (req, res) => {
     const ip = req.headers['client-ip'] || req.headers['x-forwarded-for'] || req.ip || 'unknown';
@@ -21,43 +21,26 @@ const txStatusHandler = async (req, res) => {
             if (response.ok) {
                 const data = await response.json();
                 if (data.result && data.result.tx_result) {
-                    const txResult = data.result.tx_result;
-                    const isSuccess = txResult.code === 0;
-
-                    if (isSuccess) {
-                        return sendResponse(res, true, {
-                            hash: cleanHash,
-                            height: data.result.height,
-                            code: txResult.code,
-                            log: txResult.log,
-                            gas_used: txResult.gas_used,
-                            gas_wanted: txResult.gas_wanted,
-                            tx_result: txResult
-                        });
-                    } else {
-                        // Return structured error for failed transaction
-                        return sendResponse(res, false, { hash: cleanHash }, {
-                            code: 'TX_FAILED',
-                            message: `Blockchain transaction failed: ${txResult.log || 'Unknown error'}`,
-                            txHash: cleanHash,
-                            status: 'failed'
-                        }, 200); // 200 because we found the result, but the TX itself failed
-                    }
+                    // Success or Failed result found on chain
+                    return sendResponse(res, true, {
+                        hash: cleanHash,
+                        height: data.result.height,
+                        code: data.result.tx_result.code,
+                        log: data.result.tx_result.log,
+                        gas_used: data.result.tx_result.gas_used,
+                        gas_wanted: data.result.tx_result.gas_wanted,
+                        tx_result: data.result.tx_result
+                    });
                 }
             }
         } catch (e) {
-            secureLogger.error('TX Status Fetch Error:', e.message);
+            // Ignore fetch errors during polling
         }
         attempts++;
         await new Promise(r => setTimeout(r, 1000));
     }
 
-    return sendResponse(res, false, { hash: cleanHash }, {
-        code: 'TX_TIMEOUT',
-        message: 'Transaction result timeout. It might still be processing on-chain.',
-        txHash: cleanHash,
-        status: 'pending'
-    }, 408);
+    return sendResponse(res, false, { hash: cleanHash }, 'Transaction result timeout. It might still be processing.', 408);
 };
 
 module.exports = txStatusHandler;

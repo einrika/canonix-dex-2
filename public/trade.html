@@ -496,9 +496,17 @@
     <!-- More Menu Modal -->
     <div id="moreMenuModal" class="hidden fixed inset-0 bg-primary/95 z-[200] flex flex-col animate-fade-in p-4">
         <div class="flex justify-between items-center mb-6">
+            <a href="index.html" class="flex items-center gap-2 hover:opacity-80 transition-opacity">
+                <img src="asset/android-icon-192x192.png" alt="Canonix Logo" class="w-6 h-6 object-contain">
+                <span class="text-accent font-display uppercase tracking-tight text-lg">
+                    Canonix
+                </span>
+            </a>
+            
             <h2 class="text-2xl font-display text-accent uppercase tracking-tight">EXPLORER</h2>
-            <button onclick="toggleMoreMenu()" class="w-8 h-8 flex items-center justify-center border border-secondary bg-soft-failed text-primary-text shadow-brutal hover:rotate-90 transition-transform">
-                <i class="fas fa-times text-base"></i>
+            
+            <button onclick="toggleMoreMenu()" class="w-8 h-8 flex items-center justify-center border border-secondary shadow-brutal hover:rotate-90 transition-transform">
+                <i class="fas fa-ellipsis-v text-accent text-base"></i>
             </button>
         </div>
         <div class="flex-1 overflow-y-auto no-scrollbar">

@@ -1,5 +1,5 @@
 const fetch = require('node-fetch');
-const { sendResponse, getCached, setCached, checkRateLimit, isValidPaxiAddress, secureLogger } = require('../../utils/common');
+const { sendResponse, getCached, setCached, checkRateLimit, isValidPaxiAddress } = require('../../utils/common');
 
 const myContractAccountsHandler = async (req, res) => {
     if (req.method === 'OPTIONS') return res.sendStatus(200);
@@ -57,7 +57,7 @@ const myContractAccountsHandler = async (req, res) => {
         setCached(cacheKey, data, 30); // Lower cache for user assets
         return sendResponse(res, true, data);
     } catch (error) {
-        secureLogger.error('Error fetching user assets:', error);
+        console.error('Error fetching user assets:', error);
         return sendResponse(res, false, null, 'Failed to fetch user assets', 500);
     }
 };

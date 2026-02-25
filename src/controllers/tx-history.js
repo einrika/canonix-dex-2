@@ -1,5 +1,5 @@
 const fetch = require('node-fetch');
-const { sendResponse, checkRateLimit, isValidPaxiAddress, secureLogger } = require('../utils/common');
+const { sendResponse, checkRateLimit, isValidPaxiAddress } = require('../utils/common');
 
 const decodeB64 = (str) => {
     if (!str) return '';
@@ -49,7 +49,7 @@ const txHistoryHandler = async (req, res) => {
                     });
                 }
             } catch (e) {
-                secureLogger.warn(`Query ${q} failed:`, e.message);
+                console.warn(`Query ${q} failed:`, e.message);
             }
         }));
 
@@ -137,7 +137,7 @@ const txHistoryHandler = async (req, res) => {
         });
 
     } catch (error) {
-        secureLogger.error('History Fetch Error:', error);
+        console.error('History Fetch Error:', error);
         return sendResponse(res, false, null, 'Failed to fetch transaction history', 500);
     }
 };

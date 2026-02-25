@@ -1,5 +1,5 @@
 const fetch = require('node-fetch');
-const { sendResponse, getCached, setCached, checkRateLimit, secureLogger } = require('../utils/common');
+const { sendResponse, getCached, setCached, checkRateLimit } = require('../utils/common');
 
 const tokenListHandler = async (req, res) => {
     // OPTIONS is handled by CORS middleware, but we'll keep the logic if needed
@@ -85,7 +85,7 @@ const tokenListHandler = async (req, res) => {
         setCached(cacheKey, data, 60); // Reduce cache duration for better freshness
         return sendResponse(res, true, data);
     } catch (error) {
-        secureLogger.error('Error fetching token list:', error);
+        console.error('Error fetching token list:', error);
         return sendResponse(res, false, null, 'Failed to fetch token list', 500);
     }
 };
