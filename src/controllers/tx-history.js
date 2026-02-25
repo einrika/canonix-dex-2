@@ -2,6 +2,7 @@ const fetch = require('node-fetch');
 const { sendResponse, checkRateLimit, isValidPaxiAddress } = require('../utils/common');
 
 const RPC_BASE = 'https://mainnet-rpc.paxinet.io';
+const LCD_BASE = 'https://mainnet-lcd.paxinet.io';
 
 const _tokenCache = new Map();
 const TOKEN_CACHE_TTL = 10 * 60 * 1000;
@@ -57,6 +58,9 @@ const parseCoin = (str) => {
         const symbol = denom === 'upaxi' ? 'PAXI' : denom.replace(/^u/, '').toUpperCase();
         return { raw, symbol, value: raw / 1e6 };
     }
+    // PRC20/wasm amounts are pure integers (no denom suffix)
+    const n = parseInt(str);
+    if (!isNaN(n) && String(n) === str) return { raw: n };
     return null;
 };
 
@@ -446,8 +450,8 @@ const txHistoryHandler = async (req, res) => {
 
         const normalized = allTxs.map(t => normalizeTx(t, address));
 
-        // Fetch timestamps
-        const heights = [...new Set(normalized.map(tx => tx.block))].slice(0, 30);
+        // Fetch timestamps for all unique block heights
+        const heights = [...new Set(normalized.map(tx => tx.block))];
         const heightMap = {};
 
         await Promise.allSettled(
