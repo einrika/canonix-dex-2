@@ -84,6 +84,18 @@ window.PaxiSocket = {
         console.log('[Socket] Unsubscribed from token:', address);
     },
 
+    joinSidebar: function() {
+        if (!this.socket) return;
+        this.socket.emit('subscribe_sidebar');
+        console.log('[Socket] Joined sidebar monitoring');
+    },
+
+    leaveSidebar: function() {
+        if (!this.socket) return;
+        this.socket.emit('unsubscribe_sidebar');
+        console.log('[Socket] Left sidebar monitoring');
+    },
+
     setupVisibilityHandler: function() {
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
