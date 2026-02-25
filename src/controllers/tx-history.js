@@ -108,47 +108,9 @@ const parseMsgGroup = (events, address) => {
     const action = msgEv?.attrs.action || '';
     const sender = msgEv?.attrs.sender || null;
 
-    // ── SWAP ──
-    if (action.includes('MsgSwap') || action.includes('/x.swap')) {
-        result.type = 'swap';
-        result.from = sender;
-
-        for (const ev of events) {
-            if (ev.type === 'wasm') {
-                const wa = ev.attrs.action;
-                const contract = ev.attrs._contract_address;
-                const rawAmt = parseCoin(ev.attrs.amount);
-                if (!rawAmt) continue;
-
-                if (wa === 'transfer_from' && ev.attrs.from === address) {
-                    result.amounts.push({ token: 'PRC20', raw: rawAmt.raw, contractAddress: contract, _sign: -1 });
-                    if (!result.contractAddress) result.contractAddress = contract;
-                }
-
-                if (wa === 'transfer' && ev.attrs.to === address) {
-                    result.amounts.push({ token: 'PRC20', raw: rawAmt.raw, contractAddress: contract, _sign: 1 });
-                }
-            }
-
-            if (ev.type === 'coin_spent' && ev.attrs.spender === address) {
-                const coin = parseCoin(ev.attrs.amount);
-                if (coin?.symbol) {
-                    result.amounts.push({ token: coin.symbol, amount: -coin.value });
-                    result.from = address;
-                }
-            }
-
-            if (ev.type === 'coin_received' && ev.attrs.receiver === address) {
-                const coin = parseCoin(ev.attrs.amount);
-                if (coin?.symbol) result.amounts.push({ token: coin.symbol, amount: coin.value });
-            }
-        }
-
-        return result;
-    }
-
-    // ── PROVIDE LIQUIDITY ──
-    if (action.includes('ProvideLiquidity') || action.includes('provide_liquidity') || action.includes('AddLiquidity')) {
+    // ── PROVIDE LIQUIDITY (check BEFORE swap — LP actions also contain '/x.swap') ──
+    if (action.includes('ProvideLiquidity') || action.includes('AddLiquidity') ||
+        action.includes('provide_liquidity') || action.includes('add_liquidity')) {
         result.type = 'provide_liquidity';
         result.from = sender;
 
@@ -178,8 +140,9 @@ const parseMsgGroup = (events, address) => {
         return result;
     }
 
-    // ── WITHDRAW LIQUIDITY ──
-    if (action.includes('WithdrawLiquidity') || action.includes('withdraw_liquidity') || action.includes('RemoveLiquidity')) {
+    // ── WITHDRAW LIQUIDITY (check BEFORE swap) ──
+    if (action.includes('WithdrawLiquidity') || action.includes('RemoveLiquidity') ||
+        action.includes('withdraw_liquidity') || action.includes('remove_liquidity')) {
         result.type = 'withdraw_liquidity';
         result.from = sender;
 
@@ -197,6 +160,47 @@ const parseMsgGroup = (events, address) => {
 
                 if (wa === 'transfer' && ev.attrs.to === address) {
                     result.amounts.push({ token: 'PRC20', raw: rawAmt.raw, contractAddress: contract, _sign: 1 });
+                    if (!result.contractAddress) result.contractAddress = contract;
+                }
+            }
+
+            if (ev.type === 'coin_received' && ev.attrs.receiver === address) {
+                const coin = parseCoin(ev.attrs.amount);
+                if (coin?.symbol) result.amounts.push({ token: coin.symbol, amount: coin.value });
+            }
+        }
+
+        return result;
+    }
+
+    // ── SWAP (specific match — 'MsgSwap' not 'MsgProvideLiquidity' etc.) ──
+    if (action.includes('MsgSwap') || action === '/x.swap.types.MsgSwap') {
+        result.type = 'swap';
+        result.from = sender;
+
+        for (const ev of events) {
+            if (ev.type === 'wasm') {
+                const wa = ev.attrs.action;
+                const contract = ev.attrs._contract_address;
+                const rawAmt = parseCoin(ev.attrs.amount);
+                if (!rawAmt) continue;
+
+                if (wa === 'transfer_from' && ev.attrs.from === address) {
+                    result.amounts.push({ token: 'PRC20', raw: rawAmt.raw, contractAddress: contract, _sign: -1 });
+                    if (!result.contractAddress) result.contractAddress = contract;
+                }
+
+                if (wa === 'transfer' && ev.attrs.to === address) {
+                    result.amounts.push({ token: 'PRC20', raw: rawAmt.raw, contractAddress: contract, _sign: 1 });
+                    if (!result.contractAddress) result.contractAddress = contract;
+                }
+            }
+
+            if (ev.type === 'coin_spent' && ev.attrs.spender === address) {
+                const coin = parseCoin(ev.attrs.amount);
+                if (coin?.symbol) {
+                    result.amounts.push({ token: coin.symbol, amount: -coin.value });
+                    result.from = address;
                 }
             }
 
