@@ -228,8 +228,13 @@ window.renderTransactionHistory = function(customContainerId) {
     const addr = window.selectedAddress || window.currentAddress || (window.wallet && window.wallet.address);
     if (!addr) return;
     
-    let cont = customContainerId ? document.getElementById(customContainerId) : (document.getElementById('history-container') || document.getElementById('transaction-history-container'));
+    let cont = customContainerId ? document.getElementById(customContainerId) : (document.getElementById('history-container') || document.getElementById('transaction-history-container') || document.getElementById('tabContent'));
     if (!cont) return;
+
+    // Trigger initial load if empty
+    if (window.txHistory.length === 0 && !window.historyIsLoading && !window.historyIsEnd) {
+        window.WalletHistory.loadHistory();
+    }
     
     if (window.historyIsLoading && window.txHistory.length === 0) {
         cont.innerHTML = `
@@ -482,6 +487,10 @@ window.copyAddress = (ev, text) => {
 
 window.renderTransactionHistorySidebar = function() {
     window.renderTransactionHistory('sidebarContent');
+    // Ensure history is loaded when sidebar tab is opened
+    if (window.WalletHistory && window.WalletHistory.loadHistory) {
+        window.WalletHistory.loadHistory();
+    }
 };
 
 window.openTxDetailModal = (hash) => window.showTransactionDetailModal(hash);
