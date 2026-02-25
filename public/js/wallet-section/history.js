@@ -1,21 +1,15 @@
 // =============================================================
-// TX HISTORY — complete unified version
-// history-container (halaman) + sidebar + modal detail
+// TX HISTORY — unified frontend
+// Symbol sudah di-resolve di backend, frontend cukup tampilkan
 // =============================================================
 
-window.WalletHistory = {
-    init: function() {},
-    loadHistory: function() {
-        if (window.renderTransactionHistory) window.renderTransactionHistory();
-    }
-};
-
+window.WalletHistory = { init() {}, loadHistory() { window.renderTransactionHistory?.() } };
 window.txHistory = [];
 window._txCache = window._txCache || [];
 window.historyPage = 1;
 window.historyIsEnd = false;
 
-// ── Patch loadTransactionHistory agar otomatis isi cache ──────
+// ── Patch loadTransactionHistory → auto isi cache ─────────────
 (function() {
     const _orig = window.loadTransactionHistory;
     if (!_orig || _orig._patched) return;
@@ -23,9 +17,8 @@ window.historyIsEnd = false;
         const result = await _orig.call(this, address, page);
         if (Array.isArray(result)) {
             result.forEach(tx => {
-                if (tx.hash && !window._txCache.find(c => c.hash === tx.hash)) {
+                if (tx.hash && !window._txCache.find(c => c.hash === tx.hash))
                     window._txCache.push(tx);
-                }
             });
             if (result.length === 0) window.historyIsEnd = true;
         }
@@ -47,83 +40,42 @@ function _txIcon(type) {
         case 'swap':
             return { char: '⇄', color: '#4ade80' };
         case 'provide_liquidity':
-            return { char: '+', color: '#4ade80' };
+            return { char: '+', color: '#60a5fa' };
         case 'withdraw_liquidity':
-            return { char: '-', color: '#4ade80' };
-        default:
+            return { char: '-', color: '#fbbf24' };
+        case 'burn':
             return { char: '↗', color: '#f43f5e' };
+        default:
+            return { char: '?', color: '#94a3b8' };
     }
 }
 
 function _fmt(n, dec = 4) {
-    return Math.abs(n).toLocaleString(undefined, { maximumFractionDigits: dec });
+    return Math.abs(parseFloat(n) || 0).toLocaleString(undefined, { maximumFractionDigits: dec });
 }
 
-// Amount HTML untuk LIST ROW
-function _amtRowHtml(tx) {
-    const amounts = tx.amounts || [];
-    const t = (tx.type || '').toLowerCase();
-    
-    if (t === 'swap' && amounts.length >= 2) {
-        const give = amounts.find(a => a.amount < 0);
-        const recv = amounts.find(a => a.amount > 0);
-        const gs = give ? `${_fmt(give.amount)} ${give.token}` : '';
-        const rs = recv ? `${_fmt(recv.amount)} ${recv.token}` : '';
-        return `<span style="color:#4ade80;font-weight:700">${gs} ⇄ ${rs}</span>`;
-    }
-    
-    if ((t === 'provide_liquidity' || t === 'withdraw_liquidity') && amounts.length) {
-        const parts = amounts.map(a => `${_fmt(a.amount)} ${a.token}`).join(' + ');
-        const color = t === 'withdraw_liquidity' ? '#4ade80' : '#f43f5e';
-        return `<span style="color:${color};font-weight:700">${parts}</span>`;
-    }
-    
-    if (amounts.length) {
-        const a = amounts[0];
-        const pos = a.amount >= 0;
-        const c = pos ? '#4ade80' : '#f43f5e';
-        return `<span style="color:${c};font-weight:700">${pos?'+':'-'} ${_fmt(a.amount)} ${a.token}</span>`;
-    }
-    
-    // fallback: tidak ada amounts, tampilkan type label saja
-    const label = (tx.type || 'unknown').replace(/_/g, ' ')
-        .split(' ').map(w => w[0].toUpperCase() + w.slice(1)).join(' ');
-    return `<span style="color:#94a3b8;font-weight:700">${label}</span>`;
-}
-
-// Amount HTML untuk MODAL
-function _amtModalHtml(tx) {
-    const amounts = tx.amounts || [];
-    const t = (tx.type || '').toLowerCase();
-    
-    if (t === 'swap' && amounts.length >= 2) {
-        const give = amounts.find(a => a.amount < 0);
-        const recv = amounts.find(a => a.amount > 0);
-        const gs = give ? `${_fmt(give.amount,6)} ${give.token}` : '';
-        const rs = recv ? `${_fmt(recv.amount,6)} ${recv.token}` : '';
-        return `<span style="color:#4ade80">${gs} ⇄ ${rs}</span>`;
-    }
-    
-    if (amounts.length) {
-        return amounts.map(a => {
-            const pos = a.amount >= 0;
-            const c = pos ? '#4ade80' : '#f43f5e';
-            return `<span style="color:${c}">${pos?'+':'-'} ${_fmt(a.amount,6)} ${a.token}</span>`;
-        }).join('<br>');
-    }
-    
-    return '<span style="color:#6b7280">—</span>';
-}
-
-function _counterpart(tx) {
-    const addr = (tx.type === 'receive' ? tx.from : tx.to) || tx.from || tx.to || '';
-    if (!addr) return '';
-    return `${addr.slice(0,8)}...${addr.slice(-5)}`;
-}
-
-function _dateShort(ts) {
+/**
+ * Timestamp:
+ *   < 3 hari → "2h ago" / "1d ago" / "just now"
+ *   ≥ 3 hari → "22/2/2026"
+ */
+function _timeLabel(ts) {
     if (!ts) return '';
     const d = new Date(ts);
+    const diff = Date.now() - d.getTime();
+    const D3 = 3 * 86400000;
+    
+    if (diff < D3) {
+        const s = Math.floor(diff / 1000);
+        const m = Math.floor(s / 60);
+        const h = Math.floor(m / 60);
+        const day = Math.floor(h / 24);
+        if (day > 0) return `${day}d ago`;
+        if (h > 0) return `${h}h ago`;
+        if (m > 0) return `${m}m ago`;
+        return 'just now';
+    }
+    
     return `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
 }
 
@@ -135,14 +87,81 @@ function _dateFull(ts) {
 }
 
 function _esc(s) {
-    return String(s || '')
-        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 function _typeLabel(type) {
-    return (type || 'unknown').replace(/_/g, ' ')
-        .split(' ').map(w => w[0].toUpperCase() + w.slice(1)).join(' ');
+    const MAP = {
+        send: 'Send',
+        receive: 'Receive',
+        swap: 'Swap',
+        provide_liquidity: 'Add Liquidity',
+        withdraw_liquidity: 'Remove Liquidity',
+        burn: 'Burn'
+    };
+    return MAP[(type || '').toLowerCase()] ||
+        (type || 'unknown').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function _counterpart(tx) {
+    const addr = (tx.type === 'receive' ? tx.from : tx.to) || tx.from || tx.to || '';
+    if (!addr) return '';
+    return `${addr.slice(0,8)}…${addr.slice(-5)}`;
+}
+
+// ── Amount HTML untuk LIST CARD ───────────────────────────────────────────
+function _amtRowHtml(tx) {
+    const amounts = tx.amounts || [];
+    const t = (tx.type || '').toLowerCase();
+    
+    if (!amounts.length) {
+        return `<span style="color:#94a3b8;font-weight:700">${_typeLabel(tx.type)}</span>`;
+    }
+    
+    if (t === 'swap' && amounts.length >= 2) {
+        const give = amounts.find(a => (a.amount ?? 0) < 0);
+        const recv = amounts.find(a => (a.amount ?? 0) > 0);
+        const gs = give ? `${_fmt(give.amount)} ${give.token}` : '';
+        const rs = recv ? `${_fmt(recv.amount)} ${recv.token}` : '';
+        return `<span style="color:#4ade80;font-weight:700">${gs} ⇄ ${rs}</span>`;
+    }
+    
+    if ((t === 'provide_liquidity' || t === 'withdraw_liquidity') && amounts.length) {
+        const color = t === 'withdraw_liquidity' ? '#4ade80' : '#f43f5e';
+        const parts = amounts
+            .map(a => `${_fmt(Math.abs(a.amount ?? 0))} ${a.token}`)
+            .join(' + ');
+        return `<span style="color:${color};font-weight:700">${parts}</span>`;
+    }
+    
+    const a = amounts[0];
+    const val = a.amount ?? 0;
+    const pos = val >= 0;
+    const c = pos ? '#4ade80' : '#f43f5e';
+    return `<span style="color:${c};font-weight:700">${pos?'+':'-'} ${_fmt(val)} ${a.token}</span>`;
+}
+
+// ── Amount HTML untuk MODAL DETAIL ───────────────────────────────────────
+function _amtModalHtml(tx) {
+    const amounts = tx.amounts || [];
+    if (!amounts.length) return '<span style="color:#6b7280">—</span>';
+    
+    const t = (tx.type || '').toLowerCase();
+    
+    if (t === 'swap' && amounts.length >= 2) {
+        const give = amounts.find(a => (a.amount ?? 0) < 0);
+        const recv = amounts.find(a => (a.amount ?? 0) > 0);
+        const gs = give ? `${_fmt(Math.abs(give.amount ?? 0), 6)} ${give.token}` : '';
+        const rs = recv ? `${_fmt(recv.amount ?? 0, 6)} ${recv.token}` : '';
+        return `<span style="color:#4ade80">${gs} ⇄ ${rs}</span>`;
+    }
+    
+    return amounts.map(a => {
+        const val = a.amount ?? 0;
+        const pos = val >= 0;
+        const c = pos ? '#4ade80' : '#f43f5e';
+        return `<span style="color:${c}">${pos?'+':'-'} ${_fmt(Math.abs(val), 6)} ${a.token}</span>`;
+    }).join('<br>');
 }
 
 // =============================================================
@@ -152,7 +171,7 @@ function _buildTxRowHtml(tx) {
     const icon = _txIcon(tx.type);
     const amt = _amtRowHtml(tx);
     const cp = _counterpart(tx);
-    const date = _dateShort(tx.timestamp);
+    const time = _timeLabel(tx.timestamp);
     const block = tx.block ? `#${tx.block}` : '';
     const hash = (tx.hash || '').replace(/'/g, "\\'");
     
@@ -169,7 +188,7 @@ function _buildTxRowHtml(tx) {
         <div class="flex-1 min-w-0 overflow-hidden">
             <div class="text-[13px] leading-snug truncate">${amt}</div>
             <div class="text-[11px] font-mono mt-[3px] truncate" style="color:#6b7280">
-                ${cp ? `${cp}&nbsp;&nbsp;` : ''}${date}
+                ${cp ? `${cp}&nbsp;&nbsp;` : ''}${time}
             </div>
         </div>
 
@@ -187,10 +206,7 @@ window.renderTransactionHistory = async function(page = 1) {
     if (!container) return;
     
     if (!window.wallet?.address) {
-        container.innerHTML = `
-            <div class="py-20 text-center text-secondary-text font-bold uppercase text-sm">
-                Wallet Not Connected
-            </div>`;
+        container.innerHTML = `<div class="py-20 text-center text-secondary-text font-bold uppercase text-sm">Wallet Not Connected</div>`;
         return;
     }
     
@@ -202,19 +218,13 @@ window.renderTransactionHistory = async function(page = 1) {
     try {
         const history = await window.loadTransactionHistory(window.wallet.address, page);
         if (!history?.length) {
-            container.innerHTML = `
-                <div class="py-20 text-center text-secondary-text font-bold uppercase text-sm">
-                    No transaction history found
-                </div>`;
+            container.innerHTML = `<div class="py-20 text-center text-secondary-text font-bold uppercase text-sm">No transaction history found</div>`;
             return;
         }
         container.innerHTML = `<div>${history.map(_buildTxRowHtml).join('')}</div>`;
     } catch (e) {
         console.error(e);
-        container.innerHTML = `
-            <div class="py-20 text-center font-bold text-sm" style="color:#f43f5e">
-                Failed to load transaction history
-            </div>`;
+        container.innerHTML = `<div class="py-20 text-center font-bold text-sm" style="color:#f43f5e">Failed to load transaction history</div>`;
     }
 };
 
@@ -228,9 +238,7 @@ window.renderTransactionHistorySidebar = async function() {
     container.innerHTML = `
         <div class="flex flex-col h-full">
             <div class="flex justify-between items-center px-1 pb-3 border-b border-white/10 flex-shrink-0">
-                <h4 class="text-[11px] font-black text-secondary-text uppercase tracking-widest">
-                    Recent Transactions
-                </h4>
+                <h4 class="text-[11px] font-black text-secondary-text uppercase tracking-widest">Recent Transactions</h4>
                 <button onclick="window.renderTransactionHistorySidebar()"
                     class="text-muted-text hover:text-primary-text transition-colors p-1">
                     <i class="fas fa-sync-alt text-[10px]"></i>
@@ -259,9 +267,7 @@ window.renderTxHistoryItems = async function(isInitial = false) {
     if (isInitial) listEl.innerHTML = '';
     
     if (!history.length && isInitial) {
-        listEl.innerHTML = `
-            <div class="py-16 text-center text-[10px] font-black uppercase tracking-widest"
-                style="color:#6b7280">No transactions found</div>`;
+        listEl.innerHTML = `<div class="py-16 text-center text-[10px] font-black uppercase tracking-widest" style="color:#6b7280">No transactions found</div>`;
         if (moreEl) moreEl.innerHTML = '';
         return;
     }
@@ -271,9 +277,7 @@ window.renderTxHistoryItems = async function(isInitial = false) {
     
     if (moreEl) {
         moreEl.innerHTML = window.historyIsEnd ?
-            `<span class="text-[9px] font-black uppercase tracking-widest" style="color:#6b7280">
-                   End of transactions
-               </span>` :
+            `<span class="text-[9px] font-black uppercase tracking-widest" style="color:#6b7280">End of transactions</span>` :
             `<button onclick="window.loadMoreHistory()"
                    class="px-5 py-1.5 bg-card border border-border text-[9px] font-black
                           uppercase tracking-widest hover:border-up transition-all">
@@ -309,8 +313,7 @@ window.showTransactionDetailModal = async function(hash) {
             <div class="flex items-center justify-between px-5 py-[14px] flex-shrink-0"
                 style="border-bottom:1px solid rgba(255,255,255,0.08)">
                 <button onclick="this.closest('._tx_modal_wrap').remove()"
-                    class="w-8 h-8 flex items-center justify-center transition-colors -ml-1"
-                    style="color:#6b7280">
+                    class="w-8 h-8 flex items-center justify-center -ml-1" style="color:#6b7280">
                     <i class="fas fa-arrow-left text-sm"></i>
                 </button>
                 <span class="text-[14px] font-semibold text-primary-text">Transaction Details</span>
@@ -325,25 +328,18 @@ window.showTransactionDetailModal = async function(hash) {
         </div>`;
     
     document.body.appendChild(modal);
-    
     const getBody = () => document.getElementById(bodyId);
     
     if (cached) _paintModal(getBody(), cached, hash);
     
     try {
         const rpc = await window.fetchTxDetail(hash);
-        if (rpc) {
-            const full = _enrichTx(rpc, hash, cached);
-            _paintModal(getBody(), full, hash);
-        }
+        if (rpc) _paintModal(getBody(), _enrichTx(rpc, hash, cached), hash);
     } catch (e) {
         console.warn('fetchTxDetail:', e);
         if (!cached) {
             const b = getBody();
-            if (b) b.innerHTML = `
-                <div class="p-8 text-center text-[12px]" style="color:#f43f5e">
-                    Failed to load transaction
-                </div>`;
+            if (b) b.innerHTML = `<div class="p-8 text-center text-[12px]" style="color:#f43f5e">Failed to load transaction</div>`;
         }
     }
 };
@@ -351,13 +347,12 @@ window.showTransactionDetailModal = async function(hash) {
 function _enrichTx(rpc, hash, fallback) {
     const tr = rpc.tx_response || {};
     const body = rpc.tx?.body || {};
-    
     let fee = null;
     try {
         const coins = rpc.tx?.auth_info?.fee?.amount || [];
         if (coins.length) {
             const c = coins[0];
-            fee = `${parseInt(c.amount)/1e6} ${c.denom==='upaxi'?'PAXI':c.denom.replace(/^u/,'').toUpperCase()}`;
+            fee = `${parseInt(c.amount) / 1e6} ${c.denom === 'upaxi' ? 'PAXI' : c.denom.replace(/^u/,'').toUpperCase()}`;
         }
     } catch (_) {}
     
@@ -387,7 +382,7 @@ function _paintModal(bodyEl, tx, hash) {
     const scText = ok ? 'Success' : 'Failed';
     
     const row = (label, valHtml) => {
-        if (!valHtml && valHtml !== 0) return '';
+        if (valHtml == null || valHtml === '') return '';
         return `
         <div class="flex items-start gap-4 py-[15px]"
             style="border-bottom:1px solid rgba(255,255,255,0.06)">
@@ -421,26 +416,38 @@ function _paintModal(bodyEl, tx, hash) {
             <span class="text-[13px] text-right flex-1 leading-snug">${_amtModalHtml(tx)}</span>
         </div>`;
     
-    const contractRow = tx.contractAddress ? `
+    // Contract — tampilkan address, dan nama token kalau ada di cache
+    let contractHtml = '';
+    if (tx.contractAddress) {
+        // Coba ambil nama dari amounts (token sudah di-resolve)
+        const tokenAmt = tx.amounts?.find(a => a.contractAddress === tx.contractAddress);
+        const tokenName = tokenAmt?.token && tokenAmt.token !== 'PRC20' ?
+            ` <span style="color:#6b7280;font-size:11px">(${_esc(tokenAmt.token)})</span>` :
+            '';
+        contractHtml = `
         <div class="flex items-start gap-4 py-[15px]"
             style="border-bottom:1px solid rgba(255,255,255,0.06)">
-            <span class="text-[13px] flex-shrink-0 leading-tight" style="color:#5a6070;min-width:120px">Contract<br>Address</span>
-            <span class="text-[12px] text-right flex-1 break-all leading-snug font-mono" style="color:#d1d5db">${_esc(tx.contractAddress)}</span>
-        </div>` : '';
+            <span class="text-[13px] flex-shrink-0 leading-tight" style="color:#5a6070;min-width:120px">
+                Contract<br>Address
+            </span>
+            <span class="text-[12px] text-right flex-1 break-all leading-snug font-mono"
+                style="color:#d1d5db">${_esc(tx.contractAddress)}${tokenName}</span>
+        </div>`;
+    }
     
     bodyEl.innerHTML = `
         <div class="px-5 pt-1 pb-4">
             ${row('Status',    `<span style="color:${scColor};font-weight:700">${scText}</span>`)}
             ${row('Type',      _typeLabel(tx.type))}
             ${hashRow}
-            ${tx.block     ? row('Height',   _esc(String(tx.block))) : ''}
-            ${tx.from      ? row('From',     `<span class="font-mono text-[12px]">${_esc(tx.from)}</span>`) : ''}
-            ${tx.to        ? row('To',       `<span class="font-mono text-[12px]">${_esc(tx.to)}</span>`) : ''}
-            ${contractRow}
+            ${tx.block    ? row('Height',   _esc(String(tx.block))) : ''}
+            ${tx.from     ? row('From',     `<span class="font-mono text-[12px]">${_esc(tx.from)}</span>`) : ''}
+            ${tx.to       ? row('To',       `<span class="font-mono text-[12px]">${_esc(tx.to)}</span>`) : ''}
+            ${contractHtml}
             ${amtRow}
-            ${tx.fee       ? row('Fee',      _esc(tx.fee)) : ''}
-            ${tx.gas_used  ? row('Gas Used', `${_esc(String(tx.gas_used))} / ${_esc(String(tx.gas_wanted||'?'))}`) : ''}
-            ${tx.memo      ? row('Memo',     _esc(tx.memo)) : ''}
+            ${tx.fee      ? row('Fee',      _esc(tx.fee)) : ''}
+            ${tx.gas_used ? row('Gas Used', `${_esc(String(tx.gas_used))} / ${_esc(String(tx.gas_wanted||'?'))}`) : ''}
+            ${tx.memo     ? row('Memo',     _esc(tx.memo)) : ''}
             ${row('Timestamp', _dateFull(tx.timestamp))}
             ${tx.raw_log ? `
             <div class="mt-3 p-4 rounded-xl"
@@ -461,15 +468,6 @@ function _paintModal(bodyEl, tx, hash) {
         </div>`;
 }
 
-// =============================================================
-// COMPAT
-// =============================================================
-window.openTxDetailModal = function(hash) {
-    window.showTransactionDetailModal(hash);
-};
-
-if (window.WalletUI) {
-    window.WalletUI.loadHistory = function() {
-        window.renderTransactionHistory();
-    };
-}
+// ── Compat ─────────────────────────────────────────────────────
+window.openTxDetailModal = (hash) => window.showTransactionDetailModal(hash);
+if (window.WalletUI) window.WalletUI.loadHistory = () => window.renderTransactionHistory();
