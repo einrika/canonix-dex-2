@@ -11,34 +11,15 @@ window.currentTimeframe = localStorage.getItem('chartTimeframe') || 'realtime';
 window.refreshCountdown = 10;
 window.countdownInterval = null;
 
-// WebSocket listener for live price updates (Instant feedback)
+// WebSocket listener for live price updates (Instant feedback for labels only)
 window.updateLivePrice = function(price) {
     const priceLabel = document.getElementById('currentPrice');
     if (priceLabel) window.setText(priceLabel, parseFloat(price).toFixed(8) + ' PAXI');
 
-    // Smoothly update the chart if in realtime mode
-    if (window.currentTimeframe === 'realtime' && window.lineSeries) {
-        // Use 5s bucket alignment consistent with backend
-        const now = Math.floor(Date.now() / 5000) * 5;
-        const p = parseFloat(price);
-
-        const lastPoint = window.currentPriceData[window.currentPriceData.length - 1];
-        // Only update if it's the current or new bucket. Never update history.
-        if (!lastPoint || now >= lastPoint.time) {
-            window.lineSeries.update({ time: now, value: p });
-
-            if (lastPoint && lastPoint.time === now) {
-                lastPoint.close = p;
-                lastPoint.high = Math.max(lastPoint.high, p);
-                lastPoint.low = Math.min(lastPoint.low, p);
-            } else {
-                window.currentPriceData.push({
-                    time: now, open: p, high: p, low: p, close: p, volume: 0
-                });
-                if (window.currentPriceData.length > 300) window.currentPriceData.shift();
-            }
-        }
-    }
+    // ARSITEKTUR UPDATE:
+    // Chart series update (lineSeries.update) telah DIHAPUS dari listener WebSocket ini.
+    // Hal ini untuk menghindari bentrok antara data WebSocket dan data polling (token-price.js).
+    // Chart sekarang murni menggunakan token-price.js sebagai sumber data utama (utama source).
 };
 
 // Global socket listener integration

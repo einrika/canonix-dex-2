@@ -24,8 +24,13 @@ window.addEventListener('load', async () => {
     const tokenParam = urlParams.get('token');
     const lastToken = localStorage.getItem('canonix_last_token');
 
-    // Load tokens optimized
+    // Load tokens optimized (Handles initial list load)
     await window.loadTokensOptimized();
+
+    // Initialize Global Socket Listeners once
+    if (window.setupTokenSocketListeners) {
+        window.setupTokenSocketListeners();
+    }
 
     // Upgraded Wallet: Auto-connect if active wallet exists
     if (window.WalletManager) {
