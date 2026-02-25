@@ -11,15 +11,38 @@ window.currentTimeframe = localStorage.getItem('chartTimeframe') || 'realtime';
 window.refreshCountdown = 10;
 window.countdownInterval = null;
 
-// WebSocket listener for live price updates (Instant feedback for labels only)
+// WebSocket listener for live price updates (Instant feedback)
 window.updateLivePrice = function(price) {
     const priceLabel = document.getElementById('currentPrice');
     if (priceLabel) window.setText(priceLabel, parseFloat(price).toFixed(8) + ' PAXI');
 
     // ARSITEKTUR UPDATE:
-    // Chart series update (lineSeries.update) telah DIHAPUS dari listener WebSocket ini.
-    // Hal ini untuk menghindari bentrok antara data WebSocket dan data polling (token-price.js).
-    // Chart sekarang murni menggunakan token-price.js sebagai sumber data utama (utama source).
+    // Chart sekarang mengambil data "langsung" dari monitor.js (via socket price_update event).
+    // Polling tetap jalan sebagai fallback/sync, namun socket memberikan update instant.
+
+    if (window.currentTimeframe === 'realtime' && window.lineSeries) {
+        const p = parseFloat(price);
+        // Align to 5s bucket consistent with backend monitor.js
+        const now = Math.floor(Date.now() / 5000) * 5;
+
+        const lastPoint = window.currentPriceData[window.currentPriceData.length - 1];
+
+        // VALIDATION: Only update if timestamp is >= last point
+        if (!lastPoint || now >= lastPoint.time) {
+            window.lineSeries.update({ time: now, value: p });
+
+            if (lastPoint && lastPoint.time === now) {
+                lastPoint.close = p;
+                lastPoint.high = Math.max(lastPoint.high, p);
+                lastPoint.low = Math.min(lastPoint.low, p);
+            } else {
+                window.currentPriceData.push({
+                    time: now, open: p, high: p, low: p, close: p, volume: 0
+                });
+                if (window.currentPriceData.length > 300) window.currentPriceData.shift();
+            }
+        }
+    }
 };
 
 // Global socket listener integration
