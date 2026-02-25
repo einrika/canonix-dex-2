@@ -574,97 +574,141 @@ window.AssetManager = new AssetManager();
 window.wallet = null;
 window.walletType = null; // 'paxihub', 'keplr', 'internal'
 
-// HELPER: GAS SIMULATION
+// HELPER: GAS SIMULATION (CLEAN VERSION)
 window.simulateGas = async function(messages, memo = "", options = {}) {
     try {
-        if (!window.wallet) throw new Error("Wallet not connected");
-
-        const { type = 'default' } = options;
-
-        // 1. Prepare dummy signer data for simulation
-        const accountRes = await window.fetchDirect(`${window.APP_CONFIG.LCD}/cosmos/auth/v1beta1/accounts/${window.wallet.address}`);
-        const account = accountRes.account.base_account || accountRes.account;
-        const sequence = account.sequence;
-
+        if (!window.wallet || !window.wallet.address) {
+            throw new Error("Wallet not connected");
+        }
+        
+        if (!Array.isArray(messages) || !messages.length) {
+            throw new Error("Messages required");
+        }
+        
+        const accountRes = await fetch(
+            `${window.APP_CONFIG.LCD}/cosmos/auth/v1beta1/accounts/${window.wallet.address}`
+        ).then(r => r.json());
+        
+        const accountData = accountRes?.account?.base_account || accountRes?.account;
+        
+        if (!accountData) throw new Error("Account not found");
+        
+        const sequence = accountData.sequence || "0";
+        
         let pubkeyBytes;
-        if (window.walletType === 'keplr' || window.walletType === 'internal') {
+        
+        if (window.walletType === "keplr" || window.walletType === "internal") {
             const accounts = await window.wallet.signer.getAccounts();
+            if (!accounts?.length) throw new Error("Signer account not found");
             pubkeyBytes = accounts[0].pubkey;
         } else {
-            if (typeof window.wallet.public_key === 'string') {
-                pubkeyBytes = Uint8Array.from(atob(window.wallet.public_key), c => c.charCodeAt(0));
+            if (!window.wallet.public_key) throw new Error("Public key missing");
+            
+            if (typeof window.wallet.public_key === "string") {
+                pubkeyBytes = Uint8Array.from(
+                    atob(window.wallet.public_key),
+                    c => c.charCodeAt(0)
+                );
             } else {
                 pubkeyBytes = new Uint8Array(window.wallet.public_key);
             }
         }
-
+        
         const pubkeyAny = {
             typeUrl: "/cosmos.crypto.secp256k1.PubKey",
             value: PaxiCosmJS.PubKey.encode({ key: pubkeyBytes }).finish()
         };
-
-        // 2. Build Dummy TxBody & AuthInfo
-        const txBody = PaxiCosmJS.TxBody.fromPartial({ messages, memo });
+        
+        const txBody = PaxiCosmJS.TxBody.fromPartial({
+            messages,
+            memo
+        });
+        
         const authInfo = PaxiCosmJS.AuthInfo.fromPartial({
             signerInfos: [{
                 publicKey: pubkeyAny,
                 modeInfo: { single: { mode: 1 } },
                 sequence: BigInt(sequence)
             }],
-            fee: { amount: [], gasLimit: BigInt(0) }
+            fee: {
+                amount: [],
+                gasLimit: BigInt(0)
+            }
         });
-
-        // 3. Assemble TxRaw with dummy signature
+        
         const txRaw = PaxiCosmJS.TxRaw.fromPartial({
             bodyBytes: PaxiCosmJS.TxBody.encode(txBody).finish(),
             authInfoBytes: PaxiCosmJS.AuthInfo.encode(authInfo).finish(),
-            signatures: [new Uint8Array(64)] // Dummy signature
+            signatures: [new Uint8Array(64)]
         });
-
+        
         const txBytes = PaxiCosmJS.TxRaw.encode(txRaw).finish();
-        const txBytesBase64 = btoa(String.fromCharCode(...txBytes));
-
-        // 4. Call Serverless Simulation Proxy
-        const result = await window.fetchDirect('/api/gas-simulate', {
-            method: 'POST',
-            body: JSON.stringify({ tx_bytes: txBytesBase64 })
-        });
-
-        if (result && result.gas_info) {
-            const gasUsed = parseInt(result.gas_info.gas_used);
-            const gasAdjustment = 1.4; // 40% safety buffer
-            const gasLimit = Math.ceil(gasUsed * gasAdjustment);
-            const minGasPrice = 0.05;
-
-            const estimatedFee = Math.ceil(gasLimit * minGasPrice);
-
-            return {
-                gasPrice: minGasPrice.toString(),
-                gasLimit: gasLimit.toString(),
-                baseFee: estimatedFee.toString(),
-                priorityFee: "0",
-                estimatedFee: estimatedFee.toString(),
-                estimatedFeeUSD: window.formatAmount(estimatedFee / 1e6 * (window.paxiPriceUSD || 0.05), 4)
-            };
+        
+        let binary = "";
+        const chunkSize = 0x8000;
+        for (let i = 0; i < txBytes.length; i += chunkSize) {
+            binary += String.fromCharCode.apply(
+                null,
+                txBytes.subarray(i, i + chunkSize)
+            );
         }
-        throw new Error("Invalid simulation response");
-
+        
+        const txBytesBase64 = btoa(binary);
+        
+        const response = await fetch("/api/gas-simulate", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                tx_bytes: txBytesBase64
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (!response.ok || !result?.success || !result?.data?.gas_info) {
+            throw new Error("Simulation failed");
+        }
+        
+        const gasUsed = parseInt(result.data.gas_info.gas_used || "0");
+        const gasAdjustment = 1.4;
+        const gasLimit = Math.ceil(gasUsed * gasAdjustment);
+        
+        const minGasPrice = 0.05;
+        const estimatedFee = Math.ceil(gasLimit * minGasPrice);
+        
+        return {
+            gasPrice: minGasPrice.toString(),
+            gasLimit: gasLimit.toString(),
+            baseFee: estimatedFee.toString(),
+            priorityFee: "0",
+            estimatedFee: estimatedFee.toString(),
+            estimatedFeeUSD: window.formatAmount(
+                estimatedFee / 1e6 * (window.paxiPriceUSD || 0.05),
+                4
+            )
+        };
+        
     } catch (e) {
-        console.error('Simulation failed, using fallback:', e);
-        const { type = 'default' } = options;
-        // Fallback formula
-        const gasLimit = 500000 + (300000 * (messages.length - 1));
-
+        console.error("Simulation failed, using fallback:", e);
+        
+        const safeLength = Array.isArray(messages) ? messages.length : 1;
+        const gasLimit = 500000 + (300000 * (safeLength - 1));
+        
         const minGasPrice = 0.05;
         const est = Math.ceil(gasLimit * minGasPrice);
-
+        
         return {
             gasPrice: minGasPrice.toString(),
             gasLimit: gasLimit.toString(),
             baseFee: est.toString(),
             priorityFee: "0",
             estimatedFee: est.toString(),
-            estimatedFeeUSD: window.formatAmount(est / 1e6 * (window.paxiPriceUSD || 0.05), 4)
+            estimatedFeeUSD: window.formatAmount(
+                est / 1e6 * (window.paxiPriceUSD || 0.05),
+                4
+            )
         };
     }
 };
