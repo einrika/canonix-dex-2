@@ -7,26 +7,26 @@ window._txCache = window._txCache || [];
 window.historyPage = 1;
 window.historyIsEnd = false;
 
-(function () {
+(function() {
     const _orig = window.loadTransactionHistory;
     if (!_orig || _orig._patched) return;
-
-    window.loadTransactionHistory = async function (address, page) {
+    
+    window.loadTransactionHistory = async function(address, page) {
         const result = await _orig.call(this, address, page);
-
+        
         if (Array.isArray(result)) {
             result.forEach(tx => {
                 if (tx && tx.hash && !window._txCache.find(c => c.hash === tx.hash)) {
                     window._txCache.push(tx);
                 }
             });
-
+            
             if (result.length === 0) window.historyIsEnd = true;
         }
-
+        
         return result;
     };
-
+    
     window.loadTransactionHistory._patched = true;
 })();
 
@@ -83,19 +83,26 @@ function _dateFull(ts) {
 // FontAwesome required: <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 function _txIcon(type) {
     switch ((type || '').toLowerCase()) {
-        case 'receive': return { icon: 'fas fa-arrow-down', color: '#4ade80' };
-        case 'send': return { icon: 'fas fa-arrow-up', color: '#f43f5e' };
-        case 'swap': return { icon: 'fas fa-arrow-right-arrow-left', color: '#3b82f6' };
-        case 'provide_liquidity': return { icon: 'fas fa-droplet', color: '#06b6d4' };
-        case 'withdraw_liquidity': return { icon: 'fas fa-droplet-slash', color: '#8b5cf6' };
-        case 'burn': return { icon: 'fas fa-fire-flame-curved', color: '#f97316' };
-        default: return { icon: 'fas fa-circle-dot', color: '#94a3b8' };
+        case 'receive':
+            return { icon: 'fas fa-arrow-down', color: '#4ade80' };
+        case 'send':
+            return { icon: 'fas fa-arrow-up', color: '#f43f5e' };
+        case 'swap':
+            return { icon: 'fas fa-arrow-right-arrow-left', color: '#3b82f6' };
+        case 'provide_liquidity':
+            return { icon: 'fas fa-droplet', color: '#06b6d4' };
+        case 'withdraw_liquidity':
+            return { icon: 'fas fa-droplet-slash', color: '#8b5cf6' };
+        case 'burn':
+            return { icon: 'fas fa-fire-flame-curved', color: '#f97316' };
+        default:
+            return { icon: 'fas fa-circle-dot', color: '#94a3b8' };
     }
 }
 
 function _counterpart(tx) {
     const type = (tx.type || '').toLowerCase();
-    if (['swap','provide_liquidity','withdraw_liquidity','burn'].includes(type)) return '';
+    if (['swap', 'provide_liquidity', 'withdraw_liquidity', 'burn'].includes(type)) return '';
     const addr = type === 'receive' ? tx.from : tx.to;
     if (!addr) return '';
     return `${addr.slice(0,8)}…${addr.slice(-5)}`;
@@ -104,11 +111,11 @@ function _counterpart(tx) {
 function _amtRowHtml(tx) {
     const amounts = Array.isArray(tx.amounts) ? tx.amounts : [];
     const type = (tx.type || '').toLowerCase();
-
+    
     if (!amounts.length) {
         return `<span style="color:#94a3b8;font-weight:700">${_typeLabel(tx.type)}</span>`;
     }
-
+    
     if (type === 'swap') {
         const give = amounts.find(a => Number(a.amount) < 0);
         const receive = amounts.find(a => Number(a.amount) > 0);
@@ -119,12 +126,12 @@ function _amtRowHtml(tx) {
         }
         return `<span style="color:#4ade80;font-weight:700">${amounts.map(a => `${_fmt(a.amount)} ${_esc(a.token)}`).join(' ⇄ ')}</span>`;
     }
-
+    
     if (type === 'provide_liquidity' || type === 'withdraw_liquidity') {
         const color = type === 'withdraw_liquidity' ? '#4ade80' : '#f43f5e';
         return `<span style="color:${color};font-weight:700">${amounts.map(a => `${_fmt(Math.abs(a.amount))} ${_esc(a.token)}`).join(' + ')}</span>`;
     }
-
+    
     const total = amounts.reduce((s, a) => s + Number(a.amount || 0), 0);
     const token = amounts[0]?.token || '';
     const positive = total > 0;
@@ -141,7 +148,7 @@ function _amtModalHtml(tx) {
     const amounts = Array.isArray(tx.amounts) ? tx.amounts : [];
     if (!amounts.length) return '<span style="color:#6b7280">—</span>';
     const type = (tx.type || '').toLowerCase();
-
+    
     if (type === 'swap') {
         const give = amounts.find(a => Number(a.amount) < 0);
         const receive = amounts.find(a => Number(a.amount) > 0);
@@ -153,7 +160,7 @@ function _amtModalHtml(tx) {
             </span>`;
         }
     }
-
+    
     return amounts.map(a => {
         const val = Number(a.amount || 0);
         const pos = val > 0;
@@ -168,7 +175,7 @@ function _buildTxRowHtml(tx) {
     const time = _timeLabel(tx.timestamp);
     const block = tx.block ? `#${tx.block}` : '';
     const hash = (tx.hash || '').replace(/'/g, "\\'");
-
+    
     return `
     <div onclick="window.showTransactionDetailModal('${hash}')"
          class="flex items-center gap-3 px-2 py-[14px]
@@ -193,13 +200,13 @@ function _buildTxRowHtml(tx) {
     </div>`;
 }
 
-window.renderTransactionHistory = function () {
+window.renderTransactionHistory = function() {
     const addr = window.selectedAddress || window.currentAddress;
     if (!addr) return;
-
+    
     const cont = document.getElementById('transaction-history-container');
     if (!cont) return;
-
+    
     if (window.txHistory.length === 0 && !window.historyIsEnd) {
         cont.innerHTML = `
         <div class="flex flex-col items-center justify-center py-16 px-4 text-center">
@@ -208,7 +215,7 @@ window.renderTransactionHistory = function () {
         </div>`;
         return;
     }
-
+    
     if (window.txHistory.length === 0) {
         cont.innerHTML = `
         <div class="flex flex-col items-center justify-center py-16 px-4 text-center">
@@ -216,16 +223,16 @@ window.renderTransactionHistory = function () {
         </div>`;
         return;
     }
-
+    
     const rows = window.txHistory.map(_buildTxRowHtml).join('');
-    const loadBtn = window.historyIsEnd
-        ? ''
-        : `<div class="px-5 py-4">
+    const loadBtn = window.historyIsEnd ?
+        '' :
+        `<div class="px-5 py-4">
             <button onclick="window.loadMoreHistory()" class="w-full py-3 rounded-xl text-[12px] font-semibold transition-all" style="border:1px solid rgba(255,255,255,0.08);color:#8a9099" onmouseover="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='#d1d5db'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#8a9099'">
                 Load More
             </button>
         </div>`;
-
+    
     cont.innerHTML = `
     <div style="max-height:calc(100vh - 300px);overflow-y:auto;-webkit-overflow-scrolling:touch" class="no-scrollbar">
         ${rows}
@@ -233,16 +240,16 @@ window.renderTransactionHistory = function () {
     ${loadBtn}`;
 };
 
-window.loadMoreHistory = async function () {
+window.loadMoreHistory = async function() {
     const addr = window.selectedAddress || window.currentAddress;
     if (!addr || window.historyIsEnd) return;
-
+    
     const btn = event?.target;
     if (btn) {
         btn.disabled = true;
         btn.innerHTML = 'Loading...';
     }
-
+    
     window.historyPage++;
     try {
         const result = await window.loadTransactionHistory(addr, window.historyPage);
@@ -253,25 +260,25 @@ window.loadMoreHistory = async function () {
     } catch (e) {
         console.error('loadMoreHistory', e);
     }
-
+    
     if (btn) {
         btn.disabled = false;
         btn.innerHTML = 'Load More';
     }
 };
 
-window.showTransactionDetailModal = async function (hash) {
+window.showTransactionDetailModal = async function(hash) {
     if (!hash) return;
-
+    
     const cached = window._txCache.find(t => t.hash === hash) || window.txHistory.find(t => t.hash === hash);
-
+    
     const modal = document.createElement('div');
     modal.className = '_tx_modal_wrap fixed inset-0 z-[600] flex items-end sm:items-center justify-center';
     modal.style.background = 'rgba(8,10,14,0.88)';
     modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-
+    
     const bodyId = `_txmb_${Math.random().toString(36).slice(2,8)}`;
-
+    
     modal.innerHTML = `
     <div style="background:#0f1217;max-height:90vh;border:1px solid rgba(255,255,255,0.08)"
          class="w-full sm:max-w-[640px] rounded-t-2xl sm:rounded-2xl flex flex-col overflow-hidden shadow-2xl">
@@ -291,12 +298,12 @@ window.showTransactionDetailModal = async function (hash) {
             </div>
         </div>
     </div>`;
-
+    
     document.body.appendChild(modal);
     const getBody = () => document.getElementById(bodyId);
-
+    
     if (cached) _paintModal(getBody(), _enrichTx(null, hash, cached), hash);
-
+    
     if (typeof window.fetchTxDetail === 'function') {
         try {
             const rpc = await window.fetchTxDetail(hash);
@@ -318,9 +325,9 @@ function _enrichTx(rpc, hash, fallback) {
             fee = `${(Number(c.amount) || 0) / 1e6} ${c.denom === 'upaxi' ? 'PAXI' : (c.denom || '').replace(/^u/, '').toUpperCase()}`;
         }
     } catch (_) {}
-
+    
     const fallbackAmounts = fallback?.amounts || [];
-
+    
     const final = {
         hash,
         status: (tr.code === 0 || tr.code === undefined) ? 'success' : 'failed',
@@ -337,7 +344,7 @@ function _enrichTx(rpc, hash, fallback) {
         gas_wanted: tr.gas_wanted || null,
         raw_log: tr.code !== 0 ? tr.raw_log : null,
     };
-
+    
     final.amounts = (Array.isArray(final.amounts) ? final.amounts : []).map(a => {
         if (a == null) return null;
         if (typeof a.amount === 'undefined' && typeof a.raw !== 'undefined') {
@@ -345,26 +352,26 @@ function _enrichTx(rpc, hash, fallback) {
         }
         return { token: a.token || (a.symbol || 'PRC20'), amount: Number(a.amount || 0), contractAddress: a.contractAddress || a.contract || null };
     }).filter(Boolean);
-
+    
     return final;
 }
 
 function _paintModal(bodyEl, tx, hash) {
     if (!bodyEl) return;
-
+    
     const ok = tx.status !== 'failed';
     const scColor = ok ? '#4ade80' : '#f43f5e';
     const scText = ok ? 'Success' : 'Failed';
-
+    
     const row = (label, valHtml) => {
-        if (valHtml == null || valHtml === '' ) return '';
+        if (valHtml == null || valHtml === '') return '';
         return `
         <div class="flex items-start gap-4 py-[15px]" style="border-bottom:1px solid rgba(255,255,255,0.06)">
             <span class="text-[13px] flex-shrink-0" style="color:#5a6070;min-width:140px">${label}</span>
             <span class="text-[13px] text-right flex-1 break-all leading-snug" style="color:#d1d5db">${valHtml}</span>
         </div>`;
     };
-
+    
     const hashRow = hash ? `
         <div class="flex items-start gap-4 py-[15px]" style="border-bottom:1px solid rgba(255,255,255,0.06)">
             <span class="text-[13px] flex-shrink-0" style="color:#5a6070;min-width:140px">Hash</span>
@@ -378,13 +385,13 @@ function _paintModal(bodyEl, tx, hash) {
                 </button>
             </div>
         </div>` : '';
-
+    
     const amtRow = `
         <div class="flex items-start gap-4 py-[15px]" style="border-bottom:1px solid rgba(255,255,255,0.06)">
             <span class="text-[13px] flex-shrink-0" style="color:#5a6070;min-width:140px">Amount</span>
             <span class="text-[13px] text-right flex-1 leading-snug">${_amtModalHtml(tx)}</span>
         </div>`;
-
+    
     let contractHtml = '';
     if (tx.contractAddress) {
         const tokenAmt = tx.amounts?.find(a => a.contractAddress === tx.contractAddress);
@@ -395,7 +402,7 @@ function _paintModal(bodyEl, tx, hash) {
             <span class="text-[12px] text-right flex-1 break-all leading-snug font-mono" style="color:#d1d5db">${_esc(tx.contractAddress)}${tokenName}</span>
         </div>`;
     }
-
+    
     bodyEl.innerHTML = `
     <div class="px-5 pt-1 pb-4">
         ${row('Status', `<span style="color:${scColor};font-weight:700">${scText}</span>`)}
@@ -426,7 +433,7 @@ function _paintModal(bodyEl, tx, hash) {
             View on Explorer
         </a>
     </div>`;
-
+    
     if (bodyEl.parentElement) bodyEl.parentElement.scrollTop = 0;
 }
 
