@@ -9,7 +9,7 @@ Object.assign(window.WalletUI, {
     init: function() {
         this.setupListeners();
         // Don't auto render - lazy load when tab is opened
-        console.log('✅ WalletUI initialized (lazy load mode)');
+        console.log('WalletUI initialized (lazy load mode)');
     },
 
     setupListeners: function() {
