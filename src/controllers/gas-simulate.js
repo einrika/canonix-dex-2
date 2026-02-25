@@ -19,22 +19,29 @@ const gasSimulateHandler = async (req, res) => {
     }
     
     try {
+        let body = req.body;
         
-        let body;
-        
-        if (typeof req.body === 'string') {
+        // Handle Buffer (e.g. from some middleware configurations)
+        if (Buffer.isBuffer(body)) {
             try {
-                body = JSON.parse(req.body);
+                body = JSON.parse(body.toString());
+            } catch (e) {
+                console.error('[Simulate] Failed to parse Buffer body:', e.message);
+            }
+        }
+        // Handle String
+        else if (typeof body === 'string') {
+            try {
+                body = JSON.parse(body);
             } catch (e) {
                 return sendResponse(res, false, null, 'Invalid JSON body', 400);
             }
-        } else {
-            body = req.body;
         }
         
         const tx_bytes = body?.tx_bytes;
         
         if (!tx_bytes) {
+            console.warn('[Simulate] Missing tx_bytes. Body type:', typeof body, 'Keys:', body ? Object.keys(body) : 'null');
             return sendResponse(res, false, null, 'tx_bytes required', 400);
         }
         
