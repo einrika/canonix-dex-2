@@ -1,6 +1,8 @@
 const fetch = require('node-fetch');
 const { sendResponse, checkRateLimit, isValidPaxiAddress } = require('../utils/common');
 
+const RPC_BASE = 'https://mainnet-rpc.paxinet.io';
+
 const _tokenCache = new Map();
 const TOKEN_CACHE_TTL = 10 * 60 * 1000;
 
@@ -30,17 +32,12 @@ const getTokenInfo = async (contractAddress) => {
     }
 };
 
-const decodeB64 = (str) => {
-    if (!str) return '';
-    try { return Buffer.from(str, 'base64').toString(); }
-    catch { return str; }
-};
-
-const decodeAttrs = (attrs = []) => {
+// tx_search attributes are always plain text — no base64 decoding needed.
+const attrsToMap = (attrs = []) => {
     const result = {};
     for (const a of attrs) {
-        const k = decodeB64(a.key);
-        const v = decodeB64(a.value);
+        const k = a.key;
+        const v = a.value;
         if (result[k] !== undefined) {
             if (!Array.isArray(result[k])) result[k] = [result[k]];
             result[k].push(v);
@@ -60,40 +57,31 @@ const parseCoin = (str) => {
         const symbol = denom === 'upaxi' ? 'PAXI' : denom.replace(/^u/, '').toUpperCase();
         return { raw, symbol, value: raw / 1e6 };
     }
-    const n = parseInt(str);
-    if (!isNaN(n)) return { raw: n };
     return null;
 };
 
-/**
- * Events yang hadir di setiap tx tanpa msg_index adalah infrastructure events:
- *  - tx (hash, height, fee, fee_payer, acc_seq, signature)
- *  - coin_spent / coin_received untuk FEE (receiver = fee collector paxi17xpfvakm...)
- *  - message (sender saja, tanpa action)
- *
- * Events dengan msg_index = "0", "1", dst adalah actual message events.
- * Kita kelompokkan events per msg_index untuk parse per-message.
- */
-const groupByMsgIndex = (decoded) => {
-    const groups = {};           // { msgIndex: [events] }
-    const feeEvents = [];        // events tanpa msg_index
+// Fee events = no msg_index. Message events = have msg_index "0", "1", etc.
+const groupEvents = (events) => {
+    const groups = {};
+    const feeEvents = [];
 
-    for (const ev of decoded) {
-        const idx = ev.attrs.msg_index;
+    for (const ev of events) {
+        const attrs = attrsToMap(ev.attributes);
+        const idx = attrs.msg_index;
+        const entry = { type: ev.type, attrs };
+
         if (idx === undefined || idx === null || idx === '') {
-            feeEvents.push(ev);
+            feeEvents.push(entry);
         } else {
             const key = String(idx);
             if (!groups[key]) groups[key] = [];
-            groups[key].push(ev);
+            groups[key].push(entry);
         }
     }
+
     return { groups, feeEvents };
 };
 
-/**
- * Extract fee info dari fee events (sebelum ada msg_index)
- */
 const extractFee = (feeEvents) => {
     for (const ev of feeEvents) {
         if (ev.type === 'tx' && ev.attrs.fee) {
@@ -103,10 +91,6 @@ const extractFee = (feeEvents) => {
     return null;
 };
 
-/**
- * Parse satu message group menjadi typed sub-transaction.
- * Return: { type, from, to, contractAddress, amounts: [{token, raw, amount, contractAddress, _sign}] }
- */
 const parseMsgGroup = (events, address) => {
     const result = {
         type: 'unknown',
@@ -116,17 +100,14 @@ const parseMsgGroup = (events, address) => {
         amounts: []
     };
 
-    // Cek action dari message event
     const msgEv = events.find(ev => ev.type === 'message' && ev.attrs.action);
     const action = msgEv?.attrs.action || '';
+    const sender = msgEv?.attrs.sender || null;
 
-    // ── 1. SWAP (/x.swap.types.MsgSwap) ──
+    // ── SWAP ──
     if (action.includes('MsgSwap') || action.includes('/x.swap')) {
         result.type = 'swap';
-        result.from = msgEv?.attrs.sender || null;
-
-        // Input: wasm transfer_from (PRC20 diambil dari user) atau coin_spent
-        // Output: wasm transfer ke user (PRC20) atau coin_received ke user
+        result.from = sender;
 
         for (const ev of events) {
             if (ev.type === 'wasm') {
@@ -136,24 +117,12 @@ const parseMsgGroup = (events, address) => {
                 if (!rawAmt) continue;
 
                 if (wa === 'transfer_from' && ev.attrs.from === address) {
-                    // PRC20 input (user give)
-                    result.amounts.push({
-                        token: 'PRC20',
-                        raw: rawAmt.raw,
-                        contractAddress: contract,
-                        _sign: -1
-                    });
+                    result.amounts.push({ token: 'PRC20', raw: rawAmt.raw, contractAddress: contract, _sign: -1 });
                     if (!result.contractAddress) result.contractAddress = contract;
                 }
 
                 if (wa === 'transfer' && ev.attrs.to === address) {
-                    // PRC20 output (user receive)
-                    result.amounts.push({
-                        token: 'PRC20',
-                        raw: rawAmt.raw,
-                        contractAddress: contract,
-                        _sign: 1
-                    });
+                    result.amounts.push({ token: 'PRC20', raw: rawAmt.raw, contractAddress: contract, _sign: 1 });
                 }
             }
 
@@ -167,19 +136,17 @@ const parseMsgGroup = (events, address) => {
 
             if (ev.type === 'coin_received' && ev.attrs.receiver === address) {
                 const coin = parseCoin(ev.attrs.amount);
-                if (coin?.symbol) {
-                    result.amounts.push({ token: coin.symbol, amount: coin.value });
-                }
+                if (coin?.symbol) result.amounts.push({ token: coin.symbol, amount: coin.value });
             }
         }
 
         return result;
     }
 
-    // ── 2. PROVIDE LIQUIDITY ──
+    // ── PROVIDE LIQUIDITY ──
     if (action.includes('ProvideLiquidity') || action.includes('provide_liquidity') || action.includes('AddLiquidity')) {
         result.type = 'provide_liquidity';
-        result.from = msgEv?.attrs.sender || null;
+        result.from = sender;
 
         for (const ev of events) {
             if (ev.type === 'wasm') {
@@ -193,7 +160,6 @@ const parseMsgGroup = (events, address) => {
                     if (!result.contractAddress) result.contractAddress = contract;
                 }
 
-                // LP token minted ke user
                 if (wa === 'mint' && ev.attrs.to === address) {
                     result.amounts.push({ token: 'LP', raw: rawAmt.raw, contractAddress: contract, _sign: 1 });
                 }
@@ -208,10 +174,10 @@ const parseMsgGroup = (events, address) => {
         return result;
     }
 
-    // ── 3. WITHDRAW LIQUIDITY ──
+    // ── WITHDRAW LIQUIDITY ──
     if (action.includes('WithdrawLiquidity') || action.includes('withdraw_liquidity') || action.includes('RemoveLiquidity')) {
         result.type = 'withdraw_liquidity';
-        result.from = msgEv?.attrs.sender || null;
+        result.from = sender;
 
         for (const ev of events) {
             if (ev.type === 'wasm') {
@@ -220,13 +186,11 @@ const parseMsgGroup = (events, address) => {
                 const rawAmt = parseCoin(ev.attrs.amount);
                 if (!rawAmt) continue;
 
-                // LP token diburn dari user
                 if (wa === 'burn' && ev.attrs.from === address) {
                     result.amounts.push({ token: 'LP', raw: rawAmt.raw, contractAddress: contract, _sign: -1 });
                     if (!result.contractAddress) result.contractAddress = contract;
                 }
 
-                // Token diterima user
                 if (wa === 'transfer' && ev.attrs.to === address) {
                     result.amounts.push({ token: 'PRC20', raw: rawAmt.raw, contractAddress: contract, _sign: 1 });
                 }
@@ -241,7 +205,7 @@ const parseMsgGroup = (events, address) => {
         return result;
     }
 
-    // ── 4. NATIVE SEND/RECEIVE (/cosmos.bank.v1beta1.MsgSend) ──
+    // ── NATIVE SEND/RECEIVE ──
     if (action.includes('MsgSend') || action.includes('cosmos.bank')) {
         for (const ev of events) {
             if (ev.type === 'coin_spent' && ev.attrs.spender === address) {
@@ -261,19 +225,19 @@ const parseMsgGroup = (events, address) => {
             }
 
             if (ev.type === 'transfer') {
-                if (ev.attrs.sender && result.from === address) result.from = ev.attrs.sender;
-                if (ev.attrs.sender && ev.attrs.recipient === address) {
-                    result.from = ev.attrs.sender;
+                if (ev.attrs.recipient === address) {
+                    result.from = ev.attrs.sender || result.from;
                     result.to = address;
+                } else if (ev.attrs.sender === address) {
+                    result.to = ev.attrs.recipient || result.to;
                 }
-                if (ev.attrs.recipient && result.type === 'send') result.to = ev.attrs.recipient;
             }
         }
 
         return result;
     }
 
-    // ── 5. WASM EXECUTE (PRC20 transfer / burn) ──
+    // ── WASM EXECUTE (PRC20 transfer / burn) ──
     if (action.includes('MsgExecuteContract') || action.includes('cosmwasm.wasm')) {
         for (const ev of events) {
             if (ev.type !== 'wasm') continue;
@@ -283,7 +247,6 @@ const parseMsgGroup = (events, address) => {
             const rawAmt = parseCoin(ev.attrs.amount);
             if (!rawAmt) continue;
 
-            // PRC20 transfer (send)
             if (wa === 'transfer' && ev.attrs.from === address) {
                 result.type = 'send';
                 result.from = address;
@@ -292,16 +255,14 @@ const parseMsgGroup = (events, address) => {
                 result.amounts.push({ token: 'PRC20', raw: rawAmt.raw, contractAddress: contract, _sign: -1 });
             }
 
-            // PRC20 receive
-            if (wa === 'transfer' && ev.attrs.to === address) {
+            if (wa === 'transfer' && ev.attrs.to === address && ev.attrs.from !== address) {
                 if (result.type === 'unknown') result.type = 'receive';
-                result.from = ev.attrs.from || null;
+                result.from = result.from || ev.attrs.from || null;
                 result.to = address;
-                result.contractAddress = contract;
+                if (!result.contractAddress) result.contractAddress = contract;
                 result.amounts.push({ token: 'PRC20', raw: rawAmt.raw, contractAddress: contract, _sign: 1 });
             }
 
-            // PRC20 transfer_from (delegated send, e.g. from dapp)
             if (wa === 'transfer_from' && ev.attrs.from === address) {
                 result.type = 'send';
                 result.from = address;
@@ -310,7 +271,6 @@ const parseMsgGroup = (events, address) => {
                 result.amounts.push({ token: 'PRC20', raw: rawAmt.raw, contractAddress: contract, _sign: -1 });
             }
 
-            // PRC20 burn
             if (wa === 'burn' && ev.attrs.from === address) {
                 result.type = 'burn';
                 result.from = address;
@@ -319,13 +279,11 @@ const parseMsgGroup = (events, address) => {
             }
         }
 
-        // Fallback sender
-        if (!result.from && msgEv?.attrs.sender) result.from = msgEv.attrs.sender;
-
+        if (!result.from) result.from = sender;
         return result;
     }
 
-    // ── 6. Fallback: coba baca dari events langsung ──
+    // ── Fallback ──
     for (const ev of events) {
         if (ev.type === 'transfer') {
             const coin = parseCoin(ev.attrs.amount);
@@ -345,15 +303,13 @@ const parseMsgGroup = (events, address) => {
         }
     }
 
+    if (!result.from) result.from = sender;
     return result;
 };
 
+// Normalize a tx from tx_search (tx_result.events)
 const normalizeTx = (t, address) => {
     const events = t.tx_result?.events || [];
-    const decoded = events.map(ev => ({
-        type: ev.type,
-        attrs: decodeAttrs(ev.attributes)
-    }));
 
     const result = {
         hash: t.hash,
@@ -368,59 +324,47 @@ const normalizeTx = (t, address) => {
         amounts: []
     };
 
-    if (!decoded.length) return result;
+    if (!events.length) return result;
 
-    const { groups, feeEvents } = groupByMsgIndex(decoded);
+    const { groups, feeEvents } = groupEvents(events);
 
-    // Extract fee
     const feeInfo = extractFee(feeEvents);
-    if (feeInfo?.symbol) {
-        result.fee = { token: feeInfo.symbol, amount: feeInfo.value };
-    }
+    if (feeInfo?.symbol) result.fee = { token: feeInfo.symbol, amount: feeInfo.value };
+
+    const fallbackSender = feeEvents.find(e => e.type === 'message' && e.attrs.sender)?.attrs.sender || null;
 
     const msgIndexes = Object.keys(groups).sort((a, b) => parseInt(a) - parseInt(b));
 
     if (!msgIndexes.length) {
-        // Tx hanya punya infra events (unlikely tapi handle saja)
+        if (fallbackSender) result.from = fallbackSender;
         return result;
     }
 
-    // Parse setiap message
     const parsedMsgs = msgIndexes.map(idx => parseMsgGroup(groups[idx], address));
 
-    // Kalau hanya 1 message, langsung pakai hasilnya
-    if (parsedMsgs.length === 1) {
-        const m = parsedMsgs[0];
-        result.type = m.type;
-        result.from = m.from;
-        result.to = m.to;
-        result.contractAddress = m.contractAddress;
-        result.amounts = m.amounts;
-        return result;
-    }
-
-    // Multi-message tx: tentukan tipe dominan
-    // Prioritas: swap > provide_liquidity > withdraw_liquidity > burn > send > receive
     const typePriority = ['swap', 'provide_liquidity', 'withdraw_liquidity', 'burn', 'send', 'receive'];
-    let dominantMsg = parsedMsgs[0];
+    let dominant = parsedMsgs[0];
     for (const msg of parsedMsgs) {
-        const msgPrio = typePriority.indexOf(msg.type);
-        const domPrio = typePriority.indexOf(dominantMsg.type);
-        if (msgPrio !== -1 && (domPrio === -1 || msgPrio < domPrio)) {
-            dominantMsg = msg;
-        }
+        const p = typePriority.indexOf(msg.type);
+        const dp = typePriority.indexOf(dominant.type);
+        if (p !== -1 && (dp === -1 || p < dp)) dominant = msg;
     }
 
-    result.type = dominantMsg.type;
-    result.from = dominantMsg.from;
-    result.to = dominantMsg.to;
-    result.contractAddress = dominantMsg.contractAddress;
+    result.type = dominant.type;
+    result.from = dominant.from || fallbackSender;
+    result.to = dominant.to;
+    result.contractAddress = dominant.contractAddress;
 
-    // Gabungkan amounts dari semua messages yang relevan (hindari duplikat dari approval/allowance)
-    for (const msg of parsedMsgs) {
-        for (const amt of msg.amounts) {
-            // Skip increase_allowance amounts (tidak representasikan transfer nyata)
-            result.amounts.push(amt);
+    if (parsedMsgs.length === 1) {
+        result.amounts = dominant.amounts;
+    } else {
+        const domIdx = parsedMsgs.indexOf(dominant);
+        result.amounts = [...dominant.amounts];
+        for (let i = 0; i < parsedMsgs.length; i++) {
+            if (i === domIdx) continue;
+            const msg = parsedMsgs[i];
+            if (msg.type === 'unknown' || msg.amounts.length === 0) continue;
+            for (const amt of msg.amounts) result.amounts.push(amt);
         }
     }
 
@@ -429,7 +373,6 @@ const normalizeTx = (t, address) => {
 
 const resolveTokenSymbols = async (txList) => {
     const contracts = new Set();
-
     txList.forEach(tx => {
         tx.amounts.forEach(a => {
             if (a.contractAddress && (a.token === 'PRC20' || a.token === 'LP')) {
@@ -449,22 +392,13 @@ const resolveTokenSymbols = async (txList) => {
             const decimals = info?.decimals ?? 6;
             const symbol = info?.symbol || a.contractAddress.slice(0, 8) + '…';
 
-            if (a.token === 'LP') {
-                a.token = `${symbol}-LP`;
-            } else {
-                a.token = symbol;
-            }
-
+            a.token = a.token === 'LP' ? `${symbol}-LP` : symbol;
             a.amount = (a._sign || 1) * (a.raw / Math.pow(10, decimals));
             delete a.raw;
             delete a._sign;
         });
 
-        // Cleanup native amounts yang masih punya _sign (tidak seharusnya tapi safety)
-        tx.amounts.forEach(a => {
-            delete a._sign;
-            delete a.raw;
-        });
+        tx.amounts.forEach(a => { delete a._sign; delete a.raw; });
     });
 };
 
@@ -490,7 +424,7 @@ const txHistoryHandler = async (req, res) => {
 
         await Promise.all(queries.map(async (q) => {
             const url =
-                `https://mainnet-rpc.paxinet.io/tx_search` +
+                `${RPC_BASE}/tx_search` +
                 `?query=${encodeURIComponent(q)}` +
                 `&page=1&per_page=100&order_by=desc`;
 
@@ -512,13 +446,13 @@ const txHistoryHandler = async (req, res) => {
 
         const normalized = allTxs.map(t => normalizeTx(t, address));
 
-        // Fetch timestamps (batched, max 30 unique heights)
+        // Fetch timestamps
         const heights = [...new Set(normalized.map(tx => tx.block))].slice(0, 30);
         const heightMap = {};
 
         await Promise.allSettled(
             heights.map(async (h) => {
-                const r = await fetch(`https://mainnet-rpc.paxinet.io/block?height=${h}`, { timeout: 5000 });
+                const r = await fetch(`${RPC_BASE}/block?height=${h}`, { timeout: 5000 });
                 if (!r.ok) return;
                 const d = await r.json();
                 const ts = d?.result?.block?.header?.time;
