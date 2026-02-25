@@ -24,9 +24,7 @@ const getTokenInfo = async (contractAddress, baseUrl = '') => {
     
     try {
         // Hit endpoint token-detail — bisa via internal URL atau external
-        const url = baseUrl ?
-            `${baseUrl}/token-detail?address=${contractAddress}` :
-            `https://explorer.paxinet.io/api/prc20/contract?address=${contractAddress}`;
+        const url = baseUrl ? `https://explorer.paxinet.io/api/prc20/contract?address=${contractAddress}` : '';
         
         const r = await fetch(url, { timeout: 6000 });
         if (!r.ok) return null;
