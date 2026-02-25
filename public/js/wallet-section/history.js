@@ -85,11 +85,11 @@ function _txIcon(type) {
     switch ((type || '').toLowerCase()) {
         case 'receive': return { icon: 'fas fa-arrow-down', color: '#4ade80' };
         case 'send': return { icon: 'fas fa-arrow-up', color: '#f43f5e' };
-        case 'swap': return { icon: 'fas fa-right-left', color: '#4ade80' };
-        case 'provide_liquidity': return { icon: 'fas fa-plus', color: '#f43f5e' };
-        case 'withdraw_liquidity': return { icon: 'fas fa-minus', color: '#4ade80' };
-        case 'burn': return { icon: 'fas fa-fire', color: '#ef4444' };
-        default: return { icon: 'fas fa-circle-question', color: '#94a3b8' };
+        case 'swap': return { icon: 'fas fa-arrow-right-arrow-left', color: '#3b82f6' };
+        case 'provide_liquidity': return { icon: 'fas fa-droplet', color: '#06b6d4' };
+        case 'withdraw_liquidity': return { icon: 'fas fa-droplet-slash', color: '#8b5cf6' };
+        case 'burn': return { icon: 'fas fa-fire-flame-curved', color: '#f97316' };
+        default: return { icon: 'fas fa-circle-dot', color: '#94a3b8' };
     }
 }
 
@@ -128,7 +128,13 @@ function _amtRowHtml(tx) {
     const total = amounts.reduce((s, a) => s + Number(a.amount || 0), 0);
     const token = amounts[0]?.token || '';
     const positive = total > 0;
-    return `<span style="color:${positive ? '#4ade80' : '#f43f5e'};font-weight:700">${positive ? '+' : '-'} ${_fmt(Math.abs(total))} ${_esc(token)}</span>`;
+    
+    // Perbaikan: cek jika send ke alamat sendiri (from === to), maka hijau
+    const isSelfSend = type === 'send' && tx.from && tx.to && tx.from.toLowerCase() === tx.to.toLowerCase();
+    const displayColor = isSelfSend ? '#4ade80' : (positive ? '#4ade80' : '#f43f5e');
+    const prefix = isSelfSend ? '' : (positive ? '+' : '-');
+    
+    return `<span style="color:${displayColor};font-weight:700">${prefix} ${_fmt(Math.abs(total))} ${_esc(token)}</span>`;
 }
 
 function _amtModalHtml(tx) {
@@ -182,102 +188,82 @@ function _buildTxRowHtml(tx) {
         </div>
 
         <div class="flex-shrink-0 pl-1 text-right">
-            <div class="text-[11px] font-mono" style="color:#6b7280">${block}</div>
+            <div class="text-[10px] font-mono" style="color:#5a6070">${block}</div>
         </div>
     </div>`;
 }
 
-window.renderTransactionHistory = async function (page = 1) {
-    const container = document.getElementById('history-container');
-    if (!container) return;
+window.renderTransactionHistory = function () {
+    const addr = window.selectedAddress || window.currentAddress;
+    if (!addr) return;
 
-    if (!window.wallet?.address) {
-        container.innerHTML = `<div class="py-20 text-center text-secondary-text font-bold uppercase text-sm">Wallet Not Connected</div>`;
+    const cont = document.getElementById('transaction-history-container');
+    if (!cont) return;
+
+    if (window.txHistory.length === 0 && !window.historyIsEnd) {
+        cont.innerHTML = `
+        <div class="flex flex-col items-center justify-center py-16 px-4 text-center">
+            <div style="color:#5a6070" class="text-[13px] mb-3">Loading history...</div>
+            <div class="w-6 h-6 border-[2.5px] border-meme-green border-t-transparent rounded-full animate-spin"></div>
+        </div>`;
         return;
     }
 
-    container.innerHTML = `<div class="py-16 flex justify-center"><div class="w-8 h-8 border-4 border-meme-green border-t-transparent rounded-full animate-spin"></div></div>`;
-
-    try {
-        const history = await window.loadTransactionHistory(window.wallet.address, page);
-        if (!history?.length) {
-            container.innerHTML = `<div class="py-20 text-center text-secondary-text font-bold uppercase text-sm">No transaction history found</div>`;
-            return;
-        }
-        container.innerHTML = `<div>${history.map(_buildTxRowHtml).join('')}</div>`;
-    } catch (e) {
-        console.error(e);
-        container.innerHTML = `<div class="py-20 text-center font-bold text-sm" style="color:#f43f5e">Failed to load transaction history</div>`;
+    if (window.txHistory.length === 0) {
+        cont.innerHTML = `
+        <div class="flex flex-col items-center justify-center py-16 px-4 text-center">
+            <div style="color:#5a6070" class="text-[13px]">No transactions yet</div>
+        </div>`;
+        return;
     }
-};
 
-window.renderTransactionHistorySidebar = async function () {
-    const container = document.getElementById('sidebarContent');
-    if (!container || !window.wallet) return;
-
-    container.innerHTML = `
-        <div class="flex flex-col h-full">
-            <div class="flex justify-between items-center px-1 pb-3 border-b border-white/10 flex-shrink-0">
-                <h4 class="text-[11px] font-black text-secondary-text uppercase tracking-widest">Recent Transactions</h4>
-                <button onclick="window.renderTransactionHistorySidebar()" class="text-muted-text hover:text-primary-text transition-colors p-1">
-                    <i class="fas fa-sync-alt text-[10px]"></i>
-                </button>
-            </div>
-            <div id="sidebar-tx-list" class="flex-1 overflow-y-auto no-scrollbar">
-                <div class="py-16 flex justify-center">
-                    <div class="w-7 h-7 border-[3px] border-meme-green border-t-transparent rounded-full animate-spin"></div>
-                </div>
-            </div>
-            <div id="tx-load-more" class="flex-shrink-0 flex items-center justify-center py-3"></div>
+    const rows = window.txHistory.map(_buildTxRowHtml).join('');
+    const loadBtn = window.historyIsEnd
+        ? ''
+        : `<div class="px-5 py-4">
+            <button onclick="window.loadMoreHistory()" class="w-full py-3 rounded-xl text-[12px] font-semibold transition-all" style="border:1px solid rgba(255,255,255,0.08);color:#8a9099" onmouseover="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='#d1d5db'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#8a9099'">
+                Load More
+            </button>
         </div>`;
 
-    window.historyPage = 1;
-    window.historyIsEnd = false;
-    await window.renderTxHistoryItems(true);
-};
-
-window.renderTxHistoryItems = async function (isInitial = false) {
-    const listEl = document.getElementById('sidebar-tx-list');
-    const moreEl = document.getElementById('tx-load-more');
-    if (!listEl || !window.wallet) return;
-
-    try {
-        const history = await window.loadTransactionHistory(window.wallet.address, window.historyPage);
-
-        if (isInitial) listEl.innerHTML = '';
-
-        if (!history || !history.length) {
-            if (isInitial) {
-                listEl.innerHTML = `<div class="py-16 text-center text-[10px] font-black uppercase tracking-widest" style="color:#6b7280">No transactions found</div>`;
-            }
-            if (moreEl) moreEl.innerHTML = '';
-            return;
-        }
-
-        const rows = history.map(_buildTxRowHtml).join('');
-        isInitial ? (listEl.innerHTML = rows) : listEl.insertAdjacentHTML('beforeend', rows);
-
-        if (moreEl) {
-            moreEl.innerHTML = window.historyIsEnd ?
-                `<span class="text-[9px] font-black uppercase tracking-widest" style="color:#6b7280">End of transactions</span>` :
-                `<button onclick="window.loadMoreHistory()" class="px-5 py-1.5 bg-card border border-border text-[9px] font-black uppercase tracking-widest hover:border-up transition-all">Load More</button>`;
-        }
-    } catch (e) {
-        console.error('renderTxHistoryItems:', e);
-        if (isInitial) listEl.innerHTML = `<div class="py-16 text-center text-[10px] font-black uppercase tracking-widest" style="color:#f43f5e">Failed to load</div>`;
-        if (moreEl) moreEl.innerHTML = '';
-    }
+    cont.innerHTML = `
+    <div style="max-height:calc(100vh - 300px);overflow-y:auto;-webkit-overflow-scrolling:touch" class="no-scrollbar">
+        ${rows}
+    </div>
+    ${loadBtn}`;
 };
 
 window.loadMoreHistory = async function () {
+    const addr = window.selectedAddress || window.currentAddress;
+    if (!addr || window.historyIsEnd) return;
+
+    const btn = event?.target;
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = 'Loading...';
+    }
+
     window.historyPage++;
-    await window.renderTxHistoryItems(false);
+    try {
+        const result = await window.loadTransactionHistory(addr, window.historyPage);
+        if (Array.isArray(result)) {
+            window.txHistory = window.txHistory.concat(result);
+            window.renderTransactionHistory();
+        }
+    } catch (e) {
+        console.error('loadMoreHistory', e);
+    }
+
+    if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = 'Load More';
+    }
 };
 
 window.showTransactionDetailModal = async function (hash) {
-    document.querySelectorAll('._tx_modal_wrap').forEach(m => m.remove());
+    if (!hash) return;
 
-    const cached = window._txCache.find(t => t.hash === hash);
+    const cached = window._txCache.find(t => t.hash === hash) || window.txHistory.find(t => t.hash === hash);
 
     const modal = document.createElement('div');
     modal.className = '_tx_modal_wrap fixed inset-0 z-[600] flex items-end sm:items-center justify-center';

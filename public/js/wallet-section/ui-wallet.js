@@ -391,7 +391,7 @@ Object.assign(window.WalletUI, {
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="flex justify-between items-start mb-1 gap-2">
-                                <span class="text-base font-display italic text-primary-text uppercase truncate tracking-tighter">${token.name}</span>
+                                <span class="text-base font-display italic text-primary-text uppercase truncate tracking-tighter">${token.symbol}</span>
                                 <div class="flex flex-col items-end flex-shrink-0">
                                     <span id="bal-${token.address}" class="text-sm font-mono font-black text-meme-cyan">...</span>
                                     ${canHide ? `
