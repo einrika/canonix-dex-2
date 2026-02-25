@@ -13,10 +13,8 @@ window.addEventListener('load', async () => {
     // Initialize chart
     window.initChart();
     
-    // Setup update interval
-    window.updateInterval = setInterval(() => {
-        window.updateAppUI();
-    }, 30000);
+    // Setup update interval (DEPRECATED: Using WebSocket)
+    window.updateInterval = null;
 
     // Platform fee disabled
     window.feeEnabled = false;
@@ -69,10 +67,9 @@ window.addEventListener('load', async () => {
     if (window.setSwapMode) window.setSwapMode('buy');
     if (window.setSidebarTab) window.setSidebarTab('wallet');
 
-    // Update ticker periodically
+    // Update ticker periodically (WebSocket handles most updates now)
     if (window.updateTicker) {
         window.updateTicker();
-        setInterval(() => window.updateTicker(), 30000);
     }
 
     // Diagnostic check for libraries
@@ -81,6 +78,15 @@ window.addEventListener('load', async () => {
         .catch(err => window.log('Warning: PaxiCosmJS not detected on load. Wallet features may be delayed.', 'warn'));
 
     window.log('Canonix loaded', 'info');
+
+    // Handle tab visibility changes (WebSocket connection handled in socket.js)
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            window.log('Tab visible: refreshing data state', 'info');
+            window.updateAppUI();
+            if (window.startRealtimeUpdates) window.startRealtimeUpdates();
+        }
+    });
 });
 
 window.checkWalletLock = function() {

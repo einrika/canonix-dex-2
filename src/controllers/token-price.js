@@ -1,28 +1,24 @@
 const fetch = require('node-fetch');
-const { sendResponse, getCached, setCached, checkRateLimit, isValidPaxiAddress } = require('./utils/common');
+const { sendResponse, getCached, setCached, checkRateLimit, isValidPaxiAddress } = require('../utils/common');
 
-exports.handler = async (event) => {
-    if (event.httpMethod === 'OPTIONS') return sendResponse(true);
+const tokenPriceHandler = async (req, res) => {
+    if (req.method === 'OPTIONS') return res.sendStatus(200);
 
-    const ip = event.headers['client-ip'] || event.headers['x-forwarded-for'] || 'unknown';
-    if (!checkRateLimit(ip)) return sendResponse(false, null, 'Too many requests', 429);
+    const ip = req.headers['client-ip'] || req.headers['x-forwarded-for'] || req.ip || 'unknown';
+    if (!checkRateLimit(ip)) return sendResponse(res, false, null, 'Too many requests', 429);
 
-    const { address, timeframe = '24h' } = event.queryStringParameters || {};
+    const { address, timeframe = '24h' } = req.query || {};
     if (!address || !isValidPaxiAddress(address)) {
-        return sendResponse(false, null, 'Invalid address parameter', 400);
+        return sendResponse(res, false, null, 'Invalid address parameter', 400);
     }
 
-    // Support timeframes requested by user
     const allowedTFs = ['realtime', '1h', '24h', '7d', '30d'];
     const tf = allowedTFs.includes(timeframe) ? timeframe : '24h';
 
-    const cacheKey = `price_${address}_${tf}`;
-
-    // Bypass cache for realtime requests
-    if (tf !== 'realtime') {
-        const cachedData = getCached(cacheKey);
-        if (cachedData) return sendResponse(true, cachedData);
-    }
+    // Optimized: Disable cache for price endpoints to ensure realtime data
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
 
     try {
         let apiUrl;
@@ -33,23 +29,20 @@ exports.handler = async (event) => {
         }
 
         const response = await fetch(apiUrl, {
-            timeout: 10000,
+            timeout: 5000,
             headers: tf === 'realtime' ? { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' } : {}
         });
 
         if (!response.ok) {
-            // Fallback
             const winscanUrl = `https://winscan.winsnip.xyz/api/prc20-price-history/${address}?timeframe=${tf}`;
             const fallbackRes = await fetch(winscanUrl, { timeout: 5000 });
             if (!fallbackRes.ok) throw new Error(`Upstream returned ${response.status}`);
             const fallbackData = await fallbackRes.json();
 
-            // Normalize
             const normalized = {
                 history: fallbackData.price_history || fallbackData.history || []
             };
-            if (tf !== 'realtime') setCached(cacheKey, normalized, 60);
-            return sendResponse(true, normalized);
+            return sendResponse(res, true, normalized);
         }
 
         const data = await response.json();
@@ -61,22 +54,22 @@ exports.handler = async (event) => {
             normalized = {
                 price_change: data.price_change || 0,
                 history: prices.map((p, i) => ({
-                    timestamp: now - (prices.length - 1 - i) * 10000, // 10s intervals
+                    timestamp: now - (prices.length - 1 - i) * 5000,
                     price_paxi: p
                 }))
             };
         } else {
-            // Normalize: ensure it has a 'history' array
             normalized = {
                 ...data,
                 history: data.price_history || data.history || []
             };
         }
 
-        if (tf !== 'realtime') setCached(cacheKey, normalized, 60);
-        return sendResponse(true, normalized);
+        return sendResponse(res, true, normalized);
     } catch (error) {
         console.error('Price history fetch error:', error);
-        return sendResponse(false, null, 'Failed to fetch price history', 500);
+        return sendResponse(res, false, null, 'Failed to fetch price history', 500);
     }
 };
+
+module.exports = tokenPriceHandler;

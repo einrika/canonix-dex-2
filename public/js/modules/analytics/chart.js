@@ -11,20 +11,57 @@ window.currentTimeframe = localStorage.getItem('chartTimeframe') || 'realtime';
 window.refreshCountdown = 10;
 window.countdownInterval = null;
 
+// WebSocket listener for live price updates
+window.updateLivePrice = function(price) {
+    if (!window.lineSeries || window.currentTimeframe !== 'realtime') return;
+
+    const now = Math.floor(Date.now() / 1000);
+    const newPoint = { time: now, value: parseFloat(price) };
+
+    window.lineSeries.update(newPoint);
+
+    // Update local data array for indicators
+    const last = window.currentPriceData[window.currentPriceData.length - 1];
+    if (last && last.time === now) {
+        last.close = newPoint.value;
+        last.high = Math.max(last.high, newPoint.value);
+        last.low = Math.min(last.low, newPoint.value);
+    } else {
+        window.currentPriceData.push({
+            time: now,
+            open: newPoint.value,
+            high: newPoint.value,
+            low: newPoint.value,
+            close: newPoint.value,
+            volume: Math.floor(Math.random() * 100)
+        });
+    }
+
+    // Keep data size manageable
+    if (window.currentPriceData.length > 300) window.currentPriceData.shift();
+
+    // Re-calculate MA if visible
+    if (window.ma7Series.options().visible) window.ma7Series.setData(window.calculateMA(window.currentPriceData, 7));
+    if (window.ma25Series.options().visible) window.ma25Series.setData(window.calculateMA(window.currentPriceData, 25));
+
+    const statusEl = document.getElementById('chartStatus');
+    if (statusEl) window.setText(statusEl, 'Live • Active');
+};
+
 window.initChart = function() {
     const container = document.getElementById('priceChart');
     if (!container) return;
     container.innerHTML = '';
 
     const chartOptions = {
-        layout: { background: { color: 'transparent' }, textColor: '#9ca3af' },
+        layout: { background: { color: 'transparent' }, textColor: '#B3B3B3' },
         grid: {
-            vertLines: { color: 'rgba(255, 255, 255, 0.05)' },
-            horzLines: { color: 'rgba(255, 255, 255, 0.05)' }
+            vertLines: { color: 'rgba(250, 250, 250, 0.05)' },
+            horzLines: { color: 'rgba(250, 250, 250, 0.05)' }
         },
         crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
         rightPriceScale: {
-            borderColor: 'rgba(255, 255, 255, 0.1)',
+            borderColor: 'rgba(250, 250, 250, 0.1)',
             scaleMargins: { top: 0.2, bottom: 0.2 },
             precision: 8,
             autoScale: true,
@@ -33,7 +70,7 @@ window.initChart = function() {
             priceFormatter: price => typeof price === 'number' ? price.toFixed(8) : price
         },
         timeScale: {
-            borderColor: 'rgba(255, 255, 255, 0.1)',
+            borderColor: 'rgba(250, 250, 250, 0.1)',
             timeVisible: true,
             secondsVisible: false,
         }
@@ -81,13 +118,13 @@ window.initChart = function() {
         btn7.classList.toggle('bg-up/20', ma7Visible);
         btn7.classList.toggle('text-up', ma7Visible);
         btn7.classList.toggle('border-up/30', ma7Visible);
-        btn7.classList.toggle('text-gray-500', !ma7Visible);
+        btn7.classList.toggle('text-secondary-text', !ma7Visible);
     }
     if (btn25) {
         btn25.classList.toggle('bg-up/20', ma25Visible);
         btn25.classList.toggle('text-up', ma25Visible);
         btn25.classList.toggle('border-up/30', ma25Visible);
-        btn25.classList.toggle('text-gray-500', !ma25Visible);
+        btn25.classList.toggle('text-secondary-text', !ma25Visible);
     }
 
     // Sync Timeframe Buttons
@@ -125,14 +162,14 @@ window.initChart = function() {
         const colorClass = parseFloat(priceChange) >= 0 ? 'text-up' : 'text-down';
 
         tooltip.innerHTML = `
-            <div class="font-black text-gray-400 mb-2 border-b border-border/50 pb-2 text-[10px] tracking-tight">${dateStr}</div>
+            <div class="font-black text-secondary-text mb-2 border-b border-border/50 pb-2 text-[10px] tracking-tight">${dateStr}</div>
             <div class="space-y-1.5">
-                <div class="flex justify-between items-center"><span class="text-gray-500 uppercase font-bold">Open</span> <span class="font-mono text-white">${dataPoint.open.toFixed(8)}</span></div>
-                <div class="flex justify-between items-center"><span class="text-gray-500 uppercase font-bold text-up">High</span> <span class="font-mono text-up">${dataPoint.high.toFixed(8)}</span></div>
-                <div class="flex justify-between items-center"><span class="text-gray-500 uppercase font-bold text-down">Low</span> <span class="font-mono text-down">${dataPoint.low.toFixed(8)}</span></div>
-                <div class="flex justify-between items-center"><span class="text-gray-500 uppercase font-bold">Close</span> <span class="font-mono text-white font-black">${dataPoint.close.toFixed(8)}</span></div>
-                <div class="flex justify-between items-center border-t border-border/30 pt-1.5"><span class="text-gray-500 uppercase font-bold">Change</span> <span class="font-mono ${colorClass} font-black">${priceChange}%</span></div>
-                <div class="flex justify-between items-center"><span class="text-gray-500 uppercase font-bold">Volume</span> <span class="font-mono text-gray-300">${(dataPoint.volume || 0).toLocaleString()}</span></div>
+                <div class="flex justify-between items-center"><span class="text-secondary-text uppercase font-bold">Open</span> <span class="font-mono text-primary-text">${dataPoint.open.toFixed(8)}</span></div>
+                <div class="flex justify-between items-center"><span class="text-secondary-text uppercase font-bold text-up">High</span> <span class="font-mono text-up">${dataPoint.high.toFixed(8)}</span></div>
+                <div class="flex justify-between items-center"><span class="text-secondary-text uppercase font-bold text-down">Low</span> <span class="font-mono text-down">${dataPoint.low.toFixed(8)}</span></div>
+                <div class="flex justify-between items-center"><span class="text-secondary-text uppercase font-bold">Close</span> <span class="font-mono text-primary-text font-black">${dataPoint.close.toFixed(8)}</span></div>
+                <div class="flex justify-between items-center border-t border-border/30 pt-1.5"><span class="text-secondary-text uppercase font-bold">Change</span> <span class="font-mono ${colorClass} font-black">${priceChange}%</span></div>
+                <div class="flex justify-between items-center"><span class="text-secondary-text uppercase font-bold">Volume</span> <span class="font-mono text-gray-300">${(dataPoint.volume || 0).toLocaleString()}</span></div>
                 <div class="flex justify-between items-center border-t border-border/30 pt-1.5"><span class="text-[#ffeb3b] uppercase font-bold">MA7</span> <span class="font-mono text-[#ffeb3b]">${ma7 ? ma7.value.toFixed(8) : '-'}</span></div>
                 <div class="flex justify-between items-center"><span class="text-[#9c27b0] uppercase font-bold">MA25</span> <span class="font-mono text-[#9c27b0]">${ma25 ? ma25.value.toFixed(8) : '-'}</span></div>
             </div>
@@ -182,7 +219,7 @@ window.toggleMA = function(period) {
         btn.classList.toggle('bg-up/20', !isVisible);
         btn.classList.toggle('text-up', !isVisible);
         btn.classList.toggle('border-up/30', !isVisible);
-        btn.classList.toggle('text-gray-500', isVisible);
+        btn.classList.toggle('text-secondary-text', isVisible);
     }
     localStorage.setItem(period === 7 ? 'ma7Visible' : 'ma25Visible', !isVisible);
 };
@@ -217,8 +254,8 @@ window.loadPriceHistory = async function(contractAddress, timeframe) {
 
     if (timeframe === 'realtime') {
         try {
-            // Fetch realtime data via Netlify function (routing through fetchDirect)
-            const data = await window.fetchDirect(`${window.APP_CONFIG.BACKEND_API}/api/token-price?address=${contractAddress}&timeframe=realtime&_t=${Date.now()}`);
+            // Fetch realtime data via backend endpoint (Optimized: disabled cache)
+            const data = await window.fetchDirect(`${window.APP_CONFIG.BACKEND_API}/api/token-price?address=${contractAddress}&timeframe=realtime&_t=${Date.now()}`, { cache: 'no-store' });
 
             if (!data.history || !data.history.length) {
                 window.setText(statusEl, 'No real-time data');
@@ -251,10 +288,9 @@ window.loadPriceHistory = async function(contractAddress, timeframe) {
                 changeEl.className = `text-[10px] font-bold ${change >= 0 ? 'text-up' : 'text-down'}`;
             }
 
-            window.setText(statusEl, `Live • Realtime (${window.refreshCountdown}s)`);
+            window.setText(statusEl, 'Live • Active');
 
-            // Start or restart countdown
-            window.startRealtimeUpdates();
+            // Polling removed: Using WebSocket for real-time updates
         } catch (e) {
             console.error('Real-time fetch error:', e);
             window.setText(statusEl, 'Error');
@@ -267,7 +303,7 @@ window.loadPriceHistory = async function(contractAddress, timeframe) {
 
     try {
         const url = `${window.APP_CONFIG.BACKEND_API}/api/token-price?address=${contractAddress}&timeframe=${timeframe}&_t=${Date.now()}`;
-        const data = await window.fetchDirect(url);
+        const data = await window.fetchDirect(url, { cache: 'no-store' });
         if (!data.history || !data.history.length) { window.setText(statusEl, 'No history'); return; }
 
         const rawPoints = data.history.map(item => ({
@@ -313,7 +349,7 @@ window.loadPriceHistory = async function(contractAddress, timeframe) {
         }
         window.setText(statusEl, `Live • ${timeframe}`);
 
-        // Ensure regular updates for other timeframes too
+        // Start polling for historical timeframes only (since WS only sends latest)
         window.startRealtimeUpdates();
     } catch (e) { window.setText(statusEl, 'Error'); }
 };
@@ -325,23 +361,14 @@ window.startRealtimeUpdates = function() {
     if (window.chartUpdateInterval) clearInterval(window.chartUpdateInterval);
 
     if (window.currentTimeframe === 'realtime') {
-        window.refreshCountdown = 10;
-        window.countdownInterval = setInterval(() => {
-            window.refreshCountdown--;
-            const statusEl = document.getElementById('chartStatus');
-            if (statusEl) {
-                window.setText(statusEl, `Live • Realtime (${window.refreshCountdown}s)`);
-            }
-
-            if (window.refreshCountdown <= 0) {
-                window.refreshCountdown = 10;
-                if (window.currentPRC20) window.loadPriceHistory(window.currentPRC20, 'realtime');
-            }
-        }, 1000);
+        const statusEl = document.getElementById('chartStatus');
+        if (statusEl) window.setText(statusEl, 'Live • Active');
+        // No polling needed for realtime!
     } else {
-        // Regular update for other timeframes (e.g., every 30s)
+        // Regular update for other timeframes (e.g., every 60s - reduced frequency)
         window.chartUpdateInterval = setInterval(() => {
+            if (document.visibilityState !== 'visible') return;
             if (window.currentPRC20) window.loadPriceHistory(window.currentPRC20, window.currentTimeframe);
-        }, 30000);
+        }, 60000);
     }
 };

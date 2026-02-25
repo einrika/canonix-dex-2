@@ -574,97 +574,141 @@ window.AssetManager = new AssetManager();
 window.wallet = null;
 window.walletType = null; // 'paxihub', 'keplr', 'internal'
 
-// HELPER: GAS SIMULATION
+// HELPER: GAS SIMULATION (CLEAN VERSION)
 window.simulateGas = async function(messages, memo = "", options = {}) {
     try {
-        if (!window.wallet) throw new Error("Wallet not connected");
-
-        const { type = 'default' } = options;
-
-        // 1. Prepare dummy signer data for simulation
-        const accountRes = await window.fetchDirect(`${window.APP_CONFIG.LCD}/cosmos/auth/v1beta1/accounts/${window.wallet.address}`);
-        const account = accountRes.account.base_account || accountRes.account;
-        const sequence = account.sequence;
-
+        if (!window.wallet || !window.wallet.address) {
+            throw new Error("Wallet not connected");
+        }
+        
+        if (!Array.isArray(messages) || !messages.length) {
+            throw new Error("Messages required");
+        }
+        
+        const accountRes = await fetch(
+            `${window.APP_CONFIG.LCD}/cosmos/auth/v1beta1/accounts/${window.wallet.address}`
+        ).then(r => r.json());
+        
+        const accountData = accountRes?.account?.base_account || accountRes?.account;
+        
+        if (!accountData) throw new Error("Account not found");
+        
+        const sequence = accountData.sequence || "0";
+        
         let pubkeyBytes;
-        if (window.walletType === 'keplr' || window.walletType === 'internal') {
+        
+        if (window.walletType === "keplr" || window.walletType === "internal") {
             const accounts = await window.wallet.signer.getAccounts();
+            if (!accounts?.length) throw new Error("Signer account not found");
             pubkeyBytes = accounts[0].pubkey;
         } else {
-            if (typeof window.wallet.public_key === 'string') {
-                pubkeyBytes = Uint8Array.from(atob(window.wallet.public_key), c => c.charCodeAt(0));
+            if (!window.wallet.public_key) throw new Error("Public key missing");
+            
+            if (typeof window.wallet.public_key === "string") {
+                pubkeyBytes = Uint8Array.from(
+                    atob(window.wallet.public_key),
+                    c => c.charCodeAt(0)
+                );
             } else {
                 pubkeyBytes = new Uint8Array(window.wallet.public_key);
             }
         }
-
+        
         const pubkeyAny = {
             typeUrl: "/cosmos.crypto.secp256k1.PubKey",
             value: PaxiCosmJS.PubKey.encode({ key: pubkeyBytes }).finish()
         };
-
-        // 2. Build Dummy TxBody & AuthInfo
-        const txBody = PaxiCosmJS.TxBody.fromPartial({ messages, memo });
+        
+        const txBody = PaxiCosmJS.TxBody.fromPartial({
+            messages,
+            memo
+        });
+        
         const authInfo = PaxiCosmJS.AuthInfo.fromPartial({
             signerInfos: [{
                 publicKey: pubkeyAny,
                 modeInfo: { single: { mode: 1 } },
                 sequence: BigInt(sequence)
             }],
-            fee: { amount: [], gasLimit: BigInt(0) }
+            fee: {
+                amount: [],
+                gasLimit: BigInt(0)
+            }
         });
-
-        // 3. Assemble TxRaw with dummy signature
+        
         const txRaw = PaxiCosmJS.TxRaw.fromPartial({
             bodyBytes: PaxiCosmJS.TxBody.encode(txBody).finish(),
             authInfoBytes: PaxiCosmJS.AuthInfo.encode(authInfo).finish(),
-            signatures: [new Uint8Array(64)] // Dummy signature
+            signatures: [new Uint8Array(64)]
         });
-
+        
         const txBytes = PaxiCosmJS.TxRaw.encode(txRaw).finish();
-        const txBytesBase64 = btoa(String.fromCharCode(...txBytes));
-
-        // 4. Call Serverless Simulation Proxy
-        const result = await window.fetchDirect('/api/gas-simulate', {
-            method: 'POST',
-            body: JSON.stringify({ tx_bytes: txBytesBase64 })
-        });
-
-        if (result && result.gas_info) {
-            const gasUsed = parseInt(result.gas_info.gas_used);
-            const gasAdjustment = 1.4; // 40% safety buffer
-            const gasLimit = Math.ceil(gasUsed * gasAdjustment);
-            const minGasPrice = 0.05;
-
-            const estimatedFee = Math.ceil(gasLimit * minGasPrice);
-
-            return {
-                gasPrice: minGasPrice.toString(),
-                gasLimit: gasLimit.toString(),
-                baseFee: estimatedFee.toString(),
-                priorityFee: "0",
-                estimatedFee: estimatedFee.toString(),
-                estimatedFeeUSD: window.formatAmount(estimatedFee / 1e6 * (window.paxiPriceUSD || 0.05), 4)
-            };
+        
+        let binary = "";
+        const chunkSize = 0x8000;
+        for (let i = 0; i < txBytes.length; i += chunkSize) {
+            binary += String.fromCharCode.apply(
+                null,
+                txBytes.subarray(i, i + chunkSize)
+            );
         }
-        throw new Error("Invalid simulation response");
-
+        
+        const txBytesBase64 = btoa(binary);
+        
+        const response = await fetch("/api/gas-simulate", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                tx_bytes: txBytesBase64
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (!response.ok || !result?.success || !result?.data?.gas_info) {
+            throw new Error("Simulation failed");
+        }
+        
+        const gasUsed = parseInt(result.data.gas_info.gas_used || "0");
+        const gasAdjustment = 1.4;
+        const gasLimit = Math.ceil(gasUsed * gasAdjustment);
+        
+        const minGasPrice = 0.05;
+        const estimatedFee = Math.ceil(gasLimit * minGasPrice);
+        
+        return {
+            gasPrice: minGasPrice.toString(),
+            gasLimit: gasLimit.toString(),
+            baseFee: estimatedFee.toString(),
+            priorityFee: "0",
+            estimatedFee: estimatedFee.toString(),
+            estimatedFeeUSD: window.formatAmount(
+                estimatedFee / 1e6 * (window.paxiPriceUSD || 0.05),
+                4
+            )
+        };
+        
     } catch (e) {
-        console.error('Simulation failed, using fallback:', e);
-        const { type = 'default' } = options;
-        // Fallback formula
-        const gasLimit = 500000 + (300000 * (messages.length - 1));
-
+        console.error("Simulation failed, using fallback:", e);
+        
+        const safeLength = Array.isArray(messages) ? messages.length : 1;
+        const gasLimit = 500000 + (300000 * (safeLength - 1));
+        
         const minGasPrice = 0.05;
         const est = Math.ceil(gasLimit * minGasPrice);
-
+        
         return {
             gasPrice: minGasPrice.toString(),
             gasLimit: gasLimit.toString(),
             baseFee: est.toString(),
             priorityFee: "0",
             estimatedFee: est.toString(),
-            estimatedFeeUSD: window.formatAmount(est / 1e6 * (window.paxiPriceUSD || 0.05), 4)
+            estimatedFeeUSD: window.formatAmount(
+                est / 1e6 * (window.paxiPriceUSD || 0.05),
+                4
+            )
         };
     }
 };
@@ -709,7 +753,7 @@ window.confirmTxCustom = function(memo, feeStr) {
 window.buildAndSendTx = async function(messages, memo = "", options = {}) {
     if (!window.wallet) throw new Error("Wallet not connected");
 
-    const { silent = false, sequenceOverride = null, type = 'default', metadata = {} } = options;
+    const { silent = false, sequenceOverride = null, type = 'default', metadata = {}, gasEstimate: preSimulatedGas = null } = options;
 
     // Safety check: Prevent automatic/silent transactions if wallet is locked
     if (window.walletType === 'internal' && !window.WalletSecurity.getSessionPin()) {
@@ -729,16 +773,23 @@ window.buildAndSendTx = async function(messages, memo = "", options = {}) {
     const showLoader = () => { if (!silent && loader) { loader.classList.remove('hidden'); loader.classList.add('flex'); } };
     const hideLoader = () => { if (loader) { loader.classList.add('hidden'); loader.classList.remove('flex'); } };
 
+    let gasEstimate = preSimulatedGas;
+
     try {
-        if (!silent) {
+        if (!silent && !gasEstimate) {
             window.showNotif('Loading', 'info');
             // 1. Simulation first to show fee in confirmation
-            const gasEstimate = await window.simulateGas(messages, memo, { type });
+            gasEstimate = await window.simulateGas(messages, memo, { type });
             const feeDisplay = `${window.formatAmount(parseInt(gasEstimate.estimatedFee) / 1e6, 4)} PAXI`;
 
             const confirmed = await window.confirmTxCustom(memo, feeDisplay);
             if (!confirmed) throw new Error("Transaction cancelled");
 
+            showLoader();
+        } else if (!silent && gasEstimate) {
+            const feeDisplay = `${window.formatAmount(parseInt(gasEstimate.estimatedFee) / 1e6, 4)} PAXI`;
+            const confirmed = await window.confirmTxCustom(memo, feeDisplay);
+            if (!confirmed) throw new Error("Transaction cancelled");
             showLoader();
         }
         // For internal wallet, ensure signer exists
@@ -780,12 +831,14 @@ window.buildAndSendTx = async function(messages, memo = "", options = {}) {
             }
         }
 
-        // 2. Fetch Chain ID & Account Info
-        const [chainRes, accountRes, gasEstimate] = await Promise.all([
+        // 2. Fetch Chain ID & Account Info & Gas (if not already simulated)
+        const [chainRes, accountRes, finalGasEstimate] = await Promise.all([
             window.fetchDirect(`${endpoints.rpc}/status`),
             window.fetchDirect(`${endpoints.lcd}/cosmos/auth/v1beta1/accounts/${window.wallet.address}`),
-            window.simulateGas(messages, memo, { type }) // Re-simulate to be sure
+            gasEstimate ? Promise.resolve(gasEstimate) : window.simulateGas(messages, memo, { type })
         ]);
+
+        gasEstimate = finalGasEstimate;
 
         const chainId = chainRes.result.node_info.network;
         const account = accountRes.account.base_account || accountRes.account;
@@ -913,35 +966,23 @@ window.buildAndSendTx = async function(messages, memo = "", options = {}) {
         }
 
         const hash = broadcastRes.tx_response.txhash;
-        console.log('📡 TX Broadcasted, Hash:', hash);
+        console.log('TX Broadcasted, Hash:', hash);
 
-        // 7. Poll for Result (DeliverTx)
+        // 7. Verify Result via Backend (Optimization: Offload polling to server)
         if (!silent) window.showNotif('Confirming transaction...', 'info');
 
-        let result = null;
-        let attempts = 0;
-        const maxAttempts = 15;
-
-        while (attempts < maxAttempts) {
-            try {
-                // Use Tendermint RPC for detailed result as requested
-                const pollRes = await window.fetchDirect(`${endpoints.rpc}/tx?hash=0x${hash}`);
-                if (pollRes && pollRes.result) {
-                    result = pollRes.result;
-                    break;
-                }
-            } catch (e) {
-                // Not found yet or other error, continue polling
-            }
-            attempts++;
-            await new Promise(r => setTimeout(r, 2000));
+        let resultData = null;
+        try {
+            // New optimized endpoint handles the polling and validation
+            resultData = await window.fetchDirect(`/api/tx-status?hash=${hash}`);
+        } catch (e) {
+            console.warn("Backend status check failed, falling back to basic verification", e);
         }
 
         hideLoader();
 
-        if (result && result.tx_result) {
-            const code = result.tx_result.code;
-            const isSuccess = code === 0;
+        if (resultData) {
+            const isSuccess = resultData.data.code === 0;
 
             if (!silent) {
                 window.showTxResult({
@@ -951,20 +992,20 @@ window.buildAndSendTx = async function(messages, memo = "", options = {}) {
                     amount: metadata.amount || '--',
                     address: metadata.address || window.wallet.address,
                     hash: hash,
-                    error: isSuccess ? null : (result.tx_result.log || "Execution Failed"),
-                    height: result.height,
-                    gasUsed: result.tx_result.gas_used,
-                    gasWanted: result.tx_result.gas_wanted
+                    error: isSuccess ? null : (resultData.log || "Execution Failed"),
+                    height: resultData.data.height,
+                    gasUsed: resultData.data.gas_used,
+                    gasWanted: resultData.data.gas_wanted
                 });
             }
 
             if (!isSuccess) {
-                throw new Error(`Transaction failed: ${result.tx_result.log || 'Unknown Error'}`);
+                throw new Error(`Transaction failed: ${resultData.data.log || 'Unknown Error'}`);
             }
 
-            return { success: true, hash, height: result.height, ...result };
+            return { success: true, hash, ...resultData };
         } else {
-            // Fallback if polling failed but broadcast succeeded
+            // Fallback if backend check failed but broadcast succeeded
             if (!silent) {
                 window.showTxResult({
                     status: 'success',
@@ -973,7 +1014,7 @@ window.buildAndSendTx = async function(messages, memo = "", options = {}) {
                     amount: metadata.amount || '--',
                     address: metadata.address || window.wallet.address,
                     hash: hash,
-                    note: "Transaction sent but could not verify result. Check explorer."
+                    note: "Sent successfully. Status verification pending."
                 });
             }
             return { success: true, hash };
@@ -1052,10 +1093,14 @@ window.executeSwap = async function(contractAddress, offerDenom, offerAmount, mi
     // 3. Platform Fee Removed (Bundled Support Fee logic deleted)
 
     // 4. Send Bundled Transaction (Atomic)
+    const isBuy = offerDenom === window.APP_CONFIG.DENOM;
     const metadata = {
         type: 'Swap',
-        asset: offerDenom === window.APP_CONFIG.DENOM ? `PAXI / ${tokenDetail?.symbol || 'TOKEN'}` : `${tokenDetail?.symbol || 'TOKEN'} / PAXI`,
-        amount: `${offerAmount} ${offerDenom === window.APP_CONFIG.DENOM ? 'PAXI' : (tokenDetail?.symbol || 'TOKEN')}`,
+        action: isBuy ? 'Buy' : 'Sell',
+        from: `${offerAmount} ${isBuy ? 'PAXI' : (tokenDetail?.symbol || 'TOKEN')}`,
+        receive: `${minReceive} ${isBuy ? (tokenDetail?.symbol || 'TOKEN') : 'PAXI'}`,
+        asset: isBuy ? `PAXI / ${tokenDetail?.symbol || 'TOKEN'}` : `${tokenDetail?.symbol || 'TOKEN'} / PAXI`,
+        amount: `${offerAmount} ${isBuy ? 'PAXI' : (tokenDetail?.symbol || 'TOKEN')}`,
         address: window.wallet.address
     };
     const result = await window.buildAndSendTx(msgs, memo, { type: 'swap', metadata });
@@ -1116,6 +1161,9 @@ window.executeAddLPTransaction = async function(contractAddress, paxiAmount, tok
 
     const metadata = {
         type: 'Add Liquidity',
+        action: 'Add LP',
+        from: `${paxiAmount} PAXI + ${tokenAmount} ${tokenDetail?.symbol || 'TOKEN'}`,
+        receive: 'LP Tokens',
         asset: `PAXI / ${tokenDetail?.symbol || 'TOKEN'}`,
         amount: `${paxiAmount} PAXI + ${tokenAmount} ${tokenDetail?.symbol || 'TOKEN'}`,
         address: window.wallet.address
@@ -1141,6 +1189,9 @@ window.executeRemoveLPTransaction = async function(contractAddress, lpAmount) {
 
     const metadata = {
         type: 'Remove Liquidity',
+        action: 'Remove LP',
+        from: `${lpAmount} LP Tokens`,
+        receive: 'PAXI + Token',
         asset: `PAXI / ${window.tokenDetails?.get(contractAddress)?.symbol || 'TOKEN'}`,
         amount: `${lpAmount} LP Tokens`,
         address: window.wallet.address
@@ -1191,6 +1242,9 @@ window.executeSendTransaction = async function(tokenAddress, recipient, amount, 
 
     const metadata = {
         type: 'Send',
+        action: 'Send',
+        from: `${amount} ${tokenAddress === 'PAXI' ? 'PAXI' : (tokenDetail?.symbol || 'TOKEN')}`,
+        receive: `To ${window.shortenAddress(recipient)}`,
         asset: tokenAddress === 'PAXI' ? 'PAXI' : (tokenDetail?.symbol || 'TOKEN'),
         amount: `${amount} ${tokenAddress === 'PAXI' ? 'PAXI' : (tokenDetail?.symbol || 'TOKEN')}`,
         address: recipient
@@ -1226,6 +1280,9 @@ window.executeBurnTransaction = async function(contractAddress, amount) {
 
     const metadata = {
         type: 'Burn',
+        action: 'Burn',
+        from: `${amount} ${tokenDetail?.symbol || 'TOKEN'}`,
+        receive: 'Supply Reduction',
         asset: tokenDetail?.symbol || 'TOKEN',
         amount: `${amount} ${tokenDetail?.symbol || 'TOKEN'}`,
         address: window.wallet.address

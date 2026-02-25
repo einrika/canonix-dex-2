@@ -85,7 +85,7 @@ window.fetchDirect = async function(url, options = {}) {
             if (result.success) return result.data;
             throw new Error(result.error || 'Backend API error');
         } catch (e) {
-            console.error(`❌ Backend API fetch failed: ${url}`, e);
+            console.error(`Backend API fetch failed: ${url}`, e);
             throw e;
         }
     }
@@ -128,7 +128,8 @@ window.fetchDirect = async function(url, options = {}) {
         const finalUrl = `${apiEndpoint}?${params.toString()}`;
         const fetchOptions = {
             method: options.method || 'GET',
-            headers: { 'Content-Type': 'application/json', ...options.headers }
+            headers: { 'Content-Type': 'application/json', ...options.headers },
+            cache: options.cache || 'default'
         };
         if (options.body) fetchOptions.body = options.body;
 
@@ -141,7 +142,7 @@ window.fetchDirect = async function(url, options = {}) {
             throw new Error(result.error || 'Serverless error');
         }
     } catch (error) {
-        console.error(`❌ fetchDirect failed for ${url}:`, error);
+        console.error(`fetchDirect failed for ${url}:`, error);
         throw error;
     }
 };
@@ -166,7 +167,7 @@ window.fetchWithProxy = async function(url, options = {}) {
     for (let i = 0; i < PROXIES.length; i++) {
         try {
             const proxyUrl = PROXIES[i] + encodeURIComponent(url);
-            console.log(`🔄 Trying proxy ${i + 1}/${PROXIES.length}: ${PROXIES[i]}`);
+            console.log(`Trying proxy ${i + 1}/${PROXIES.length}: ${PROXIES[i]}`);
             
             const response = await fetch(proxyUrl, {
                 method: options.method || 'GET',
@@ -180,16 +181,16 @@ window.fetchWithProxy = async function(url, options = {}) {
             }
 
             const data = await response.json();
-            console.log(`✅ Proxy ${i + 1} succeeded`);
+            console.log(`proxy ${i + 1} succeeded`);
             return data;
 
         } catch (error) {
-            console.warn(`❌ Proxy ${i + 1} failed:`, error.message);
+            console.warn(`Proxy ${i + 1} failed:`, error.message);
             lastError = error;
             
             // If this is not the last proxy, continue to next one
             if (i < PROXIES.length - 1) {
-                console.log(`⏭️ Trying next proxy...`);
+                console.log(`Trying next proxy...`);
                 continue;
             }
         }
@@ -197,7 +198,7 @@ window.fetchWithProxy = async function(url, options = {}) {
 
     // If all proxies failed, try direct fetch as last resort
     try {
-        console.log('🔄 All proxies failed, trying direct fetch...');
+        console.log('All proxies failed, trying direct fetch...');
         const response = await fetch(url, {
             method: options.method || 'GET',
             headers: options.headers || {},
@@ -210,11 +211,11 @@ window.fetchWithProxy = async function(url, options = {}) {
         }
 
         const data = await response.json();
-        console.log('✅ Direct fetch succeeded');
+        console.log('Direct fetch succeeded');
         return data;
 
     } catch (directError) {
-        console.error('❌ Direct fetch also failed:', directError.message);
+        console.error('Direct fetch also failed:', directError.message);
         throw new Error(`All proxies and direct fetch failed. Last error: ${lastError?.message || directError.message}`);
     }
 };
@@ -254,7 +255,7 @@ window.fetchWithRandomProxy = async function(url, options = {}) {
     const proxy = PROXIES[randomIndex];
     const proxyUrl = proxy + encodeURIComponent(url);
     
-    console.log(`🎲 Using random proxy ${randomIndex + 1}: ${proxy}`);
+    console.log(`Using random proxy ${randomIndex + 1}: ${proxy}`);
     
     try {
         const response = await fetch(proxyUrl, {
@@ -268,11 +269,11 @@ window.fetchWithRandomProxy = async function(url, options = {}) {
         }
 
         const data = await response.json();
-        console.log(`✅ Random proxy fetch succeeded`);
+        console.log(`Random proxy fetch succeeded`);
         return data;
 
     } catch (error) {
-        console.error(`❌ Random proxy fetch failed:`, error);
+        console.error(`Random proxy fetch failed:`, error);
         throw error;
     }
 };
@@ -302,7 +303,7 @@ window.fetchWithTimeout = async function(url, timeoutMs = 10000, useProxy = fals
         clearTimeout(timeoutId);
         
         if (error.name === 'AbortError') {
-            console.error(`⏱️ Request timeout after ${timeoutMs}ms`);
+            console.error(`request timeout after ${timeoutMs}ms`);
             throw new Error(`Request timeout (${timeoutMs}ms)`);
         }
         
@@ -329,7 +330,7 @@ window.smartFetch = async function(url, options = {}) {
     } catch (error) {
         // If CORS error or network error, try with proxy
         if (error.message.includes('CORS') || error.message.includes('NetworkError') || error.message.includes('Failed to fetch')) {
-            console.warn('⚠️ CORS/Network error detected, switching to proxy...');
+            console.warn('CORS/Network error detected, switching to proxy...');
             return await window.fetchWithProxy(url, options);
         }
         
@@ -391,6 +392,13 @@ window.setCachedData = function(key, value) {
 
 // ===== NOTIFICATION SYSTEM =====
 window.showTxResult = function(data) {
+    const enableModal = localStorage.getItem('paxi_enable_result_modal') !== 'false';
+
+    if (!enableModal) {
+        window.renderCompactNotif(data);
+        return;
+    }
+
     const modal = document.getElementById('txResultModal');
     if (!modal) return;
 
@@ -405,7 +413,7 @@ window.showTxResult = function(data) {
     statusEl.textContent = isSuccess ? 'Success' : 'Failed';
     statusEl.className = `text-xl md:text-2xl font-black uppercase italic tracking-widest mb-1 ${isSuccess ? 'text-meme-green' : 'text-meme-pink'}`;
 
-    iconEl.className = `w-12 h-12 md:w-16 md:h-16 rounded-full border-2 border-black flex items-center justify-center mx-auto mb-3 ${isSuccess ? 'bg-meme-green text-black' : 'bg-meme-pink text-white'} shadow-brutal-sm`;
+    iconEl.className = `w-12 h-12 md:w-16 md:h-16 rounded-full border-2 border-card flex items-center justify-center mx-auto mb-3 ${isSuccess ? 'bg-meme-green text-black' : 'bg-meme-pink text-primary-text'} shadow-brutal-sm`;
     iconEl.innerHTML = `<i class="fas ${isSuccess ? 'fa-check-circle' : 'fa-times-circle'} text-2xl"></i>`;
 
     typeEl.textContent = `${type} Details`;
@@ -415,7 +423,7 @@ window.showTxResult = function(data) {
     document.getElementById('logType').textContent = type || '--';
     document.getElementById('logAsset').textContent = asset || '--';
     document.getElementById('logAmount').textContent = amount || '0.00';
-    document.getElementById('logAmount').className = `text-[10px] font-mono font-bold ${isSuccess ? 'text-meme-green' : 'text-gray-400'}`;
+    document.getElementById('logAmount').className = `text-[10px] font-mono font-bold ${isSuccess ? 'text-meme-green' : 'text-secondary-text'}`;
 
     const activeNet = window.NetworkManager?.getActiveNetwork();
     const netEl = document.getElementById('logNetwork');
@@ -438,7 +446,7 @@ window.showTxResult = function(data) {
         if (hashEl) hashEl.textContent = hash;
         const explorer = activeNet?.explorer || 'https://explorer.paxinet.io';
         const viewBtn = document.getElementById('viewHashBtn');
-        if (viewBtn) viewBtn.onclick = () => window.open(`${explorer}/tx/${hash}`, '_blank');
+        if (viewBtn) viewBtn.onclick = () => window.open(`${explorer}/txs/${hash}`, '_blank');
     } else {
         if (hashContainer) hashContainer.classList.add('hidden');
     }
@@ -482,6 +490,57 @@ window.closeTxResult = function() {
     }
 };
 
+window.renderCompactNotif = function(data) {
+    const container = document.getElementById('notificationContainer');
+    if (!container) return;
+
+    const { status, type, action, from, receive, error } = data;
+    const isSuccess = status === 'success';
+
+    const notif = document.createElement('div');
+    notif.className = `p-3 border-2 border-card shadow-brutal-sm flex flex-col gap-1 min-w-[240px] animate-slide-up ${isSuccess ? 'bg-meme-green text-black' : 'bg-meme-pink text-primary-text'}`;
+
+    const actionType = action || type || 'Transaction';
+
+    notif.innerHTML = `
+        <div class="flex justify-between items-center border-b border-card/20 pb-1 mb-1">
+            <span class="font-display text-sm uppercase italic tracking-tighter">${actionType} Result</span>
+            <i class="fas ${isSuccess ? 'fa-check-circle' : 'fa-times-circle'}"></i>
+        </div>
+        <div class="font-mono text-[9px] grid grid-cols-[60px_1fr] gap-x-2 leading-tight">
+            <span class="opacity-70 uppercase font-black">Status</span>
+            <span class="font-bold uppercase tracking-tight">: ${isSuccess ? 'Success' : 'Failed'}</span>
+
+            <span class="opacity-70 uppercase font-black">Action</span>
+            <span class="font-bold uppercase tracking-tight">: ${actionType}</span>
+
+            ${from ? `
+            <span class="opacity-70 uppercase font-black">From</span>
+            <span class="font-bold uppercase tracking-tight truncate">: ${from}</span>
+            ` : ''}
+
+            ${receive ? `
+            <span class="opacity-70 uppercase font-black">Receive</span>
+            <span class="font-bold uppercase tracking-tight truncate">: ${receive}</span>
+            ` : ''}
+
+            ${!isSuccess && error ? `
+            <span class="opacity-70 uppercase font-black">Error</span>
+            <span class="font-bold uppercase tracking-tight italic">: ${error.substring(0, 30)}${error.length > 30 ? '...' : ''}</span>
+            ` : ''}
+        </div>
+    `;
+
+    container.appendChild(notif);
+
+    // Auto remove
+    setTimeout(() => {
+        notif.classList.add('opacity-0', 'translate-x-full');
+        notif.style.transition = 'all 0.4s ease-in';
+        setTimeout(() => notif.remove(), 400);
+    }, 6000);
+};
+
 window.activeNotifs = [];
 window.showNotif = function(msg, type = 'info') {
   if (!msg) return;
@@ -504,16 +563,16 @@ window.showNotif = function(msg, type = 'info') {
 
   const icons = { success: 'check-circle', error: 'exclamation-circle', info: 'info-circle' };
   const typeColors = {
-      success: 'border-meme-green text-meme-green bg-black/90',
-      error: 'border-meme-pink text-meme-pink bg-black/90',
-      info: 'border-meme-cyan text-meme-cyan bg-black/90'
+      success: 'border-meme-green text-meme-green bg-surface/90',
+      error: 'border-meme-pink text-meme-pink bg-surface/90',
+      info: 'border-meme-cyan text-meme-cyan bg-surface/90'
   };
 
   const notif = document.createElement('div');
-  notif.className = `fixed right-4 z-[10000] p-4 border-4 border-black shadow-brutal flex items-center gap-4 min-w-[200px] max-w-[320px] transition-all duration-300 translate-x-[120%] overflow-hidden ${typeColors[type] || typeColors.info}`;
+  notif.className = `fixed right-4 z-[10000] p-4 border-4 border-card shadow-brutal flex items-center gap-4 min-w-[200px] max-w-[320px] transition-all duration-300 translate-x-[120%] overflow-hidden ${typeColors[type] || typeColors.info}`;
 
   notif.innerHTML = `
-    <div class="flex-shrink-0 w-8 h-8 flex items-center justify-center border-2 border-black bg-black"><i class="fas fa-${icons[type] || icons.info}"></i></div>
+    <div class="flex-shrink-0 w-8 h-8 flex items-center justify-center border-2 border-card bg-surface"><i class="fas fa-${icons[type] || icons.info}"></i></div>
     <div class="font-display text-lg uppercase italic tracking-tighter">${finalMsg}</div>
     <div class="absolute bottom-0 left-0 h-1 bg-current transition-all duration-[3000ms] ease-linear w-full progress-bar"></div>
   `;
@@ -559,17 +618,17 @@ window.showNotif = function(msg, type = 'info') {
 // ===== LOGGER =====
 window.log = function(msg, type = 'info') {
   const colors = {
-    success: '✅',
-    error: '❌',
-    info: 'ℹ️',
-    warn: '⚠️'
+    success: 'sukses',
+    error: 'failed',
+    info: 'info',
+    warn: '️warning'
   };
   const time = new Date().toLocaleTimeString();
   
   if (msg instanceof Error) {
-    console.error(`${colors[type] || 'ℹ️'} [${time}] ${msg.message}\nStack: ${msg.stack}`);
+    console.error(`${colors[type] || 'info'} [${time}] ${msg.message}\nStack: ${msg.stack}`);
   } else {
-    console.log(`${colors[type] || 'ℹ️'} [${time}] ${msg}`);
+    console.log(`${colors[type] || 'info'} [${time}] ${msg}`);
   }
 };
 
