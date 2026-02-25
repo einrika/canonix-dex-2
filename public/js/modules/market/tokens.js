@@ -76,14 +76,19 @@ window.loadTokensOptimized = async function() {
         if (!window.isTokensLoaded) {
             window.isTokensLoaded = true;
             await window.loadAllTokenAddresses();
-            // Polling removed: WebSocket now handles updates via paxi_token_list_updated
-            window.setupTokenSocketListeners();
+            // Listeners are now setup globally once in app.js
         }
     }
 };
 
 // ===== TOKEN SOCKET LISTENERS =====
+window.isSocketListenersSetup = false;
 window.setupTokenSocketListeners = function() {
+    if (window.isSocketListenersSetup) return;
+    window.isSocketListenersSetup = true;
+
+    console.log('[Tokens] Setting up global socket listeners...');
+
     window.addEventListener('paxi_token_list_updated', (event) => {
         const data = event.detail;
         if (data && data.contracts) {
@@ -124,8 +129,10 @@ window.setupTokenSocketListeners = function() {
             // Update UI if this is the selected token
             if (window.currentPRC20 === data.address) {
                 if (window.updateDashboard) window.updateDashboard(processed);
-                // Also trigger chart update if live
-                if (window.updateLivePrice) window.updateLivePrice(processed.price_paxi);
+
+                // DECOUPLED: Removed window.updateLivePrice from here.
+                // The chart will handle its own label updates via its own listener
+                // to avoid double updates and bentrok with polling.
             }
 
             if (window.updateTokenCard) window.updateTokenCard(data.address);
