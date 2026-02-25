@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canonix (CNX) - The Pulse of Paxi Network</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind = {
+            config: {
+                theme: {
+                    extend: {
+                        colors: {
+                            'meme-black': '#0B0C0D',
+                            'meme-surface': '#121314',
+                            'meme-card': '#1A1B1C',
+                            'meme-green': '#00D685',
+                            'meme-pink': '#D60047',
+                            'meme-cyan': '#00B2D6',
+                            'meme-yellow': '#D6B500',
+                            up: '#00D685',
+                            down: '#D60047',
+                            accent: '#00B2D6',
+                            bg: '#0B0C0D',
+                            surface: '#121314',
+                            card: '#1A1B1C',
+                            border: '#0B0C0D',
+                            'primary-text': '#FAFAFA',
+                            'secondary-text': '#E5E5E5',
+                            'muted-text': '#B3B3B3',
+                        },
+                        fontFamily: {
+                            display: ['Bangers', 'system-ui'],
+                            mono: ['Space Mono', 'monospace'],
+                            sans: ['DM Sans', 'sans-serif'],
+                        },
+                        boxShadow: {
+                            'brutal-sm': '2px 2px 0px 0px rgba(11,12,13,1)',
+                            'brutal': '4px 4px 0px 0px rgba(11,12,13,1)',
+                            'brutal-lg': '6px 6px 0px 0px rgba(11,12,13,1)',
+                            'brutal-green': '4px 4px 0px 0px #00D685',
+                            'brutal-pink': '4px 4px 0px 0px #D60047',
+                            'brutal-cyan': '4px 4px 0px 0px #00B2D6',
+                            'brutal-yellow': '4px 4px 0px 0px #D6B500',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- FONTS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .animate-float { animation: float 6s ease-in-out infinite; }
+
+        .progress-bar { transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        section { position: relative; z-index: 10; }
+
+        .bg-grid {
+            background-image: radial-gradient(rgba(0, 214, 133, 0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+    </style>
+</head>
+
+<body class="bg-bg text-primary-text font-sans selection:bg-meme-pink selection:text-primary-text overflow-x-hidden">
+    <!-- Background Decor -->
+    <div class="fixed inset-0 bg-grid pointer-events-none"></div>
+    <div class="fixed top-0 right-0 w-[500px] h-[500px] bg-meme-green opacity-[0.03] blur-[120px] rounded-full pointer-events-none translate-x-1/2 -translate-y-1/2"></div>
+    <div class="fixed bottom-0 left-0 w-[500px] h-[500px] bg-meme-pink opacity-[0.03] blur-[120px] rounded-full pointer-events-none -translate-x-1/2 translate-y-1/2"></div>
+
+    <main class="max-w-7xl mx-auto px-4 py-12 md:py-24 space-y-32">
+        <!-- 1. Header Section -->
+        <section id="cnx-header" class="min-h-[60vh] flex items-center">
+            <!-- Dynamic Content -->
+            <div class="animate-pulse flex space-x-4">
+                <div class="rounded-full bg-meme-surface h-24 w-24"></div>
+                <div class="flex-1 space-y-6 py-1">
+                    <div class="h-12 bg-meme-surface rounded"></div>
+                    <div class="space-y-3">
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="h-4 bg-meme-surface rounded col-span-2"></div>
+                            <div class="h-4 bg-meme-surface rounded col-span-1"></div>
+                        </div>
+                        <div class="h-4 bg-meme-surface rounded"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Token Information -->
+        <section id="cnx-info">
+            <!-- Dynamic Content -->
+        </section>
+
+        <!-- 3. Token Utility -->
+        <section id="cnx-utility">
+            <!-- Dynamic Content -->
+        </section>
+
+        <!-- 4. Tokenomics -->
+        <section id="cnx-tokenomics">
+            <!-- Dynamic Content -->
+        </section>
+
+        <!-- 5. Roadmap -->
+        <section id="cnx-roadmap" class="pb-20">
+            <!-- Dynamic Content -->
+        </section>
+
+        <!-- 6. FAQ -->
+        <section id="cnx-faq" class="pb-24">
+            <!-- Dynamic Content -->
+        </section>
+
+        <!-- CTA Bottom -->
+        <section class="reveal text-center pb-24">
+            <div class="inline-block p-1 bg-card border-4 border-card shadow-brutal rotate-[-1deg] mb-8">
+                <div class="bg-meme-surface p-8 md:p-12 border-2 border-card">
+                    <h2 class="text-4xl md:text-6xl font-display text-primary-text italic uppercase mb-6 drop-shadow-[4px_4px_0_rgba(11,12,13,1)]">Ready to <span class="text-meme-green">Join?</span></h2>
+                    <p class="font-mono text-secondary-text text-sm md:text-lg mb-10 font-bold uppercase italic max-w-xl mx-auto">Get your CNX tokens today and start earning rewards while trading on the fastest DEX in the galaxy.</p>
+                    <div class="flex flex-col sm:flex-row justify-center gap-6">
+                        <a href="trade.html" class="bg-meme-green text-black font-display text-3xl px-12 py-4 border-4 border-card shadow-brutal-green hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">ENTER APP</a>
+                        <a href="index.html" class="bg-meme-surface text-primary-text font-display text-3xl px-12 py-4 border-4 border-card shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">BACK HOME</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Scripts -->
+    <script src="js/pages/token-cnx-config.js"></script>
+    <script src="js/pages/token-cnx.js"></script>
+</body>
+
+</html>
