@@ -265,6 +265,27 @@
             `;
         }
 
+        // 7. Render CTA
+        const ctaContainer = document.getElementById('cnx-cta');
+        if (ctaContainer) {
+            ctaContainer.innerHTML = `
+                <div class="reveal text-center">
+                    <div class="inline-block p-1 bg-card border-4 border-card shadow-brutal rotate-[-1deg] mb-8">
+                        <div class="bg-meme-surface p-8 md:p-12 border-2 border-card">
+                            <h2 class="text-4xl md:text-6xl font-display text-primary-text italic uppercase mb-6 drop-shadow-[4px_4px_0_rgba(11,12,13,1)]">Ready to <span class="text-meme-green">Join?</span></h2>
+                            <p class="font-mono text-secondary-text text-sm md:text-lg mb-10 font-bold uppercase italic max-w-xl mx-auto">
+                                Get your CNX today and be part of the Canonix ecosystem — earn rewards, join events, and grow with the community.
+                            </p>
+                            <div class="flex flex-col sm:flex-row justify-center gap-6">
+                                <a href="${config.token.ctaLink}" class="bg-meme-green text-black font-display text-3xl px-12 py-4 border-4 border-card shadow-brutal-green hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">ENTER APP</a>
+                                <a href="index.html" class="bg-meme-surface text-primary-text font-display text-3xl px-12 py-4 border-4 border-card shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">BACK HOME</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
         initScrollReveal();
     };
 

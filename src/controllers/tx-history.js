@@ -435,7 +435,7 @@ const txHistoryHandler = async (req, res) => {
             const url =
                 `${RPC_BASE}/tx_search` +
                 `?query=${encodeURIComponent(q)}` +
-                `&page=1&per_page=10&order_by=desc`;
+                `&page=${page}&per_page=${limit}&order_by=desc`;
             
             const r = await fetch(url, { timeout: 8000 });
             if (!r.ok) return;
