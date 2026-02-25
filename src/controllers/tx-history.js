@@ -3,7 +3,7 @@ const { sendResponse, checkRateLimit, isValidPaxiAddress } = require('../utils/c
 
 // ─── Fee collector — transfers ke sini adalah fee payment, bukan real tx ───
 const FEE_COLLECTORS = new Set([
-    'paxi17xpfvakm2amg962yls6f84z3kell8c5ln9803d',
+    '',
 ]);
 
 // ─── In-memory token symbol cache ─────────────────────────────────────────
@@ -100,7 +100,7 @@ const normalizeTx = (t, address) => {
     
     const result = {
         hash: t.hash,
-        type: 'send',
+        type: '',
         status: t.tx_result.code === 0 ? 'success' : 'failed',
         timestamp: t.timestamp || null,
         block: t.height,
