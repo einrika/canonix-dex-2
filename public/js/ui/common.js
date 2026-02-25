@@ -87,7 +87,7 @@ window.renderTokenList = function(filter = '') {
     });
     
     if (filtered.length === 0) {
-        container.innerHTML = '<div class="text-center font-display text-2xl text-muted-text py-12 uppercase italic">No Trash Detected</div>';
+        container.innerHTML = '<div class="text-center font-display text-2xl text-muted-text py-12 uppercase italic">No Token Detected</div>';
         return;
     }
     

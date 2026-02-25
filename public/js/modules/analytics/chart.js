@@ -45,7 +45,7 @@ window.updateLivePrice = function(price) {
     if (window.ma25Series.options().visible) window.ma25Series.setData(window.calculateMA(window.currentPriceData, 25));
 
     const statusEl = document.getElementById('chartStatus');
-    if (statusEl) window.setText(statusEl, 'Live • WebSocket Active');
+    if (statusEl) window.setText(statusEl, 'Live • Active');
 };
 
 window.initChart = function() {
@@ -288,7 +288,7 @@ window.loadPriceHistory = async function(contractAddress, timeframe) {
                 changeEl.className = `text-[10px] font-bold ${change >= 0 ? 'text-up' : 'text-down'}`;
             }
 
-            window.setText(statusEl, 'Live • WebSocket Active');
+            window.setText(statusEl, 'Live • Active');
 
             // Polling removed: Using WebSocket for real-time updates
         } catch (e) {
@@ -362,7 +362,7 @@ window.startRealtimeUpdates = function() {
 
     if (window.currentTimeframe === 'realtime') {
         const statusEl = document.getElementById('chartStatus');
-        if (statusEl) window.setText(statusEl, 'Live • WebSocket Active');
+        if (statusEl) window.setText(statusEl, 'Live • Active');
         // No polling needed for realtime!
     } else {
         // Regular update for other timeframes (e.g., every 60s - reduced frequency)

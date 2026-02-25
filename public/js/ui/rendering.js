@@ -269,8 +269,8 @@ window.patchTokenElement = function(el, addr) {
 
     if (changeEl.textContent !== changeText) {
         changeEl.textContent = changeText;
-        changeEl.classList.remove('text-soft-success', 'text-soft-failed');
-        changeEl.classList.add(priceChangePct >= 0 ? 'text-soft-success' : 'text-soft-failed');
+        changeEl.classList.remove('text-up', 'text-down');
+        changeEl.classList.add(priceChangePct >= 0 ? 'text-up' : 'text-down');
     }
 
     // Update MCap

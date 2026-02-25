@@ -203,13 +203,11 @@ window.loadMoreMarket = async function() {
 
             renderMarketGrid();
         } else {
-            // Tidak ada data lagi
-            window.marketTotalAvailable = window.marketTokens.length; // ✅ Stop load more
+            window.marketTotalAvailable = window.marketTokens.length;
             renderMarketGrid();
         }
     } catch (e) {
         console.error('Load more failed:', e);
-        // Tidak rollback marketPage karena nextPage belum di-assign
     } finally {
         window.marketIsFetching = false;
         if (btn && !btn.classList.contains('hidden')) {
@@ -264,12 +262,10 @@ function renderMarketGrid() {
         );
     }
 
-    // ✅ FIX: Tampilkan semua token yang sudah di-fetch, tanpa slice by marketLimit
     const display = filtered;
 
     if (display.length === 0) {
-        grid.innerHTML = '<div class="col-span-full text-center py-20 text-muted-text font-bold uppercase tracking-widest">No assets found</div>';
-        // Sembunyikan tombol load more saat kosong
+        grid.innerHTML = '<div class="col-span-full text-center py-20 text-muted-text font-bold uppercase tracking-widest">No Token found</div>';
         const loadMoreBtn = document.getElementById('loadMoreMarket');
         if (loadMoreBtn) loadMoreBtn.classList.add('hidden');
         return;
@@ -321,7 +317,6 @@ function renderMarketGrid() {
         `;
     }).join('');
 
-    // ✅ FIX: Tampilkan/sembunyikan tombol Load More berdasarkan total dari API
     const loadMoreBtn = document.getElementById('loadMoreMarket');
     if (loadMoreBtn) {
         const hasMore = window.marketTotalAvailable > window.marketTokens.length;
