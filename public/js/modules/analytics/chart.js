@@ -279,7 +279,8 @@ window.loadPriceHistory = async function(contractAddress, timeframe) {
             window.lightweightChart.timeScale().fitContent();
 
             const lastPrice = candles[candles.length - 1].close;
-            window.setText('currentPrice', lastPrice.toFixed(8) + ' PAXI');
+            const priceEl = document.getElementById('currentPrice');
+            if (priceEl) window.setText(priceEl, lastPrice.toFixed(8) + ' PAXI');
 
             const change = data.price_change !== undefined ? data.price_change * 100 : 0;
             const changeEl = document.getElementById('priceChange');
@@ -290,7 +291,8 @@ window.loadPriceHistory = async function(contractAddress, timeframe) {
 
             window.setText(statusEl, 'Live • Active');
 
-            // Polling removed: Using WebSocket for real-time updates
+            // Start 5s polling as requested (complementing WebSocket)
+            window.startRealtimeUpdates();
         } catch (e) {
             console.error('Real-time fetch error:', e);
             window.setText(statusEl, 'Error');
@@ -339,7 +341,8 @@ window.loadPriceHistory = async function(contractAddress, timeframe) {
 
         const last = candles[candles.length - 1];
         if (last) {
-            window.setText('currentPrice', last.close.toFixed(8) + ' PAXI');
+            const priceEl = document.getElementById('currentPrice');
+            if (priceEl) window.setText(priceEl, last.close.toFixed(8) + ' PAXI');
             const change = candles[0].open !== 0 ? ((last.close - candles[0].open) / candles[0].open * 100) : 0;
             const changeEl = document.getElementById('priceChange');
             if (changeEl) {
@@ -357,18 +360,93 @@ window.loadPriceHistory = async function(contractAddress, timeframe) {
 window.chartUpdateInterval = null;
 
 window.startRealtimeUpdates = function() {
-    if (window.countdownInterval) clearInterval(window.countdownInterval);
-    if (window.chartUpdateInterval) clearInterval(window.chartUpdateInterval);
+    if (window.countdownInterval) {
+        clearInterval(window.countdownInterval);
+        window.countdownInterval = null;
+    }
+    if (window.chartUpdateInterval) {
+        clearInterval(window.chartUpdateInterval);
+        window.chartUpdateInterval = null;
+    }
 
     if (window.currentTimeframe === 'realtime') {
         const statusEl = document.getElementById('chartStatus');
         if (statusEl) window.setText(statusEl, 'Live • Active');
-        // No polling needed for realtime!
+
+        // Consistent 5s polling for realtime as requested (streaming mechanism)
+        window.chartUpdateInterval = setInterval(() => {
+            if (document.visibilityState !== 'visible') return;
+            window.refreshRealtimeChart();
+        }, 5000);
     } else {
         // Regular update for other timeframes (e.g., every 60s - reduced frequency)
         window.chartUpdateInterval = setInterval(() => {
             if (document.visibilityState !== 'visible') return;
             if (window.currentPRC20) window.loadPriceHistory(window.currentPRC20, window.currentTimeframe);
         }, 60000);
+    }
+};
+
+window.refreshRealtimeChart = async function() {
+    if (!window.currentPRC20 || window.currentTimeframe !== 'realtime' || !window.lineSeries) return;
+
+    try {
+        // Optimized: Disable cache, use timestamp to ensure fresh data
+        const url = `${window.APP_CONFIG.BACKEND_API}/api/token-price?address=${window.currentPRC20}&timeframe=realtime&_t=${Date.now()}`;
+        const data = await window.fetchDirect(url, { cache: 'no-store' });
+
+        if (!data || !data.history || !data.history.length) return;
+
+        // Normalize and sort data
+        const candles = data.history.map(item => ({
+            time: Math.floor(item.timestamp / 1000),
+            value: parseFloat(item.price_paxi)
+        })).sort((a, b) => a.time - b.time);
+
+        let hasNewData = false;
+        candles.forEach(point => {
+            const lastPoint = window.currentPriceData[window.currentPriceData.length - 1];
+
+            // Only update if it's newer or same timestamp (for price update)
+            if (!lastPoint || point.time >= lastPoint.time) {
+                window.lineSeries.update({ time: point.time, value: point.value });
+
+                if (lastPoint && lastPoint.time === point.time) {
+                    lastPoint.close = point.value;
+                    lastPoint.high = Math.max(lastPoint.high, point.value);
+                    lastPoint.low = Math.min(lastPoint.low, point.value);
+                } else {
+                    window.currentPriceData.push({
+                        time: point.time,
+                        open: point.value,
+                        high: point.value,
+                        low: point.value,
+                        close: point.value,
+                        volume: Math.floor(Math.random() * 50)
+                    });
+                    if (window.currentPriceData.length > 300) window.currentPriceData.shift();
+                }
+                hasNewData = true;
+            }
+        });
+
+        if (hasNewData) {
+            // Smoothly update indicators if they are visible
+            if (window.ma7Series.options().visible) window.ma7Series.setData(window.calculateMA(window.currentPriceData, 7));
+            if (window.ma25Series.options().visible) window.ma25Series.setData(window.calculateMA(window.currentPriceData, 25));
+
+            const lastPrice = candles[candles.length - 1].value;
+            const priceEl = document.getElementById('currentPrice');
+            if (priceEl) window.setText(priceEl, lastPrice.toFixed(8) + ' PAXI');
+
+            const change = data.price_change !== undefined ? data.price_change * 100 : 0;
+            const changeEl = document.getElementById('priceChange');
+            if (changeEl) {
+                changeEl.textContent = `${change >= 0 ? '+' : ''}${change.toFixed(2)}%`;
+                changeEl.className = `text-[10px] font-bold ${change >= 0 ? 'text-up' : 'text-down'}`;
+            }
+        }
+    } catch (e) {
+        console.warn('[Chart] Refresh failed:', e);
     }
 };
