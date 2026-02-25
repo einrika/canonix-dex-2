@@ -643,17 +643,12 @@ window.simulateGas = async function(messages, memo = "", options = {}) {
         });
         
         const txBytes = PaxiCosmJS.TxRaw.encode(txRaw).finish();
+        if (!txBytes || txBytes.length === 0) throw new Error("Failed to encode transaction for simulation");
+
+        // Use a more robust Uint8Array to Base64 conversion
+        const txBytesBase64 = btoa(Array.from(txBytes).map(b => String.fromCharCode(b)).join(''));
         
-        let binary = "";
-        const chunkSize = 0x8000;
-        for (let i = 0; i < txBytes.length; i += chunkSize) {
-            binary += String.fromCharCode.apply(
-                null,
-                txBytes.subarray(i, i + chunkSize)
-            );
-        }
-        
-        const txBytesBase64 = btoa(binary);
+        if (!txBytesBase64) throw new Error("Failed to convert transaction to Base64");
         
         const response = await fetch("/api/gas-simulate", {
             method: "POST",
