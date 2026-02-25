@@ -16,22 +16,22 @@ window.setSwapMode = function(mode) {
     if (mode === 'buy') {
         window.addClass(buyTab, 'bg-up');
         window.addClass(buyTab, 'text-bg');
-        window.removeClass(buyTab, 'text-gray-400');
+        window.removeClass(buyTab, 'text-secondary-text');
 
         window.removeClass(sellTab, 'bg-down');
         window.removeClass(sellTab, 'text-bg');
-        window.addClass(sellTab, 'text-gray-400');
+        window.addClass(sellTab, 'text-secondary-text');
 
         window.setText('payTokenSymbol', 'PAXI');
         window.setText('recvTokenSymbol', window.currentTokenInfo?.symbol || 'TOKEN');
     } else {
         window.removeClass(buyTab, 'bg-up');
         window.removeClass(buyTab, 'text-bg');
-        window.addClass(buyTab, 'text-gray-400');
+        window.addClass(buyTab, 'text-secondary-text');
 
         window.addClass(sellTab, 'bg-down');
         window.addClass(sellTab, 'text-bg');
-        window.removeClass(sellTab, 'text-gray-400');
+        window.removeClass(sellTab, 'text-secondary-text');
 
         window.setText('payTokenSymbol', window.currentTokenInfo?.symbol || 'TOKEN');
         window.setText('recvTokenSymbol', 'PAXI');

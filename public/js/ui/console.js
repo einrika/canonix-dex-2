@@ -43,7 +43,7 @@ function addConsoleLog(type, args) {
 
 function renderConsoleLog(entry) {
     const container = document.getElementById('consoleContent');
-    if (container.querySelector('.text-gray-700')) container.innerHTML = '';
+    if (container.querySelector('.text-muted-text')) container.innerHTML = '';
 
     const logItem = document.createElement('div');
     logItem.className = `console-log-item p-4 border-b border-white/5 font-mono text-[10px] leading-relaxed group hover:bg-white/5 transition-colors`;
@@ -55,13 +55,13 @@ function renderConsoleLog(entry) {
 
     logItem.innerHTML = `
         <div class="flex items-start gap-4">
-            <span class="text-gray-700 font-bold uppercase shrink-0">${entry.timestamp}</span>
+            <span class="text-muted-text font-bold uppercase shrink-0">${entry.timestamp}</span>
             <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2 mb-1">
                     <i class="fas fa-${typeIcons[entry.type]} ${typeColors[entry.type]}"></i>
                     <span class="${typeColors[entry.type]} font-black uppercase italic">${entry.type}</span>
                 </div>
-                <pre class="text-gray-400 whitespace-pre-wrap break-words overflow-hidden selection:bg-meme-green selection:text-black">${escapeHtml(entry.message)}</pre>
+                <pre class="text-secondary-text whitespace-pre-wrap break-words overflow-hidden selection:bg-meme-green selection:text-black">${escapeHtml(entry.message)}</pre>
             </div>
         </div>
     `;
@@ -84,7 +84,7 @@ function renderAllConsoleLogs() {
     const container = document.getElementById('consoleContent');
     container.innerHTML = '';
     if (consoleLogBuffer.length === 0) {
-        container.innerHTML = `<div class="text-gray-700 text-center py-20 font-display text-2xl uppercase italic opacity-20"><i class="fas fa-terminal text-6xl mb-6"></i><p>Zero Activity Logs</p></div>`;
+        container.innerHTML = `<div class="text-muted-text text-center py-20 font-display text-2xl uppercase italic opacity-20"><i class="fas fa-terminal text-6xl mb-6"></i><p>Zero Activity Logs</p></div>`;
         return;
     }
     consoleLogBuffer.forEach(entry => renderConsoleLog(entry));
@@ -93,7 +93,7 @@ function renderAllConsoleLogs() {
 function clearConsoleLogs() {
     if (confirm('PURGE ALL SYSTEM LOGS?')) {
         consoleLogBuffer = []; consoleLogCount = { log: 0, warn: 0, error: 0, success: 0 };
-        document.getElementById('consoleContent').innerHTML = `<div class="text-gray-700 text-center py-20 font-display text-2xl uppercase italic opacity-20"><i class="fas fa-terminal text-6xl mb-6"></i><p>Logs Purged</p></div>`;
+        document.getElementById('consoleContent').innerHTML = `<div class="text-muted-text text-center py-20 font-display text-2xl uppercase italic opacity-20"><i class="fas fa-terminal text-6xl mb-6"></i><p>Logs Purged</p></div>`;
         updateConsoleStats();
     }
 }

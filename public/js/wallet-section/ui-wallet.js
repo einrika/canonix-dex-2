@@ -41,14 +41,14 @@ Object.assign(window.WalletUI, {
         if (!activeWallet) {
             container.innerHTML = `
                 <div class="flex flex-col items-center justify-center py-12 px-6 text-center animate-fade-in">
-                    <div class="w-16 h-16 bg-meme-green border-4 border-black shadow-brutal flex items-center justify-center mb-8 rotate-[-10deg]">
+                    <div class="w-16 h-16 bg-meme-green border-4 border-card shadow-brutal flex items-center justify-center mb-8 rotate-[-10deg]">
                         <i class="fas fa-wallet text-3xl text-black"></i>
                     </div>
-                    <h3 class="text-3xl font-display italic mb-4 uppercase tracking-tighter text-white drop-shadow-[2px_2px_0_rgba(0,0,0,1)]">NO WALLET</h3>
-                    <p class="text-[10px] text-gray-500 mb-10 uppercase font-black tracking-widest leading-relaxed italic">Connect a wallet to start trading on Paxi Network.</p>
+                    <h3 class="text-3xl font-display italic mb-4 uppercase tracking-tighter text-primary-text drop-shadow-[2px_2px_0_rgba(0,0,0,1)]">NO WALLET</h3>
+                    <p class="text-[10px] text-secondary-text mb-10 uppercase font-black tracking-widest leading-relaxed italic">Connect a wallet to start trading on Paxi Network.</p>
                     <div class="flex flex-col gap-4 w-full">
-                        <button onclick="window.WalletUI.showCreateModal()" class="w-full py-4 bg-meme-green text-black font-display text-xl border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">CREATE NEW</button>
-                        <button onclick="window.WalletUI.showImportModal()" class="w-full py-4 bg-black border-4 border-black text-white font-display text-xl shadow-brutal-cyan hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">IMPORT WALLET</button>
+                        <button onclick="window.WalletUI.showCreateModal()" class="w-full py-4 bg-meme-green text-black font-display text-xl border-4 border-card shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">CREATE NEW</button>
+                        <button onclick="window.WalletUI.showImportModal()" class="w-full py-4 bg-surface border-4 border-card text-primary-text font-display text-xl shadow-brutal-cyan hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">IMPORT WALLET</button>
                     </div>
                 </div>
             `;
@@ -58,12 +58,12 @@ Object.assign(window.WalletUI, {
         if (isLocked && !activeWallet.isWatchOnly) {
             container.innerHTML = `
                 <div class="flex flex-col items-center justify-center py-16 px-6 text-center animate-fade-in">
-                    <div class="w-16 h-16 bg-meme-pink border-4 border-black shadow-brutal flex items-center justify-center mb-8 rotate-[10deg]">
-                        <i class="fas fa-lock text-3xl text-white"></i>
+                    <div class="w-16 h-16 bg-meme-pink border-4 border-card shadow-brutal flex items-center justify-center mb-8 rotate-[10deg]">
+                        <i class="fas fa-lock text-3xl text-primary-text"></i>
                     </div>
-                    <h3 class="text-3xl font-display italic mb-4 uppercase tracking-tighter text-white drop-shadow-[2px_2px_0_rgba(0,0,0,1)]">WALLET LOCKED</h3>
-                    <p class="text-[10px] text-gray-500 mb-10 uppercase font-black tracking-widest leading-relaxed italic">Enter your PIN to unlock and access your assets.</p>
-                    <button onclick="window.WalletUI.unlockActiveWallet()" class="w-full py-5 bg-meme-pink text-white font-display text-2xl border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">UNLOCK NOW</button>
+                    <h3 class="text-3xl font-display italic mb-4 uppercase tracking-tighter text-primary-text drop-shadow-[2px_2px_0_rgba(0,0,0,1)]">WALLET LOCKED</h3>
+                    <p class="text-[10px] text-secondary-text mb-10 uppercase font-black tracking-widest leading-relaxed italic">Enter your PIN to unlock and access your assets.</p>
+                    <button onclick="window.WalletUI.unlockActiveWallet()" class="w-full py-5 bg-meme-pink text-primary-text font-display text-2xl border-4 border-card shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">UNLOCK NOW</button>
                 </div>
             `;
             return;
@@ -80,17 +80,17 @@ Object.assign(window.WalletUI, {
         const historySection = document.getElementById('wallet-history-section');
 
         if (tab === 'assets') {
-            assetsBtn.classList.add('bg-card', 'text-white');
-            assetsBtn.classList.remove('text-gray-500');
-            historyBtn.classList.remove('bg-card', 'text-white');
-            historyBtn.classList.add('text-gray-500');
+            assetsBtn.classList.add('bg-card', 'text-primary-text');
+            assetsBtn.classList.remove('text-secondary-text');
+            historyBtn.classList.remove('bg-card', 'text-primary-text');
+            historyBtn.classList.add('text-secondary-text');
             assetsSection.classList.remove('hidden');
             historySection.classList.add('hidden');
         } else {
-            historyBtn.classList.add('bg-card', 'text-white');
-            historyBtn.classList.remove('text-gray-500');
-            assetsBtn.classList.remove('bg-card', 'text-white');
-            assetsBtn.classList.add('text-gray-500');
+            historyBtn.classList.add('bg-card', 'text-primary-text');
+            historyBtn.classList.remove('text-secondary-text');
+            assetsBtn.classList.remove('bg-card', 'text-primary-text');
+            assetsBtn.classList.add('text-secondary-text');
             historySection.classList.remove('hidden');
             assetsSection.classList.add('hidden');
 
@@ -110,17 +110,17 @@ Object.assign(window.WalletUI, {
         const lpSec = document.getElementById('lp-section');
 
         if (tab === 'tokens') {
-            tokensBtn.classList.add('bg-card', 'text-white');
-            tokensBtn.classList.remove('text-gray-500');
-            lpBtn.classList.remove('bg-card', 'text-white');
-            lpBtn.classList.add('text-gray-500');
+            tokensBtn.classList.add('bg-card', 'text-primary-text');
+            tokensBtn.classList.remove('text-secondary-text');
+            lpBtn.classList.remove('bg-card', 'text-primary-text');
+            lpBtn.classList.add('text-secondary-text');
             tokensSec.classList.remove('hidden');
             lpSec.classList.add('hidden');
         } else {
-            lpBtn.classList.add('bg-card', 'text-white');
-            lpBtn.classList.remove('text-gray-500');
-            tokensBtn.classList.remove('bg-card', 'text-white');
-            tokensBtn.classList.add('text-gray-500');
+            lpBtn.classList.add('bg-card', 'text-primary-text');
+            lpBtn.classList.remove('text-secondary-text');
+            tokensBtn.classList.remove('bg-card', 'text-primary-text');
+            tokensBtn.classList.add('text-secondary-text');
             lpSec.classList.remove('hidden');
             tokensSec.classList.add('hidden');
             this.renderLPAssets();
@@ -139,7 +139,7 @@ Object.assign(window.WalletUI, {
         const lps = await window.fetchUserLPPositions(activeWallet.address);
 
         if (lps.length === 0) {
-            container.innerHTML = '<div class="text-center py-8 text-[10px] text-gray-600 uppercase font-black tracking-widest">No LP Positions found</div>';
+            container.innerHTML = '<div class="text-center py-8 text-[10px] text-muted-text uppercase font-black tracking-widest">No LP Positions found</div>';
             return;
         }
 
@@ -151,26 +151,26 @@ Object.assign(window.WalletUI, {
                             <div class="w-6 h-6 rounded-full bg-up/20 border border-border flex items-center justify-center text-[10px] font-black">P</div>
                             <div class="w-6 h-6 rounded-full bg-purple-500/20 border border-border flex items-center justify-center text-[10px] font-black">${lp.symbol.charAt(0)}</div>
                         </div>
-                        <span class="text-xs font-black italic text-white uppercase">PAXI/${lp.symbol}</span>
+                        <span class="text-xs font-black italic text-primary-text uppercase">PAXI/${lp.symbol}</span>
                     </div>
                     <div class="text-right">
-                        <div class="text-xs font-mono font-bold text-white">${lp.lpBalance} LP</div>
+                        <div class="text-xs font-mono font-bold text-primary-text">${lp.lpBalance} LP</div>
                         <div class="text-[9px] text-up font-black italic">${lp.share}% Share</div>
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-2 mb-4 text-[9px] text-gray-500 font-bold uppercase tracking-tighter">
-                    <div class="p-2 bg-black/20 rounded-lg border border-white/5">
+                <div class="grid grid-cols-2 gap-2 mb-4 text-[9px] text-secondary-text font-bold uppercase tracking-tighter">
+                    <div class="p-2 bg-surface/20 rounded-lg border border-white/5">
                         <div class="mb-0.5">${lp.paxiReserve} PAXI</div>
-                        <div class="text-gray-600">${lp.prc20Reserve} ${lp.symbol}</div>
+                        <div class="text-muted-text">${lp.prc20Reserve} ${lp.symbol}</div>
                     </div>
-                    <div class="p-2 bg-black/20 rounded-lg border border-white/5 text-right">
-                        <div class="text-white">$${lp.totalUSD}</div>
-                        <div class="text-gray-600">Total Value</div>
+                    <div class="p-2 bg-surface/20 rounded-lg border border-white/5 text-right">
+                        <div class="text-primary-text">$${lp.totalUSD}</div>
+                        <div class="text-muted-text">Total Value</div>
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-2">
                     <button onclick="window.WalletUI.handleAssetAction('${lp.prc20}', 'lp')" class="py-2 bg-blue-500/10 text-blue-400 rounded-xl text-[8px] font-black uppercase hover:bg-blue-500/20 transition-all">Add</button>
-                    <button onclick="window.WalletUI.handleAssetAction('${lp.prc20}', 'lp')" class="py-2 bg-surface border border-border text-white rounded-xl text-[8px] font-black uppercase hover:bg-card transition-all">Withdraw</button>
+                    <button onclick="window.WalletUI.handleAssetAction('${lp.prc20}', 'lp')" class="py-2 bg-surface border border-border text-primary-text rounded-xl text-[8px] font-black uppercase hover:bg-card transition-all">Withdraw</button>
                 </div>
             </div>
         `).join('');
@@ -182,41 +182,41 @@ Object.assign(window.WalletUI, {
         container.innerHTML = `
             <div class="space-y-8 animate-fade-in p-1">
                 <!-- Wallet Card - Brutal Style -->
-                <div class="p-6 bg-meme-surface border-4 border-black shadow-brutal rotate-[-1deg] relative overflow-hidden group">
+                <div class="p-6 bg-surface border-4 border-card shadow-brutal rotate-[-1deg] relative overflow-hidden group">
                     <div class="absolute -top-10 -right-10 w-32 h-32 bg-meme-green opacity-5 blur-3xl rounded-full pointer-events-none"></div>
                     <div class="flex justify-between items-start mb-8">
                         <div>
                             <div class="flex items-center gap-2 mb-2">
-                                <span class="text-[8px] font-black uppercase tracking-[0.2em] text-meme-cyan italic bg-black px-2 py-0.5 border border-black">${net.name}</span>
-                                ${wallet.isWatchOnly ? '<span class="px-2 py-0.5 bg-meme-yellow text-black text-[8px] font-black border border-black uppercase italic">Passive Mode</span>' : ''}
+                                <span class="text-[8px] font-black uppercase tracking-[0.2em] text-meme-cyan italic bg-surface px-2 py-0.5 border border-card">${net.name}</span>
+                                ${wallet.isWatchOnly ? '<span class="px-2 py-0.5 bg-meme-yellow text-black text-[8px] font-black border border-card uppercase italic">Passive Mode</span>' : ''}
                             </div>
-                            <h3 class="text-3xl font-display italic tracking-tighter text-white uppercase drop-shadow-[2px_2px_0_rgba(0,0,0,1)]">${wallet.name}</h3>
+                            <h3 class="text-3xl font-display italic tracking-tighter text-primary-text uppercase drop-shadow-[2px_2px_0_rgba(0,0,0,1)]">${wallet.name}</h3>
                         </div>
                         <div class="flex gap-2">
-                            <button onclick="window.WalletUI.showWalletSwitcher()" class="w-10 h-10 flex items-center justify-center bg-black border-2 border-black text-gray-500 hover:text-meme-yellow transition-all shadow-brutal-sm hover:shadow-none" title="Switch Wallet">
+                            <button onclick="window.WalletUI.showWalletSwitcher()" class="w-10 h-10 flex items-center justify-center bg-surface border-2 border-card text-secondary-text hover:text-meme-yellow transition-all shadow-brutal-sm hover:shadow-none" title="Switch Wallet">
                                 <i class="fas fa-exchange-alt text-sm"></i>
                             </button>
-                            <button id="wallet-refresh-btn" class="w-10 h-10 flex items-center justify-center bg-black border-2 border-black text-gray-500 hover:text-meme-green transition-all shadow-brutal-sm hover:shadow-none" title="Sync">
+                            <button id="wallet-refresh-btn" class="w-10 h-10 flex items-center justify-center bg-surface border-2 border-card text-secondary-text hover:text-meme-green transition-all shadow-brutal-sm hover:shadow-none" title="Sync">
                                 <i class="fas fa-sync-alt text-sm"></i>
                             </button>
-                            <button id="wallet-settings-btn" class="w-10 h-10 flex items-center justify-center bg-black border-2 border-black text-gray-500 hover:text-meme-cyan transition-all shadow-brutal-sm hover:shadow-none" title="Settings">
+                            <button id="wallet-settings-btn" class="w-10 h-10 flex items-center justify-center bg-surface border-2 border-card text-secondary-text hover:text-meme-cyan transition-all shadow-brutal-sm hover:shadow-none" title="Settings">
                                 <i class="fas fa-cog"></i>
                             </button>
                         </div>
                     </div>
 
                     <div class="mb-8">
-                        <div class="text-[10px] text-gray-700 font-black uppercase tracking-widest mb-1 italic">TOTAL BALANCE</div>
+                        <div class="text-[10px] text-muted-text font-black uppercase tracking-widest mb-1 italic">TOTAL BALANCE</div>
                         <div class="flex items-baseline gap-2">
                             <span id="sidebar-paxi-bal" class="text-5xl font-display italic tracking-tighter text-meme-green drop-shadow-[3px_3px_0_rgba(0,0,0,1)]">0.00</span>
-                            <span class="text-lg font-display text-white italic uppercase">PAXI</span>
+                            <span class="text-lg font-display text-primary-text italic uppercase">PAXI</span>
                         </div>
-                        <div id="portfolio-usd" class="text-[10px] text-gray-600 font-mono font-bold mt-2 uppercase tracking-widest">$0.00 USD</div>
+                        <div id="portfolio-usd" class="text-[10px] text-muted-text font-mono font-bold mt-2 uppercase tracking-widest">$0.00 USD</div>
                     </div>
 
-                    <div class="flex items-center gap-3 p-3 bg-black border-2 border-black shadow-inner">
-                        <code class="text-[10px] font-mono text-gray-500 flex-1 break-all font-bold">${window.shortenAddress(wallet.address, 10)}</code>
-                        <button onclick="window.copyAddress(event, '${wallet.address}')" class="w-8 h-8 flex items-center justify-center bg-meme-cyan text-black border-2 border-black shadow-brutal-sm hover:shadow-none transition-all">
+                    <div class="flex items-center gap-3 p-3 bg-surface border-2 border-card shadow-inner">
+                        <code class="text-[10px] font-mono text-secondary-text flex-1 break-all font-bold">${window.shortenAddress(wallet.address, 10)}</code>
+                        <button onclick="window.copyAddress(event, '${wallet.address}')" class="w-8 h-8 flex items-center justify-center bg-meme-cyan text-black border-2 border-card shadow-brutal-sm hover:shadow-none transition-all">
                             <i class="fas fa-copy text-xs"></i>
                         </button>
                     </div>
@@ -224,11 +224,11 @@ Object.assign(window.WalletUI, {
 
                 <!-- Action Bar -->
                 <div class="grid grid-cols-2 gap-4">
-                    <button onclick="if(window.WalletUI && window.WalletUI.showSendBottomSheet) window.WalletUI.showSendBottomSheet();" class="flex items-center justify-center gap-3 p-5 bg-meme-green border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all group">
+                    <button onclick="if(window.WalletUI && window.WalletUI.showSendBottomSheet) window.WalletUI.showSendBottomSheet();" class="flex items-center justify-center gap-3 p-5 bg-meme-green border-4 border-card shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all group">
                         <i class="fas fa-paper-plane text-black text-xl group-hover:rotate-12 transition-transform"></i>
                         <span class="text-xl font-display uppercase italic text-black">SEND</span>
                     </button>
-                    <button onclick="if(window.WalletUI && window.WalletUI.showReceiveModal) window.WalletUI.showReceiveModal();" class="flex items-center justify-center gap-3 p-5 bg-meme-cyan border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all group">
+                    <button onclick="if(window.WalletUI && window.WalletUI.showReceiveModal) window.WalletUI.showReceiveModal();" class="flex items-center justify-center gap-3 p-5 bg-meme-cyan border-4 border-card shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all group">
                         <i class="fas fa-qrcode text-black text-xl group-hover:scale-110 transition-transform"></i>
                         <span class="text-xl font-display uppercase italic text-black">RECV</span>
                     </button>
@@ -236,31 +236,31 @@ Object.assign(window.WalletUI, {
 
                 <!-- Tabs -->
                 <div class="space-y-6">
-                    <div class="flex bg-black p-1 border-4 border-black shadow-brutal rotate-[0.5deg]">
+                    <div class="flex bg-surface p-1 border-4 border-card shadow-brutal rotate-[0.5deg]">
                         <button onclick="window.WalletUI.setWalletSubTab('assets')" id="wallet-tab-assets" class="flex-1 py-3 font-display text-2xl transition-all bg-meme-green text-black italic">ASSETS</button>
-                        <button onclick="window.WalletUI.setWalletSubTab('history')" id="wallet-tab-history" class="flex-1 py-3 font-display text-2xl transition-all text-gray-600 italic hover:text-white">HISTORY</button>
+                        <button onclick="window.WalletUI.setWalletSubTab('history')" id="wallet-tab-history" class="flex-1 py-3 font-display text-2xl transition-all text-muted-text italic hover:text-primary-text">HISTORY</button>
                     </div>
 
                     <!-- Assets Section -->
                     <div id="wallet-assets-section" class="space-y-6">
                         <div class="flex justify-between items-center px-2">
-                            <h4 class="text-sm font-display uppercase tracking-tighter text-white italic underline decoration-meme-green decoration-2 underline-offset-4">MY ASSETS</h4>
-                            <button onclick="window.WalletUI.showImportTokenModal()" class="w-8 h-8 bg-meme-yellow border-2 border-black shadow-brutal-sm flex items-center justify-center text-black hover:shadow-none"><i class="fas fa-plus text-xs"></i></button>
+                            <h4 class="text-sm font-display uppercase tracking-tighter text-primary-text italic underline decoration-meme-green decoration-2 underline-offset-4">MY ASSETS</h4>
+                            <button onclick="window.WalletUI.showImportTokenModal()" class="w-8 h-8 bg-meme-yellow border-2 border-card shadow-brutal-sm flex items-center justify-center text-black hover:shadow-none"><i class="fas fa-plus text-xs"></i></button>
                         </div>
 
                         <!-- Asset Filters -->
-                        <div class="flex items-center justify-between px-4 py-3 bg-meme-surface border-4 border-black shadow-brutal-sm rotate-[-0.5deg]">
+                        <div class="flex items-center justify-between px-4 py-3 bg-surface border-4 border-card shadow-brutal-sm rotate-[-0.5deg]">
                             <div class="flex items-center gap-3">
-                                <i class="fas fa-filter text-xs text-gray-600"></i>
-                                <select onchange="window.WalletUI.setAssetSort(this.value)" class="bg-transparent text-[10px] font-black uppercase tracking-widest text-gray-400 outline-none cursor-pointer hover:text-meme-cyan transition-colors">
+                                <i class="fas fa-filter text-xs text-muted-text"></i>
+                                <select onchange="window.WalletUI.setAssetSort(this.value)" class="bg-transparent text-[10px] font-black uppercase tracking-widest text-secondary-text outline-none cursor-pointer hover:text-meme-cyan transition-colors">
                                     <option value="most" ${window.AssetManager.settings.assetSort === 'most' ? 'selected' : ''}>MAX BAL</option>
                                     <option value="least" ${window.AssetManager.settings.assetSort === 'least' ? 'selected' : ''}>MIN BAL</option>
                                     <option value="name" ${window.AssetManager.settings.assetSort === 'name' ? 'selected' : ''}>A-Z</option>
                                 </select>
                             </div>
                             <div class="flex items-center gap-3">
-                                <span class="text-[10px] font-black uppercase tracking-widest text-gray-600 italic">HIDE EMPTY</span>
-                                <input type="checkbox" onchange="window.WalletUI.toggleHideZero(this.checked)" class="w-8 h-4 bg-black border-2 border-black appearance-none checked:bg-meme-green transition-all cursor-pointer" ${window.AssetManager.settings.hideZeroBalance ? 'checked' : ''}>
+                                <span class="text-[10px] font-black uppercase tracking-widest text-muted-text italic">HIDE EMPTY</span>
+                                <input type="checkbox" onchange="window.WalletUI.toggleHideZero(this.checked)" class="w-8 h-4 bg-surface border-2 border-card appearance-none checked:bg-meme-green transition-all cursor-pointer" ${window.AssetManager.settings.hideZeroBalance ? 'checked' : ''}>
                             </div>
                         </div>
 
@@ -346,7 +346,7 @@ Object.assign(window.WalletUI, {
 
         const activeWallet = window.WalletManager.getActiveWallet();
         if (activeWallet && (!window.AssetManager.apiTokens || window.AssetManager.apiTokens.length === 0)) {
-            container.innerHTML = '<div class="text-center py-12 animate-pulse"><div class="w-12 h-12 border-4 border-meme-cyan border-t-transparent rounded-full animate-spin mx-auto mb-4"></div><p class="text-[10px] text-gray-600 font-black uppercase tracking-widest">Scanning Chain...</p></div>';
+            container.innerHTML = '<div class="text-center py-12 animate-pulse"><div class="w-12 h-12 border-4 border-meme-cyan border-t-transparent rounded-full animate-spin mx-auto mb-4"></div><p class="text-[10px] text-muted-text font-black uppercase tracking-widest">Scanning Chain...</p></div>';
             await window.AssetManager.fetchUserAssets(activeWallet.address);
         }
 
@@ -380,23 +380,23 @@ Object.assign(window.WalletUI, {
             const canHide = token.address !== 'PAXI';
 
             return `
-                <div class="p-4 bg-meme-surface border-4 border-black shadow-brutal-sm hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all group cursor-pointer relative"
+                <div class="p-4 bg-surface border-4 border-card shadow-brutal-sm hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all group cursor-pointer relative"
                      id="asset-item-${token.address}" onclick="window.WalletUI.showAssetActions('${token.address}')">
 
                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-black border-2 border-black flex items-center justify-center text-sm font-black overflow-hidden relative shadow-brutal-sm group-hover:rotate-6 transition-transform flex-shrink-0">
+                        <div class="w-12 h-12 bg-surface border-2 border-card flex items-center justify-center text-sm font-black overflow-hidden relative shadow-brutal-sm group-hover:rotate-6 transition-transform flex-shrink-0">
                             ${logoUrl ? `<img src="${logoUrl}" class="w-full h-full object-cover" onerror=\"this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden'); this.nextElementSibling.classList.add('flex');\">
                                         <span class="hidden absolute inset-0 flex items-center justify-center font-black">${token.symbol.charAt(0)}</span>`
                                      : `<span class="font-black">${token.symbol.charAt(0)}</span>`}
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="flex justify-between items-start mb-1 gap-2">
-                                <span class="text-base font-display italic text-white uppercase truncate tracking-tighter">${token.name}</span>
+                                <span class="text-base font-display italic text-primary-text uppercase truncate tracking-tighter">${token.name}</span>
                                 <div class="flex flex-col items-end flex-shrink-0">
                                     <span id="bal-${token.address}" class="text-sm font-mono font-black text-meme-cyan">...</span>
                                     ${canHide ? `
                                         <button onclick="event.stopPropagation(); window.WalletUI.confirmHideToken('${token.address}')"
-                                                class="mt-1 w-5 h-5 bg-meme-yellow border border-black flex items-center justify-center text-[8px] text-black hover:bg-meme-pink transition-all shadow-brutal-sm hover:shadow-none"
+                                                class="mt-1 w-5 h-5 bg-meme-yellow border border-card flex items-center justify-center text-[8px] text-black hover:bg-meme-pink transition-all shadow-brutal-sm hover:shadow-none"
                                                 title="Hide">
                                             <i class="fas fa-eye-slash"></i>
                                         </button>
@@ -405,12 +405,12 @@ Object.assign(window.WalletUI, {
                             </div>
                             <div class="flex justify-between items-end mt-1">
                                 <div class="flex items-center gap-2">
-                                    <span class="text-[9px] font-black text-gray-600 uppercase tracking-widest italic">${token.symbol}</span>
+                                    <span class="text-[9px] font-black text-muted-text uppercase tracking-widest italic">${token.symbol}</span>
                                     <span class="text-[8px] font-mono font-bold ${meta.change24h >= 0 ? 'text-meme-green' : 'text-meme-pink'}">${meta.change24h >= 0 ? '+' : ''}${meta.change24h.toFixed(2)}%</span>
                                 </div>
                                 <div class="text-right">
                                     <div id="price-${token.address}" class="text-[8px] font-mono font-bold text-meme-yellow">...</div>
-                                    <div id="val-${token.address}" class="text-[10px] font-display text-white/50 italic tracking-tighter">...</div>
+                                    <div id="val-${token.address}" class="text-[10px] font-display text-primary-text/50 italic tracking-tighter">...</div>
                                 </div>
                             </div>
                         </div>
@@ -428,20 +428,20 @@ Object.assign(window.WalletUI, {
         if (!token) return;
 
         const modalHtml = `
-            <div id="hideTokenModal" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-[650] flex items-center justify-center p-4" onclick="if(event.target === this) this.remove()">
+            <div id="hideTokenModal" class="fixed inset-0 bg-surface/90 backdrop-blur-sm z-[650] flex items-center justify-center p-4" onclick="if(event.target === this) this.remove()">
                 <div class="bg-card border border-border w-full max-w-sm rounded-[2.5rem] p-8 animate-slide-up" onclick="event.stopPropagation()">
                     <div class="text-center mb-6">
                         <div class="w-16 h-16 rounded-full bg-yellow-500/20 flex items-center justify-center mx-auto mb-4">
                             <i class="fas fa-eye-slash text-3xl text-yellow-500"></i>
                         </div>
                         <h3 class="text-xl font-black uppercase mb-2">Hide Token?</h3>
-                        <p class="text-sm text-gray-400">Hide <span class="text-white font-bold">${token.symbol}</span> from your asset list?</p>
-                        <p class="text-xs text-gray-500 mt-2">You can unhide it later in Settings</p>
+                        <p class="text-sm text-secondary-text">Hide <span class="text-primary-text font-bold">${token.symbol}</span> from your asset list?</p>
+                        <p class="text-xs text-secondary-text mt-2">You can unhide it later in Settings</p>
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
                         <button onclick="document.getElementById('hideTokenModal').remove()"
-                                class="py-3 bg-surface border border-border text-white rounded-xl font-black text-sm hover:bg-card transition-all">
+                                class="py-3 bg-surface border border-border text-primary-text rounded-xl font-black text-sm hover:bg-card transition-all">
                             Cancel
                         </button>
                         <button onclick="window.AssetManager.toggleVisibility('${address}'); window.WalletUI.renderAssets(); document.getElementById('hideTokenModal').remove(); "
@@ -494,24 +494,24 @@ Object.assign(window.WalletUI, {
         const usdValue = balance * (meta.priceUSD || 0);
 
         const modalHtml = `
-            <div id="assetActionModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[630] flex items-end" onclick="if(event.target === this) this.remove()">
+            <div id="assetActionModal" class="fixed inset-0 bg-surface/80 backdrop-blur-sm z-[630] flex items-end" onclick="if(event.target === this) this.remove()">
                 <div class="bg-card border-t border-border w-full rounded-t-[2.5rem] p-6 animate-slide-up max-h-[90vh] overflow-y-auto no-scrollbar" onclick="event.stopPropagation()">
                     <div class="w-12 h-1 bg-gray-600 rounded-full mx-auto mb-6"></div>
 
                     <div class="flex items-center justify-between mb-6">
                         <div class="flex items-center gap-3">
-                            <div class="w-14 h-14 rounded-full bg-surface border-2 border-black flex items-center justify-center font-black overflow-hidden shadow-brutal-sm rotate-[-5deg]">
+                            <div class="w-14 h-14 rounded-full bg-surface border-2 border-card flex items-center justify-center font-black overflow-hidden shadow-brutal-sm rotate-[-5deg]">
                                 ${logoUrl ? `<img src="${logoUrl}" class="w-full h-full object-cover">` : `<span>${token.symbol.charAt(0)}</span>`}
                             </div>
                             <div>
-                                <h3 class="text-xl font-black italic uppercase tracking-tighter text-white">${token.name}</h3>
+                                <h3 class="text-xl font-black italic uppercase tracking-tighter text-primary-text">${token.name}</h3>
                                 <div class="flex items-center gap-2">
-                                    <span class="text-[10px] font-mono text-gray-500 font-bold uppercase">${token.symbol}</span>
+                                    <span class="text-[10px] font-mono text-secondary-text font-bold uppercase">${token.symbol}</span>
                                     ${c.official_verified ? '<span class="px-1.5 py-0.5 bg-meme-cyan/20 text-meme-cyan text-[8px] font-black border border-meme-cyan/30 uppercase italic">Verified</span>' : ''}
                                 </div>
                             </div>
                         </div>
-                        <button onclick="document.getElementById('assetActionModal').remove()" class="text-gray-500 hover:text-meme-pink transition-colors">
+                        <button onclick="document.getElementById('assetActionModal').remove()" class="text-secondary-text hover:text-meme-pink transition-colors">
                             <i class="fas fa-times text-xl"></i>
                         </button>
                     </div>
@@ -519,41 +519,41 @@ Object.assign(window.WalletUI, {
                     <!-- Integrated Details Section -->
                     <div class="grid grid-cols-1 gap-4 mb-8">
                         <!-- Holding Summary -->
-                        <div class="p-4 bg-meme-surface border-2 border-black shadow-brutal-sm rotate-[0.5deg]">
-                            <div class="text-[9px] text-gray-500 font-black uppercase tracking-widest mb-3 italic">YOUR HOLDINGS</div>
+                        <div class="p-4 bg-surface border-2 border-card shadow-brutal-sm rotate-[0.5deg]">
+                            <div class="text-[9px] text-secondary-text font-black uppercase tracking-widest mb-3 italic">YOUR HOLDINGS</div>
                             <div class="flex justify-between items-end">
-                                <div class="text-xl font-display text-white italic tracking-tighter">${formatNumber(balance)} ${token.symbol}</div>
+                                <div class="text-xl font-display text-primary-text italic tracking-tighter">${formatNumber(balance)} ${token.symbol}</div>
                                 <div class="text-lg font-display text-meme-green italic tracking-tighter">${formatUSD(usdValue)}</div>
                             </div>
                         </div>
 
                         <!-- Market Stats -->
                         <div class="grid grid-cols-2 gap-3">
-                            <div class="p-3 bg-black border border-black">
-                                <div class="text-[8px] text-gray-600 uppercase font-black italic mb-1">Your Value (PAXI)</div>
-                                <div class="text-[10px] font-mono font-bold text-white">${paxiValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })}</div>
+                            <div class="p-3 bg-surface border border-card">
+                                <div class="text-[8px] text-muted-text uppercase font-black italic mb-1">Your Value (PAXI)</div>
+                                <div class="text-[10px] font-mono font-bold text-primary-text">${paxiValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })}</div>
                             </div>
-                            <div class="p-3 bg-black border border-black">
-                                <div class="text-[8px] text-gray-600 uppercase font-black italic mb-1">24h Change</div>
+                            <div class="p-3 bg-surface border border-card">
+                                <div class="text-[8px] text-muted-text uppercase font-black italic mb-1">24h Change</div>
                                 <div class="text-[10px] font-mono font-bold ${meta.change24h >= 0 ? 'text-meme-green' : 'text-meme-pink'}">${meta.change24h >= 0 ? '+' : ''}${meta.change24h.toFixed(2)}%</div>
                             </div>
                         </div>
 
                         ${address !== 'PAXI' ? `
                         <div class="grid grid-cols-2 gap-3">
-                            <div class="p-3 bg-black border border-black">
-                                <div class="text-[8px] text-gray-600 uppercase font-black italic mb-1">Holders</div>
+                            <div class="p-3 bg-surface border border-card">
+                                <div class="text-[8px] text-muted-text uppercase font-black italic mb-1">Holders</div>
                                 <div class="text-[10px] font-mono font-bold text-meme-cyan">${formatNumber(c.holders || 0)}</div>
                             </div>
-                            <div class="p-3 bg-black border border-black">
-                                <div class="text-[8px] text-gray-600 uppercase font-black italic mb-1">Volume (24h)</div>
+                            <div class="p-3 bg-surface border border-card">
+                                <div class="text-[8px] text-muted-text uppercase font-black italic mb-1">Volume (24h)</div>
                                 <div class="text-[10px] font-mono font-bold text-meme-yellow">${formatUSD(c.volume || 0)}</div>
                             </div>
                         </div>
-                        <div class="p-3 bg-black border border-black">
-                            <div class="text-[8px] text-gray-600 uppercase font-black italic mb-1">Contract Address</div>
+                        <div class="p-3 bg-surface border border-card">
+                            <div class="text-[8px] text-muted-text uppercase font-black italic mb-1">Contract Address</div>
                             <div class="flex items-center gap-2">
-                                <code class="text-[8px] font-mono text-gray-400 break-all flex-1 uppercase tracking-tighter">${window.shortenAddress(address, 10)}</code>
+                                <code class="text-[8px] font-mono text-secondary-text break-all flex-1 uppercase tracking-tighter">${window.shortenAddress(address, 10)}</code>
                                 <button onclick="navigator.clipboard.writeText('${address}')" class="text-meme-yellow hover:scale-125 transition-transform"><i class="fas fa-copy"></i></button>
                             </div>
                         </div>
@@ -563,32 +563,32 @@ Object.assign(window.WalletUI, {
                     <!-- Action Buttons -->
                     <div class="grid grid-cols-2 gap-3">
                         <button onclick="window.WalletUI.handleBottomSheetAction('${address}', 'swap')"
-                                class="col-span-2 flex items-center justify-center gap-3 p-4 bg-meme-cyan border-2 border-black shadow-brutal-sm hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all group">
+                                class="col-span-2 flex items-center justify-center gap-3 p-4 bg-meme-cyan border-2 border-card shadow-brutal-sm hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all group">
                             <i class="fas fa-exchange-alt text-black text-lg group-hover:rotate-180 transition-transform duration-500"></i>
                             <span class="text-lg font-display uppercase italic text-black">SWAP TOKEN</span>
                         </button>
 
                         <button onclick="window.WalletUI.handleBottomSheetAction('${address}', 'send')"
-                                class="flex items-center justify-center gap-3 p-4 bg-meme-green border-2 border-black shadow-brutal-sm hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all group">
+                                class="flex items-center justify-center gap-3 p-4 bg-meme-green border-2 border-card shadow-brutal-sm hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all group">
                             <i class="fas fa-paper-plane text-black text-base group-hover:rotate-12 transition-transform"></i>
                             <span class="text-base font-display uppercase italic text-black">SEND</span>
                         </button>
 
                         <button onclick="window.WalletUI.handleBottomSheetAction('${address}', 'lp')"
-                                class="flex items-center justify-center gap-3 p-4 bg-white border-2 border-black shadow-brutal-sm hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all group">
+                                class="flex items-center justify-center gap-3 p-4 bg-white border-2 border-card shadow-brutal-sm hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all group">
                             <i class="fas fa-plus-circle text-black text-base group-hover:scale-110 transition-transform"></i>
                             <span class="text-base font-display uppercase italic text-black">LIQUIDITY</span>
                         </button>
 
                         <button onclick="window.WalletUI.handleBottomSheetAction('${address}', 'burn')"
-                                class="col-span-2 flex items-center justify-center gap-3 p-4 bg-meme-pink border-2 border-black shadow-brutal-sm hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all group">
-                            <i class="fas fa-fire text-white text-lg group-hover:animate-bounce"></i>
-                            <span class="text-lg font-display uppercase italic text-white">BURN TOKEN</span>
+                                class="col-span-2 flex items-center justify-center gap-3 p-4 bg-meme-pink border-2 border-card shadow-brutal-sm hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all group">
+                            <i class="fas fa-fire text-primary-text text-lg group-hover:animate-bounce"></i>
+                            <span class="text-lg font-display uppercase italic text-primary-text">BURN TOKEN</span>
                         </button>
                     </div>
 
                     <button onclick="document.getElementById('assetActionModal').remove()"
-                            class="w-full mt-6 py-4 bg-meme-surface border-2 border-black text-gray-500 rounded-none font-display text-xl uppercase italic hover:text-white transition-all">
+                            class="w-full mt-6 py-4 bg-surface border-2 border-card text-secondary-text rounded-none font-display text-xl uppercase italic hover:text-primary-text transition-all">
                         Cancel
                     </button>
                 </div>
@@ -642,7 +642,7 @@ Object.assign(window.WalletUI, {
         };
 
         const modalHtml = `
-            <div id="sendBottomSheet" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[640] flex items-end" onclick="if(event.target === this) this.remove()">
+            <div id="sendBottomSheet" class="fixed inset-0 bg-surface/80 backdrop-blur-sm z-[640] flex items-end" onclick="if(event.target === this) this.remove()">
                 <div class="bg-surface border-t border-border w-full rounded-t-[2.5rem] max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
                     <div class="w-12 h-1 bg-gray-600 rounded-full mx-auto mt-3"></div>
                     
@@ -651,13 +651,13 @@ Object.assign(window.WalletUI, {
                         <div class="flex items-center justify-between py-4">
                             <h3 class="text-xl font-black uppercase italic">Send Token</h3>
                             <button onclick="document.getElementById('sendBottomSheet').remove()" class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center">
-                                <i class="fas fa-times text-gray-400"></i>
+                                <i class="fas fa-times text-secondary-text"></i>
                             </button>
                         </div>
 
                         <!-- Token Selector -->
                         <div class="mb-4">
-                            <label class="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2 block">Select Token</label>
+                            <label class="text-[10px] font-black uppercase tracking-widest text-secondary-text mb-2 block">Select Token</label>
                             <div class="relative">
                                 <button id="token-selector-btn" class="w-full p-3 bg-card border border-border rounded-xl flex items-center justify-between hover:border-up/30 transition-all">
                                     <div class="flex items-center gap-3" id="selected-token-display">
@@ -666,10 +666,10 @@ Object.assign(window.WalletUI, {
                                         </div>
                                         <div>
                                             <div class="text-sm font-black">${selectedToken ? selectedToken.symbol : 'PAXI'}</div>
-                                            <div class="text-[10px] text-gray-500">Balance: <span id="selected-token-balance">0.00</span></div>
+                                            <div class="text-[10px] text-secondary-text">Balance: <span id="selected-token-balance">0.00</span></div>
                                         </div>
                                     </div>
-                                    <i class="fas fa-chevron-down text-gray-500"></i>
+                                    <i class="fas fa-chevron-down text-secondary-text"></i>
                                 </button>
 
                                 <!-- Dropdown -->
@@ -683,9 +683,9 @@ Object.assign(window.WalletUI, {
                                                 </div>
                                                 <div class="flex-1 text-left">
                                                     <div class="text-sm font-black">${token.symbol}</div>
-                                                    <div class="text-[10px] text-gray-500">${token.name}</div>
+                                                    <div class="text-[10px] text-secondary-text">${token.name}</div>
                                                 </div>
-                                                <div class="text-xs font-mono text-gray-400" id="balance-${token.address}">0.00</div>
+                                                <div class="text-xs font-mono text-secondary-text" id="balance-${token.address}">0.00</div>
                                             </button>
                                         `;
                                     }).join('')}
@@ -695,13 +695,13 @@ Object.assign(window.WalletUI, {
 
                         <!-- Recipient Address -->
                         <div class="mb-4">
-                            <label class="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2 block">Recipient Address</label>
+                            <label class="text-[10px] font-black uppercase tracking-widest text-secondary-text mb-2 block">Recipient Address</label>
                             <input type="text" id="send-recipient" placeholder="paxi1..." class="w-full p-3 bg-card border border-border rounded-xl text-sm font-mono outline-none focus:border-up">
                         </div>
 
                         <!-- Amount -->
                         <div class="mb-4">
-                            <label class="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2 block">Amount</label>
+                            <label class="text-[10px] font-black uppercase tracking-widest text-secondary-text mb-2 block">Amount</label>
                             <div class="relative">
                                 <input type="number" id="send-amount" placeholder="0.00" step="any" class="w-full p-3 bg-card border border-border rounded-xl text-sm font-mono outline-none focus:border-up pr-16">
                                 <button onclick="window.WalletUI.setMaxAmount()" class="absolute right-3 top-1/2 -translate-y-1/2 px-3 py-1 bg-up/20 text-up text-xs font-black rounded hover:bg-up/30 transition-all">
@@ -712,31 +712,31 @@ Object.assign(window.WalletUI, {
 
                         <!-- Memo (Optional) -->
                         <div class="mb-4">
-                            <label class="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2 block">Memo (Optional)</label>
+                            <label class="text-[10px] font-black uppercase tracking-widest text-secondary-text mb-2 block">Memo (Optional)</label>
                             <textarea id="send-memo" placeholder="Add a note..." rows="2" class="w-full p-3 bg-card border border-border rounded-xl text-sm outline-none focus:border-up resize-none"></textarea>
                         </div>
 
                         <!-- Confirmation Details -->
                         <div id="send-confirmation" class="hidden mb-4 p-4 bg-card border border-border rounded-xl space-y-2">
-                            <div class="text-xs font-black uppercase text-gray-500 mb-3">Confirmation</div>
+                            <div class="text-xs font-black uppercase text-secondary-text mb-3">Confirmation</div>
                             <div class="flex justify-between text-sm">
-                                <span class="text-gray-500">Token</span>
+                                <span class="text-secondary-text">Token</span>
                                 <span class="font-bold" id="confirm-token">-</span>
                             </div>
                             <div class="flex justify-between text-sm">
-                                <span class="text-gray-500">Amount</span>
+                                <span class="text-secondary-text">Amount</span>
                                 <span class="font-bold" id="confirm-amount">-</span>
                             </div>
                             <div class="flex justify-between text-sm">
-                                <span class="text-gray-500">To Address</span>
+                                <span class="text-secondary-text">To Address</span>
                                 <span class="font-mono text-xs" id="confirm-address">-</span>
                             </div>
                             <div class="flex justify-between text-sm">
-                                <span class="text-gray-500">Balance</span>
+                                <span class="text-secondary-text">Balance</span>
                                 <span class="font-bold" id="confirm-balance">-</span>
                             </div>
                             <div class="flex justify-between text-sm border-t border-border/50 pt-2">
-                                <span class="text-gray-500">Estimated Fee</span>
+                                <span class="text-secondary-text">Estimated Fee</span>
                                 <span class="font-bold text-up" id="confirm-fee">~0.0063 PAXI</span>
                             </div>
                         </div>
@@ -749,7 +749,7 @@ Object.assign(window.WalletUI, {
                             <button id="confirm-send-btn" onclick="window.WalletUI.confirmSend()" class="hidden w-full py-4 bg-up text-black rounded-xl font-black text-sm hover:bg-up/90 transition-all">
                                 Confirm & Send
                             </button>
-                            <button onclick="document.getElementById('sendBottomSheet').remove()" class="w-full py-3 bg-surface border border-border text-white rounded-xl font-bold text-sm hover:bg-card transition-all">
+                            <button onclick="document.getElementById('sendBottomSheet').remove()" class="w-full py-3 bg-surface border border-border text-primary-text rounded-xl font-bold text-sm hover:bg-card transition-all">
                                 Cancel
                             </button>
                         </div>
@@ -807,7 +807,7 @@ Object.assign(window.WalletUI, {
                 </div>
                 <div>
                     <div class="text-sm font-black">${token.symbol}</div>
-                    <div class="text-[10px] text-gray-500">Balance: <span id="selected-token-balance">...</span></div>
+                    <div class="text-[10px] text-secondary-text">Balance: <span id="selected-token-balance">...</span></div>
                 </div>
             `;
         }
@@ -936,7 +936,7 @@ Object.assign(window.WalletUI, {
     showActionBottomSheet: function(action) {
         // Create bottom sheet container
         const modalHtml = `
-            <div id="actionBottomSheet" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[640] flex items-end" onclick="if(event.target === this) this.remove()">
+            <div id="actionBottomSheet" class="fixed inset-0 bg-surface/80 backdrop-blur-sm z-[640] flex items-end" onclick="if(event.target === this) this.remove()">
                 <div class="bg-surface border-t border-border w-full rounded-t-[2.5rem] max-h-[85vh] overflow-y-auto" onclick="event.stopPropagation()">
                     <div class="w-12 h-1 bg-gray-600 rounded-full mx-auto mt-3 mb-4"></div>
                     <div id="bottomSheetContent" class="px-4 pb-6">
@@ -1068,17 +1068,17 @@ Object.assign(window.WalletUI, {
         if (!wallet) return;
 
         const modalHtml = `
-            <div id="qrModal" class="fixed inset-0 bg-black/90 z-[600] flex items-center justify-center p-4 animate-fade-in">
+            <div id="qrModal" class="fixed inset-0 bg-surface/90 z-[600] flex items-center justify-center p-4 animate-fade-in">
                 <div class="bg-card border border-border w-full max-w-sm rounded-[2.5rem] p-8 flex flex-col items-center">
                     <h3 class="text-xl font-black italic uppercase tracking-tighter mb-6">Receive Assets</h3>
                     <div class="bg-white p-4 rounded-3xl mb-6 shadow-2xl">
                         <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${wallet.address}" class="w-48 h-48">
                     </div>
                     <div class="bg-surface border border-border rounded-2xl p-4 w-full flex items-center gap-3 mb-6">
-                        <code class="text-[10px] font-mono text-gray-400 flex-1">${window.shortenAddress(wallet.address, 10)}</code>
+                        <code class="text-[10px] font-mono text-secondary-text flex-1">${window.shortenAddress(wallet.address, 10)}</code>
                         <button onclick="window.copyAddress(event, '${wallet.address}')" class="text-up hover:scale-110 transition-transform"><i class="fas fa-copy"></i></button>
                     </div>
-                    <button onclick="document.getElementById('qrModal').remove()" class="w-full py-4 bg-surface text-gray-500 font-black rounded-2xl text-xs uppercase italic border border-border hover:text-white transition-all">Close</button>
+                    <button onclick="document.getElementById('qrModal').remove()" class="w-full py-4 bg-surface text-secondary-text font-black rounded-2xl text-xs uppercase italic border border-border hover:text-primary-text transition-all">Close</button>
                 </div>
             </div>
         `;
@@ -1111,12 +1111,12 @@ Object.assign(window.WalletUI, {
 
     showImportTokenModal: function() {
         const modalHtml = `
-            <div id="importTokenModal" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-[650] flex items-center justify-center p-4" onclick="if(event.target === this) this.remove()">
-                <div class="bg-meme-surface border-4 border-black w-full max-w-sm rounded-none p-8 shadow-brutal animate-fade-in" onclick="event.stopPropagation()">
-                    <h3 class="text-3xl font-display italic uppercase mb-6 text-white drop-shadow-[2px_2px_0_rgba(0,0,0,1)]">Track Asset</h3>
+            <div id="importTokenModal" class="fixed inset-0 bg-surface/90 backdrop-blur-sm z-[650] flex items-center justify-center p-4" onclick="if(event.target === this) this.remove()">
+                <div class="bg-surface border-4 border-card w-full max-w-sm rounded-none p-8 shadow-brutal animate-fade-in" onclick="event.stopPropagation()">
+                    <h3 class="text-3xl font-display italic uppercase mb-6 text-primary-text drop-shadow-[2px_2px_0_rgba(0,0,0,1)]">Track Asset</h3>
                     <div class="space-y-4">
-                        <input type="text" id="tokenAddressInput" placeholder="paxi1..." class="w-full bg-black border-4 border-black p-4 text-xs font-mono text-white outline-none focus:border-meme-cyan transition-all italic uppercase">
-                        <button onclick="window.AssetManager.addToken(document.getElementById('tokenAddressInput').value); document.getElementById('importTokenModal').remove(); window.WalletUI.renderAssets();" class="w-full py-4 bg-meme-cyan text-black font-display text-2xl border-4 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">INJECT ASSET</button>
+                        <input type="text" id="tokenAddressInput" placeholder="paxi1..." class="w-full bg-surface border-4 border-card p-4 text-xs font-mono text-primary-text outline-none focus:border-meme-cyan transition-all italic uppercase">
+                        <button onclick="window.AssetManager.addToken(document.getElementById('tokenAddressInput').value); document.getElementById('importTokenModal').remove(); window.WalletUI.renderAssets();" class="w-full py-4 bg-meme-cyan text-black font-display text-2xl border-4 border-card shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">INJECT ASSET</button>
                     </div>
                 </div>
             </div>
@@ -1143,16 +1143,16 @@ Object.assign(window.WalletUI, {
         console.log('✅ Opening settings for wallet:', wallet.name);
 
         const modalHtml = `
-            <div id="settingsModal" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-[610] flex items-center justify-center p-4" onclick="if(event.target === this) this.remove()">
+            <div id="settingsModal" class="fixed inset-0 bg-surface/90 backdrop-blur-sm z-[610] flex items-center justify-center p-4" onclick="if(event.target === this) this.remove()">
                 <div class="bg-card border border-border w-full max-w-sm rounded-[2.5rem] p-8" onclick="event.stopPropagation()">
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="text-xl font-black italic uppercase tracking-tighter">Wallet Settings</h3>
-                        <button onclick="document.getElementById('settingsModal').remove()" class="text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
+                        <button onclick="document.getElementById('settingsModal').remove()" class="text-secondary-text hover:text-primary-text"><i class="fas fa-times"></i></button>
                     </div>
 
                     <div class="space-y-6">
                         <div>
-                            <label class="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2 block">Wallet Name</label>
+                            <label class="text-[10px] font-black uppercase tracking-widest text-secondary-text mb-2 block">Wallet Name</label>
                             <div class="flex gap-2">
                                 <input type="text" id="renameInput" value="${wallet.name}" class="flex-1 bg-surface border border-border rounded-xl p-3 text-sm font-bold outline-none focus:border-up">
                                 <button onclick="window.WalletUI.processRename('${wallet.id}')" class="px-4 bg-up/10 text-up rounded-xl font-black text-[10px] uppercase italic border border-up/20">Save</button>
@@ -1161,23 +1161,23 @@ Object.assign(window.WalletUI, {
 
                         ${!wallet.isWatchOnly ? `
                             <div class="pt-4 border-t border-border space-y-3">
-                                <button onclick="window.WalletUI.exportSecrets('${wallet.id}', 'privatekey')" class="w-full py-3 bg-surface border border-border text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-card transition-all flex items-center justify-center gap-2">
+                                <button onclick="window.WalletUI.exportSecrets('${wallet.id}', 'privatekey')" class="w-full py-3 bg-surface border border-border text-primary-text rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-card transition-all flex items-center justify-center gap-2">
                                     <i class="fas fa-key text-up"></i> Export Private Key
                                 </button>
-                                <button onclick="window.WalletUI.exportSecrets('${wallet.id}', 'mnemonic')" class="w-full py-3 bg-surface border border-border text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-card transition-all flex items-center justify-center gap-2">
+                                <button onclick="window.WalletUI.exportSecrets('${wallet.id}', 'mnemonic')" class="w-full py-3 bg-surface border border-border text-primary-text rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-card transition-all flex items-center justify-center gap-2">
                                     <i class="fas fa-shield-alt text-purple-400"></i> Backup Seed Phrase
                                 </button>
                             </div>
                         ` : ''}
 
                         <div class="pt-4 border-t border-border space-y-3">
-                            <button onclick="window.WalletUI.showHiddenTokens()" class="w-full py-3 bg-surface border border-border text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-card transition-all flex items-center justify-center gap-2">
+                            <button onclick="window.WalletUI.showHiddenTokens()" class="w-full py-3 bg-surface border border-border text-primary-text rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-card transition-all flex items-center justify-center gap-2">
                                 <i class="fas fa-eye-slash text-yellow-500"></i> Hidden Tokens
                             </button>
                         </div>
 
                         <div class="pt-4 border-t border-border">
-                            <button onclick="window.WalletUI.processDelete('${wallet.id}')" class="w-full py-3 bg-down/10 border border-down/20 text-down rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-down hover:text-white transition-all">
+                            <button onclick="window.WalletUI.processDelete('${wallet.id}')" class="w-full py-3 bg-down/10 border border-down/20 text-down rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-down hover:text-primary-text transition-all">
                                 <i class="fas fa-trash-alt mr-2"></i> Delete Wallet
                             </button>
                         </div>
@@ -1210,26 +1210,26 @@ Object.assign(window.WalletUI, {
         const hiddenTokens = allTokens.filter(t => !window.AssetManager.isTokenVisible(t.address));
 
         const modalHtml = `
-            <div id="hiddenTokensModal" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-[620] flex items-center justify-center p-4" onclick="if(event.target === this) this.remove()">
+            <div id="hiddenTokensModal" class="fixed inset-0 bg-surface/90 backdrop-blur-sm z-[620] flex items-center justify-center p-4" onclick="if(event.target === this) this.remove()">
                 <div class="bg-card border border-border w-full max-w-md rounded-[2.5rem] max-h-[80vh] overflow-hidden flex flex-col" onclick="event.stopPropagation()">
                     <div class="p-6 border-b border-border">
                         <div class="flex items-center justify-between">
                             <h3 class="text-xl font-black uppercase tracking-tight">Hidden Tokens</h3>
-                            <button onclick="document.getElementById('hiddenTokensModal').remove()" class="text-gray-500 hover:text-white">
+                            <button onclick="document.getElementById('hiddenTokensModal').remove()" class="text-secondary-text hover:text-primary-text">
                                 <i class="fas fa-times"></i>
                             </button>
                         </div>
-                        <p class="text-xs text-gray-500 mt-2">Tokens you've hidden from your asset list</p>
+                        <p class="text-xs text-secondary-text mt-2">Tokens you've hidden from your asset list</p>
                     </div>
 
                     <div class="flex-1 overflow-y-auto p-6">
                         ${hiddenTokens.length === 0 ? `
                             <div class="text-center py-12">
                                 <div class="w-16 h-16 rounded-full bg-gray-500/20 flex items-center justify-center mx-auto mb-4">
-                                    <i class="fas fa-eye text-2xl text-gray-500"></i>
+                                    <i class="fas fa-eye text-2xl text-secondary-text"></i>
                                 </div>
-                                <p class="text-sm text-gray-500 font-bold">No hidden tokens</p>
-                                <p class="text-xs text-gray-600 mt-1">Long press any token to hide it</p>
+                                <p class="text-sm text-secondary-text font-bold">No hidden tokens</p>
+                                <p class="text-xs text-muted-text mt-1">Long press any token to hide it</p>
                             </div>
                         ` : `
                             <div class="space-y-2">
@@ -1240,8 +1240,8 @@ Object.assign(window.WalletUI, {
                                                 ${token.logo ? `<img src="${token.logo}" class="w-full h-full rounded-full">` : token.symbol.charAt(0)}
                                             </div>
                                             <div>
-                                                <div class="text-sm font-black text-white">${token.name}</div>
-                                                <div class="text-xs text-gray-500">${token.symbol}</div>
+                                                <div class="text-sm font-black text-primary-text">${token.name}</div>
+                                                <div class="text-xs text-secondary-text">${token.symbol}</div>
                                             </div>
                                         </div>
                                         <button onclick="window.AssetManager.toggleVisibility('${token.address}'); window.WalletUI.showHiddenTokens(); window.WalletUI.renderAssets(); "
@@ -1269,7 +1269,7 @@ Object.assign(window.WalletUI, {
                 const decrypted = await window.WalletSecurity.decrypt(wallet.encryptedData, pin);
 
                 const secretModalHtml = `
-                    <div id="secretRevealModal" class="fixed inset-0 bg-black/95 z-[620] flex items-center justify-center p-4">
+                    <div id="secretRevealModal" class="fixed inset-0 bg-surface/95 z-[620] flex items-center justify-center p-4">
                         <div class="bg-card border border-border w-full max-w-sm rounded-[2.5rem] p-8 text-center">
                             <h3 class="text-xl font-black italic uppercase tracking-tighter mb-4">Your ${type === 'mnemonic' ? 'Seed Phrase' : 'Private Key'}</h3>
                             <p class="text-[9px] text-down font-black uppercase tracking-widest mb-6">⚠️ NEVER SHARE THIS WITH ANYONE!</p>
@@ -1279,13 +1279,13 @@ Object.assign(window.WalletUI, {
                                     ${decrypted}
                                 </div>
                                 <div class="absolute inset-0 flex items-center justify-center bg-surface/80 rounded-2xl group-hover:hidden">
-                                    <span class="text-[10px] font-black uppercase text-gray-500">Hover to Reveal</span>
+                                    <span class="text-[10px] font-black uppercase text-secondary-text">Hover to Reveal</span>
                                 </div>
                             </div>
 
                             <div class="grid grid-cols-2 gap-3">
                                 <button onclick="window.copyAddress(event, '${decrypted}')" class="py-3 bg-up/10 text-up rounded-xl font-black text-[10px] uppercase italic border border-up/20">Copy</button>
-                                <button onclick="document.getElementById('secretRevealModal').remove()" class="py-3 bg-surface text-white rounded-xl font-black text-[10px] uppercase italic border border-border">Done</button>
+                                <button onclick="document.getElementById('secretRevealModal').remove()" class="py-3 bg-surface text-primary-text rounded-xl font-black text-[10px] uppercase italic border border-border">Done</button>
                             </div>
                         </div>
                     </div>
@@ -1305,17 +1305,17 @@ Object.assign(window.WalletUI, {
         const activeWallet = window.WalletManager.getActiveWallet();
 
         container.innerHTML = wallets.map(w => `
-            <button onclick="window.WalletUI.handleSwitchWallet('${w.id}')" class="w-full flex items-center justify-between p-4 ${w.id === activeWallet?.id ? 'bg-meme-green text-black' : 'bg-meme-surface text-white'} border-2 border-black shadow-brutal-sm hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all group text-left">
+            <button onclick="window.WalletUI.handleSwitchWallet('${w.id}')" class="w-full flex items-center justify-between p-4 ${w.id === activeWallet?.id ? 'bg-meme-green text-black' : 'bg-surface text-primary-text'} border-2 border-card shadow-brutal-sm hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all group text-left">
                 <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 ${w.id === activeWallet?.id ? 'bg-black text-meme-green' : 'bg-meme-pink text-white'} border-2 border-black flex items-center justify-center text-xs group-hover:rotate-12 transition-transform shrink-0">
+                    <div class="w-8 h-8 ${w.id === activeWallet?.id ? 'bg-surface text-meme-green' : 'bg-meme-pink text-primary-text'} border-2 border-card flex items-center justify-center text-xs group-hover:rotate-12 transition-transform shrink-0">
                         <i class="fas fa-wallet"></i>
                     </div>
                     <div class="min-w-0">
                         <div class="text-base font-display uppercase italic tracking-tighter leading-none truncate">${w.name || 'Wallet'}</div>
-                        <div class="font-mono text-[7px] ${w.id === activeWallet?.id ? 'text-black/60' : 'text-gray-500'} font-bold uppercase tracking-widest italic truncate">${window.shortenAddress(w.address)}</div>
+                        <div class="font-mono text-[7px] ${w.id === activeWallet?.id ? 'text-black/60' : 'text-secondary-text'} font-bold uppercase tracking-widest italic truncate">${window.shortenAddress(w.address)}</div>
                     </div>
                 </div>
-                ${w.id === activeWallet?.id ? '<i class="fas fa-check-circle shrink-0"></i>' : '<i class="fas fa-chevron-right text-gray-800 shrink-0"></i>'}
+                ${w.id === activeWallet?.id ? '<i class="fas fa-check-circle shrink-0"></i>' : '<i class="fas fa-chevron-right text-muted-text shrink-0"></i>'}
             </button>
         `).join('');
 
@@ -1350,16 +1350,16 @@ Object.assign(window.WalletUI, {
 
     showImportModal: function() {
         const modalHtml = `
-            <div id="importModal" class="fixed inset-0 bg-black/90 z-[600] flex items-center justify-center p-4">
+            <div id="importModal" class="fixed inset-0 bg-surface/90 z-[600] flex items-center justify-center p-4">
                 <div class="bg-card border border-border w-full max-w-md rounded-[2.5rem] p-8">
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="text-xl font-black italic uppercase tracking-tighter">Import Wallet</h3>
-                        <button onclick="document.getElementById('importModal').remove()" class="text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
+                        <button onclick="document.getElementById('importModal').remove()" class="text-secondary-text hover:text-primary-text"><i class="fas fa-times"></i></button>
                     </div>
 
                     <div class="space-y-4">
                         <div>
-                            <label class="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2 block">Import Type</label>
+                            <label class="text-[10px] font-black uppercase tracking-widest text-secondary-text mb-2 block">Import Type</label>
                             <select id="importType" class="w-full bg-surface border border-border rounded-xl p-4 text-xs font-bold outline-none" onchange="window.WalletUI.updateImportFields()">
                                 <option value="mnemonic">Recovery Phrase (12/24 words)</option>
                                 <option value="privatekey">Private Key (Hex)</option>
@@ -1368,12 +1368,12 @@ Object.assign(window.WalletUI, {
                         </div>
 
                         <div>
-                            <label class="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2 block">Wallet Name</label>
+                            <label class="text-[10px] font-black uppercase tracking-widest text-secondary-text mb-2 block">Wallet Name</label>
                             <input type="text" id="importName" placeholder="My New Wallet" class="w-full bg-surface border border-border rounded-xl p-4 text-xs font-bold outline-none focus:border-up">
                         </div>
 
                         <div id="importValueContainer">
-                            <label class="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2 block">Seed Phrase</label>
+                            <label class="text-[10px] font-black uppercase tracking-widest text-secondary-text mb-2 block">Seed Phrase</label>
                             <textarea id="importValue" class="w-full bg-surface border border-border rounded-xl p-4 text-xs font-mono outline-none focus:border-up h-24" placeholder="word1 word2 ..."></textarea>
                         </div>
 
@@ -1495,11 +1495,11 @@ window.WalletUI.showSettingsPanel = function() {
     const cfg = window.SettingsManager.config;
 
     const modalHtml = `
-        <div id="settingsPanelModal" class="fixed inset-0 bg-black/90 z-[700] flex items-center justify-center p-4">
+        <div id="settingsPanelModal" class="fixed inset-0 bg-surface/90 z-[700] flex items-center justify-center p-4">
             <div class="bg-card border border-border w-full max-w-md rounded-[2.5rem] flex flex-col max-h-[90vh]">
                 <div class="p-6 border-b border-border flex justify-between items-center">
                     <h3 class="text-xl font-black italic uppercase tracking-tighter">Settings</h3>
-                    <button onclick="document.getElementById('settingsPanelModal').remove()" class="text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
+                    <button onclick="document.getElementById('settingsPanelModal').remove()" class="text-secondary-text hover:text-primary-text"><i class="fas fa-times"></i></button>
                 </div>
 
                 <div class="flex-1 overflow-y-auto p-6 space-y-6 no-scrollbar">
@@ -1508,8 +1508,8 @@ window.WalletUI.showSettingsPanel = function() {
                         <h4 class="text-[10px] font-black uppercase tracking-widest text-up italic">Security</h4>
                         <div class="flex justify-between items-center">
                             <div>
-                                <div class="text-sm font-bold text-white">Manual Lock</div>
-                                <div class="text-[10px] text-gray-500">Enable lock option in wallet menu</div>
+                                <div class="text-sm font-bold text-primary-text">Manual Lock</div>
+                                <div class="text-[10px] text-secondary-text">Enable lock option in wallet menu</div>
                             </div>
                             <input type="checkbox" ${cfg.manualLock ? 'checked' : ''} onchange="window.SettingsManager.save({manualLock: this.checked})" class="w-10 h-5 rounded-full appearance-none bg-surface checked:bg-up transition-all relative cursor-pointer before:content-[''] before:absolute before:w-4 before:h-4 before:bg-white before:rounded-full before:top-0.5 before:left-0.5 checked:before:translate-x-5 before:transition-transform">
                         </div>
@@ -1520,14 +1520,14 @@ window.WalletUI.showSettingsPanel = function() {
                         <h4 class="text-[10px] font-black uppercase tracking-widest text-purple-400 italic">Trading</h4>
                         <div class="flex justify-between items-center">
                             <div>
-                                <div class="text-sm font-bold text-white">Advanced Gas</div>
-                                <div class="text-[10px] text-gray-500">Show detailed gas breakdown</div>
+                                <div class="text-sm font-bold text-primary-text">Advanced Gas</div>
+                                <div class="text-[10px] text-secondary-text">Show detailed gas breakdown</div>
                             </div>
                             <input type="checkbox" ${cfg.advancedGas ? 'checked' : ''} onchange="window.SettingsManager.save({advancedGas: this.checked})" class="w-10 h-5 rounded-full appearance-none bg-surface checked:bg-up transition-all relative cursor-pointer before:content-[''] before:absolute before:w-4 before:h-4 before:bg-white before:rounded-full before:top-0.5 before:left-0.5 checked:before:translate-x-5 before:transition-transform">
                         </div>
 
                         <div class="space-y-2">
-                            <div class="text-sm font-bold text-white">Default Slippage (%)</div>
+                            <div class="text-sm font-bold text-primary-text">Default Slippage (%)</div>
                             <input type="number" step="0.1" value="${cfg.defaultSlippage}" onchange="window.SettingsManager.save({defaultSlippage: parseFloat(this.value)})" class="w-full bg-surface border border-border rounded-xl p-3 text-sm font-bold outline-none focus:border-up">
                         </div>
                     </div>
@@ -1536,7 +1536,7 @@ window.WalletUI.showSettingsPanel = function() {
                     <div class="space-y-4 border-t border-border pt-6">
                         <h4 class="text-[10px] font-black uppercase tracking-widest text-blue-400 italic">Preferences</h4>
                         <div class="space-y-2">
-                            <div class="text-sm font-bold text-white">Currency Display</div>
+                            <div class="text-sm font-bold text-primary-text">Currency Display</div>
                             <select onchange="window.SettingsManager.save({currency: this.value})" class="w-full bg-surface border border-border rounded-xl p-3 text-sm font-bold outline-none focus:border-up">
                                 <option value="USD" ${cfg.currency === 'USD' ? 'selected' : ''}>USD ($)</option>
                                 <option value="IDR" ${cfg.currency === 'IDR' ? 'selected' : ''}>IDR (Rp)</option>
@@ -1545,8 +1545,8 @@ window.WalletUI.showSettingsPanel = function() {
 
                         <div class="flex justify-between items-center">
                             <div>
-                                <div class="text-sm font-bold text-white">Hide Small Balance</div>
-                                <div class="text-[10px] text-gray-500">Hide tokens with < $1 value</div>
+                                <div class="text-sm font-bold text-primary-text">Hide Small Balance</div>
+                                <div class="text-[10px] text-secondary-text">Hide tokens with < $1 value</div>
                             </div>
                             <input type="checkbox" ${cfg.hideSmallBalance ? 'checked' : ''} onchange="window.SettingsManager.save({hideSmallBalance: this.checked})" class="w-10 h-5 rounded-full appearance-none bg-surface checked:bg-up transition-all relative cursor-pointer before:content-[''] before:absolute before:w-4 before:h-4 before:bg-white before:rounded-full before:top-0.5 before:left-0.5 checked:before:translate-x-5 before:transition-transform">
                         </div>
@@ -1556,15 +1556,15 @@ window.WalletUI.showSettingsPanel = function() {
                     <div class="space-y-4 border-t border-border pt-6">
                         <h4 class="text-[10px] font-black uppercase tracking-widest text-yellow-500 italic">Network</h4>
                         <div class="space-y-2">
-                            <div class="text-sm font-bold text-white">Custom RPC Endpoint</div>
+                            <div class="text-sm font-bold text-primary-text">Custom RPC Endpoint</div>
                             <input type="text" placeholder="https://..." value="${cfg.customRPC}" onchange="window.SettingsManager.save({customRPC: this.value})" class="w-full bg-surface border border-border rounded-xl p-3 text-xs font-mono outline-none focus:border-up">
-                            <div class="text-[8px] text-gray-600 uppercase font-black">Requires app reload to apply</div>
+                            <div class="text-[8px] text-muted-text uppercase font-black">Requires app reload to apply</div>
                         </div>
                     </div>
                 </div>
 
                 <div class="p-6 border-t border-border">
-                    <button onclick="document.getElementById('settingsPanelModal').remove()" class="w-full py-4 bg-surface text-white font-black rounded-2xl text-xs uppercase italic border border-border hover:bg-card transition-all">Close</button>
+                    <button onclick="document.getElementById('settingsPanelModal').remove()" class="w-full py-4 bg-surface text-primary-text font-black rounded-2xl text-xs uppercase italic border border-border hover:bg-card transition-all">Close</button>
                 </div>
             </div>
         </div>
@@ -1823,15 +1823,15 @@ window.updateLPBalances = async function() {
 
                     posInfo.innerHTML = `
                         <div class="flex justify-between text-[10px] mt-1 border-t border-border pt-1">
-                            <span class="text-gray-500">Pooled PAXI</span>
+                            <span class="text-secondary-text">Pooled PAXI</span>
                             <span class="text-gray-300 font-mono">${myPaxi.toFixed(2)}</span>
                         </div>
                         <div class="flex justify-between text-[10px]">
-                            <span class="text-gray-500">Pooled ${window.currentTokenInfo?.symbol || 'TOKEN'}</span>
+                            <span class="text-secondary-text">Pooled ${window.currentTokenInfo?.symbol || 'TOKEN'}</span>
                             <span class="text-gray-300 font-mono">${myToken.toFixed(2)}</span>
                         </div>
                         <div class="flex justify-between text-[10px]">
-                            <span class="text-gray-500">Share of Pool</span>
+                            <span class="text-secondary-text">Share of Pool</span>
                             <span class="text-gray-300 font-mono">${(share * 100).toFixed(4)}%</span>
                         </div>
                     `;
@@ -1868,7 +1868,7 @@ window.showInternalWalletSheet = function() {
     if (sheet.querySelector('.close-sheet')) {
     } else {
         const closeBtn = document.createElement('button');
-        closeBtn.className = 'close-sheet absolute top-4 right-4 text-gray-500 hover:text-white';
+        closeBtn.className = 'close-sheet absolute top-4 right-4 text-secondary-text hover:text-primary-text';
         closeBtn.innerHTML = '<i class="fas fa-times text-xl"></i>';
         closeBtn.onclick = window.hideInternalWalletSheet;
         sheet.appendChild(closeBtn);
@@ -1959,7 +1959,7 @@ window.renderWalletOptions = function() {
                     <i class="fas fa-shield-alt text-2xl text-cyan-400"></i>
                 </div>
                 <h3 class="text-xl font-bold">Internal Wallet</h3>
-                <p class="text-sm text-gray-400">Wallet found on this device</p>
+                <p class="text-sm text-secondary-text">Wallet found on this device</p>
             </div>
             <div class="space-y-3">
                 <button onclick="unlockInternalWallet()" class="w-full py-4 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl font-bold">
@@ -1977,7 +1977,7 @@ window.renderWalletOptions = function() {
                     <i class="fas fa-plus-circle text-2xl text-purple-400"></i>
                 </div>
                 <h3 class="text-xl font-bold">Setup Wallet</h3>
-                <p class="text-sm text-gray-400">Create a new wallet or import existing one</p>
+                <p class="text-sm text-secondary-text">Create a new wallet or import existing one</p>
             </div>
             <div class="space-y-3">
                 <button onclick="setupNewWallet()" class="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl font-bold">
@@ -2020,9 +2020,9 @@ window.setupNewWallet = async function() {
         const content = document.getElementById('walletSheetContent');
         content.innerHTML = `
             <h3 class="text-lg font-bold mb-2">Back up your Seed Phrase</h3>
-            <p class="text-xs text-gray-400 mb-4">Write down these 12 words in order and keep them safe.</p>
-            <div class="bg-black/40 p-4 rounded-xl grid grid-cols-3 gap-2 mb-6 border border-gray-800">
-                ${mnemonic.split(' ').map((w, i) => `<div class="text-[10px]"><span class="text-gray-600 mr-1">${i+1}.</span>${w}</div>`).join('')}
+            <p class="text-xs text-secondary-text mb-4">Write down these 12 words in order and keep them safe.</p>
+            <div class="bg-surface/40 p-4 rounded-xl grid grid-cols-3 gap-2 mb-6 border border-gray-800">
+                ${mnemonic.split(' ').map((w, i) => `<div class="text-[10px]"><span class="text-muted-text mr-1">${i+1}.</span>${w}</div>`).join('')}
             </div>
             <button onclick="confirmBackup()" class="w-full py-4 bg-cyan-500 rounded-xl font-bold">
                 I HAVE WRITTEN IT DOWN
@@ -2048,8 +2048,8 @@ window.setupImportWallet = function() {
     const content = document.getElementById('walletSheetContent');
     content.innerHTML = `
         <h3 class="text-lg font-bold mb-2">Import Wallet</h3>
-        <p class="text-xs text-gray-400 mb-4">Enter your 12 or 24-word seed phrase.</p>
-        <textarea id="importMnemonic" class="w-full h-32 bg-black/40 border border-gray-800 rounded-xl p-4 text-sm mb-4" placeholder="word1 word2 ..."></textarea>
+        <p class="text-xs text-secondary-text mb-4">Enter your 12 or 24-word seed phrase.</p>
+        <textarea id="importMnemonic" class="w-full h-32 bg-surface/40 border border-gray-800 rounded-xl p-4 text-sm mb-4" placeholder="word1 word2 ..."></textarea>
         <button onclick="processImport()" class="w-full py-4 bg-cyan-500 rounded-xl font-bold">
             IMPORT WALLET
         </button>
