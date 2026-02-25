@@ -1,5 +1,5 @@
 const fetch = require('node-fetch');
-const { sendResponse, checkRateLimit } = require('../utils/common');
+const { sendResponse, checkRateLimit, secureLogger } = require('../utils/common');
 
 const WHITELISTED_DOMAINS = [
     'paxinet.io',
@@ -50,7 +50,7 @@ const proxyHandler = async (req, res) => {
 
         return sendResponse(res, true, data);
     } catch (error) {
-        console.error('Proxy error:', error);
+        secureLogger.error('Proxy error:', error);
         return sendResponse(res, false, null, 'Proxy request failed', 500);
     }
 };

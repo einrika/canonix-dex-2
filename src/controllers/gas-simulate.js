@@ -1,5 +1,5 @@
 const fetch = require('node-fetch');
-const { sendResponse, checkRateLimit } = require('../utils/common');
+const { sendResponse, checkRateLimit, secureLogger } = require('../utils/common');
 
 const gasSimulateHandler = async (req, res) => {
     if (req.method === 'OPTIONS') return res.sendStatus(200);
@@ -31,7 +31,7 @@ const gasSimulateHandler = async (req, res) => {
         return sendResponse(res, true, data);
 
     } catch (error) {
-        console.error('Gas Simulation Error:', error);
+        secureLogger.error('Gas Simulation Error:', error);
         return sendResponse(res, false, null, 'Internal server error during simulation', 500);
     }
 };

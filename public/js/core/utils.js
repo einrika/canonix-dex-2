@@ -446,7 +446,7 @@ window.showTxResult = function(data) {
         if (hashEl) hashEl.textContent = hash;
         const explorer = activeNet?.explorer || 'https://explorer.paxinet.io';
         const viewBtn = document.getElementById('viewHashBtn');
-        if (viewBtn) viewBtn.onclick = () => window.open(`${explorer}/txs/${hash}`, '_blank');
+        if (viewBtn) viewBtn.onclick = () => window.open(`${explorer}/tx/${hash}`, '_blank');
     } else {
         if (hashContainer) hashContainer.classList.add('hidden');
     }

@@ -1,4 +1,5 @@
 const fetch = require('node-fetch');
+const { secureLogger } = require('../utils/common');
 
 const aiAnalysisHandler = async (req, res) => {
   if (req.method !== 'POST') {
@@ -53,7 +54,7 @@ Format with <b> for emphasis. Use a punchy, trader-like tone. Return ONLY inner 
     for (let i = 0; i < apiKeys.length; i++) {
         const apiKey = apiKeys[i];
         try {
-            console.log(`[AI] Attempting analysis with Key #${i + 1}`);
+            secureLogger.log(`[AI] Attempting analysis with Key #${i + 1}`);
 
             const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
                 method: 'POST',
@@ -66,7 +67,7 @@ Format with <b> for emphasis. Use a punchy, trader-like tone. Return ONLY inner 
             const data = await response.json();
 
             if (response.status === 429) {
-                console.warn(`[AI] Key #${i + 1} hit quota limit. Rotating...`);
+                secureLogger.warn(`[AI] Key #${i + 1} hit quota limit. Rotating...`);
                 continue;
             }
 
@@ -86,7 +87,7 @@ Format with <b> for emphasis. Use a punchy, trader-like tone. Return ONLY inner 
             });
 
         } catch (error) {
-            console.error(`[AI] Key #${i + 1} failed:`, error.message);
+            secureLogger.error(`[AI] Key #${i + 1} failed:`, error.message);
             lastError = error;
         }
     }
@@ -94,7 +95,7 @@ Format with <b> for emphasis. Use a punchy, trader-like tone. Return ONLY inner 
     throw new Error(`All available Gemini API keys failed. Last error: ${lastError?.message}`);
 
   } catch (error) {
-    console.error('AI Rotation Error:', error);
+    secureLogger.error('AI Rotation Error:', error);
     return res.status(500).json({ error: error.message || 'Failed to generate analysis' });
   }
 };

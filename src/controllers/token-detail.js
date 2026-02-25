@@ -1,5 +1,5 @@
 const fetch = require('node-fetch');
-const { sendResponse, checkRateLimit, isValidPaxiAddress } = require('../utils/common');
+const { sendResponse, checkRateLimit, isValidPaxiAddress, secureLogger } = require('../utils/common');
 
 const tokenDetailHandler = async (req, res) => {
     if (req.method === 'OPTIONS') return res.sendStatus(200);
@@ -47,7 +47,7 @@ const tokenDetailHandler = async (req, res) => {
 
         return sendResponse(res, true, processed);
     } catch (error) {
-        console.error('Token detail fetch error:', error);
+        secureLogger.error('Token detail fetch error:', error);
         return sendResponse(res, false, null, 'Failed to fetch contract details', 500);
     }
 };

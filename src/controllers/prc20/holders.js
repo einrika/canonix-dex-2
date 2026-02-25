@@ -1,5 +1,5 @@
 const fetch = require('node-fetch');
-const { sendResponse, getCached, setCached, checkRateLimit, isValidPaxiAddress } = require('../../utils/common');
+const { sendResponse, getCached, setCached, checkRateLimit, isValidPaxiAddress, secureLogger } = require('../../utils/common');
 
 const holdersHandler = async (req, res) => {
     if (req.method === 'OPTIONS') return res.sendStatus(200);
@@ -30,7 +30,7 @@ const holdersHandler = async (req, res) => {
         setCached(cacheKey, data, 120); // Holders can be cached longer
         return sendResponse(res, true, data);
     } catch (error) {
-        console.error('Error fetching holders:', error);
+        secureLogger.error('Error fetching holders:', error);
         return sendResponse(res, false, null, 'Failed to fetch holders list', 500);
     }
 };

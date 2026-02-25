@@ -1,5 +1,5 @@
 const fetch = require('node-fetch');
-const { sendResponse, getCached, setCached, checkRateLimit, isValidPaxiAddress } = require('../utils/common');
+const { sendResponse, getCached, setCached, checkRateLimit, isValidPaxiAddress, secureLogger } = require('../utils/common');
 
 const tokenPriceHandler = async (req, res) => {
     if (req.method === 'OPTIONS') return res.sendStatus(200);
@@ -67,7 +67,7 @@ const tokenPriceHandler = async (req, res) => {
 
         return sendResponse(res, true, normalized);
     } catch (error) {
-        console.error('Price history fetch error:', error);
+        secureLogger.error('Price history fetch error:', error);
         return sendResponse(res, false, null, 'Failed to fetch price history', 500);
     }
 };
