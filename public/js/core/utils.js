@@ -85,7 +85,7 @@ window.fetchDirect = async function(url, options = {}) {
             if (result.success) return result.data;
             throw new Error(result.error || 'Backend API error');
         } catch (e) {
-            console.error(`❌ Backend API fetch failed: ${url}`, e);
+            console.error(`Backend API fetch failed: ${url}`, e);
             throw e;
         }
     }
@@ -142,7 +142,7 @@ window.fetchDirect = async function(url, options = {}) {
             throw new Error(result.error || 'Serverless error');
         }
     } catch (error) {
-        console.error(`❌ fetchDirect failed for ${url}:`, error);
+        console.error(`fetchDirect failed for ${url}:`, error);
         throw error;
     }
 };
@@ -167,7 +167,7 @@ window.fetchWithProxy = async function(url, options = {}) {
     for (let i = 0; i < PROXIES.length; i++) {
         try {
             const proxyUrl = PROXIES[i] + encodeURIComponent(url);
-            console.log(`🔄 Trying proxy ${i + 1}/${PROXIES.length}: ${PROXIES[i]}`);
+            console.log(`Trying proxy ${i + 1}/${PROXIES.length}: ${PROXIES[i]}`);
             
             const response = await fetch(proxyUrl, {
                 method: options.method || 'GET',
@@ -181,16 +181,16 @@ window.fetchWithProxy = async function(url, options = {}) {
             }
 
             const data = await response.json();
-            console.log(`✅ Proxy ${i + 1} succeeded`);
+            console.log(`proxy ${i + 1} succeeded`);
             return data;
 
         } catch (error) {
-            console.warn(`❌ Proxy ${i + 1} failed:`, error.message);
+            console.warn(`Proxy ${i + 1} failed:`, error.message);
             lastError = error;
             
             // If this is not the last proxy, continue to next one
             if (i < PROXIES.length - 1) {
-                console.log(`⏭️ Trying next proxy...`);
+                console.log(`Trying next proxy...`);
                 continue;
             }
         }
@@ -198,7 +198,7 @@ window.fetchWithProxy = async function(url, options = {}) {
 
     // If all proxies failed, try direct fetch as last resort
     try {
-        console.log('🔄 All proxies failed, trying direct fetch...');
+        console.log('All proxies failed, trying direct fetch...');
         const response = await fetch(url, {
             method: options.method || 'GET',
             headers: options.headers || {},
@@ -211,11 +211,11 @@ window.fetchWithProxy = async function(url, options = {}) {
         }
 
         const data = await response.json();
-        console.log('✅ Direct fetch succeeded');
+        console.log('Direct fetch succeeded');
         return data;
 
     } catch (directError) {
-        console.error('❌ Direct fetch also failed:', directError.message);
+        console.error('Direct fetch also failed:', directError.message);
         throw new Error(`All proxies and direct fetch failed. Last error: ${lastError?.message || directError.message}`);
     }
 };
@@ -255,7 +255,7 @@ window.fetchWithRandomProxy = async function(url, options = {}) {
     const proxy = PROXIES[randomIndex];
     const proxyUrl = proxy + encodeURIComponent(url);
     
-    console.log(`🎲 Using random proxy ${randomIndex + 1}: ${proxy}`);
+    console.log(`Using random proxy ${randomIndex + 1}: ${proxy}`);
     
     try {
         const response = await fetch(proxyUrl, {
@@ -269,11 +269,11 @@ window.fetchWithRandomProxy = async function(url, options = {}) {
         }
 
         const data = await response.json();
-        console.log(`✅ Random proxy fetch succeeded`);
+        console.log(`Random proxy fetch succeeded`);
         return data;
 
     } catch (error) {
-        console.error(`❌ Random proxy fetch failed:`, error);
+        console.error(`Random proxy fetch failed:`, error);
         throw error;
     }
 };
@@ -303,7 +303,7 @@ window.fetchWithTimeout = async function(url, timeoutMs = 10000, useProxy = fals
         clearTimeout(timeoutId);
         
         if (error.name === 'AbortError') {
-            console.error(`⏱️ Request timeout after ${timeoutMs}ms`);
+            console.error(`request timeout after ${timeoutMs}ms`);
             throw new Error(`Request timeout (${timeoutMs}ms)`);
         }
         
@@ -330,7 +330,7 @@ window.smartFetch = async function(url, options = {}) {
     } catch (error) {
         // If CORS error or network error, try with proxy
         if (error.message.includes('CORS') || error.message.includes('NetworkError') || error.message.includes('Failed to fetch')) {
-            console.warn('⚠️ CORS/Network error detected, switching to proxy...');
+            console.warn('CORS/Network error detected, switching to proxy...');
             return await window.fetchWithProxy(url, options);
         }
         
@@ -618,17 +618,17 @@ window.showNotif = function(msg, type = 'info') {
 // ===== LOGGER =====
 window.log = function(msg, type = 'info') {
   const colors = {
-    success: '✅',
-    error: '❌',
-    info: 'ℹ️',
-    warn: '⚠️'
+    success: 'sukses',
+    error: 'failed',
+    info: 'info',
+    warn: '️warning'
   };
   const time = new Date().toLocaleTimeString();
   
   if (msg instanceof Error) {
-    console.error(`${colors[type] || 'ℹ️'} [${time}] ${msg.message}\nStack: ${msg.stack}`);
+    console.error(`${colors[type] || 'info'} [${time}] ${msg.message}\nStack: ${msg.stack}`);
   } else {
-    console.log(`${colors[type] || 'ℹ️'} [${time}] ${msg}`);
+    console.log(`${colors[type] || 'info'} [${time}] ${msg}`);
   }
 };
 

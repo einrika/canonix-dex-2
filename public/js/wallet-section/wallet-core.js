@@ -922,7 +922,7 @@ window.buildAndSendTx = async function(messages, memo = "", options = {}) {
         }
 
         const hash = broadcastRes.tx_response.txhash;
-        console.log('📡 TX Broadcasted, Hash:', hash);
+        console.log('TX Broadcasted, Hash:', hash);
 
         // 7. Verify Result via Backend (Optimization: Offload polling to server)
         if (!silent) window.showNotif('Confirming transaction...', 'info');
