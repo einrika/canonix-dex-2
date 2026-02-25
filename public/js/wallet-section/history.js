@@ -1,6 +1,23 @@
 /* global window, document, fetch */
 
-window.WalletHistory = { init() {}, loadHistory() { window.renderTransactionHistory?.() } };
+window.WalletHistory = {
+    init() {},
+    async loadHistory() {
+        const addr = window.selectedAddress || window.currentAddress || (window.wallet && window.wallet.address);
+        if (addr && window.txHistory.length === 0 && !window.historyIsEnd) {
+            try {
+                // Trigger initial fetch if empty
+                const result = await window.loadTransactionHistory(addr, 1);
+                if (Array.isArray(result)) {
+                    window.txHistory = result;
+                }
+            } catch (e) {
+                console.error('[History] Load failed:', e);
+            }
+        }
+        window.renderTransactionHistory?.();
+    }
+};
 
 window.txHistory = [];
 window._txCache = window._txCache || [];
@@ -200,11 +217,11 @@ function _buildTxRowHtml(tx) {
     </div>`;
 }
 
-window.renderTransactionHistory = function() {
-    const addr = window.selectedAddress || window.currentAddress;
+window.renderTransactionHistory = function(customContainerId) {
+    const addr = window.selectedAddress || window.currentAddress || (window.wallet && window.wallet.address);
     if (!addr) return;
     
-    const cont = document.getElementById('transaction-history-container');
+    let cont = customContainerId ? document.getElementById(customContainerId) : (document.getElementById('history-container') || document.getElementById('transaction-history-container'));
     if (!cont) return;
     
     if (window.txHistory.length === 0 && !window.historyIsEnd) {
@@ -453,5 +470,9 @@ window.copyAddress = (ev, text) => {
     }
 };
 
+window.renderTransactionHistorySidebar = function() {
+    window.renderTransactionHistory('sidebarContent');
+};
+
 window.openTxDetailModal = (hash) => window.showTransactionDetailModal(hash);
-if (window.WalletUI) window.WalletUI.loadHistory = () => window.renderTransactionHistory();
+if (window.WalletUI) window.WalletUI.loadHistory = () => window.WalletHistory.loadHistory();
