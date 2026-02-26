@@ -109,39 +109,6 @@ window.setupTokenSocketListeners = function() {
         }
     });
 
-    window.addEventListener('paxi_price_updated_socket', (event) => {
-        const data = event.detail;
-        const currentDetail = window.tokenDetails.get(data.address);
-        if (currentDetail) {
-            // SAFE MERGE: Only update fields that are present in the socket data
-            // This prevents price-only updates from zeroing out contract metadata
-            const updated = {
-                ...currentDetail,
-                price_paxi: data.price_paxi !== undefined ? data.price_paxi : currentDetail.price_paxi,
-                price_change_24h: data.price_change !== undefined ? data.price_change : currentDetail.price_change_24h,
-                reserve_paxi: data.reserve_paxi !== undefined ? data.reserve_paxi : currentDetail.reserve_paxi,
-                reserve_prc20: data.reserve_prc20 !== undefined ? data.reserve_prc20 : currentDetail.reserve_prc20,
-                volume_24h: data.volume_24h !== undefined ? data.volume_24h : currentDetail.volume_24h,
-                holders: data.holders || currentDetail.holders
-            };
-
-            // Re-process to update MCAP/LIQ based on new price
-            const processed = window.processTokenDetail(data.address, updated);
-            window.tokenDetails.set(data.address, processed);
-
-            // Update UI if this is the selected token
-            if (window.currentPRC20 === data.address) {
-                if (window.updateDashboard) window.updateDashboard(processed);
-
-                // DECOUPLED: Removed window.updateLivePrice from here.
-                // The chart will handle its own label updates via its own listener
-                // to avoid double updates and bentrok with polling.
-            }
-
-            if (window.updateTokenCard) window.updateTokenCard(data.address);
-        }
-    });
-
     window.addEventListener('paxi_contract_updated_socket', (event) => {
         const data = event.detail;
         const currentDetail = window.tokenDetails.get(data.address);
