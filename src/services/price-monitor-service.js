@@ -106,44 +106,63 @@ const startMonitoring = () => {
                 let prevLength = lastPricesLength.get(address);
                 let lastEmitted = lastEmittedPrice.get(address);
 
-                // First fetch initialization
                 if (prevLength === undefined) {
+                    // Initial load state
                     lastPricesLength.set(address, currentLength);
-                    prevLength = currentLength - 1;
+                    const initPrice = data.prices[currentLength - 1];
+                    lastEmitted = poolPrice !== null ? poolPrice : initPrice;
+
+                    ioInstance.to(`token_${address}`).emit('price_update', {
+                        type: 'price_realtime',
+                        source: poolPrice !== null ? 'price_pool_fast' : 'price_api_realtime',
+                        address: address,
+                        price_paxi_realtime: lastEmitted,
+                        price_change_realtime: data.price_change,
+                        index: currentLength - 1
+                    });
+                    lastEmittedPrice.set(address, lastEmitted);
+                    return;
                 }
 
-                // HYBRID LOGIC:
-                // 1. If contract prices array has increased, use the official chart data.
+                // 1. Process Array Growth (Authoritative History)
                 if (currentLength > prevLength) {
-                    let lastP = 0;
                     for (let i = prevLength; i < currentLength; i++) {
-                        lastP = data.prices[i];
-                        const payload = {
+                        let p = data.prices[i];
+                        let currentSource = 'price_api_realtime';
+
+                        // If it's the LATEST index of the new array, prioritize poolPrice if it's available and different.
+                        // This ensures that even when the official array grows, the fast price wins for the current candle.
+                        if (i === currentLength - 1 && poolPrice !== null && Math.abs(poolPrice - p) > 1e-12) {
+                            p = poolPrice;
+                            currentSource = 'price_pool_fast';
+                        }
+
+                        ioInstance.to(`token_${address}`).emit('price_update', {
                             type: 'price_realtime',
-                            source: 'price_api_realtime',
+                            source: currentSource,
                             address: address,
-                            price_paxi_realtime: lastP,
+                            price_paxi_realtime: p,
                             price_change_realtime: data.price_change,
                             index: i
-                        };
-                        ioInstance.to(`token_${address}`).emit('price_update', payload);
+                        });
+                        lastEmitted = p;
                     }
                     lastPricesLength.set(address, currentLength);
-                    lastEmittedPrice.set(address, lastP);
+                    lastEmittedPrice.set(address, lastEmitted);
                 }
-                // 2. Fallback: If array hasn't changed, check swap pool for faster updates.
-                else if (poolPrice && poolPrice !== lastEmitted) {
-                    // Update the active candle (current last index) with fast pool price
-                    const payload = {
+                // 2. Real-time Override (Gap Filler)
+                // If array hasn't grown, check if pool price is newer than what we last emitted.
+                else if (poolPrice !== null && Math.abs(poolPrice - lastEmitted) > 1e-12) {
+                    ioInstance.to(`token_${address}`).emit('price_update', {
                         type: 'price_realtime',
-                        source: 'price_pool_fast', // Differentiated source
+                        source: 'price_pool_fast',
                         address: address,
                         price_paxi_realtime: poolPrice,
-                        price_change_realtime: data.price_change, // Still using official change
+                        price_change_realtime: data.price_change,
                         index: currentLength - 1
-                    };
-                    ioInstance.to(`token_${address}`).emit('price_update', payload);
-                    lastEmittedPrice.set(address, poolPrice);
+                    });
+                    lastEmitted = poolPrice;
+                    lastEmittedPrice.set(address, lastEmitted);
                 }
             }));
 
@@ -153,4 +172,4 @@ const startMonitoring = () => {
     }, 5000);
 };
 
-module.exports = { init, fetchContractPrices };
+module.exports = { init, fetchContractPrices, fetchPoolPrice };

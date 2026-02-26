@@ -12,9 +12,8 @@ window.refreshCountdown = 10;
 window.countdownInterval = null;
 
 // WebSocket listener for live price updates (Instant feedback)
-window.updateLivePrice = function(price, priceIndex = null) {
-    const priceLabel = document.getElementById('currentPrice');
-    if (priceLabel) window.setText(priceLabel, parseFloat(price).toFixed(8) + ' PAXI');
+window.updateLivePrice = function(price, priceIndex = null, source = null) {
+    if (price === undefined || price === null) return;
 
     // ARSITEKTUR STREAMING (INDEX-BASED):
     // Chart menggunakan mechanism update incremental (series.update) tanpa redraw total.
@@ -31,17 +30,33 @@ window.updateLivePrice = function(price, priceIndex = null) {
         // INDEX PROTECTION: Hanya update jika index >= data terakhir
         if (!lastPoint || timeRef >= lastPoint.time) {
             try {
+                // BRUTAL BOUNCE PROTECTION: Jika index sama, tapi source adalah official API,
+                // pastikan kita tidak menimpa harga pool yang lebih baru dengan data official yang stale.
+                if (lastPoint && timeRef === lastPoint.time && source === 'price_api_realtime') {
+                    // If we already updated this index with a pool price (fast source),
+                    // and the incoming official price is DIFFERENT (and usually older/lagging),
+                    // we ignore the official update to prevent chart flickering/jumping back.
+                    if (lastPoint.source === 'price_pool_fast' && Math.abs(p - lastPoint.close) > 1e-12) {
+                        return;
+                    }
+                }
+
                 // Smooth update via lightweight-charts internal state
                 window.lineSeries.update({ time: timeRef, value: p });
+
+                // Update UI Labels ONLY if the price update is accepted
+                const priceLabel = document.getElementById('currentPrice');
+                if (priceLabel) window.setText(priceLabel, p.toFixed(8) + ' PAXI');
 
                 if (lastPoint && lastPoint.time === timeRef) {
                     lastPoint.close = p;
                     lastPoint.high = Math.max(lastPoint.high, p);
                     lastPoint.low = Math.min(lastPoint.low, p);
+                    lastPoint.source = source; // Track source
                 } else {
                     // New Candle (New index)
                     window.currentPriceData.push({
-                        time: timeRef, open: p, high: p, low: p, close: p, volume: 0
+                        time: timeRef, open: p, high: p, low: p, close: p, volume: 0, source: source
                     });
                     if (window.currentPriceData.length > 1000) window.currentPriceData.shift();
 
@@ -68,7 +83,8 @@ window.addEventListener('paxi_price_updated_socket', (event) => {
         if (price !== undefined && price !== null) {
             // Use index from payload if available for reliable mapping
             const index = isRealtimeType ? data.index : null;
-            window.updateLivePrice(price, index);
+            const source = isRealtimeType ? data.source : null;
+            window.updateLivePrice(price, index, source);
 
             // Update Price Change Label
             const changeEl = document.getElementById('priceChange');
@@ -311,7 +327,8 @@ window.loadPriceHistory = async function(contractAddress, timeframe) {
                 const p = parseFloat(item.price_paxi_realtime || item.price_paxi || 0);
                 return {
                     time: item.timestamp !== undefined ? item.timestamp : idx, // Use index if timestamp is missing
-                    open: p, high: p, low: p, close: p, volume: 0
+                    open: p, high: p, low: p, close: p, volume: 0,
+                    source: data.source || 'rest_api_init'
                 };
             });
 
@@ -444,51 +461,27 @@ window.refreshRealtimeChart = async function() {
         if (!data || !data.history || !data.history.length) return;
 
         // INDEX-BASED PROCESSING
-        const points = data.history.map(item => ({
-            time: item.timestamp, // Index from backend
-            value: parseFloat(item.price_paxi_realtime || item.price_paxi || 0)
-        })).sort((a, b) => a.time - b.time);
-
+        // Use window.updateLivePrice to ensure consistent label updates and bounce protection
         let hasNewData = false;
 
-        points.forEach(point => {
+        data.history.forEach(item => {
+            const time = item.timestamp;
+            const price = parseFloat(item.price_paxi_realtime || item.price_paxi || 0);
+
             const lastPoint = window.currentPriceData[window.currentPriceData.length - 1];
-
-            // GUARD: Only update if index is new or value changed at same index
-            if (!lastPoint || point.time >= lastPoint.time) {
-                if (!lastPoint || point.time > lastPoint.time || point.value !== lastPoint.close) {
-                    try {
-                        window.lineSeries.update({ time: point.time, value: point.value });
-
-                        if (lastPoint && lastPoint.time === point.time) {
-                            lastPoint.close = point.value;
-                            lastPoint.high = Math.max(lastPoint.high, point.value);
-                            lastPoint.low = Math.min(lastPoint.low, point.value);
-                        } else {
-                            window.currentPriceData.push({
-                                time: point.time,
-                                open: point.value,
-                                high: point.value,
-                                low: point.value,
-                                close: point.value,
-                                volume: 0
-                            });
-                            if (window.currentPriceData.length > 1000) window.currentPriceData.shift();
-                        }
-                        hasNewData = true;
-                    } catch (e) { }
+            if (!lastPoint || time >= lastPoint.time) {
+                // Determine source: If this comes from history mapping, it's 'price_api_realtime' equivalent.
+                const itemSource = item.source || data.source || 'price_api_realtime';
+                if (!lastPoint || time > lastPoint.time || Math.abs(price - lastPoint.close) > 1e-12) {
+                    window.updateLivePrice(price, time, itemSource);
+                    hasNewData = true;
                 }
             }
         });
 
         if (hasNewData) {
-            // Smoothly update indicators if they are visible
-            if (window.ma7Series?.options()?.visible) window.ma7Series.setData(window.calculateMA(window.currentPriceData, 7));
-            if (window.ma25Series?.options()?.visible) window.ma25Series.setData(window.calculateMA(window.currentPriceData, 25));
-
-            const lastPrice = window.currentPriceData[window.currentPriceData.length - 1].close;
-            const priceEl = document.getElementById('currentPrice');
-            if (priceEl) window.setText(priceEl, lastPrice.toFixed(8) + ' PAXI');
+            // Indicators are already handled inside updateLivePrice if index grows,
+            // but we call fitContent here for sync results.
 
             const change = (data.price_change_realtime !== undefined ? data.price_change_realtime : (data.price_change || 0)) * 100;
             const changeEl = document.getElementById('priceChange');

@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
 const { sendResponse, checkRateLimit, isValidPaxiAddress } = require('../utils/common');
-const { fetchContractPrices } = require('../services/price-monitor-service');
+const { fetchContractPrices, fetchPoolPrice } = require('../services/price-monitor-service');
 
 const tokenPriceHandler = async (req, res) => {
     if (req.method === 'OPTIONS') return res.sendStatus(200);
@@ -22,16 +22,27 @@ const tokenPriceHandler = async (req, res) => {
 
     try {
         if (tf === 'realtime') {
-            // Use the unified modular service
-            const data = await fetchContractPrices(address);
+            // CONCURRENT FETCH for hybrid data
+            const [data, poolPrice] = await Promise.all([
+                fetchContractPrices(address),
+                fetchPoolPrice(address)
+            ]);
+
             if (!data) return sendResponse(res, false, null, 'Failed to fetch realtime prices', 500);
 
-            const prices = data.prices || [];
+            const prices = [...(data.prices || [])];
+
+            // HYBRID OVERRIDE: If pool price is available, override the latest entry
+            // to ensure the REST API response matches the fast WebSocket feed.
+            if (prices.length > 0 && poolPrice !== null) {
+                prices[prices.length - 1] = poolPrice;
+            }
 
             // Refactor for index-based reference as requested
             // 1 candle = 1 element array. Timestamp is index to prevent "snail" redraws.
             const normalized = {
                 type: 'price_realtime',
+                source: 'hybrid_rest_api',
                 price_change_realtime: data.price_change || 0,
                 prices: prices,
                 history: prices.map((p, i) => ({
