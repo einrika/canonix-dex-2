@@ -60,6 +60,13 @@ if (features.ENABLE_CONTRACT_MONITOR) {
     console.log('[Server] Contract Monitor is DISABLED');
 }
 
+if (features.ENABLE_PRICE_STREAMING) {
+    const priceStreamer = require('./src/services/monitor-price-streaming');
+    priceStreamer.init(io);
+} else {
+    console.log('[Server] Price Streaming is DISABLED');
+}
+
 // Start the server
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

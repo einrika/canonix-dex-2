@@ -8,9 +8,11 @@ module.exports = {
     // Default: enabled
     ENABLE_GLOBAL_MONITOR: process.env.ENABLE_GLOBAL_MONITOR !== 'false',
 
-    // Contract Details Monitor: Handles realtime price, reserves, and holders polling per active token.
-    // Default: disabled (as requested)
+    // Contract Details Monitor: Handles realtime reserves, and holders polling per active token.
+    // Default: disabled
     ENABLE_CONTRACT_MONITOR: process.env.ENABLE_CONTRACT_MONITOR === 'true',
 
-    // Add other feature toggles here as needed
+    // Price Streaming Monitor: Handles realtime price data for the chart using PRC20 Price API.
+    // Default: enabled (Essential for real-time chart)
+    ENABLE_PRICE_STREAMING: process.env.ENABLE_PRICE_STREAMING !== 'false',
 };
