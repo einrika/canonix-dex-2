@@ -7,6 +7,9 @@ let monitorInterval = null;
 // State to track the last known length of prices array for each token
 const lastPricesLength = new Map();
 
+// State to track the absolute last price emitted to prevent duplicate emissions
+const lastEmittedPrice = new Map();
+
 /**
  * Fetch price data from PRC20 API
  * Returns ONLY 'prices' array and 'price_change'
@@ -32,6 +35,22 @@ const fetchContractPrices = async (address) => {
         };
     } catch (error) {
         // Log sparingly to avoid log bloat
+        return null;
+    }
+};
+
+/**
+ * Fetch fast price from swap pool (LCD)
+ * Used as a real-time fallback when chart source is delayed.
+ */
+const fetchPoolPrice = async (address) => {
+    try {
+        const url = `https://mainnet-lcd.paxinet.io/paxi/swap/pool/${address}`;
+        const response = await fetch(url, { timeout: 3000 });
+        if (!response.ok) return null;
+        const data = await response.json();
+        return parseFloat(data.price_paxi_per_prc20 || 0);
+    } catch (e) {
         return null;
     }
 };
@@ -75,39 +94,56 @@ const startMonitoring = () => {
             await Promise.all(activeTokens.map(async (address) => {
                 if (!isValidPaxiAddress(address)) return;
 
-                const data = await fetchContractPrices(address);
+                // Concurrent fetch: Chart Source (Prices API) and Fast Source (Swap Pool LCD)
+                const [data, poolPrice] = await Promise.all([
+                    fetchContractPrices(address),
+                    fetchPoolPrice(address)
+                ]);
+
                 if (!data || !data.prices || data.prices.length === 0) return;
 
                 const currentLength = data.prices.length;
                 let prevLength = lastPricesLength.get(address);
+                let lastEmitted = lastEmittedPrice.get(address);
 
-                // First fetch: just store the length and emit the latest
+                // First fetch initialization
                 if (prevLength === undefined) {
                     lastPricesLength.set(address, currentLength);
-                    prevLength = currentLength - 1; // Emit at least the last one
+                    prevLength = currentLength - 1;
                 }
 
-                // RULE: Only update if length increases.
-                // Emit for each NEW element in the array to keep frontend index-based chart in sync.
+                // HYBRID LOGIC:
+                // 1. If contract prices array has increased, use the official chart data.
                 if (currentLength > prevLength) {
+                    let lastP = 0;
                     for (let i = prevLength; i < currentLength; i++) {
-                        const price = data.prices[i];
-
+                        lastP = data.prices[i];
                         const payload = {
                             type: 'price_realtime',
                             source: 'price_api_realtime',
                             address: address,
-                            price_paxi_realtime: price,
+                            price_paxi_realtime: lastP,
                             price_change_realtime: data.price_change,
-                            index: i // Include index for reliable chart mapping
+                            index: i
                         };
-
-                        // Broadcast to specific token room
                         ioInstance.to(`token_${address}`).emit('price_update', payload);
                     }
-
-                    // Update state
                     lastPricesLength.set(address, currentLength);
+                    lastEmittedPrice.set(address, lastP);
+                }
+                // 2. Fallback: If array hasn't changed, check swap pool for faster updates.
+                else if (poolPrice && poolPrice !== lastEmitted) {
+                    // Update the active candle (current last index) with fast pool price
+                    const payload = {
+                        type: 'price_realtime',
+                        source: 'price_pool_fast', // Differentiated source
+                        address: address,
+                        price_paxi_realtime: poolPrice,
+                        price_change_realtime: data.price_change, // Still using official change
+                        index: currentLength - 1
+                    };
+                    ioInstance.to(`token_${address}`).emit('price_update', payload);
+                    lastEmittedPrice.set(address, poolPrice);
                 }
             }));
 
