@@ -364,6 +364,10 @@ window.setTab = function(name) {
         window.loadTokenHolders();
     } else if (name === 'history') {
         window.renderTransactionHistory('tabContent');
+        // Explicitly trigger history load to ensure data is fetched
+        if (window.WalletHistory && window.WalletHistory.loadHistory) {
+            window.WalletHistory.loadHistory();
+        }
     }
 };
 

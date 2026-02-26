@@ -61,8 +61,8 @@ if (features.ENABLE_CONTRACT_MONITOR) {
 }
 
 if (features.ENABLE_PRICE_STREAMING) {
-    const priceStreamer = require('./src/services/monitor-price-streaming');
-    priceStreamer.init(io);
+    const priceMonitor = require('./src/services/price-monitor-service');
+    priceMonitor.init(io);
 } else {
     console.log('[Server] Price Streaming is DISABLED');
 }

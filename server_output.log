@@ -6,6 +6,7 @@
 [Socket] Initializing room management...
 [Monitor] Global Monitor initialized
 [Server] Contract Monitor is DISABLED
-[MonitorPriceStreaming] Realtime Price Feed initialized
+[PriceMonitor] Unified Realtime Price Monitor initialized
 Server is running on port 3000
 Local: http://localhost:3000
+rminated

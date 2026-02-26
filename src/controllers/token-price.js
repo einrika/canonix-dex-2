@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
 const { sendResponse, checkRateLimit, isValidPaxiAddress } = require('../utils/common');
-const { fetchContractPrices } = require('../services/monitor-price-get-contract-prices');
+const { fetchContractPrices } = require('../services/price-monitor-service');
 
 const tokenPriceHandler = async (req, res) => {
     if (req.method === 'OPTIONS') return res.sendStatus(200);
@@ -22,19 +22,21 @@ const tokenPriceHandler = async (req, res) => {
 
     try {
         if (tf === 'realtime') {
-            // Use the modular service for realtime data (Strictly minimal output)
+            // Use the unified modular service
             const data = await fetchContractPrices(address);
+            if (!data) return sendResponse(res, false, null, 'Failed to fetch realtime prices', 500);
 
             const prices = data.prices || [];
-            const now = Math.floor(Date.now() / 5000) * 5000;
 
-            // Normalize to history format as requested
+            // Refactor for index-based reference as requested
+            // 1 candle = 1 element array. Timestamp is index to prevent "snail" redraws.
             const normalized = {
-                price_change: data.price_change || 0,
+                type: 'price_realtime',
+                price_change_realtime: data.price_change || 0,
                 prices: prices,
                 history: prices.map((p, i) => ({
-                    timestamp: now - (prices.length - 1 - i) * 5000,
-                    price_paxi: p
+                    timestamp: i, // Use index as time reference
+                    price_paxi_realtime: p
                 }))
             };
 

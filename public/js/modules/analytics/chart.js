@@ -12,45 +12,44 @@ window.refreshCountdown = 10;
 window.countdownInterval = null;
 
 // WebSocket listener for live price updates (Instant feedback)
-window.updateLivePrice = function(price, timestamp = null) {
+window.updateLivePrice = function(price, priceIndex = null) {
     const priceLabel = document.getElementById('currentPrice');
     if (priceLabel) window.setText(priceLabel, parseFloat(price).toFixed(8) + ' PAXI');
 
-    // ARSITEKTUR STREAMING:
+    // ARSITEKTUR STREAMING (INDEX-BASED):
     // Chart menggunakan mechanism update incremental (series.update) tanpa redraw total.
-    // Data disinkronkan ke bucket 5 detik konsisten dengan polling backend.
+    // 1 elemen array price = 1 candle. Time reference menggunakan index array.
 
     if (window.currentTimeframe === 'realtime' && window.lineSeries) {
         const p = parseFloat(price);
-        // Align to 5s bucket consistent with backend monitor-price.js
-        // Backend uses ms, chart uses seconds (Lightweight charts requirement)
-        const now = timestamp ? Math.floor(timestamp / 1000) : Math.floor(Date.now() / 5000) * 5;
+
+        // Use provided index or calculate fallback (though fallback might be risky)
+        const timeRef = priceIndex !== null ? priceIndex : (window.currentPriceData.length > 0 ? window.currentPriceData[window.currentPriceData.length - 1].time + 1 : 0);
 
         const lastPoint = window.currentPriceData[window.currentPriceData.length - 1];
 
-        // BOUNCE PROTECTION: Hanya update jika timestamp >= data terakhir
-        if (!lastPoint || now >= lastPoint.time) {
+        // INDEX PROTECTION: Hanya update jika index >= data terakhir
+        if (!lastPoint || timeRef >= lastPoint.time) {
             try {
                 // Smooth update via lightweight-charts internal state
-                window.lineSeries.update({ time: now, value: p });
+                window.lineSeries.update({ time: timeRef, value: p });
 
-                if (lastPoint && lastPoint.time === now) {
+                if (lastPoint && lastPoint.time === timeRef) {
                     lastPoint.close = p;
                     lastPoint.high = Math.max(lastPoint.high, p);
                     lastPoint.low = Math.min(lastPoint.low, p);
                 } else {
-                    // New 5s bucket
+                    // New Candle (New index)
                     window.currentPriceData.push({
-                        time: now, open: p, high: p, low: p, close: p, volume: 0
+                        time: timeRef, open: p, high: p, low: p, close: p, volume: 0
                     });
-                    if (window.currentPriceData.length > 500) window.currentPriceData.shift();
+                    if (window.currentPriceData.length > 1000) window.currentPriceData.shift();
 
                     // Sync indicators on new bucket
-                    if (window.ma7Series?.options().visible) window.ma7Series.setData(window.calculateMA(window.currentPriceData, 7));
-                    if (window.ma25Series?.options().visible) window.ma25Series.setData(window.calculateMA(window.currentPriceData, 25));
+                    if (window.ma7Series?.options()?.visible) window.ma7Series.setData(window.calculateMA(window.currentPriceData, 7));
+                    if (window.ma25Series?.options()?.visible) window.ma25Series.setData(window.calculateMA(window.currentPriceData, 25));
                 }
             } catch (e) {
-                // Lightweight charts error handling for unordered timestamps
                 console.warn('[Chart] Streaming update error:', e.message);
             }
         }
@@ -61,11 +60,23 @@ window.updateLivePrice = function(price, timestamp = null) {
 window.addEventListener('paxi_price_updated_socket', (event) => {
     const data = event.detail;
     if (data && data.address === window.currentPRC20) {
-        const price = data.price_paxi || data.price;
-        const ts = data.timestamp;
+        // Handle New Payload Structure
+        const isRealtimeType = data.type === 'price_realtime';
+        const price = isRealtimeType ? data.price_paxi_realtime : (data.price_paxi || data.price);
+        const change = isRealtimeType ? data.price_change_realtime : (data.price_change || 0);
 
-        if (price) {
-            window.updateLivePrice(price, ts);
+        if (price !== undefined && price !== null) {
+            // Use index from payload if available for reliable mapping
+            const index = isRealtimeType ? data.index : null;
+            window.updateLivePrice(price, index);
+
+            // Update Price Change Label
+            const changeEl = document.getElementById('priceChange');
+            if (changeEl) {
+                const valNum = change * 100;
+                changeEl.textContent = `${valNum >= 0 ? '+' : ''}${valNum.toFixed(2)}%`;
+                changeEl.className = `text-[10px] font-bold ${valNum >= 0 ? 'text-up' : 'text-down'}`;
+            }
 
             // Visual indicator of feed activity
             const statusEl = document.getElementById('chartStatus');
@@ -74,7 +85,6 @@ window.addEventListener('paxi_price_updated_socket', (event) => {
                 statusEl.classList.add('text-accent');
                 statusEl.classList.remove('text-soft-success');
 
-                // Flash effect
                 statusEl.style.opacity = '0.5';
                 setTimeout(() => { statusEl.style.opacity = '1'; }, 100);
             }
@@ -296,27 +306,28 @@ window.loadPriceHistory = async function(contractAddress, timeframe) {
                 return;
             }
 
-            // Data is already normalized by the Netlify function
-            const candles = data.history.map(item => ({
-                time: Math.floor(item.timestamp / 1000),
-                open: parseFloat(item.price_paxi),
-                high: parseFloat(item.price_paxi),
-                low: parseFloat(item.price_paxi),
-                close: parseFloat(item.price_paxi),
-                volume: parseFloat(item.volume || 0)
-            }));
+            // INDEX-BASED MAPPING: 1 element = 1 candle
+            const candles = data.history.map((item, idx) => {
+                const p = parseFloat(item.price_paxi_realtime || item.price_paxi || 0);
+                return {
+                    time: item.timestamp !== undefined ? item.timestamp : idx, // Use index if timestamp is missing
+                    open: p, high: p, low: p, close: p, volume: 0
+                };
+            });
 
             window.currentPriceData = candles;
             window.lineSeries.setData(candles.map(c => ({ time: c.time, value: c.close })));
-            window.ma7Series.setData(window.calculateMA(candles, 7));
-            window.ma25Series.setData(window.calculateMA(candles, 25));
+
+            if (window.ma7Series?.options()?.visible) window.ma7Series.setData(window.calculateMA(candles, 7));
+            if (window.ma25Series?.options()?.visible) window.ma25Series.setData(window.calculateMA(candles, 25));
+
             window.lightweightChart.timeScale().fitContent();
 
             const lastPrice = candles[candles.length - 1].close;
             const priceEl = document.getElementById('currentPrice');
             if (priceEl) window.setText(priceEl, lastPrice.toFixed(8) + ' PAXI');
 
-            const change = data.price_change !== undefined ? data.price_change * 100 : 0;
+            const change = (data.price_change_realtime !== undefined ? data.price_change_realtime : (data.price_change || 0)) * 100;
             const changeEl = document.getElementById('priceChange');
             if (changeEl) {
                 changeEl.textContent = `${change >= 0 ? '+' : ''}${change.toFixed(2)}%`;
@@ -426,15 +437,16 @@ window.refreshRealtimeChart = async function() {
 
     window.isRefreshingChart = true;
     try {
-        // Konsisten 5 detik polling untuk syncing data histori pendek (realtime streaming fallback)
+        // Consistent 5s polling for syncing data (streaming fallback)
         const url = `${window.APP_CONFIG.BACKEND_API}/api/token-price?address=${window.currentPRC20}&timeframe=realtime&_t=${Date.now()}`;
         const data = await window.fetchDirect(url, { cache: 'no-store' });
 
         if (!data || !data.history || !data.history.length) return;
 
+        // INDEX-BASED PROCESSING
         const points = data.history.map(item => ({
-            time: Math.floor(item.timestamp / 1000),
-            value: parseFloat(item.price_paxi)
+            time: item.timestamp, // Index from backend
+            value: parseFloat(item.price_paxi_realtime || item.price_paxi || 0)
         })).sort((a, b) => a.time - b.time);
 
         let hasNewData = false;
@@ -442,7 +454,7 @@ window.refreshRealtimeChart = async function() {
         points.forEach(point => {
             const lastPoint = window.currentPriceData[window.currentPriceData.length - 1];
 
-            // BOUNCE PROTECTION
+            // GUARD: Only update if index is new or value changed at same index
             if (!lastPoint || point.time >= lastPoint.time) {
                 if (!lastPoint || point.time > lastPoint.time || point.value !== lastPoint.close) {
                     try {
@@ -461,7 +473,7 @@ window.refreshRealtimeChart = async function() {
                                 close: point.value,
                                 volume: 0
                             });
-                            if (window.currentPriceData.length > 500) window.currentPriceData.shift();
+                            if (window.currentPriceData.length > 1000) window.currentPriceData.shift();
                         }
                         hasNewData = true;
                     } catch (e) { }
@@ -471,14 +483,14 @@ window.refreshRealtimeChart = async function() {
 
         if (hasNewData) {
             // Smoothly update indicators if they are visible
-            if (window.ma7Series.options().visible) window.ma7Series.setData(window.calculateMA(window.currentPriceData, 7));
-            if (window.ma25Series.options().visible) window.ma25Series.setData(window.calculateMA(window.currentPriceData, 25));
+            if (window.ma7Series?.options()?.visible) window.ma7Series.setData(window.calculateMA(window.currentPriceData, 7));
+            if (window.ma25Series?.options()?.visible) window.ma25Series.setData(window.calculateMA(window.currentPriceData, 25));
 
             const lastPrice = window.currentPriceData[window.currentPriceData.length - 1].close;
             const priceEl = document.getElementById('currentPrice');
             if (priceEl) window.setText(priceEl, lastPrice.toFixed(8) + ' PAXI');
 
-            const change = data.price_change !== undefined ? data.price_change * 100 : 0;
+            const change = (data.price_change_realtime !== undefined ? data.price_change_realtime : (data.price_change || 0)) * 100;
             const changeEl = document.getElementById('priceChange');
             if (changeEl) {
                 changeEl.textContent = `${change >= 0 ? '+' : ''}${change.toFixed(2)}%`;
