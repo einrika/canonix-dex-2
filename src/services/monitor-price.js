@@ -1,9 +1,7 @@
-const fetch = require('node-fetch');
+const { fetchContractPrices } = require('./monitor-price-get-contract-prices');
 
 let ioInstance = null;
 let monitorInterval = null;
-
-const API_ENDPOINT = (address) => `https://mainnet-api.paxinet.io/prc20/get_contract_prices?address=${address}`;
 
 const init = (io) => {
     ioInstance = io;
@@ -30,30 +28,11 @@ const startMonitoring = () => {
             // Poll each active token
             await Promise.all(activeTokens.map(async (address) => {
                 try {
-                    const res = await fetch(API_ENDPOINT(address), { timeout: 4000 });
-                    if (!res.ok) return;
-
-                    const result = await res.json();
-                    if (!result || !result.data) return;
-
-                    const tokenData = result.data;
-
-                    // Format data for chart and UI
-                    // Sending ALL fields to ensure tokens.js listener doesn't break MCAP/LIQ stats
-                    const payload = {
-                        address: address,
-                        price_paxi: parseFloat(tokenData.price_paxi || tokenData.price || 0),
-                        price_change: parseFloat(tokenData.price_change_24h || 0),
-                        reserve_paxi: parseFloat(tokenData.reserve_paxi || 0),
-                        reserve_prc20: parseFloat(tokenData.reserve_prc20 || 0),
-                        volume_24h: parseFloat(tokenData.volume_24h || 0),
-                        market_cap: parseFloat(tokenData.market_cap || 0),
-                        liquidity: parseFloat(tokenData.liquidity || 0),
-                        timestamp: Date.now()
-                    };
+                    const data = await fetchContractPrices(address);
 
                     // Broadcast to specific token room
-                    ioInstance.to(`token_${address}`).emit('paxi_price_updated_socket', payload);
+                    // Note: fetchContractPrices already returns the correctly formatted payload
+                    ioInstance.to(`token_${address}`).emit('paxi_price_updated_socket', data);
                 } catch (e) {
                     // Fail silently for individual tokens
                 }
