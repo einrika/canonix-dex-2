@@ -41,7 +41,10 @@ app.use((req, res) => {
 
 // WebSocket initialization
 const dataMonitor = require('./src/services/monitor');
+const priceMonitor = require('./src/services/monitor-price');
+
 dataMonitor.init(io);
+priceMonitor.init(io);
 
 // Start the server
 server.listen(PORT, () => {

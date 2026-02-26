@@ -61,16 +61,6 @@ const tokenPriceHandler = async (req, res) => {
                 }))
             };
 
-            // Realtime Broadcast via WebSocket
-            if (req.io && prices.length > 0) {
-                const latestPrice = prices[prices.length - 1];
-                req.io.to(`token_${address}`).emit('price_update', {
-                    address: address,
-                    price_paxi: latestPrice,
-                    price_change: data.price_change || 0,
-                    timestamp: now
-                });
-            }
         } else {
             normalized = {
                 ...data,

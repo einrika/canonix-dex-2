@@ -1,0 +1,10 @@
+
+> paxi-dex@1.0.0 start
+> node server.js
+
+[dotenv@17.3.1] injecting env (0) from .env -- tip: 🤖 agentic secret storage: https://dotenvx.com/as2
+[Monitor] WebSocket initialized
+[Monitor-Price] Realtime price monitoring initialized
+Server is running on port 3000
+Local: http://localhost:3000
+Terminated
