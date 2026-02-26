@@ -39,12 +39,26 @@ app.use((req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// WebSocket initialization
-const dataMonitor = require('./src/services/monitor');
-const contractMonitor = require('./src/services/monitor-contract-details');
+// WebSocket initialization & Feature Configuration
+const features = require('./src/config/features');
+const socketManager = require('./src/services/socket-io');
 
-dataMonitor.init(io);
-contractMonitor.init(io);
+// Always initialize socket room management
+socketManager.init(io);
+
+if (features.ENABLE_GLOBAL_MONITOR) {
+    const dataMonitor = require('./src/services/monitor');
+    dataMonitor.init(io);
+} else {
+    console.log('[Server] Global Monitor is DISABLED');
+}
+
+if (features.ENABLE_CONTRACT_MONITOR) {
+    const contractMonitor = require('./src/services/monitor-contract-details');
+    contractMonitor.init(io);
+} else {
+    console.log('[Server] Contract Monitor is DISABLED');
+}
 
 // Start the server
 server.listen(PORT, () => {
