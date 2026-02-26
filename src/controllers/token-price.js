@@ -1,5 +1,6 @@
 const fetch = require('node-fetch');
 const { sendResponse, getCached, setCached, checkRateLimit, isValidPaxiAddress } = require('../utils/common');
+const { fetchContractPrices } = require('../services/monitor-price-get-contract-prices');
 
 const tokenPriceHandler = async (req, res) => {
     if (req.method === 'OPTIONS') return res.sendStatus(200);
@@ -21,17 +22,28 @@ const tokenPriceHandler = async (req, res) => {
     res.setHeader('Expires', '0');
 
     try {
-        let apiUrl;
         if (tf === 'realtime') {
-            apiUrl = `https://mainnet-api.paxinet.io/prc20/get_contract_prices?address=${address}`;
-        } else {
-            apiUrl = `https://paxi-pumpfun.winsnip.xyz/api/prc20-price-history/${address}?timeframe=${tf}`;
+            // Use the modular service for realtime data
+            const data = await fetchContractPrices(address);
+
+            // Align 'now' to the nearest 5-second bucket
+            const now = Math.floor(Date.now() / 5000) * 5000;
+
+            const normalized = {
+                price_change: data.price_change || 0,
+                prices: data.prices, // Include raw prices array
+                history: data.prices.map((p, i) => ({
+                    timestamp: now - (data.prices.length - 1 - i) * 5000,
+                    price_paxi: p
+                }))
+            };
+
+            return sendResponse(res, true, normalized);
         }
 
-        const response = await fetch(apiUrl, {
-            timeout: 5000,
-            headers: tf === 'realtime' ? { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' } : {}
-        });
+        // For historical data
+        const apiUrl = `https://paxi-pumpfun.winsnip.xyz/api/prc20-price-history/${address}?timeframe=${tf}`;
+        const response = await fetch(apiUrl, { timeout: 5000 });
 
         if (!response.ok) {
             const winscanUrl = `https://winscan.winsnip.xyz/api/prc20-price-history/${address}?timeframe=${tf}`;
@@ -46,27 +58,10 @@ const tokenPriceHandler = async (req, res) => {
         }
 
         const data = await response.json();
-
-        let normalized;
-        if (tf === 'realtime') {
-            const prices = data.prices || [];
-            // Align 'now' to the nearest 5-second bucket to prevent timestamp shifting on every poll
-            // Use UTC to ensure consistency across different server environments
-            const now = Math.floor(Date.now() / 5000) * 5000;
-            normalized = {
-                price_change: data.price_change || 0,
-                history: prices.map((p, i) => ({
-                    timestamp: now - (prices.length - 1 - i) * 5000,
-                    price_paxi: p
-                }))
-            };
-
-        } else {
-            normalized = {
-                ...data,
-                history: data.price_history || data.history || []
-            };
-        }
+        const normalized = {
+            ...data,
+            history: data.price_history || data.history || []
+        };
 
         return sendResponse(res, true, normalized);
     } catch (error) {

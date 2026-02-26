@@ -2,9 +2,12 @@ const fetch = require('node-fetch');
 const { isValidPaxiAddress } = require('../utils/common');
 
 /**
- * Fetch contract prices and normalize for history/chart
+ * Ambil data harga dari API PRC20.
+ * Output hanya mengandung array 'prices' dan angka 'price_change'.
+ * Jangan sertakan data lain.
+ *
  * @param {string} address - PRC20 contract address
- * @returns {Promise<object>} - Normalized price data
+ * @returns {Promise<{prices: number[], price_change: number}>}
  */
 const fetchContractPrices = async (address) => {
     if (!address || !isValidPaxiAddress(address)) {
@@ -16,35 +19,16 @@ const fetchContractPrices = async (address) => {
         const response = await fetch(url, { timeout: 5000 });
 
         if (!response.ok) {
-            throw new Error(`API Error: ${response.status} ${response.statusText}`);
+            throw new Error(`Price API Error: ${response.status}`);
         }
 
-        const result = await response.json();
-        if (!result || !result.data) {
-            throw new Error('Invalid response data from price API');
-        }
+        const data = await response.json();
 
-        const data = result.data;
-        const prices = data.prices || [];
-        const now = Math.floor(Date.now() / 5000) * 5000; // Align to 5s bucket
-
-        const normalized = {
-            address: address,
-            price_change: data.price_change_24h || 0,
-            price_paxi: parseFloat(data.price_paxi || data.price || 0),
-            reserve_paxi: parseFloat(data.reserve_paxi || 0),
-            reserve_prc20: parseFloat(data.reserve_prc20 || 0),
-            volume_24h: parseFloat(data.volume_24h || 0),
-            market_cap: parseFloat(data.market_cap || 0),
-            liquidity: parseFloat(data.liquidity || 0),
-            history: prices.map((p, i) => ({
-                timestamp: now - (prices.length - 1 - i) * 5000,
-                price_paxi: p
-            })),
-            raw_data: data // Keep raw data for extended use cases
+        // Output must contain only 'prices' and 'price_change' as per specification
+        return {
+            prices: Array.isArray(data.prices) ? data.prices : [],
+            price_change: typeof data.price_change === 'number' ? data.price_change : 0
         };
-
-        return normalized;
     } catch (error) {
         console.error(`[fetchContractPrices] Error for ${address}:`, error.message);
         throw error;

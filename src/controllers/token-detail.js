@@ -1,5 +1,6 @@
 const fetch = require('node-fetch');
 const { sendResponse, checkRateLimit, isValidPaxiAddress } = require('../utils/common');
+const { fetchContractDetails } = require('../services/monitor-contract-details');
 
 const tokenDetailHandler = async (req, res) => {
     if (req.method === 'OPTIONS') return res.sendStatus(200);
@@ -13,17 +14,7 @@ const tokenDetailHandler = async (req, res) => {
     }
 
     try {
-        const explorerUrl = `https://explorer.paxinet.io/api/prc20/contract?address=${address}`;
-        const response = await fetch(explorerUrl, { timeout: 10000 });
-
-        if (!response.ok) {
-            return sendResponse(res, false, null, 'Contract not found');
-        }
-
-        const data = await response.json();
-
-        // Optimized: Move processing and calculations to backend
-        const c = data.contract || data;
+        const c = await fetchContractDetails(address);
         const decimals = c.decimals || 6;
         const totalSupply = parseFloat(c.total_supply || 0) / Math.pow(10, decimals);
         let pricePaxi = 0;
@@ -34,7 +25,6 @@ const tokenDetailHandler = async (req, res) => {
         const liquidityPaxi = (parseFloat(c.reserve_paxi || 0) * 2) / 1000000;
 
         const processed = {
-            ...data,
             contract: {
                 ...c,
                 processed: true,

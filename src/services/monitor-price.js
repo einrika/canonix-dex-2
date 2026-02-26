@@ -5,7 +5,7 @@ let monitorInterval = null;
 
 const init = (io) => {
     ioInstance = io;
-    console.log('[MonitorPrice] Realtime Chart Monitor initialized');
+    console.log('[MonitorPrice] Realtime Monitor initialized');
     startMonitoring();
 };
 
@@ -28,11 +28,24 @@ const startMonitoring = () => {
             // Poll each active token
             await Promise.all(activeTokens.map(async (address) => {
                 try {
+                    // Fetch data using the modular service
                     const data = await fetchContractPrices(address);
 
-                    // Broadcast to specific token room
-                    // Note: fetchContractPrices already returns the correctly formatted payload
-                    ioInstance.to(`token_${address}`).emit('paxi_price_updated_socket', data);
+                    // Determine latest price from the prices array
+                    const latestPrice = data.prices.length > 0 ? data.prices[data.prices.length - 1] : 0;
+
+                    // Construct payload for frontend listeners
+                    const payload = {
+                        address: address,
+                        price_paxi: latestPrice,
+                        price_change: data.price_change,
+                        prices: data.prices,
+                        timestamp: Date.now()
+                    };
+
+                    // Broadcast using the correct event name 'price_update'
+                    // Frontend socket.js listens for 'price_update' and dispatches 'paxi_price_updated_socket'
+                    ioInstance.to(`token_${address}`).emit('price_update', payload);
                 } catch (e) {
                     // Fail silently for individual tokens
                 }
@@ -41,7 +54,7 @@ const startMonitoring = () => {
         } catch (e) {
             console.error('[MonitorPrice] Loop error:', e.message);
         }
-    }, 5000); // Consistent 5s interval for realtime monitoring
+    }, 5000); // 5s interval for realtime streaming
 };
 
 module.exports = { init };
