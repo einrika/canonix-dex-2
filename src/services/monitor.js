@@ -15,18 +15,32 @@ const API_ENDPOINTS = {
 
 const init = (io) => {
     ioInstance = io;
-    console.log('[Monitor] WebSocket initialized');
+    console.log('[Monitor] Global Monitor initialized');
 
     io.on('connection', (socket) => {
         if (cache.tokenList) socket.emit('token_list_update', cache.tokenList);
         if (cache.paxiPrice) socket.emit('paxi_price_usd_update', cache.paxiPrice);
 
+        // Sidebar subscription
         socket.on('subscribe_sidebar', () => {
             socket.join('sidebar');
         });
 
         socket.on('unsubscribe_sidebar', () => {
             socket.leave('sidebar');
+        });
+
+        // Token room subscription (Handled here as requested)
+        socket.on('subscribe_token', (address) => {
+            if (!address) return;
+            socket.join(`token_${address}`);
+            console.log(`[Monitor] Socket ${socket.id} joined token_${address}`);
+        });
+
+        socket.on('unsubscribe_token', (address) => {
+            if (!address) return;
+            socket.leave(`token_${address}`);
+            console.log(`[Monitor] Socket ${socket.id} left token_${address}`);
         });
     });
 
@@ -36,10 +50,8 @@ const init = (io) => {
 const startMonitoring = () => {
     if (monitorInterval) clearInterval(monitorInterval);
 
+    // Global monitoring every 10 seconds
     monitorInterval = setInterval(async () => {
-        const connections = await ioInstance.fetchSockets();
-        if (connections.length === 0) return;
-
         try {
             await Promise.all([
                 updateTokenList(),

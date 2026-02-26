@@ -358,7 +358,13 @@ window.setTab = function(name) {
         btn.classList.add('active', 'bg-meme-green', 'text-black');
         btn.classList.remove('bg-surface', 'text-primary-text');
     }
-    if (name === 'holders') window.loadTokenHolders(); else window.renderTransactionHistory();
+
+    // Force render into tabContent for main page tabs
+    if (name === 'holders') {
+        window.loadTokenHolders();
+    } else if (name === 'history') {
+        window.renderTransactionHistory('tabContent');
+    }
 };
 
 // ===== UNIFIED SIDEBAR TAB MANAGEMENT =====

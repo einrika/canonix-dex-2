@@ -3,36 +3,11 @@ const fetch = require('node-fetch');
 let ioInstance = null;
 let monitorInterval = null;
 
-const cache = {
-    tokenPrices: new Map() // address -> data
-};
+const API_ENDPOINT = (address) => `https://mainnet-api.paxinet.io/prc20/get_contract_prices?address=${address}`;
 
 const init = (io) => {
     ioInstance = io;
-    console.log('[Monitor-Price] Realtime price monitoring initialized');
-
-    io.on('connection', (socket) => {
-        socket.on('subscribe_token', async (tokenAddress) => {
-            if (tokenAddress) {
-                socket.join(`token_${tokenAddress}`);
-
-                // Immediate delivery if cached
-                if (cache.tokenPrices.has(tokenAddress)) {
-                    socket.emit('price_update', cache.tokenPrices.get(tokenAddress));
-                } else {
-                    const data = await fetchTokenPrice(tokenAddress);
-                    if (data) socket.emit('price_update', data);
-                }
-            }
-        });
-
-        socket.on('unsubscribe_token', (tokenAddress) => {
-            if (tokenAddress) {
-                socket.leave(`token_${tokenAddress}`);
-            }
-        });
-    });
-
+    console.log('[MonitorPrice] Realtime Chart Monitor initialized');
     startMonitoring();
 };
 
@@ -40,51 +15,54 @@ const startMonitoring = () => {
     if (monitorInterval) clearInterval(monitorInterval);
 
     monitorInterval = setInterval(async () => {
-        const connections = await ioInstance.fetchSockets();
-        if (connections.length === 0) return;
-
-        const rooms = Array.from(ioInstance.sockets.adapter.rooms.keys())
-            .filter(room => room.startsWith('token_'));
-
-        if (rooms.length === 0) return;
-
         try {
-            for (const room of rooms) {
-                const address = room.replace('token_', '');
-                const data = await fetchTokenPrice(address);
-                if (data) {
-                    ioInstance.to(room).emit('price_update', data);
+            const rooms = ioInstance.sockets.adapter.rooms;
+            const activeTokens = [];
+
+            for (const [roomName, roomData] of rooms) {
+                if (roomName.startsWith('token_') && roomData.size > 0) {
+                    activeTokens.push(roomName.replace('token_', ''));
                 }
             }
+
+            if (activeTokens.length === 0) return;
+
+            // Poll each active token
+            await Promise.all(activeTokens.map(async (address) => {
+                try {
+                    const res = await fetch(API_ENDPOINT(address), { timeout: 4000 });
+                    if (!res.ok) return;
+
+                    const result = await res.json();
+                    if (!result || !result.data) return;
+
+                    const tokenData = result.data;
+
+                    // Format data for chart and UI
+                    // Sending ALL fields to ensure tokens.js listener doesn't break MCAP/LIQ stats
+                    const payload = {
+                        address: address,
+                        price_paxi: parseFloat(tokenData.price_paxi || tokenData.price || 0),
+                        price_change: parseFloat(tokenData.price_change_24h || 0),
+                        reserve_paxi: parseFloat(tokenData.reserve_paxi || 0),
+                        reserve_prc20: parseFloat(tokenData.reserve_prc20 || 0),
+                        volume_24h: parseFloat(tokenData.volume_24h || 0),
+                        market_cap: parseFloat(tokenData.market_cap || 0),
+                        liquidity: parseFloat(tokenData.liquidity || 0),
+                        timestamp: Date.now()
+                    };
+
+                    // Broadcast to specific token room
+                    ioInstance.to(`token_${address}`).emit('paxi_price_updated_socket', payload);
+                } catch (e) {
+                    // Fail silently for individual tokens
+                }
+            }));
+
         } catch (e) {
-            console.error('[Monitor-Price] Loop error:', e.message);
+            console.error('[MonitorPrice] Loop error:', e.message);
         }
-    }, 5000);
-};
-
-const fetchTokenPrice = async (address) => {
-    try {
-        const url = `https://explorer.paxinet.io/api/prc20/contract?address=${address}`;
-        const res = await fetch(url);
-        if (!res.ok) return null;
-        const data = await res.json();
-
-        if (data && data.contract) {
-            const now = Math.floor(Date.now() / 5000) * 5000;
-            const payload = {
-                address: address,
-                price_paxi: data.contract.price_paxi,
-                price_change: data.contract.price_change,
-                reserve_paxi: data.contract.reserve_paxi,
-                reserve_prc20: data.contract.reserve_prc20,
-                volume_24h: data.contract.volume,
-                timestamp: now
-            };
-            cache.tokenPrices.set(address, payload);
-            return payload;
-        }
-    } catch (e) { }
-    return null;
+    }, 5000); // Consistent 5s interval for realtime monitoring
 };
 
 module.exports = { init };

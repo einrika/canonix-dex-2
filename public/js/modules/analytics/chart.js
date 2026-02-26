@@ -16,22 +16,22 @@ window.updateLivePrice = function(price, timestamp = null) {
     const priceLabel = document.getElementById('currentPrice');
     if (priceLabel) window.setText(priceLabel, parseFloat(price).toFixed(8) + ' PAXI');
 
-    // ARSITEKTUR UPDATE:
-    // Chart mengambil data "langsung" dari monitor.js (via socket price_update event).
-    // Polling tetap jalan sebagai fallback/sync, namun socket memberikan update instant.
+    // ARSITEKTUR STREAMING:
+    // Chart menggunakan mechanism update incremental (series.update) tanpa redraw total.
+    // Data disinkronkan ke bucket 5 detik konsisten dengan polling backend.
 
     if (window.currentTimeframe === 'realtime' && window.lineSeries) {
         const p = parseFloat(price);
-        // Align to 5s bucket consistent with backend monitor.js
-        // Backend uses ms, chart uses seconds
+        // Align to 5s bucket consistent with backend monitor-price.js
+        // Backend uses ms, chart uses seconds (Lightweight charts requirement)
         const now = timestamp ? Math.floor(timestamp / 1000) : Math.floor(Date.now() / 5000) * 5;
 
         const lastPoint = window.currentPriceData[window.currentPriceData.length - 1];
 
-        // VALIDATION: Only update if timestamp is >= last point
-        // This prevents "flicker" or "regression" if socket message arrives after a newer poll
+        // BOUNCE PROTECTION: Hanya update jika timestamp >= data terakhir
         if (!lastPoint || now >= lastPoint.time) {
             try {
+                // Smooth update via lightweight-charts internal state
                 window.lineSeries.update({ time: now, value: p });
 
                 if (lastPoint && lastPoint.time === now) {
@@ -39,17 +39,19 @@ window.updateLivePrice = function(price, timestamp = null) {
                     lastPoint.high = Math.max(lastPoint.high, p);
                     lastPoint.low = Math.min(lastPoint.low, p);
                 } else {
+                    // New 5s bucket
                     window.currentPriceData.push({
                         time: now, open: p, high: p, low: p, close: p, volume: 0
                     });
-                    if (window.currentPriceData.length > 300) window.currentPriceData.shift();
+                    if (window.currentPriceData.length > 500) window.currentPriceData.shift();
 
-                    // Update indicators for new candle
+                    // Sync indicators on new bucket
                     if (window.ma7Series?.options().visible) window.ma7Series.setData(window.calculateMA(window.currentPriceData, 7));
                     if (window.ma25Series?.options().visible) window.ma25Series.setData(window.calculateMA(window.currentPriceData, 25));
                 }
             } catch (e) {
-                console.warn('[Chart] Update error:', e);
+                // Lightweight charts error handling for unordered timestamps
+                console.warn('[Chart] Streaming update error:', e.message);
             }
         }
     }
@@ -409,14 +411,12 @@ window.refreshRealtimeChart = async function() {
 
     window.isRefreshingChart = true;
     try {
-        // Optimized: Disable cache, use timestamp to ensure fresh data
-        // Explicitly requesting 'realtime' timeframe which aligns to 5s buckets in backend
+        // Konsisten 5 detik polling untuk syncing data histori pendek (realtime streaming fallback)
         const url = `${window.APP_CONFIG.BACKEND_API}/api/token-price?address=${window.currentPRC20}&timeframe=realtime&_t=${Date.now()}`;
         const data = await window.fetchDirect(url, { cache: 'no-store' });
 
         if (!data || !data.history || !data.history.length) return;
 
-        // Normalize and sort data
         const points = data.history.map(item => ({
             time: Math.floor(item.timestamp / 1000),
             value: parseFloat(item.price_paxi)
@@ -427,11 +427,8 @@ window.refreshRealtimeChart = async function() {
         points.forEach(point => {
             const lastPoint = window.currentPriceData[window.currentPriceData.length - 1];
 
-            // BOUNCE PROTECTION:
-            // Never update points older than our current last point
+            // BOUNCE PROTECTION
             if (!lastPoint || point.time >= lastPoint.time) {
-
-                // Only update if it's a new bucket OR a new price for the current bucket
                 if (!lastPoint || point.time > lastPoint.time || point.value !== lastPoint.close) {
                     try {
                         window.lineSeries.update({ time: point.time, value: point.value });
@@ -449,13 +446,10 @@ window.refreshRealtimeChart = async function() {
                                 close: point.value,
                                 volume: 0
                             });
-                            if (window.currentPriceData.length > 300) window.currentPriceData.shift();
+                            if (window.currentPriceData.length > 500) window.currentPriceData.shift();
                         }
                         hasNewData = true;
-                    } catch (e) {
-                        // Lightweight charts can be sensitive to timestamps
-                        console.warn('[Chart] series.update error:', e);
-                    }
+                    } catch (e) { }
                 }
             }
         });
