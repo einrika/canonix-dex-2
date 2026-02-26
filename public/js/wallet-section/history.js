@@ -225,15 +225,18 @@ function _buildTxRowHtml(tx) {
 }
 
 window.renderTransactionHistory = function(customContainerId) {
-    const addr = window.selectedAddress || window.currentAddress || (window.wallet && window.wallet.address);
-    
     let cont = customContainerId ? document.getElementById(customContainerId) : (document.getElementById('history-container') || document.getElementById('transaction-history-container') || document.getElementById('tabContent'));
     if (!cont) return;
 
+    const addr = window.selectedAddress || window.currentAddress || (window.wallet && window.wallet.address);
     if (!addr) {
         cont.innerHTML = `
         <div class="flex flex-col items-center justify-center py-16 px-4 text-center">
-            <div style="color:#5a6070" class="text-[13px]">Connect wallet to view history</div>
+            <div class="w-12 h-12 bg-secondary border border-secondary shadow-brutal flex items-center justify-center text-muted-text text-xl mb-4 rotate-[-10deg]">
+                <i class="fas fa-plug"></i>
+            </div>
+            <p class="font-display text-lg text-muted-text uppercase italic mb-4">Connect wallet to view history</p>
+            <button onclick="showConnectModal()" class="px-6 py-2 bg-accent text-black font-display text-sm border border-secondary shadow-brutal hover:shadow-none transition-all uppercase italic">Connect Wallet</button>
         </div>`;
         return;
     }
