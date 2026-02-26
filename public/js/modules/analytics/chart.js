@@ -63,7 +63,22 @@ window.addEventListener('paxi_price_updated_socket', (event) => {
     if (data && data.address === window.currentPRC20) {
         const price = data.price_paxi || data.price;
         const ts = data.timestamp;
-        if (price) window.updateLivePrice(price, ts);
+
+        if (price) {
+            window.updateLivePrice(price, ts);
+
+            // Visual indicator of feed activity
+            const statusEl = document.getElementById('chartStatus');
+            if (statusEl && window.currentTimeframe === 'realtime') {
+                statusEl.textContent = 'Live • Streaming';
+                statusEl.classList.add('text-accent');
+                statusEl.classList.remove('text-soft-success');
+
+                // Flash effect
+                statusEl.style.opacity = '0.5';
+                setTimeout(() => { statusEl.style.opacity = '1'; }, 100);
+            }
+        }
     }
 });
 

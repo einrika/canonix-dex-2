@@ -119,7 +119,8 @@ window.setupTokenSocketListeners = function() {
                 price_change_24h: data.price_change,
                 reserve_paxi: data.reserve_paxi,
                 reserve_prc20: data.reserve_prc20,
-                volume_24h: data.volume_24h
+                volume_24h: data.volume_24h,
+                holders: data.holders || currentDetail.holders
             };
 
             // Re-process to update MCAP/LIQ based on new price
