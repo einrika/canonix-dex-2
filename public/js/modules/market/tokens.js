@@ -64,7 +64,8 @@ window.processTokenDetail = function(contractAddress, data) {
         official_verified: c.official_verified === true,
         marketing_wallet: c.marketing || '',
         high_24h: parseFloat(c.high_24h || 0),
-        low_24h: parseFloat(c.low_24h || 0)
+        low_24h: parseFloat(c.low_24h || 0),
+        processed: true
     };
 };
 
@@ -135,6 +136,32 @@ window.setupTokenSocketListeners = function() {
                 // DECOUPLED: Removed window.updateLivePrice from here.
                 // The chart will handle its own label updates via its own listener
                 // to avoid double updates and bentrok with polling.
+            }
+
+            if (window.updateTokenCard) window.updateTokenCard(data.address);
+        }
+    });
+
+    window.addEventListener('paxi_contract_updated_socket', (event) => {
+        const data = event.detail;
+        const currentDetail = window.tokenDetails.get(data.address);
+        if (currentDetail) {
+            // Full detailed update including reserves, volume, and holders
+            const updated = {
+                ...currentDetail,
+                price_paxi: data.price_paxi !== undefined ? data.price_paxi : currentDetail.price_paxi,
+                price_change_24h: data.price_change !== undefined ? data.price_change : currentDetail.price_change_24h,
+                reserve_paxi: data.reserve_paxi !== undefined ? data.reserve_paxi : currentDetail.reserve_paxi,
+                reserve_prc20: data.reserve_prc20 !== undefined ? data.reserve_prc20 : currentDetail.reserve_prc20,
+                volume_24h: data.volume_24h !== undefined ? data.volume_24h : currentDetail.volume_24h,
+                holders: data.holders || currentDetail.holders
+            };
+
+            const processed = window.processTokenDetail(data.address, updated);
+            window.tokenDetails.set(data.address, processed);
+
+            if (window.currentPRC20 === data.address) {
+                if (window.updateDashboard) window.updateDashboard(processed);
             }
 
             if (window.updateTokenCard) window.updateTokenCard(data.address);

@@ -84,6 +84,8 @@ const startMonitoring = () => {
                     }
 
                     const payload = {
+                        type: 'contract',
+                        source: 'explorer_api',
                         address: address,
                         price_paxi: pricePaxi,
                         price_change: parseFloat(tokenData.price_change || tokenData.price_change_24h || 0),
@@ -91,11 +93,12 @@ const startMonitoring = () => {
                         reserve_prc20: parseFloat(tokenData.reserve_prc20 || 0),
                         volume_24h: parseFloat(tokenData.volume || tokenData.volume_24h || 0),
                         holders: parseInt(tokenData.holders || 0),
-                        timestamp: Date.now()
+                        timestamp: Date.now(),
+                        processed: true
                     };
 
-                    // Broadcast using 'price_update'
-                    ioInstance.to(`token_${address}`).emit('price_update', payload);
+                    // Broadcast using 'contract_update' to separate from high-frequency price feed
+                    ioInstance.to(`token_${address}`).emit('contract_update', payload);
 
                 } catch (e) {
                     // Fail silently for individual tokens to keep the loop running

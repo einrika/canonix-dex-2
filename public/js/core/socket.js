@@ -50,9 +50,14 @@ window.PaxiSocket = {
             window.dispatchEvent(new CustomEvent('paxi_token_list_updated', { detail: data }));
         });
 
-        // Specific price updates
+        // Specific price updates (High frequency)
         this.socket.on('price_update', (data) => {
             window.dispatchEvent(new CustomEvent('paxi_price_updated_socket', { detail: data }));
+        });
+
+        // Specific contract details updates (Lower frequency)
+        this.socket.on('contract_update', (data) => {
+            window.dispatchEvent(new CustomEvent('paxi_contract_updated_socket', { detail: data }));
         });
 
         // Global PAXI USD price update

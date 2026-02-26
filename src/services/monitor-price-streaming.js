@@ -47,10 +47,13 @@ const startMonitoring = () => {
 
                         // Construct payload for realtime chart
                         const payload = {
+                            type: 'price',
+                            source: 'price_feed',
                             address: address,
                             price_paxi: latestPrice,
                             price_change: data.price_change,
-                            timestamp: Date.now()
+                            timestamp: Date.now(),
+                            processed: true
                         };
 
                         // Broadcast using 'price_update'
