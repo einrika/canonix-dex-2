@@ -112,14 +112,15 @@ window.setupTokenSocketListeners = function() {
         const data = event.detail;
         const currentDetail = window.tokenDetails.get(data.address);
         if (currentDetail) {
-            // Update detail with new socket data
+            // SAFE MERGE: Only update fields that are present in the socket data
+            // This prevents price-only updates from zeroing out contract metadata
             const updated = {
                 ...currentDetail,
-                price_paxi: data.price_paxi,
-                price_change_24h: data.price_change,
-                reserve_paxi: data.reserve_paxi,
-                reserve_prc20: data.reserve_prc20,
-                volume_24h: data.volume_24h,
+                price_paxi: data.price_paxi !== undefined ? data.price_paxi : currentDetail.price_paxi,
+                price_change_24h: data.price_change !== undefined ? data.price_change : currentDetail.price_change_24h,
+                reserve_paxi: data.reserve_paxi !== undefined ? data.reserve_paxi : currentDetail.reserve_paxi,
+                reserve_prc20: data.reserve_prc20 !== undefined ? data.reserve_prc20 : currentDetail.reserve_prc20,
+                volume_24h: data.volume_24h !== undefined ? data.volume_24h : currentDetail.volume_24h,
                 holders: data.holders || currentDetail.holders
             };
 
