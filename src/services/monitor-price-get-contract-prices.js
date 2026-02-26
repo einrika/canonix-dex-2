@@ -24,7 +24,7 @@ const fetchContractPrices = async (address) => {
 
         const data = await response.json();
 
-        // Output must contain only 'prices' and 'price_change' as per specification
+        // Output must contain ONLY 'prices' and 'price_change' as per specification
         return {
             prices: Array.isArray(data.prices) ? data.prices : [],
             price_change: typeof data.price_change === 'number' ? data.price_change : 0

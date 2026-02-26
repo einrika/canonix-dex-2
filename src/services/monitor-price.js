@@ -1,4 +1,5 @@
-const { fetchContractPrices } = require('./monitor-price-get-contract-prices');
+const fetch = require('node-fetch');
+const { isValidPaxiAddress } = require('../utils/common');
 
 let ioInstance = null;
 let monitorInterval = null;
@@ -27,24 +28,36 @@ const startMonitoring = () => {
 
             // Poll each active token
             await Promise.all(activeTokens.map(async (address) => {
+                if (!isValidPaxiAddress(address)) return;
+
                 try {
-                    // Fetch data using the modular service
-                    const data = await fetchContractPrices(address);
+                    // Fetch FULL data for monitoring and dashboard stats
+                    const url = `https://mainnet-api.paxinet.io/prc20/get_contract_prices?address=${address}`;
+                    const res = await fetch(url, { timeout: 4000 });
+                    if (!res.ok) return;
 
-                    // Determine latest price from the prices array
-                    const latestPrice = data.prices.length > 0 ? data.prices[data.prices.length - 1] : 0;
+                    const result = await res.json();
+                    if (!result || !result.data) return;
 
-                    // Construct payload for frontend listeners
+                    const tokenData = result.data;
+                    const prices = result.prices || []; // Usually top level in this API?
+
+                    // Determine latest price
+                    const latestPrice = parseFloat(tokenData.price_paxi || tokenData.price || (prices.length > 0 ? prices[prices.length - 1] : 0));
+
+                    // Construct payload for frontend listeners (Must match tokens.js and chart.js expectations)
                     const payload = {
                         address: address,
                         price_paxi: latestPrice,
-                        price_change: data.price_change,
-                        prices: data.prices,
+                        price_change: parseFloat(tokenData.price_change_24h || result.price_change || 0),
+                        reserve_paxi: parseFloat(tokenData.reserve_paxi || 0),
+                        reserve_prc20: parseFloat(tokenData.reserve_prc20 || 0),
+                        volume_24h: parseFloat(tokenData.volume_24h || 0),
+                        prices: prices,
                         timestamp: Date.now()
                     };
 
-                    // Broadcast using the correct event name 'price_update'
-                    // Frontend socket.js listens for 'price_update' and dispatches 'paxi_price_updated_socket'
+                    // Broadcast using 'price_update' as per socket.js listener
                     ioInstance.to(`token_${address}`).emit('price_update', payload);
                 } catch (e) {
                     // Fail silently for individual tokens

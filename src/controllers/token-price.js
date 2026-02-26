@@ -1,5 +1,5 @@
 const fetch = require('node-fetch');
-const { sendResponse, getCached, setCached, checkRateLimit, isValidPaxiAddress } = require('../utils/common');
+const { sendResponse, checkRateLimit, isValidPaxiAddress } = require('../utils/common');
 const { fetchContractPrices } = require('../services/monitor-price-get-contract-prices');
 
 const tokenPriceHandler = async (req, res) => {
@@ -16,24 +16,24 @@ const tokenPriceHandler = async (req, res) => {
     const allowedTFs = ['realtime', '1h', '24h', '7d', '30d'];
     const tf = allowedTFs.includes(timeframe) ? timeframe : '24h';
 
-    // Optimized: Disable cache for price endpoints to ensure realtime data
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
 
     try {
         if (tf === 'realtime') {
-            // Use the modular service for realtime data
+            // Use the modular service for realtime data (Strictly minimal output)
             const data = await fetchContractPrices(address);
 
-            // Align 'now' to the nearest 5-second bucket
+            const prices = data.prices || [];
             const now = Math.floor(Date.now() / 5000) * 5000;
 
+            // Normalize to history format as requested
             const normalized = {
                 price_change: data.price_change || 0,
-                prices: data.prices, // Include raw prices array
-                history: data.prices.map((p, i) => ({
-                    timestamp: now - (data.prices.length - 1 - i) * 5000,
+                prices: prices,
+                history: prices.map((p, i) => ({
+                    timestamp: now - (prices.length - 1 - i) * 5000,
                     price_paxi: p
                 }))
             };
