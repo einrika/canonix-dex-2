@@ -79,17 +79,22 @@ const startMonitoring = () => {
         const connections = await ioInstance.fetchSockets();
         if (connections.length === 0) return;
 
-        // Check if anyone is viewing the sidebar
+        // Check if anyone is viewing the sidebar or individual tokens
         const sidebarRoom = ioInstance.sockets.adapter.rooms.get('sidebar');
         const isSidebarActive = sidebarRoom && sidebarRoom.size > 0;
+
+        const tokenRooms = Array.from(ioInstance.sockets.adapter.rooms.keys())
+            .filter(room => room.startsWith('token_'));
+        const hasTokenSubscribers = tokenRooms.length > 0;
 
         try {
             const tasks = [updateGlobalPaxiPrice()];
 
-            // Only update list and price data if sidebar is open
-            // as requested by the user.
             if (isSidebarActive) {
                 tasks.push(updateTokenList());
+            }
+
+            if (isSidebarActive || hasTokenSubscribers) {
                 tasks.push(updatePriceData());
             }
 

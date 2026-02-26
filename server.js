@@ -22,6 +22,12 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Attach Socket.io to request
+app.use((req, res, next) => {
+    req.io = io;
+    next();
+});
+
 // API Routes
 app.use('/api', apiRoutes);
 

@@ -226,10 +226,17 @@ function _buildTxRowHtml(tx) {
 
 window.renderTransactionHistory = function(customContainerId) {
     const addr = window.selectedAddress || window.currentAddress || (window.wallet && window.wallet.address);
-    if (!addr) return;
     
     let cont = customContainerId ? document.getElementById(customContainerId) : (document.getElementById('history-container') || document.getElementById('transaction-history-container') || document.getElementById('tabContent'));
     if (!cont) return;
+
+    if (!addr) {
+        cont.innerHTML = `
+        <div class="flex flex-col items-center justify-center py-16 px-4 text-center">
+            <div style="color:#5a6070" class="text-[13px]">Connect wallet to view history</div>
+        </div>`;
+        return;
+    }
 
     // Trigger initial load if empty
     if (window.txHistory.length === 0 && !window.historyIsLoading && !window.historyIsEnd) {
@@ -270,7 +277,7 @@ window.renderTransactionHistory = function(customContainerId) {
 };
 
 window.loadMoreHistory = async function() {
-    const addr = window.selectedAddress || window.currentAddress;
+    const addr = window.selectedAddress || window.currentAddress || (window.wallet && window.wallet.address);
     if (!addr || window.historyIsEnd || window.historyIsLoading) return;
     
     const btn = (window.event && window.event.target) || document.querySelector('[onclick="window.loadMoreHistory()"]');
@@ -495,3 +502,25 @@ window.renderTransactionHistorySidebar = function() {
 
 window.openTxDetailModal = (hash) => window.showTransactionDetailModal(hash);
 if (window.WalletUI) window.WalletUI.loadHistory = () => window.WalletHistory.loadHistory();
+
+// Reset history on wallet changes to prevent cross-wallet data leakage
+// and ensure fresh load for the new address.
+function resetWalletHistory() {
+    console.log('[History] Resetting data for new wallet');
+    window.txHistory = [];
+    window._txCache = [];
+    window.historyPage = 1;
+    window.historyIsEnd = false;
+    window.historyIsLoading = false;
+
+    // If the history tab is currently active, trigger a reload
+    if (window.currentSidebarTab === 'wallet') {
+        const historySec = document.getElementById('wallet-history-section');
+        if (historySec && !historySec.classList.contains('hidden')) {
+            window.WalletHistory.loadHistory();
+        }
+    }
+}
+
+window.addEventListener('paxi_active_wallet_changed', resetWalletHistory);
+window.addEventListener('paxi_wallet_connected', resetWalletHistory);

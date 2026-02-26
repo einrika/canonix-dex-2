@@ -51,6 +51,7 @@ const tokenPriceHandler = async (req, res) => {
         if (tf === 'realtime') {
             const prices = data.prices || [];
             // Align 'now' to the nearest 5-second bucket to prevent timestamp shifting on every poll
+            // Use UTC to ensure consistency across different server environments
             const now = Math.floor(Date.now() / 5000) * 5000;
             normalized = {
                 price_change: data.price_change || 0,
@@ -59,6 +60,17 @@ const tokenPriceHandler = async (req, res) => {
                     price_paxi: p
                 }))
             };
+
+            // Realtime Broadcast via WebSocket
+            if (req.io && prices.length > 0) {
+                const latestPrice = prices[prices.length - 1];
+                req.io.to(`token_${address}`).emit('price_update', {
+                    address: address,
+                    price_paxi: latestPrice,
+                    price_change: data.price_change || 0,
+                    timestamp: now
+                });
+            }
         } else {
             normalized = {
                 ...data,
