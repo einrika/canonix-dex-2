@@ -40,15 +40,57 @@ Object.assign(window.WalletUI, {
 
         if (!activeWallet) {
             container.innerHTML = `
-                <div class="flex flex-col items-center justify-center py-12 px-6 text-center animate-fade-in">
-                    <div class="w-16 h-16 bg-meme-green border-4 border-card shadow-brutal flex items-center justify-center mb-8 rotate-[-10deg]">
-                        <i class="fas fa-wallet text-3xl text-black"></i>
+                <div class="flex flex-col gap-4 animate-fade-in p-2">
+                    <!-- Connect Internal -->
+                    <div class="p-4 bg-surface border-4 border-card shadow-brutal-sm">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-8 h-8 bg-meme-green border-2 border-card flex items-center justify-center text-black">
+                                <i class="fas fa-shield-alt text-xs"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-display italic uppercase leading-none">Connect Internal</h4>
+                                <p class="text-[7px] font-mono font-bold text-muted-text uppercase tracking-widest">Secure & Encrypted</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 gap-2">
+                            <button onclick="window.WalletUI.showCreateModal()" class="w-full py-2.5 bg-meme-green text-black font-display text-sm border-2 border-card shadow-brutal-sm hover:shadow-none transition-all uppercase italic tracking-tight">Create Wallet</button>
+                            <button onclick="window.WalletUI.showImportModal()" class="w-full py-2.5 bg-surface border-2 border-card text-primary-text font-display text-sm shadow-brutal-sm hover:shadow-none transition-all uppercase italic tracking-tight">Import Wallet</button>
+                        </div>
                     </div>
-                    <h3 class="text-3xl font-display italic mb-4 uppercase tracking-tighter text-primary-text drop-shadow-[2px_2px_0_rgba(0,0,0,1)]">NO WALLET</h3>
-                    <p class="text-[10px] text-secondary-text mb-10 uppercase font-black tracking-widest leading-relaxed italic">Connect a wallet to start trading on Paxi Network.</p>
-                    <div class="flex flex-col gap-4 w-full">
-                        <button onclick="window.WalletUI.showCreateModal()" class="w-full py-4 bg-meme-green text-black font-display text-xl border-4 border-card shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">CREATE NEW</button>
-                        <button onclick="window.WalletUI.showImportModal()" class="w-full py-4 bg-surface border-4 border-card text-primary-text font-display text-xl shadow-brutal-cyan hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">IMPORT WALLET</button>
+
+                    <div class="flex items-center gap-2 px-2">
+                        <div class="flex-1 h-px bg-card"></div>
+                        <span class="text-[8px] font-mono font-bold text-muted-text uppercase tracking-widest">OR</span>
+                        <div class="flex-1 h-px bg-card"></div>
+                    </div>
+
+                    <!-- External Wallets -->
+                    <div class="grid grid-cols-1 gap-3">
+                        <button onclick="window.connectWallet('paxihub')" class="flex items-center justify-between p-4 bg-surface border-4 border-card shadow-brutal-sm hover:shadow-none transition-all group">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-meme-pink border-2 border-card flex items-center justify-center text-primary-text group-hover:rotate-6 transition-transform">
+                                    <i class="fas fa-wallet"></i>
+                                </div>
+                                <div class="text-left">
+                                    <h4 class="text-lg font-display italic uppercase leading-none">PaxiHub</h4>
+                                    <p class="text-[7px] font-mono font-bold text-muted-text uppercase tracking-widest">Mobile & Extension</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-right text-muted-text text-[10px]"></i>
+                        </button>
+
+                        <button onclick="window.connectWallet('keplr')" class="flex items-center justify-between p-4 bg-surface border-4 border-card shadow-brutal-sm hover:shadow-none transition-all group">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-meme-cyan border-2 border-card flex items-center justify-center text-black group-hover:rotate-6 transition-transform">
+                                    <i class="fas fa-rocket"></i>
+                                </div>
+                                <div class="text-left">
+                                    <h4 class="text-lg font-display italic uppercase leading-none">Keplr</h4>
+                                    <p class="text-[7px] font-mono font-bold text-muted-text uppercase tracking-widest">Cosmos Extension</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-right text-muted-text text-[10px]"></i>
+                        </button>
                     </div>
                 </div>
             `;
@@ -1097,6 +1139,8 @@ Object.assign(window.WalletUI, {
                 this.renderDashboard();
             } catch (e) {
                 console.error("Unlock failed", e);
+                const errorModal = document.getElementById('pinErrorModal');
+                if (errorModal) errorModal.classList.remove('hidden');
             }
         });
     },
@@ -1292,7 +1336,10 @@ Object.assign(window.WalletUI, {
                 `;
                 document.body.insertAdjacentHTML('beforeend', secretModalHtml);
             } catch (e) {
-                            }
+                console.error("Export failed", e);
+                const errorModal = document.getElementById('pinErrorModal');
+                if (errorModal) errorModal.classList.remove('hidden');
+            }
         });
     },
 
@@ -1436,7 +1483,10 @@ Object.assign(window.WalletUI, {
 
                 this.renderDashboard();
             } catch (e) {
-                            }
+                console.error("Import failed", e);
+                const errorModal = document.getElementById('pinErrorModal');
+                if (errorModal) errorModal.classList.remove('hidden');
+            }
             });
         } catch (e) {
             console.error("❌ processImport error:", e);
@@ -1992,7 +2042,18 @@ window.renderWalletOptions = function() {
 };
 
 window.setupNewWallet = async function() {
-        try {
+    window.showInternalWalletSheet();
+    const content = document.getElementById('walletSheetContent');
+    if (content) {
+        content.innerHTML = `
+            <div class="flex flex-col items-center justify-center py-12">
+                <div class="w-12 h-12 border-4 border-meme-green border-t-transparent rounded-full animate-spin mb-4"></div>
+                <p class="font-display text-lg uppercase italic text-primary-text">Generating Wallet...</p>
+            </div>
+        `;
+    }
+
+    try {
         const paxi = await window.waitForLibrary('PaxiCosmJS');
 
         if (!window.DirectSecp256k1HdWallet && !paxi.DirectSecp256k1HdWallet) {
@@ -2029,7 +2090,20 @@ window.setupNewWallet = async function() {
             </button>
         `;
     } catch (e) {
-            }
+        console.error("❌ Wallet generation failed:", e);
+        const content = document.getElementById('walletSheetContent');
+        if (content) {
+            content.innerHTML = `
+                <div class="text-center py-8">
+                    <i class="fas fa-exclamation-triangle text-meme-pink text-4xl mb-4"></i>
+                    <h3 class="text-xl font-bold text-meme-pink">Generation Failed</h3>
+                    <p class="text-xs text-secondary-text mt-2">${e.message || 'Unknown Error'}</p>
+                    <button onclick="window.setupNewWallet()" class="mt-6 px-6 py-2 bg-meme-green text-black font-bold rounded-lg">Retry</button>
+                </div>
+            `;
+        }
+        if (window.showNotif) window.showNotif("Error: Wallet generation failed", "error");
+    }
 };
 
 window.confirmBackup = function() {
@@ -2045,6 +2119,7 @@ window.confirmBackup = function() {
 };
 
 window.setupImportWallet = function() {
+    window.showInternalWalletSheet();
     const content = document.getElementById('walletSheetContent');
     content.innerHTML = `
         <h3 class="text-lg font-bold mb-2">Import Wallet</h3>
@@ -2056,6 +2131,13 @@ window.setupImportWallet = function() {
     `;
 };
 
+window.retryPin = function() {
+    const modal = document.getElementById('pinErrorModal');
+    if (modal) modal.classList.add('hidden');
+    const lastTitle = document.getElementById('pinTitle')?.textContent || 'Enter PIN';
+    window.showPinSheet(lastTitle, window.internalWalletState.pinCallback);
+};
+
 window.unlockInternalWallet = function() {
     window.showPinSheet('Enter PIN to Unlock', async (pin) => {
         try {
@@ -2064,7 +2146,10 @@ window.unlockInternalWallet = function() {
             await window.connectWithMnemonic(mnemonic);
             window.hideInternalWalletSheet();
         } catch (e) {
-                    }
+            console.error("Unlock failed", e);
+            const errorModal = document.getElementById('pinErrorModal');
+            if (errorModal) errorModal.classList.remove('hidden');
+        }
     });
 };
 

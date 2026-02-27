@@ -184,9 +184,9 @@
 
 <body class="bg-bg text-primary-text font-sans h-screen flex flex-col overflow-hidden selection:bg-soft-failed selection:text-primary-text">
     <!-- ===== HEADER ===== -->
-    <header class="h-12 border-b border-secondary hidden lg:flex items-center justify-between px-3 bg-bg z-50">
+    <header class="h-12 border-b border-secondary flex items-center justify-between px-3 bg-bg z-50">
         <div class="flex items-center gap-2">
-            <button onclick="toggleMobileSidebar()" class="lg:hidden text-primary-text p-1 border border-secondary bg-secondary"><i class="fas fa-bars"></i></button>
+            <button onclick="toggleMobileSidebar()" class="lg:hidden text-primary-text p-2 border border-secondary bg-secondary hover:bg-card active:scale-95 transition-all"><i class="fas fa-bars"></i></button>
             <a href="index.html" class="flex items-center group">
                 <div class="w-7 h-7 bg-accent border border-secondary shadow-brutal-sm flex items-center justify-center rotate-[-3deg] group-hover:rotate-0 transition-transform mr-2">
                     <i class="fas fa-exchange-alt text-black text-[10px]"></i>
@@ -209,15 +209,15 @@
                 <button onclick="window.location.href='setting.html'" title="Settings" class="w-7 h-7 flex items-center justify-center border border-secondary bg-secondary text-primary-text hover:bg-secondary hover:text-black transition-all shadow-brutal-sm"><i class="fas fa-cog text-[10px]"></i></button>
             </div>
             
-            <div id="walletInfo" class="hidden sm:flex items-center gap-2 px-2 py-1 bg-secondary border border-secondary shadow-brutal-sm">
+            <div id="walletInfo" class="hidden xs:flex items-center gap-2 px-2 py-1 bg-secondary border border-secondary shadow-brutal-sm">
                 <div class="text-right">
                     <div id="walletAddrShort" class="text-[7px] font-mono text-muted-text font-bold uppercase">...</div>
                     <div id="walletBalance" class="text-[9px] font-display text-accent italic">0.00 PAXI</div>
                 </div>
                 <div class="w-5 h-5 bg-secondary border border-secondary flex items-center justify-center text-primary-text rotate-[5deg]"><i class="fas fa-wallet text-[9px]"></i></div>
             </div>
-            <button id="connectBtn" onclick="showConnectModal()" class="bg-accent text-black font-display text-sm px-3 py-1 border border-secondary shadow-brutal-sm hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all flex items-center gap-2 uppercase">
-                <i class="fas fa-plug text-[10px]"></i><span class="hidden xs:inline">Connect</span>
+            <button id="connectBtn" onclick="showConnectModal()" class="bg-accent text-black font-display text-sm px-4 py-2 border border-secondary shadow-brutal-sm hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 active:scale-95 transition-all flex items-center gap-2 uppercase">
+                <i class="fas fa-plug text-[10px]"></i><span class="hidden sm:inline">Connect</span>
             </button>
         </div>
     </header>
@@ -273,7 +273,7 @@
                                 <span id="priceChange" class="text-[9px] font-sans text-soft-success bg-primary px-1 border border-secondary">-0.00%</span>
                             </div>
                         </div>
-                        <button id="aiBtn" onclick="showAIAnalysis()" class="bg-accent text-black font-display text-base px-2 py-0.5 border border-secondary shadow-brutal-sm hover:shadow-none transition-all uppercase italic">
+                        <button id="aiBtn" onclick="showAIAnalysis()" class="bg-accent text-black font-display text-base px-3 py-1.5 border border-secondary shadow-brutal-sm hover:shadow-none active:scale-95 transition-all uppercase italic">
                             <i class="fas fa-brain text-[10px]"></i> AI
                         </button>
                     </div>
@@ -395,7 +395,7 @@
                             <span class="font-mono text-[7px] text-muted-text font-bold uppercase">CONTRACT CA</span>
                             <div class="flex items-center gap-2 bg-primary p-1.5 border border-secondary shadow-inner">
                                 <code id="caAddr" class="text-[9px] font-mono text-soft-success flex-1 uppercase truncate tracking-tight">paxi...</code>
-                                <button onclick="copyAddrText()" class="text-soft-warning hover:scale-110 transition-transform"><i class="fas fa-copy text-xs"></i></button>
+                                <button onclick="copyAddrText()" class="text-soft-warning hover:scale-110 active:scale-90 transition-transform p-1.5"><i class="fas fa-copy text-xs"></i></button>
                             </div>
                         </div>
                         <div class="flex justify-between items-center">
@@ -601,10 +601,9 @@
         </div>
     </div>
     
-    <!-- PIN Bottom Sheet -->
-    <div id="pinSheet" class="hidden fixed inset-0 bg-primary/95 z-[100000] flex items-end justify-center">
-        <div class="bg-secondary w-full max-w-md border-t-2 border-secondary animate-slide-up flex flex-col p-5 pb-8">
-            <div class="w-12 h-1 bg-primary rounded-full mx-auto mb-6 shrink-0"></div>
+    <!-- PIN Modal (Centered) -->
+    <div id="pinSheet" class="hidden fixed inset-0 bg-primary/95 z-[100000] flex items-center justify-center p-4">
+        <div class="bg-secondary w-full max-w-xs border-4 border-card shadow-brutal flex flex-col p-5 pb-8 animate-fade-in">
             <h3 id="pinTitle" class="text-2xl font-display text-center mb-1 uppercase tracking-tight text-accent">Unlock</h3>
             <p id="pinMsg" class="font-mono text-[7px] text-muted-text text-center mb-6 font-bold uppercase tracking-widest">Enter your 6-digit access code</p>
             
@@ -634,6 +633,18 @@
                 <button onclick="backspacePin()" class="w-12 h-12 flex items-center justify-center text-soft-failed hover:scale-110 transition-transform"><i class="fas fa-backspace text-xl"></i></button>
             </div>
             <button onclick="hidePinSheet()" class="mt-6 font-display text-lg text-muted-text uppercase hover:text-primary-text transition-colors tracking-widest shrink-0">Abort</button>
+        </div>
+    </div>
+
+    <!-- PIN Error Modal -->
+    <div id="pinErrorModal" class="hidden fixed inset-0 bg-primary/98 z-[110000] flex items-center justify-center p-4">
+        <div class="bg-secondary border-4 border-card shadow-brutal w-full max-w-xs p-6 text-center animate-shake">
+            <div class="w-16 h-16 bg-meme-pink border-4 border-card shadow-brutal flex items-center justify-center mx-auto mb-6 rotate-[10deg]">
+                <i class="fas fa-exclamation-triangle text-3xl text-primary-text"></i>
+            </div>
+            <h3 class="text-2xl font-display text-meme-pink uppercase italic tracking-tighter mb-2">ACCESS DENIED</h3>
+            <p id="pinErrorMsg" class="font-mono text-[9px] text-secondary-text mb-8 uppercase font-bold tracking-widest italic">Invalid PIN provided. Please try again.</p>
+            <button onclick="retryPin()" class="w-full py-4 bg-meme-pink text-primary-text font-display text-xl border-4 border-card shadow-brutal hover:shadow-none transition-all uppercase italic">RETRY</button>
         </div>
     </div>
     
