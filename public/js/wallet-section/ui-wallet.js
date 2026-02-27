@@ -35,27 +35,24 @@ Object.assign(window.WalletUI, {
         const container = document.getElementById('sidebarContent');
         if (!container || window.currentSidebarTab !== 'wallet') return;
 
-        const activeWallet = window.WalletManager.getActiveWallet();
-        const isLocked = !window.WalletSecurity.getSessionPin();
+        const connectedWallet = window.wallet;
+        const activeInternal = window.WalletManager.getActiveWallet();
+        const isLocked = activeInternal && !activeInternal.isWatchOnly && !window.WalletSecurity.getSessionPin();
 
-        if (!activeWallet) {
-            container.innerHTML = `
-                <div class="flex flex-col items-center justify-center py-12 px-6 text-center animate-fade-in">
-                    <div class="w-16 h-16 bg-meme-green border-4 border-card shadow-brutal flex items-center justify-center mb-8 rotate-[-10deg]">
-                        <i class="fas fa-wallet text-3xl text-black"></i>
-                    </div>
-                    <h3 class="text-3xl font-display italic mb-4 uppercase tracking-tighter text-primary-text drop-shadow-[2px_2px_0_rgba(0,0,0,1)]">NO WALLET</h3>
-                    <p class="text-[10px] text-secondary-text mb-10 uppercase font-black tracking-widest leading-relaxed italic">Connect a wallet to start trading on Paxi Network.</p>
-                    <div class="flex flex-col gap-4 w-full">
-                        <button onclick="window.WalletUI.showCreateModal()" class="w-full py-4 bg-meme-green text-black font-display text-xl border-4 border-card shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">CREATE NEW</button>
-                        <button onclick="window.WalletUI.showImportModal()" class="w-full py-4 bg-surface border-4 border-card text-primary-text font-display text-xl shadow-brutal-cyan hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">IMPORT WALLET</button>
-                    </div>
-                </div>
-            `;
+        // Priority 1: Show connected wallet (internal or external)
+        // External wallets or unlocked internal wallets go here
+        if (connectedWallet && (window.walletType !== 'internal' || !isLocked)) {
+            const walletToRender = {
+                ...connectedWallet,
+                name: connectedWallet.name || (window.walletType === 'keplr' ? 'Keplr Wallet' :
+                      window.walletType === 'paxihub' ? 'Paxihub Wallet' : 'External Wallet')
+            };
+            this.renderActiveWalletView(container, walletToRender);
             return;
         }
 
-        if (isLocked && !activeWallet.isWatchOnly) {
+        // Priority 2: Show locked view if an internal wallet is selected but locked
+        if (isLocked) {
             container.innerHTML = `
                 <div class="flex flex-col items-center justify-center py-16 px-6 text-center animate-fade-in">
                     <div class="w-16 h-16 bg-meme-pink border-4 border-card shadow-brutal flex items-center justify-center mb-8 rotate-[10deg]">
@@ -69,7 +66,20 @@ Object.assign(window.WalletUI, {
             return;
         }
 
-        this.renderActiveWalletView(container, activeWallet);
+        // Priority 3: No wallet connected and no internal wallet exists
+        container.innerHTML = `
+            <div class="flex flex-col items-center justify-center py-12 px-6 text-center animate-fade-in">
+                <div class="w-16 h-16 bg-meme-green border-4 border-card shadow-brutal flex items-center justify-center mb-8 rotate-[-10deg]">
+                    <i class="fas fa-wallet text-3xl text-black"></i>
+                </div>
+                <h3 class="text-3xl font-display italic mb-4 uppercase tracking-tighter text-primary-text drop-shadow-[2px_2px_0_rgba(0,0,0,1)]">NO WALLET</h3>
+                <p class="text-[10px] text-secondary-text mb-10 uppercase font-black tracking-widest leading-relaxed italic">Connect a wallet to start trading on Paxi Network.</p>
+                <div class="flex flex-col gap-4 w-full">
+                    <button onclick="window.WalletUI.showCreateModal()" class="w-full py-4 bg-meme-green text-black font-display text-xl border-4 border-card shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">CREATE NEW</button>
+                    <button onclick="window.WalletUI.showImportModal()" class="w-full py-4 bg-surface border-4 border-card text-primary-text font-display text-xl shadow-brutal-cyan hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">IMPORT WALLET</button>
+                </div>
+            </div>
+        `;
     },
 
     setWalletSubTab: function(tab) {
@@ -131,12 +141,15 @@ Object.assign(window.WalletUI, {
         const container = document.getElementById('lp-list-container');
         if (!container) return;
 
-        const activeWallet = window.WalletManager.getActiveWallet();
-        if (!activeWallet) return;
+        const walletAddress = window.wallet?.address || window.WalletManager.getActiveWallet()?.address;
+        if (!walletAddress) {
+            container.innerHTML = '<div class="text-center py-8 text-[10px] text-muted-text uppercase font-black tracking-widest">Connect wallet to view positions</div>';
+            return;
+        }
 
         container.innerHTML = '<div class="text-center py-4"><div class="w-8 h-8 border-4 border-meme-green border-t-transparent rounded-full animate-spin mx-auto"></div></div>';
 
-        const lps = await window.fetchUserLPPositions(activeWallet.address);
+        const lps = await window.fetchUserLPPositions(walletAddress);
 
         if (lps.length === 0) {
             container.innerHTML = '<div class="text-center py-8 text-[10px] text-muted-text uppercase font-black tracking-widest">No LP Positions found</div>';
@@ -155,7 +168,6 @@ Object.assign(window.WalletUI, {
                     </div>
                     <div class="text-right">
                         <div class="text-xs font-mono font-bold text-primary-text">${lp.lpBalance} LP</div>
-                        <div class="text-[9px] text-up font-black italic">${lp.share}% Share</div>
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-2 mb-4 text-[9px] text-secondary-text font-bold uppercase tracking-tighter">
@@ -279,8 +291,9 @@ Object.assign(window.WalletUI, {
 
         this.renderAssets();
         
-        // Set window.wallet for backward compatibility with old code
-        if (!window.wallet || window.wallet.address !== wallet.address) {
+        // Set window.wallet for backward compatibility with old code if it's an internal wallet
+        // Avoid overwriting if it's an external wallet already connected
+        if (wallet.id && (!window.wallet || window.wallet.address !== wallet.address)) {
             window.wallet = {
                 address: wallet.address,
                 name: wallet.name,
@@ -1097,6 +1110,7 @@ Object.assign(window.WalletUI, {
                 this.renderDashboard();
             } catch (e) {
                 console.error("Unlock failed", e);
+                window.showWrongPinModal();
             }
         });
     },
@@ -1292,7 +1306,9 @@ Object.assign(window.WalletUI, {
                 `;
                 document.body.insertAdjacentHTML('beforeend', secretModalHtml);
             } catch (e) {
-                            }
+                console.error("Reveal failed:", e);
+                window.showWrongPinModal();
+            }
         });
     },
 
@@ -1420,23 +1436,25 @@ Object.assign(window.WalletUI, {
             }
 
             window.showPinSheet('Set 6-Digit PIN', async (pin) => {
-            try {
-                                if (type === 'mnemonic') {
-                    await window.WalletManager.importMnemonic(name, value, pin);
-                } else {
-                    await window.WalletManager.importPrivateKey(name, value, pin);
+                try {
+                    if (type === 'mnemonic') {
+                        await window.WalletManager.importMnemonic(name, value, pin);
+                    } else {
+                        await window.WalletManager.importPrivateKey(name, value, pin);
+                    }
+
+                    window.WalletSecurity.setSessionPin(pin);
+                    document.getElementById('importModal')?.remove();
+
+                    // Trigger auto-connect for the new wallet
+                    const active = window.WalletManager.getActiveWallet();
+                    if (active) await window.connectInternalWallet(active.id, pin);
+
+                    this.renderDashboard();
+                } catch (e) {
+                    console.error("Import failed:", e);
+                    window.showWrongPinModal();
                 }
-
-                window.WalletSecurity.setSessionPin(pin);
-                document.getElementById('importModal').remove();
-
-                // Trigger auto-connect for the new wallet
-                const active = window.WalletManager.getActiveWallet();
-                if (active) await window.connectInternalWallet(active.id, pin);
-
-                this.renderDashboard();
-            } catch (e) {
-                            }
             });
         } catch (e) {
             console.error("❌ processImport error:", e);
@@ -1444,9 +1462,31 @@ Object.assign(window.WalletUI, {
     },
 
     showCreateModal: function() {
+        window.showInternalWalletSheet();
         window.setupNewWallet();
     }
 });
+
+// Helper for Wrong PIN Modal
+window.showWrongPinModal = function() {
+    window.removeClass('wrongPinModal', 'hidden');
+    window.addClass('wrongPinModal', 'flex');
+};
+
+window.hideWrongPinModal = function() {
+    window.addClass('wrongPinModal', 'hidden');
+    window.removeClass('wrongPinModal', 'flex');
+};
+
+window.retryPin = function() {
+    window.hideWrongPinModal();
+    window.clearPin();
+    const pinSheet = document.getElementById('pinSheet');
+    if (pinSheet && pinSheet.classList.contains('hidden')) {
+        window.removeClass('pinSheet', 'hidden');
+        window.addClass('pinSheet', 'flex');
+    }
+};
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => window.WalletUI.init());
@@ -1773,14 +1813,17 @@ window.updateLPBalances = async function() {
             window.lpBalances.tokenRaw = tokenBalance.toString();
 
             // LP Position Logic (Hybrid Backend Proxy)
-            if (posRes && posRes.position) {
-                const lpAmountRaw = posRes.position.lp_amount || '0';
+            // fetchDirect returns full { success, data } for local /api/ routes
+            const posData = posRes?.data || posRes;
+
+            if (posData && posData.position) {
+                const lpAmountRaw = posData.position.lp_amount || '0';
                 window.lpBalances.lpRaw = lpAmountRaw;
                 window.lpBalances.lpTokens = parseFloat(lpAmountRaw) / 1000000;
 
                 // My Position / Withdraw Amount (from position API)
-                window.lpBalances.expectedPaxi = parseFloat(posRes.expected_paxi || 0) / 1000000;
-                window.lpBalances.expectedPrc20 = parseFloat(posRes.expected_prc20 || 0) / Math.pow(10, tokenDecimals);
+                window.lpBalances.expectedPaxi = parseFloat(posData.expected_paxi || 0) / 1000000;
+                window.lpBalances.expectedPrc20 = parseFloat(posData.expected_prc20 || 0) / Math.pow(10, tokenDecimals);
             } else {
                 window.lpBalances.lpRaw = '0';
                 window.lpBalances.lpTokens = 0;
@@ -1803,6 +1846,7 @@ window.updateLPBalances = async function() {
 
         // 3. Update Position & Withdraw Stats (NEW REFACTORED STRUCTURE)
         const symbol = window.currentTokenInfo?.symbol || 'TOKEN';
+        const format = (val, dec) => window.formatAmount ? window.formatAmount(val, dec) : val.toFixed(dec);
 
         // Total Pool Depth
         if (!window.poolData) await window.fetchPoolData();
@@ -1810,18 +1854,17 @@ window.updateLPBalances = async function() {
             const totalResPaxi = parseFloat(window.poolData.reserve_paxi || 0) / 1000000;
             const totalResToken = parseFloat(window.poolData.reserve_prc20 || 0) / Math.pow(10, window.currentTokenInfo?.decimals || 6);
 
-            window.setText('lpTotalPaxi', window.formatAmount ? window.formatAmount(totalResPaxi, 2) : totalResPaxi.toFixed(2));
-            window.setText('lpTotalToken', window.formatAmount ? window.formatAmount(totalResToken, 2) : totalResToken.toFixed(2));
+            const totalText = `${format(totalResPaxi, 2)} PAXI ${format(totalResToken, 2)} ${symbol}`;
+            window.setText('lpTotalCombined', totalText);
         }
 
         // My Position Stats
-        window.setText('lpMyPaxi', window.formatAmount ? window.formatAmount(window.lpBalances.expectedPaxi, 4) : window.lpBalances.expectedPaxi.toFixed(4));
-        window.setText('lpMyToken', window.formatAmount ? window.formatAmount(window.lpBalances.expectedPrc20, 4) : window.lpBalances.expectedPrc20.toFixed(4));
+        const myText = `${format(window.lpBalances.expectedPaxi, 4)} PAXI ${format(window.lpBalances.expectedPrc20, 4)} ${symbol}`;
+        window.setText('lpMyCombined', myText);
 
         // Withdraw Area Stats
-        window.setText('lpWithdrawAmount', window.formatAmount ? window.formatAmount(window.lpBalances.lpTokens, 6) : window.lpBalances.lpTokens.toFixed(6));
-        window.setText('lpWithdrawPaxi', window.formatAmount ? window.formatAmount(window.lpBalances.expectedPaxi, 4) : window.lpBalances.expectedPaxi.toFixed(4));
-        window.setText('lpWithdrawToken', window.formatAmount ? window.formatAmount(window.lpBalances.expectedPrc20, 4) : window.lpBalances.expectedPrc20.toFixed(4));
+        const withdrawText = `${format(window.lpBalances.lpTokens, 6)} LP ${format(window.lpBalances.expectedPaxi, 4)} PAXI ${format(window.lpBalances.expectedPrc20, 4)} ${symbol}`;
+        window.setText('lpWithdrawCombined', withdrawText);
 
         // Compatibility for old IDs
         const yourLP = document.getElementById('yourLPTokens');
@@ -2032,9 +2075,11 @@ window.confirmBackup = function() {
             const encryptedMnemonic = await window.cryptoUtils.encrypt(window.internalWalletState.tempMnemonic, pin);
             localStorage.setItem('paxi_internal_wallet', encryptedMnemonic);
             window.internalWalletState.tempMnemonic = '';
-                        window.renderWalletOptions();
+            window.renderWalletOptions();
         } catch (e) {
-                    }
+            console.error("Backup failed:", e);
+            window.showWrongPinModal();
+        }
     });
 };
 
@@ -2058,7 +2103,9 @@ window.unlockInternalWallet = function() {
             await window.connectWithMnemonic(mnemonic);
             window.hideInternalWalletSheet();
         } catch (e) {
-                    }
+            console.error("Unlock internal failed:", e);
+            window.showWrongPinModal();
+        }
     });
 };
 

@@ -486,34 +486,16 @@ window.renderLPTerminal = async function() {
 
     container.innerHTML = `
         <div class="space-y-6 animate-fade-in p-1">
-            <!-- Pool Depth Section -->
+            <!-- Total Liquidity Pool Section -->
             <div class="p-4 bg-surface border-4 border-card shadow-brutal rotate-[-1deg]">
-                <h4 class="text-[10px] font-black text-secondary-text uppercase tracking-widest mb-3 italic">POOL DEPTH</h4>
-                <div class="space-y-2">
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs font-display italic text-primary-text uppercase tracking-tighter">TOTAL PAXI</span>
-                        <span id="lpTotalPaxi" class="text-sm font-mono font-black text-meme-cyan">0.00</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs font-display italic text-primary-text uppercase tracking-tighter">TOTAL ${symbol}</span>
-                        <span id="lpTotalToken" class="text-sm font-mono font-black text-meme-cyan">0.00</span>
-                    </div>
-                </div>
+                <h4 class="text-[10px] font-black text-secondary-text uppercase tracking-widest mb-3 italic">TOTAL LIQUIDITY POOL</h4>
+                <div id="lpTotalCombined" class="text-sm font-mono font-black text-meme-cyan">0.00 PAXI 0.00 ${symbol}</div>
             </div>
 
             <!-- My Position Section -->
             <div class="p-4 bg-surface border-4 border-card shadow-brutal-sm rotate-[1deg]">
                 <h4 class="text-[10px] font-black text-meme-green uppercase tracking-widest mb-3 italic">MY POSITION</h4>
-                <div class="space-y-2">
-                    <div class="flex justify-between items-center">
-                        <span class="text-[10px] font-black text-secondary-text uppercase italic tracking-widest">EXPECTED PAXI</span>
-                        <span id="lpMyPaxi" class="text-xs font-mono font-black text-primary-text">0.00</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-[10px] font-black text-secondary-text uppercase italic tracking-widest">EXPECTED ${symbol}</span>
-                        <span id="lpMyToken" class="text-xs font-mono font-black text-primary-text">0.00</span>
-                    </div>
-                </div>
+                <div id="lpMyCombined" class="text-xs font-mono font-black text-primary-text">0.00 PAXI 0.00 ${symbol}</div>
             </div>
 
             <!-- Add Liquidity Action -->
@@ -552,31 +534,18 @@ window.renderLPTerminal = async function() {
                 </div>
             </div>
 
-            <!-- Withdraw Section -->
+            <!-- Withdraw Amount Section -->
             <div class="p-4 bg-surface border-4 border-card shadow-brutal-pink rotate-[0.5deg]">
-                <h4 class="text-[10px] font-black text-meme-pink uppercase tracking-widest mb-4 italic">WITHDRAW LIQUIDITY</h4>
+                <h4 class="text-[10px] font-black text-meme-pink uppercase tracking-widest mb-4 italic">WITHDRAW AMOUNT</h4>
+
+                <div id="lpWithdrawCombined" class="text-[10px] font-mono font-black text-primary-text mb-4">0.00 LP 0.00 PAXI 0.00 ${symbol}</div>
 
                 <div class="space-y-4 mb-4">
-                    <div class="flex justify-between text-[9px] font-black text-secondary-text uppercase italic tracking-widest">
-                        Amount (LP)
-                        <span class="text-primary-text"><span id="lpWithdrawAmount">0.00</span> LP</span>
-                    </div>
                     <div class="relative">
                         <input type="number" id="lpRemoveAmount" placeholder="0.00" class="w-full bg-surface border-2 border-card p-3 text-sm font-mono text-primary-text outline-none focus:border-meme-pink italic uppercase" oninput="window.updateRemoveLPFromInput()">
-                        <div class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-black text-muted-text italic">MAX</div>
+                        <div class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-black text-muted-text italic cursor-pointer" onclick="window.setRemoveLPPercent(100)">MAX</div>
                     </div>
                     <input type="range" id="lpRemoveSlider" min="0" max="100" step="1" value="0" class="w-full h-1 bg-gray-900 appearance-none cursor-pointer accent-meme-pink" oninput="window.updateRemoveLPFromSlider(this.value)">
-                </div>
-
-                <div class="p-3 bg-surface border border-card space-y-2 mb-4">
-                    <div class="flex justify-between text-[8px] font-black text-muted-text uppercase italic">
-                        <span>EST. PAXI RETURN</span>
-                        <span id="lpWithdrawPaxi" class="text-primary-text">0.00</span>
-                    </div>
-                    <div class="flex justify-between text-[8px] font-black text-muted-text uppercase italic">
-                        <span>EST. ${symbol} RETURN</span>
-                        <span id="lpWithdrawToken" class="text-primary-text">0.00</span>
-                    </div>
                 </div>
 
                 <button onclick="window.executeRemoveLP()" class="w-full py-3 bg-meme-pink/10 text-meme-pink border-2 border-card font-display text-lg uppercase italic hover:bg-meme-pink hover:text-primary-text transition-all">
