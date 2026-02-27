@@ -1745,49 +1745,85 @@ window.updateLPBalances = async function() {
 
     // Ensure lpBalances object exists
     if (!window.lpBalances) {
-        window.lpBalances = { paxi: 0, token: 0, lpTokens: 0 };
+        window.lpBalances = { paxi: 0, token: 0, lpTokens: 0, expectedPaxi: 0, expectedPrc20: 0 };
     }
 
     try {
-        // 1. Handle Wallet Balances if connected
-        if (window.wallet) {
-            const response = await window.smartFetch(
-                `${window.APP_CONFIG.LCD}/cosmos/bank/v1beta1/balances/${window.wallet.address}`
-            );
-            const balances = response.balances || [];
-            const paxiBalance = balances.find(b => b.denom === 'upaxi');
+        // 1. Handle Wallet Balances and User Position
+        const activeWallet = window.WalletManager?.getActiveWallet();
+        const walletAddress = activeWallet?.address || window.wallet?.address;
+
+        if (walletAddress) {
+            // Use concurrent fetch for better performance
+            const [balRes, posRes] = await Promise.all([
+                window.smartFetch(`${window.APP_CONFIG.LCD}/cosmos/bank/v1beta1/balances/${walletAddress}`),
+                window.fetchDirect(`/api/prc20/lp-position?address=${walletAddress}&token=${window.currentPRC20}`)
+            ]);
+
+            // Native Balance
+            const paxiBalance = (balRes.balances || []).find(b => b.denom === 'upaxi');
             const paxiRaw = paxiBalance ? paxiBalance.amount : '0';
             window.lpBalances.paxi = parseInt(paxiRaw) / 1000000;
             window.lpBalances.paxiRaw = paxiRaw;
 
+            // PRC20 Balance
             const tokenDecimals = window.currentTokenInfo?.decimals || 6;
-            const tokenBalance = await window.getPRC20Balance(window.wallet.address, window.currentPRC20);
+            const tokenBalance = await window.getPRC20Balance(walletAddress, window.currentPRC20);
             window.lpBalances.token = tokenBalance / Math.pow(10, tokenDecimals);
             window.lpBalances.tokenRaw = tokenBalance.toString();
 
-            try {
-                const posData = await window.smartFetch(
-                    `${window.APP_CONFIG.LCD}/paxi/swap/position/${window.wallet.address}/${window.currentPRC20}`
-                );
-                const lpAmount = posData.position?.lp_amount || '0';
-                window.lpBalances.lpTokens = parseFloat(lpAmount) / 1000000;
-                window.lpBalances.lpRaw = lpAmount.toString();
-            } catch (e) {
-                window.lpBalances.lpTokens = 0;
+            // LP Position Logic (Hybrid Backend Proxy)
+            if (posRes && posRes.position) {
+                const lpAmountRaw = posRes.position.lp_amount || '0';
+                window.lpBalances.lpRaw = lpAmountRaw;
+                window.lpBalances.lpTokens = parseFloat(lpAmountRaw) / 1000000;
+
+                // My Position / Withdraw Amount (from position API)
+                window.lpBalances.expectedPaxi = parseFloat(posRes.expected_paxi || 0) / 1000000;
+                window.lpBalances.expectedPrc20 = parseFloat(posRes.expected_prc20 || 0) / Math.pow(10, tokenDecimals);
+            } else {
                 window.lpBalances.lpRaw = '0';
+                window.lpBalances.lpTokens = 0;
+                window.lpBalances.expectedPaxi = 0;
+                window.lpBalances.expectedPrc20 = 0;
             }
         }
 
+        // 2. Update Basic Balances (Add Liquidity Inputs)
         const paxiEl = document.getElementById('lpPaxiBalance');
         if (paxiEl) {
-            window.setText(paxiEl, (window.lpBalances.paxi || 0).toFixed(6));
+            window.setText(paxiEl, (window.lpBalances.paxi || 0).toFixed(4));
             paxiEl.setAttribute('data-raw', window.lpBalances.paxiRaw || '0');
         }
         const tokenEl = document.getElementById('lpTokenBalance');
         if (tokenEl) {
-            window.setText(tokenEl, (window.lpBalances.token || 0).toFixed(6));
+            window.setText(tokenEl, (window.lpBalances.token || 0).toFixed(4));
             tokenEl.setAttribute('data-raw', window.lpBalances.tokenRaw || '0');
         }
+
+        // 3. Update Position & Withdraw Stats (NEW REFACTORED STRUCTURE)
+        const symbol = window.currentTokenInfo?.symbol || 'TOKEN';
+
+        // Total Pool Depth
+        if (!window.poolData) await window.fetchPoolData();
+        if (window.poolData) {
+            const totalResPaxi = parseFloat(window.poolData.reserve_paxi || 0) / 1000000;
+            const totalResToken = parseFloat(window.poolData.reserve_prc20 || 0) / Math.pow(10, window.currentTokenInfo?.decimals || 6);
+
+            window.setText('lpTotalPaxi', window.formatAmount ? window.formatAmount(totalResPaxi, 2) : totalResPaxi.toFixed(2));
+            window.setText('lpTotalToken', window.formatAmount ? window.formatAmount(totalResToken, 2) : totalResToken.toFixed(2));
+        }
+
+        // My Position Stats
+        window.setText('lpMyPaxi', window.formatAmount ? window.formatAmount(window.lpBalances.expectedPaxi, 4) : window.lpBalances.expectedPaxi.toFixed(4));
+        window.setText('lpMyToken', window.formatAmount ? window.formatAmount(window.lpBalances.expectedPrc20, 4) : window.lpBalances.expectedPrc20.toFixed(4));
+
+        // Withdraw Area Stats
+        window.setText('lpWithdrawAmount', window.formatAmount ? window.formatAmount(window.lpBalances.lpTokens, 6) : window.lpBalances.lpTokens.toFixed(6));
+        window.setText('lpWithdrawPaxi', window.formatAmount ? window.formatAmount(window.lpBalances.expectedPaxi, 4) : window.lpBalances.expectedPaxi.toFixed(4));
+        window.setText('lpWithdrawToken', window.formatAmount ? window.formatAmount(window.lpBalances.expectedPrc20, 4) : window.lpBalances.expectedPrc20.toFixed(4));
+
+        // Compatibility for old IDs
         const yourLP = document.getElementById('yourLPTokens');
         if (yourLP) {
             window.setText(yourLP, (window.lpBalances.lpTokens || 0).toFixed(6));
@@ -1797,48 +1833,6 @@ window.updateLPBalances = async function() {
         if (maxLP) {
             window.setText(maxLP, (window.lpBalances.lpTokens || 0).toFixed(6));
             maxLP.setAttribute('data-raw', window.lpBalances.lpRaw || '0');
-        }
-
-        // 3. Handle Pool Data & Ratio (Always update if currentPRC20 exists)
-        if (!window.poolData) {
-            await window.fetchPoolData();
-        }
-
-        if (window.poolData) {
-            const reservePaxi = parseFloat(window.poolData.reserve_paxi || 0) / 1000000;
-            const reserveToken = parseFloat(window.poolData.reserve_prc20 || 0) / Math.pow(10, window.currentTokenInfo?.decimals || 6);
-            const ratio = reservePaxi > 0 ? (reserveToken / reservePaxi).toFixed(6) : '0';
-
-            if (document.getElementById('poolRatioDisplay')) {
-                window.setText('poolRatioDisplay', `1 PAXI = ${ratio} ${window.currentTokenInfo?.symbol || 'TOKEN'}`);
-            }
-
-            const posInfo = document.getElementById('yourPositionDetails');
-            if (posInfo) {
-                if (window.lpBalances.lpTokens > 0) {
-                    const totalLP = parseFloat(window.poolData.total_lp_amount || window.poolData.total_lp || 1) / 1000000;
-                    const share = window.lpBalances.lpTokens / totalLP;
-                    const myPaxi = reservePaxi * share;
-                    const myToken = reserveToken * share;
-
-                    posInfo.innerHTML = `
-                        <div class="flex justify-between text-[10px] mt-1 border-t border-border pt-1">
-                            <span class="text-secondary-text">Pooled PAXI</span>
-                            <span class="text-gray-300 font-mono">${myPaxi.toFixed(2)}</span>
-                        </div>
-                        <div class="flex justify-between text-[10px]">
-                            <span class="text-secondary-text">Pooled ${window.currentTokenInfo?.symbol || 'TOKEN'}</span>
-                            <span class="text-gray-300 font-mono">${myToken.toFixed(2)}</span>
-                        </div>
-                        <div class="flex justify-between text-[10px]">
-                            <span class="text-secondary-text">Share of Pool</span>
-                            <span class="text-gray-300 font-mono">${(share * 100).toFixed(4)}%</span>
-                        </div>
-                    `;
-                } else {
-                    posInfo.innerHTML = ''; // Clear if no position
-                }
-            }
         }
 
     } catch (e) {

@@ -33,9 +33,6 @@ window.updateLivePrice = function(price, priceIndex = null, source = null) {
                 // BRUTAL BOUNCE PROTECTION: Jika index sama, tapi source adalah official API,
                 // pastikan kita tidak menimpa harga pool yang lebih baru dengan data official yang stale.
                 if (lastPoint && timeRef === lastPoint.time && source === 'price_api_realtime') {
-                    // If we already updated this index with a pool price (fast source),
-                    // and the incoming official price is DIFFERENT (and usually older/lagging),
-                    // we ignore the official update to prevent chart flickering/jumping back.
                     if (lastPoint.source === 'price_pool_fast' && Math.abs(p - lastPoint.close) > 1e-12) {
                         return;
                     }
@@ -52,7 +49,7 @@ window.updateLivePrice = function(price, priceIndex = null, source = null) {
                     lastPoint.close = p;
                     lastPoint.high = Math.max(lastPoint.high, p);
                     lastPoint.low = Math.min(lastPoint.low, p);
-                    lastPoint.source = source; // Track source
+                    lastPoint.source = source;
                 } else {
                     // New Candle (New index)
                     window.currentPriceData.push({
@@ -433,7 +430,7 @@ window.startRealtimeUpdates = function() {
 
     if (window.currentTimeframe === 'realtime') {
         const statusEl = document.getElementById('chartStatus');
-        if (statusEl) window.setText(statusEl, 'Live • Active');
+        if (statusEl) window.setText(statusEl, 'Live • Streaming');
 
         // Consistent 5s polling for realtime as requested (streaming mechanism)
         window.chartUpdateInterval = setInterval(() => {
@@ -455,40 +452,37 @@ window.refreshRealtimeChart = async function() {
     window.isRefreshingChart = true;
     try {
         // Consistent 5s polling for syncing data (streaming fallback)
+        // Strictly avoid cache to ensure fresh data for streaming
         const url = `${window.APP_CONFIG.BACKEND_API}/api/token-price?address=${window.currentPRC20}&timeframe=realtime&_t=${Date.now()}`;
         const data = await window.fetchDirect(url, { cache: 'no-store' });
 
         if (!data || !data.history || !data.history.length) return;
 
-        // INDEX-BASED PROCESSING
-        // Use window.updateLivePrice to ensure consistent label updates and bounce protection
-        let hasNewData = false;
-
+        // STREAMING PROCESSING (Incremental)
+        // Instead of resetting the chart, we iterate through the history
+        // and use updateLivePrice which uses series.update() for smooth additions.
         data.history.forEach(item => {
-            const time = item.timestamp;
+            const time = item.timestamp; // Index in Paxi Network
             const price = parseFloat(item.price_paxi_realtime || item.price_paxi || 0);
 
             const lastPoint = window.currentPriceData[window.currentPriceData.length - 1];
+
+            // Only update if it's the same or newer index
             if (!lastPoint || time >= lastPoint.time) {
-                // Determine source: If this comes from history mapping, it's 'price_api_realtime' equivalent.
                 const itemSource = item.source || data.source || 'price_api_realtime';
+                // Only trigger update if data actually changed or it's a new index
                 if (!lastPoint || time > lastPoint.time || Math.abs(price - lastPoint.close) > 1e-12) {
                     window.updateLivePrice(price, time, itemSource);
-                    hasNewData = true;
                 }
             }
         });
 
-        if (hasNewData) {
-            // Indicators are already handled inside updateLivePrice if index grows,
-            // but we call fitContent here for sync results.
-
-            const change = (data.price_change_realtime !== undefined ? data.price_change_realtime : (data.price_change || 0)) * 100;
-            const changeEl = document.getElementById('priceChange');
-            if (changeEl) {
-                changeEl.textContent = `${change >= 0 ? '+' : ''}${change.toFixed(2)}%`;
-                changeEl.className = `text-[10px] font-bold ${change >= 0 ? 'text-up' : 'text-down'}`;
-            }
+        // Sync extra labels from aggregated data
+        const change = (data.price_change_realtime !== undefined ? data.price_change_realtime : (data.price_change || 0)) * 100;
+        const changeEl = document.getElementById('priceChange');
+        if (changeEl) {
+            changeEl.textContent = `${change >= 0 ? '+' : ''}${change.toFixed(2)}%`;
+            changeEl.className = `text-[10px] font-bold ${change >= 0 ? 'text-up' : 'text-down'}`;
         }
     } catch (e) {
         console.warn('[Chart] Refresh failed:', e);
