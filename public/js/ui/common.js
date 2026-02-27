@@ -363,11 +363,10 @@ window.setTab = function(name) {
     if (name === 'holders') {
         window.loadTokenHolders();
     } else if (name === 'history') {
-        // Force render into tabContent for main page History tab
         window.renderTransactionHistory('tabContent');
         // Explicitly trigger history load to ensure data is fetched
         if (window.WalletHistory && window.WalletHistory.loadHistory) {
-            window.WalletHistory.loadHistory(true); // Force refresh to ensure it loads
+            window.WalletHistory.loadHistory();
         }
     }
 };

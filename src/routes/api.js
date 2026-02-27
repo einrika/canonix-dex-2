@@ -15,7 +15,6 @@ const txHistory = require('../controllers/tx-history');
 const txStatus = require('../controllers/tx-status');
 const myContractAccounts = require('../controllers/prc20/my_contract_accounts');
 const holders = require('../controllers/prc20/holders');
-const lpPosition = require('../controllers/prc20/lp-position');
 
 // Map routes
 router.all('/admin-control', adminControl);
@@ -37,6 +36,5 @@ router.get('/prc20/search', tokenList);
 router.get('/prc20/get_contract_prices', tokenPrice);
 router.get('/prc20/my_contract_accounts', myContractAccounts);
 router.get('/prc20/holders', holders);
-router.get('/prc20/lp-position', lpPosition);
 
 module.exports = router;

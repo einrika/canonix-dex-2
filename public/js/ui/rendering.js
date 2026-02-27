@@ -481,121 +481,94 @@ window.renderLPTerminal = async function() {
     const container = document.getElementById('sidebarContent');
     if (!container) return;
 
-    if (window.fetchPoolData) await window.fetchPoolData();
+    // Fetch fresh pool data directly from blockchain
+    if (window.fetchPoolData) {
+        await window.fetchPoolData();
+    }
     const symbol = window.currentTokenInfo?.symbol || 'TOKEN';
-
     container.innerHTML = `
-        <div class="space-y-6 animate-fade-in p-1">
-            <!-- Pool Depth Section -->
-            <div class="p-4 bg-surface border-4 border-card shadow-brutal rotate-[-1deg]">
-                <h4 class="text-[10px] font-black text-secondary-text uppercase tracking-widest mb-3 italic">POOL DEPTH</h4>
-                <div class="space-y-2">
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs font-display italic text-primary-text uppercase tracking-tighter">TOTAL PAXI</span>
-                        <span id="lpTotalPaxi" class="text-sm font-mono font-black text-meme-cyan">0.00</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs font-display italic text-primary-text uppercase tracking-tighter">TOTAL ${symbol}</span>
-                        <span id="lpTotalToken" class="text-sm font-mono font-black text-meme-cyan">0.00</span>
-                    </div>
+        <div class="space-y-4 animate-fade-in">
+            <h4 class="text-[10px] font-black text-secondary-text uppercase tracking-widest border-b border-border pb-2">Liquidity Provision</h4>
+            <div class="bg-card p-4 rounded-2xl border border-border space-y-4">
+                <div>
+                    <div class="flex justify-between text-[10px] text-secondary-text mb-1">PAXI Amount <span class="text-[9px]">Bal: <span id="lpPaxiBalance">0.00</span></span></div>
+                    <input type="number" id="lpPaxiAmount" placeholder="0.0" class="bg-bg border border-border rounded-xl p-3 w-full text-primary-text font-bold outline-none focus:border-up" oninput="window.updateLPFromInput('paxi')">
+                    <input type="range" id="lpPaxiSlider" min="0" max="100" step="1" value="0" class="w-full mt-3 h-1.5 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-up" oninput="window.updateLPFromSlider('paxi', this.value)">
                 </div>
+                <div class="text-center text-up"><i class="fas fa-plus scale-75"></i></div>
+                <div>
+                    <div class="flex justify-between text-[10px] text-secondary-text mb-1">${symbol} Amount <span class="text-[9px]">Bal: <span id="lpTokenBalance">0.00</span></span></div>
+                    <input type="number" id="lpTokenAmount" placeholder="0.0" class="bg-bg border border-border rounded-xl p-3 w-full text-primary-text font-bold outline-none focus:border-up" oninput="window.updateLPFromInput('token')">
+                    <input type="range" id="lpTokenSlider" min="0" max="100" step="1" value="0" class="w-full mt-3 h-1.5 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-up" oninput="window.updateLPFromSlider('token', this.value)">
+                </div>
+                <div id="estimatedLP" class="text-[10px] text-up font-black text-center h-4"></div>
+                <button onclick="window.executeAddLP()" class="w-full py-4 btn-trade rounded-xl font-black text-xs uppercase tracking-widest shadow-brutal-sm">Add Liquidity</button>
             </div>
-
-            <!-- My Position Section -->
-            <div class="p-4 bg-surface border-4 border-card shadow-brutal-sm rotate-[1deg]">
-                <h4 class="text-[10px] font-black text-meme-green uppercase tracking-widest mb-3 italic">MY POSITION</h4>
-                <div class="space-y-2">
-                    <div class="flex justify-between items-center">
-                        <span class="text-[10px] font-black text-secondary-text uppercase italic tracking-widest">EXPECTED PAXI</span>
-                        <span id="lpMyPaxi" class="text-xs font-mono font-black text-primary-text">0.00</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-[10px] font-black text-secondary-text uppercase italic tracking-widest">EXPECTED ${symbol}</span>
-                        <span id="lpMyToken" class="text-xs font-mono font-black text-primary-text">0.00</span>
-                    </div>
-                </div>
+            <div class="bg-surface border border-border p-4 rounded-2xl space-y-2.5">
+                <h5 class="text-[10px] font-black text-secondary-text uppercase tracking-widest mb-1">Your Position</h5>
+                <div class="flex justify-between text-xs"><span class="text-secondary-text font-bold uppercase text-[9px]">LP Tokens</span><span id="yourLPTokens" class="font-black text-up">0.00</span></div>
+                <div class="flex justify-between text-xs"><span class="text-secondary-text font-bold uppercase text-[9px]">Pool Ratio</span><span id="poolRatioDisplay" class="font-mono text-[9px] text-gray-300">-</span></div>
+                <div id="yourPositionDetails"></div>
             </div>
-
-            <!-- Add Liquidity Action -->
-            <div class="space-y-4">
-                <div class="bg-surface p-4 border-4 border-card shadow-brutal-sm rotate-[-0.5deg]">
-                    <div class="flex justify-between text-[10px] text-muted-text mb-3 font-black uppercase italic tracking-widest">
-                        Inject Liquidity
-                        <span class="text-meme-cyan">Bal: <span id="lpPaxiBalance">0.00</span> PAXI</span>
-                    </div>
-
-                    <div class="space-y-4">
-                        <div class="flex items-center gap-3">
-                            <input type="number" id="lpPaxiAmount" placeholder="0.0" class="bg-transparent text-2xl font-display outline-none w-full text-primary-text placeholder-gray-800 italic uppercase" oninput="window.updateLPFromInput('paxi')">
-                            <div class="px-3 py-1 bg-surface border-2 border-card text-meme-cyan font-display text-sm italic uppercase">PAXI</div>
-                        </div>
-                        <input type="range" id="lpPaxiSlider" min="0" max="100" step="1" value="0" class="w-full h-1 bg-gray-900 appearance-none cursor-pointer accent-meme-cyan" oninput="window.updateLPFromSlider('paxi', this.value)">
-
-                        <div class="flex justify-center -my-2"><i class="fas fa-plus text-xs text-muted-text"></i></div>
-
-                        <div class="flex justify-between text-[10px] text-muted-text mb-1 font-black uppercase italic tracking-widest">
-                            <span class="invisible">Spacer</span>
-                            <span class="text-meme-yellow">Bal: <span id="lpTokenBalance">0.00</span> ${symbol}</span>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <input type="number" id="lpTokenAmount" placeholder="0.0" class="bg-transparent text-2xl font-display outline-none w-full text-primary-text placeholder-gray-800 italic uppercase" oninput="window.updateLPFromInput('token')">
-                            <div class="px-3 py-1 bg-surface border-2 border-card text-meme-yellow font-display text-sm italic uppercase">${symbol}</div>
-                        </div>
-                        <input type="range" id="lpTokenSlider" min="0" max="100" step="1" value="0" class="w-full h-1 bg-gray-900 appearance-none cursor-pointer accent-meme-yellow" oninput="window.updateLPFromSlider('token', this.value)">
-                    </div>
-
-                    <div id="estimatedLP" class="mt-4 text-[9px] font-black text-meme-green text-center italic uppercase min-h-[12px]"></div>
-
-                    <button onclick="window.executeAddLP()" class="w-full mt-4 py-4 bg-meme-green text-black border-4 border-card font-display text-2xl uppercase italic shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all">
-                        PROVIDE ASSETS
-                    </button>
-                </div>
+            <div class="bg-down/5 p-4 rounded-2xl border border-down/10">
+                <h5 class="text-[10px] font-black text-down uppercase mb-3 tracking-widest">Remove Liquidity</h5>
+                <div class="flex justify-between text-[9px] text-secondary-text mb-2 font-bold">AMOUNT TO WITHDRAW</div>
+                <input type="number" id="lpRemoveAmount" placeholder="0.00" class="bg-bg border border-border rounded-xl p-3 w-full text-primary-text font-bold mb-2 outline-none focus:border-down" oninput="window.updateRemoveLPFromInput()">
+                <input type="range" id="lpRemoveSlider" min="0" max="100" step="1" value="0" class="w-full mb-4 h-1.5 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-down" oninput="window.updateRemoveLPFromSlider(this.value)">
+                <button onclick="window.executeRemoveLP()" class="w-full py-3 bg-down/20 text-down border border-down/30 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-down hover:text-primary-text transition-all">Withdraw Assets</button>
             </div>
-
-            <!-- Withdraw Section -->
-            <div class="p-4 bg-surface border-4 border-card shadow-brutal-pink rotate-[0.5deg]">
-                <h4 class="text-[10px] font-black text-meme-pink uppercase tracking-widest mb-4 italic">WITHDRAW LIQUIDITY</h4>
-
-                <div class="space-y-4 mb-4">
-                    <div class="flex justify-between text-[9px] font-black text-secondary-text uppercase italic tracking-widest">
-                        Amount (LP)
-                        <span class="text-primary-text"><span id="lpWithdrawAmount">0.00</span> LP</span>
-                    </div>
-                    <div class="relative">
-                        <input type="number" id="lpRemoveAmount" placeholder="0.00" class="w-full bg-surface border-2 border-card p-3 text-sm font-mono text-primary-text outline-none focus:border-meme-pink italic uppercase" oninput="window.updateRemoveLPFromInput()">
-                        <div class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-black text-muted-text italic">MAX</div>
-                    </div>
-                    <input type="range" id="lpRemoveSlider" min="0" max="100" step="1" value="0" class="w-full h-1 bg-gray-900 appearance-none cursor-pointer accent-meme-pink" oninput="window.updateRemoveLPFromSlider(this.value)">
-                </div>
-
-                <div class="p-3 bg-surface border border-card space-y-2 mb-4">
-                    <div class="flex justify-between text-[8px] font-black text-muted-text uppercase italic">
-                        <span>EST. PAXI RETURN</span>
-                        <span id="lpWithdrawPaxi" class="text-primary-text">0.00</span>
-                    </div>
-                    <div class="flex justify-between text-[8px] font-black text-muted-text uppercase italic">
-                        <span>EST. ${symbol} RETURN</span>
-                        <span id="lpWithdrawToken" class="text-primary-text">0.00</span>
-                    </div>
-                </div>
-
-                <button onclick="window.executeRemoveLP()" class="w-full py-3 bg-meme-pink/10 text-meme-pink border-2 border-card font-display text-lg uppercase italic hover:bg-meme-pink hover:text-primary-text transition-all">
-                    PULL ASSETS
-                </button>
-            </div>
-
-            <!-- Legacy Compatibility IDs -->
-            <span id="yourLPTokens" class="hidden"></span>
-            <span id="maxLPTokens" class="hidden"></span>
         </div>`;
 
-    if (window.updateLPBalances) window.updateLPBalances();
+    // Update LP balances immediately - fetch langsung dari blockchain
+    if (window.updateLPBalances) {
+        window.updateLPBalances();
+    }
 };
 
 // ===== RENDER REMOVE LP TERMINAL (SIDEBAR) =====
 window.renderRemoveLPTerminal = async function() {
-    // We unified the UI in renderLPTerminal, but providing this for backward compatibility
-    window.renderLPTerminal();
+    const container = document.getElementById('sidebarContent');
+    if (!container) return;
+
+    await window.fetchPoolData();
+    const symbol = window.currentTokenInfo?.symbol || 'TOKEN';
+
+    container.innerHTML = `
+        <div class="space-y-4 animate-in slide-in-from-right duration-300">
+            <div class="flex items-center justify-between mb-2">
+                <h3 class="text-xs font-black uppercase tracking-tighter text-secondary-text">Remove Liquidity</h3>
+                <div class="px-2 py-0.5 bg-down/10 text-down text-[9px] rounded-full border border-down/20 font-bold">BURN LP</div>
+            </div>
+
+            <div class="bg-card p-4 rounded-2xl border border-border space-y-4">
+                <div>
+                    <div class="flex justify-between text-[10px] text-secondary-text mb-1">LP Tokens to Remove <span class="text-[9px]">Max: <span id="maxLPTokens">0.00</span></span></div>
+                    <div class="relative">
+                        <input type="number" id="removeLPInput" placeholder="0.00" class="w-full bg-bg border border-border rounded-xl px-4 py-3 text-sm font-mono focus:border-down outline-none transition-all pr-12">
+                        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-secondary-text">LP</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-surface border border-border p-4 rounded-2xl space-y-2.5">
+                <h5 class="text-[10px] font-black text-secondary-text uppercase tracking-widest mb-1">Estimated Return</h5>
+                <div class="flex justify-between text-xs"><span class="text-secondary-text font-bold uppercase text-[9px]">PAXI</span><span id="estPaxiReturn" class="font-black text-primary-text">0.00</span></div>
+                <div class="flex justify-between text-xs"><span class="text-secondary-text font-bold uppercase text-[9px]">${symbol}</span><span id="estTokenReturn" class="font-black text-primary-text">0.00</span></div>
+            </div>
+
+            <button onclick="window.removeLiquidity()" class="w-full py-4 bg-down/20 text-down border border-down/30 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-down hover:text-primary-text transition-all">
+                Remove Liquidity
+            </button>
+
+            <div class="flex justify-center">
+                <button onclick="setSidebarTab('lp')" class="text-[10px] font-black text-secondary-text hover:text-primary-text uppercase tracking-widest transition-colors">Switch to Add Liquidity</button>
+            </div>
+        </div>
+    `;
+
+    if (window.updateLPBalances) {
+        window.updateLPBalances();
+    }
 };
 
 // ===== RENDER SEND TERMINAL (SIDEBAR) =====
