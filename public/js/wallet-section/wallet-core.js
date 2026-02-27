@@ -1158,7 +1158,7 @@ window.executeAddLPTransaction = async function(contractAddress, paxiAmount, tok
         type: 'Add Liquidity',
         action: 'Add LP',
         from: `${paxiAmount} PAXI + ${tokenAmount} ${tokenDetail?.symbol || 'TOKEN'}`,
-        receive: 'LP Tokens',
+        receive: 'LP',
         asset: `PAXI / ${tokenDetail?.symbol || 'TOKEN'}`,
         amount: `${paxiAmount} PAXI + ${tokenAmount} ${tokenDetail?.symbol || 'TOKEN'}`,
         address: window.wallet.address
@@ -1185,10 +1185,10 @@ window.executeRemoveLPTransaction = async function(contractAddress, lpAmount) {
     const metadata = {
         type: 'Remove Liquidity',
         action: 'Remove LP',
-        from: `${lpAmount} LP Tokens`,
+        from: `${lpAmount} LP`,
         receive: 'PAXI + Token',
         asset: `PAXI / ${window.tokenDetails?.get(contractAddress)?.symbol || 'TOKEN'}`,
-        amount: `${lpAmount} LP Tokens`,
+        amount: `${lpAmount} LP`,
         address: window.wallet.address
     };
 

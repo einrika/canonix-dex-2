@@ -418,7 +418,6 @@ window.renderSidebarContent = function(tab) {
         case 'swap': window.renderSwapTerminal(); break;
         case 'history': window.renderTransactionHistorySidebar(); break;
         case 'lp': window.renderLPTerminal(); break;
-        case 'remove_lp': window.renderRemoveLPTerminal(); break;
         case 'send': window.renderSendTerminal(); break;
         case 'burn': window.renderBurnTerminal(); break;
         case 'donate': window.renderDonateTerminal(); break;

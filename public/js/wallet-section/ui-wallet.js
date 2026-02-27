@@ -35,10 +35,22 @@ Object.assign(window.WalletUI, {
         const container = document.getElementById('sidebarContent');
         if (!container || window.currentSidebarTab !== 'wallet') return;
 
-        const activeWallet = window.WalletManager.getActiveWallet();
-        const isLocked = !window.WalletSecurity.getSessionPin();
+        const connectedWallet = window.wallet;
+        const managedWallet = window.WalletManager.getActiveWallet();
 
-        if (!activeWallet) {
+        // Prioritize connected wallet
+        let walletToRender = null;
+        if (connectedWallet) {
+            walletToRender = {
+                ...connectedWallet,
+                name: connectedWallet.name || (window.walletType === 'keplr' ? 'Keplr' : (window.walletType === 'paxihub' ? 'PaxiHub' : 'Internal Wallet')),
+                type: window.walletType || 'internal'
+            };
+        } else {
+            walletToRender = managedWallet;
+        }
+
+        if (!walletToRender) {
             container.innerHTML = `
                 <div class="flex flex-col gap-4 animate-fade-in p-2">
                     <!-- Connect Internal -->
@@ -97,7 +109,10 @@ Object.assign(window.WalletUI, {
             return;
         }
 
-        if (isLocked && !activeWallet.isWatchOnly) {
+        // Check if managed wallet is locked
+        const isLocked = walletToRender.encryptedData && !window.WalletSecurity.getSessionPin();
+
+        if (isLocked && !walletToRender.isWatchOnly) {
             container.innerHTML = `
                 <div class="flex flex-col items-center justify-center py-16 px-6 text-center animate-fade-in">
                     <div class="w-16 h-16 bg-meme-pink border-4 border-card shadow-brutal flex items-center justify-center mb-8 rotate-[10deg]">
@@ -111,7 +126,7 @@ Object.assign(window.WalletUI, {
             return;
         }
 
-        this.renderActiveWalletView(container, activeWallet);
+        this.renderActiveWalletView(container, walletToRender);
     },
 
     setWalletSubTab: function(tab) {
@@ -197,7 +212,6 @@ Object.assign(window.WalletUI, {
                     </div>
                     <div class="text-right">
                         <div class="text-xs font-mono font-bold text-primary-text">${lp.lpBalance} LP</div>
-                        <div class="text-[9px] text-up font-black italic">${lp.share}% Share</div>
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-2 mb-4 text-[9px] text-secondary-text font-bold uppercase tracking-tighter">
@@ -1863,32 +1877,6 @@ window.updateLPBalances = async function() {
                 window.setText('poolRatioDisplay', `1 PAXI = ${ratio} ${window.currentTokenInfo?.symbol || 'TOKEN'}`);
             }
 
-            const posInfo = document.getElementById('yourPositionDetails');
-            if (posInfo) {
-                if (window.lpBalances.lpTokens > 0) {
-                    const totalLP = parseFloat(window.poolData.total_lp_amount || window.poolData.total_lp || 1) / 1000000;
-                    const share = window.lpBalances.lpTokens / totalLP;
-                    const myPaxi = reservePaxi * share;
-                    const myToken = reserveToken * share;
-
-                    posInfo.innerHTML = `
-                        <div class="flex justify-between text-[10px] mt-1 border-t border-border pt-1">
-                            <span class="text-secondary-text">Pooled PAXI</span>
-                            <span class="text-gray-300 font-mono">${myPaxi.toFixed(2)}</span>
-                        </div>
-                        <div class="flex justify-between text-[10px]">
-                            <span class="text-secondary-text">Pooled ${window.currentTokenInfo?.symbol || 'TOKEN'}</span>
-                            <span class="text-gray-300 font-mono">${myToken.toFixed(2)}</span>
-                        </div>
-                        <div class="flex justify-between text-[10px]">
-                            <span class="text-secondary-text">Share of Pool</span>
-                            <span class="text-gray-300 font-mono">${(share * 100).toFixed(4)}%</span>
-                        </div>
-                    `;
-                } else {
-                    posInfo.innerHTML = ''; // Clear if no position
-                }
-            }
         }
 
     } catch (e) {
@@ -1915,17 +1903,15 @@ window.showInternalWalletSheet = function() {
     const sheet = document.getElementById('internalWalletSheet');
     if (!sheet) return;
 
-    if (sheet.querySelector('.close-sheet')) {
-    } else {
+    if (!sheet.querySelector('.close-sheet')) {
         const closeBtn = document.createElement('button');
-        closeBtn.className = 'close-sheet absolute top-4 right-4 text-secondary-text hover:text-primary-text';
+        closeBtn.className = 'close-sheet absolute top-4 right-4 text-secondary-text hover:text-primary-text z-10';
         closeBtn.innerHTML = '<i class="fas fa-times text-xl"></i>';
         closeBtn.onclick = window.hideInternalWalletSheet;
         sheet.appendChild(closeBtn);
     }
     window.removeClass(sheet, 'translate-y-full');
     window.removeClass('sheetOverlay', 'hidden');
-    window.renderWalletOptions();
 };
 
 window.hideInternalWalletSheet = function() {
@@ -1998,48 +1984,6 @@ window.backspacePin = function() {
     window.updatePinDots();
 };
 
-window.renderWalletOptions = function() {
-    const content = document.getElementById('walletSheetContent');
-    const hasWallet = localStorage.getItem('paxi_internal_wallet') !== null;
-
-    if (hasWallet) {
-        content.innerHTML = `
-            <div class="text-center mb-6">
-                <div class="w-16 h-16 bg-cyan-400/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <i class="fas fa-shield-alt text-2xl text-cyan-400"></i>
-                </div>
-                <h3 class="text-xl font-bold">Internal Wallet</h3>
-                <p class="text-sm text-secondary-text">Wallet found on this device</p>
-            </div>
-            <div class="space-y-3">
-                <button onclick="unlockInternalWallet()" class="w-full py-4 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl font-bold">
-                    UNLOCK WALLET
-                </button>
-                <button onclick="confirmRemoveWallet()" class="w-full py-3 text-red-400 font-semibold text-sm">
-                    REMOVE WALLET
-                </button>
-            </div>
-        `;
-    } else {
-        content.innerHTML = `
-            <div class="text-center mb-6">
-                <div class="w-16 h-16 bg-purple-500/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <i class="fas fa-plus-circle text-2xl text-purple-400"></i>
-                </div>
-                <h3 class="text-xl font-bold">Setup Wallet</h3>
-                <p class="text-sm text-secondary-text">Create a new wallet or import existing one</p>
-            </div>
-            <div class="space-y-3">
-                <button onclick="setupNewWallet()" class="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl font-bold">
-                    CREATE NEW WALLET
-                </button>
-                <button onclick="setupImportWallet()" class="w-full py-4 bg-dark border border-gray-700 rounded-xl font-bold">
-                    IMPORT SEED PHRASE
-                </button>
-            </div>
-        `;
-    }
-};
 
 window.setupNewWallet = async function() {
     window.showInternalWalletSheet();
@@ -2070,51 +2014,65 @@ window.setupNewWallet = async function() {
 
         const HDWallet = paxi.DirectSecp256k1HdWallet || window.DirectSecp256k1HdWallet;
         if (!HDWallet) {
-             throw new Error('DirectSecp256k1HdWallet component missing in PaxiCosmJS bundle');
+             throw new Error('DirectSecp256k1HdWallet missing');
         }
 
-                const wallet = await HDWallet.generate(12, { prefix: "paxi" });
+        const wallet = await HDWallet.generate(12, { prefix: "paxi" });
         const mnemonic = wallet.mnemonic;
 
         window.internalWalletState.tempMnemonic = mnemonic;
 
-        const content = document.getElementById('walletSheetContent');
         content.innerHTML = `
-            <h3 class="text-lg font-bold mb-2">Back up your Seed Phrase</h3>
-            <p class="text-xs text-secondary-text mb-4">Write down these 12 words in order and keep them safe.</p>
-            <div class="bg-surface/40 p-4 rounded-xl grid grid-cols-3 gap-2 mb-6 border border-gray-800">
-                ${mnemonic.split(' ').map((w, i) => `<div class="text-[10px]"><span class="text-muted-text mr-1">${i+1}.</span>${w}</div>`).join('')}
+            <div class="p-4 bg-surface border-4 border-card shadow-brutal rotate-1">
+                <h3 class="text-xl font-black italic uppercase tracking-tighter mb-4 text-primary-text">Backup Seed Phrase</h3>
+                <p class="text-[10px] text-secondary-text mb-4 font-bold uppercase">Write down these 12 words in order. This is the only way to recover your wallet.</p>
+
+                <div class="bg-card/50 p-4 rounded-2xl grid grid-cols-3 gap-2 mb-6 border-2 border-card">
+                    ${mnemonic.split(' ').map((w, i) => `
+                        <div class="flex items-center gap-1">
+                            <span class="text-[8px] font-black text-muted-text">${i+1}.</span>
+                            <span class="text-[10px] font-mono font-bold text-primary-text">${w}</span>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <button onclick="window.confirmBackup()" class="w-full py-4 bg-meme-green text-black font-black rounded-xl border-4 border-card shadow-brutal-sm hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">
+                    I SECURED IT
+                </button>
             </div>
-            <button onclick="confirmBackup()" class="w-full py-4 bg-cyan-500 rounded-xl font-bold">
-                I HAVE WRITTEN IT DOWN
-            </button>
         `;
     } catch (e) {
         console.error("❌ Wallet generation failed:", e);
-        const content = document.getElementById('walletSheetContent');
         if (content) {
             content.innerHTML = `
-                <div class="text-center py-8">
+                <div class="text-center py-8 bg-surface border-4 border-card shadow-brutal">
                     <i class="fas fa-exclamation-triangle text-meme-pink text-4xl mb-4"></i>
-                    <h3 class="text-xl font-bold text-meme-pink">Generation Failed</h3>
-                    <p class="text-xs text-secondary-text mt-2">${e.message || 'Unknown Error'}</p>
-                    <button onclick="window.setupNewWallet()" class="mt-6 px-6 py-2 bg-meme-green text-black font-bold rounded-lg">Retry</button>
+                    <h3 class="text-xl font-bold text-meme-pink uppercase italic">Generation Failed</h3>
+                    <p class="text-[10px] text-secondary-text mt-2 font-bold uppercase">${e.message || 'Unknown Error'}</p>
+                    <button onclick="window.setupNewWallet()" class="mt-6 px-6 py-3 bg-meme-green text-black font-black rounded-lg border-2 border-card shadow-brutal-sm hover:shadow-none transition-all uppercase italic">Retry</button>
                 </div>
             `;
         }
-        if (window.showNotif) window.showNotif("Error: Wallet generation failed", "error");
     }
 };
 
 window.confirmBackup = function() {
     window.showPinSheet('Set 6-Digit PIN', async (pin) => {
         try {
-            const encryptedMnemonic = await window.cryptoUtils.encrypt(window.internalWalletState.tempMnemonic, pin);
-            localStorage.setItem('paxi_internal_wallet', encryptedMnemonic);
+            await window.WalletManager.importMnemonic("Internal Wallet", window.internalWalletState.tempMnemonic, pin);
+            window.WalletSecurity.setSessionPin(pin);
             window.internalWalletState.tempMnemonic = '';
-                        window.renderWalletOptions();
+
+            const active = window.WalletManager.getActiveWallet();
+            if (active) await window.connectInternalWallet(active.id, pin);
+
+            window.hideInternalWalletSheet();
+            if (window.WalletUI) window.WalletUI.renderDashboard();
         } catch (e) {
-                    }
+            console.error("Backup confirmation failed", e);
+            const errorModal = document.getElementById('pinErrorModal');
+            if (errorModal) errorModal.classList.remove('hidden');
+        }
     });
 };
 
@@ -2122,13 +2080,41 @@ window.setupImportWallet = function() {
     window.showInternalWalletSheet();
     const content = document.getElementById('walletSheetContent');
     content.innerHTML = `
-        <h3 class="text-lg font-bold mb-2">Import Wallet</h3>
-        <p class="text-xs text-secondary-text mb-4">Enter your 12 or 24-word seed phrase.</p>
-        <textarea id="importMnemonic" class="w-full h-32 bg-surface/40 border border-gray-800 rounded-xl p-4 text-sm mb-4" placeholder="word1 word2 ..."></textarea>
-        <button onclick="processImport()" class="w-full py-4 bg-cyan-500 rounded-xl font-bold">
-            IMPORT WALLET
-        </button>
+        <div class="p-4 bg-surface border-4 border-card shadow-brutal -rotate-1">
+            <h3 class="text-xl font-black italic uppercase tracking-tighter mb-4 text-primary-text">Import Wallet</h3>
+            <p class="text-[10px] text-secondary-text mb-4 font-bold uppercase tracking-widest">Enter your 12 or 24-word seed phrase below.</p>
+
+            <textarea id="importMnemonic"
+                class="w-full h-32 bg-card border-4 border-card text-primary-text rounded-2xl p-4 text-xs font-mono mb-6 outline-none focus:border-meme-cyan transition-colors"
+                placeholder="word1 word2 word3 ..."></textarea>
+
+            <button onclick="window.processImportLegacy()" class="w-full py-4 bg-meme-cyan text-black font-black rounded-xl border-4 border-card shadow-brutal-sm hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">
+                RESTORE ACCESS
+            </button>
+        </div>
     `;
+};
+
+window.processImportLegacy = async function() {
+    const mnemonic = document.getElementById('importMnemonic').value.trim();
+    if (!mnemonic) return;
+
+    window.showPinSheet('Set 6-Digit PIN', async (pin) => {
+        try {
+            await window.WalletManager.importMnemonic("Internal Wallet", mnemonic, pin);
+            window.WalletSecurity.setSessionPin(pin);
+
+            const active = window.WalletManager.getActiveWallet();
+            if (active) await window.connectInternalWallet(active.id, pin);
+
+            window.hideInternalWalletSheet();
+            if (window.WalletUI) window.WalletUI.renderDashboard();
+        } catch (e) {
+            console.error("Import failed", e);
+            const errorModal = document.getElementById('pinErrorModal');
+            if (errorModal) errorModal.classList.remove('hidden');
+        }
+    });
 };
 
 window.retryPin = function() {
@@ -2138,20 +2124,6 @@ window.retryPin = function() {
     window.showPinSheet(lastTitle, window.internalWalletState.pinCallback);
 };
 
-window.unlockInternalWallet = function() {
-    window.showPinSheet('Enter PIN to Unlock', async (pin) => {
-        try {
-            const encrypted = localStorage.getItem('paxi_internal_wallet');
-            const mnemonic = await window.cryptoUtils.decrypt(encrypted, pin);
-            await window.connectWithMnemonic(mnemonic);
-            window.hideInternalWalletSheet();
-        } catch (e) {
-            console.error("Unlock failed", e);
-            const errorModal = document.getElementById('pinErrorModal');
-            if (errorModal) errorModal.classList.remove('hidden');
-        }
-    });
-};
 
 window.connectWithMnemonic = async function(mnemonic) {
         try {

@@ -197,7 +197,7 @@ window.executeAddLP = async function() {
     
     try {
         await window.executeAddLPTransaction(window.currentPRC20, paxiAmount, tokenAmount);
-        window.hideLPModal();
+        if (window.closeAllSidebars) window.closeAllSidebars();
     } catch (e) {
         console.error(e);
     }
@@ -221,7 +221,7 @@ window.executeRemoveLP = async function() {
     
     try {
         await window.executeRemoveLPTransaction(window.currentPRC20, lpAmount);
-        window.hideLPModal();
+        if (window.closeAllSidebars) window.closeAllSidebars();
     } catch (e) {
         console.error(e);
     }
