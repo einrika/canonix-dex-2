@@ -37,6 +37,12 @@ window.updateLPFromSlider = function(type, percent) {
     }
     
     window.updateSliderGradient(type === 'paxi' ? 'lpPaxiSlider' : 'lpTokenSlider', percent);
+
+    // UI Feedback for amount
+    const displayEl = document.getElementById(type === 'paxi' ? 'lpPaxiDisplay' : 'lpTokenDisplay');
+    if (displayEl) window.setText(displayEl, `${amount} ${type === 'paxi' ? 'PAXI' : (window.currentTokenInfo?.symbol || 'TOKEN')}`);
+
+    window.calculateEstimatedLP();
 };
 
 // ===== UPDATE LP FROM INPUT =====
@@ -125,11 +131,29 @@ window.calculateEstimatedLP = function() {
 
 // ===== UPDATE REMOVE LP FROM SLIDER =====
 window.updateRemoveLPFromSlider = function(percent) {
-    const amount = (window.lpBalances.lpTokens * percent / 100).toFixed(6);
+    const lpAmount = (window.lpBalances.lpTokens * percent / 100);
+    const amountStr = lpAmount.toFixed(6);
+
     const input = document.getElementById('lpRemoveAmount');
     if (input) {
-        input.value = amount;
+        input.value = amountStr;
         window.updateSliderGradient('lpRemoveSlider', percent);
+    }
+
+    // UI Feedback for Withdrawal Estimation
+    const lpDisplay = document.getElementById('lpWithdrawDisplay');
+    if (lpDisplay) window.setText(lpDisplay, `${amountStr} LP`);
+
+    // Calculate Estimated Returns based on percentage of total user position
+    if (window.currentUserPosition) {
+        const paxiEst = (parseFloat(window.currentUserPosition.expected_paxi || 0) * percent / 100) / 1e6;
+        const tokenEst = (parseFloat(window.currentUserPosition.expected_prc20 || 0) * percent / 100) / Math.pow(10, window.currentTokenInfo?.decimals || 6);
+
+        const paxiEl = document.getElementById('lpWithdrawPaxiEst');
+        const tokenEl = document.getElementById('lpWithdrawTokenEst');
+
+        if (paxiEl) window.setText(paxiEl, `${paxiEst.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 6})} PAXI`);
+        if (tokenEl) window.setText(tokenEl, `${tokenEst.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 6})} ${window.currentTokenInfo?.symbol || 'TOKEN'}`);
     }
 };
 
