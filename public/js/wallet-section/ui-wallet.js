@@ -155,7 +155,6 @@ Object.assign(window.WalletUI, {
                     </div>
                     <div class="text-right">
                         <div class="text-xs font-mono font-bold text-primary-text">${lp.lpBalance} LP</div>
-                        <div class="text-[9px] text-up font-black italic">${lp.share}% Share</div>
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-2 mb-4 text-[9px] text-secondary-text font-bold uppercase tracking-tighter">
@@ -1803,6 +1802,7 @@ window.updateLPBalances = async function() {
 
         // 3. Update Position & Withdraw Stats (NEW REFACTORED STRUCTURE)
         const symbol = window.currentTokenInfo?.symbol || 'TOKEN';
+        const format = (val, dec) => window.formatAmount ? window.formatAmount(val, dec) : val.toFixed(dec);
 
         // Total Pool Depth
         if (!window.poolData) await window.fetchPoolData();
@@ -1810,18 +1810,17 @@ window.updateLPBalances = async function() {
             const totalResPaxi = parseFloat(window.poolData.reserve_paxi || 0) / 1000000;
             const totalResToken = parseFloat(window.poolData.reserve_prc20 || 0) / Math.pow(10, window.currentTokenInfo?.decimals || 6);
 
-            window.setText('lpTotalPaxi', window.formatAmount ? window.formatAmount(totalResPaxi, 2) : totalResPaxi.toFixed(2));
-            window.setText('lpTotalToken', window.formatAmount ? window.formatAmount(totalResToken, 2) : totalResToken.toFixed(2));
+            const totalText = `${format(totalResPaxi, 2)} PAXI ${format(totalResToken, 2)} ${symbol}`;
+            window.setText('lpTotalCombined', totalText);
         }
 
         // My Position Stats
-        window.setText('lpMyPaxi', window.formatAmount ? window.formatAmount(window.lpBalances.expectedPaxi, 4) : window.lpBalances.expectedPaxi.toFixed(4));
-        window.setText('lpMyToken', window.formatAmount ? window.formatAmount(window.lpBalances.expectedPrc20, 4) : window.lpBalances.expectedPrc20.toFixed(4));
+        const myText = `${format(window.lpBalances.expectedPaxi, 4)} PAXI ${format(window.lpBalances.expectedPrc20, 4)} ${symbol}`;
+        window.setText('lpMyCombined', myText);
 
         // Withdraw Area Stats
-        window.setText('lpWithdrawAmount', window.formatAmount ? window.formatAmount(window.lpBalances.lpTokens, 6) : window.lpBalances.lpTokens.toFixed(6));
-        window.setText('lpWithdrawPaxi', window.formatAmount ? window.formatAmount(window.lpBalances.expectedPaxi, 4) : window.lpBalances.expectedPaxi.toFixed(4));
-        window.setText('lpWithdrawToken', window.formatAmount ? window.formatAmount(window.lpBalances.expectedPrc20, 4) : window.lpBalances.expectedPrc20.toFixed(4));
+        const withdrawText = `${format(window.lpBalances.lpTokens, 6)} LP ${format(window.lpBalances.expectedPaxi, 4)} PAXI ${format(window.lpBalances.expectedPrc20, 4)} ${symbol}`;
+        window.setText('lpWithdrawCombined', withdrawText);
 
         // Compatibility for old IDs
         const yourLP = document.getElementById('yourLPTokens');
