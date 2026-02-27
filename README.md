@@ -1,5 +1,7 @@
 # Canonix v3.9 - PERBAIKAN & PENINGKATAN
 
+https://github.com/einrika/canonix-dex-2/tree/f276ed859caee7d673f7e75f776d6c1162f3c980
+
 ## ⚠️ CRITICAL: URL Configuration
 
 **PENTING**: Semua URL API harus LENGKAP dengan domain. Browser akan otomatis replace relative path dengan current domain!
