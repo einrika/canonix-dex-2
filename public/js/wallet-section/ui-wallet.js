@@ -1772,14 +1772,17 @@ window.updateLPBalances = async function() {
             window.lpBalances.tokenRaw = tokenBalance.toString();
 
             // LP Position Logic (Hybrid Backend Proxy)
-            if (posRes && posRes.position) {
-                const lpAmountRaw = posRes.position.lp_amount || '0';
+            // fetchDirect returns full { success, data } for local /api/ routes
+            const posData = posRes?.data || posRes;
+
+            if (posData && posData.position) {
+                const lpAmountRaw = posData.position.lp_amount || '0';
                 window.lpBalances.lpRaw = lpAmountRaw;
                 window.lpBalances.lpTokens = parseFloat(lpAmountRaw) / 1000000;
 
                 // My Position / Withdraw Amount (from position API)
-                window.lpBalances.expectedPaxi = parseFloat(posRes.expected_paxi || 0) / 1000000;
-                window.lpBalances.expectedPrc20 = parseFloat(posRes.expected_prc20 || 0) / Math.pow(10, tokenDecimals);
+                window.lpBalances.expectedPaxi = parseFloat(posData.expected_paxi || 0) / 1000000;
+                window.lpBalances.expectedPrc20 = parseFloat(posData.expected_prc20 || 0) / Math.pow(10, tokenDecimals);
             } else {
                 window.lpBalances.lpRaw = '0';
                 window.lpBalances.lpTokens = 0;
