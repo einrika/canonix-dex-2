@@ -523,7 +523,7 @@ window.renderLPTerminal = async function() {
         <div class="space-y-4 animate-fade-in pb-8">
             <div class="flex items-center justify-between border-b border-card pb-2 mb-2">
                 <h4 class="text-[10px] font-black text-secondary-text uppercase tracking-widest italic">Liquidity Provision</h4>
-                <button onclick="window.setSidebarTab('wallet')" class="w-6 h-6 flex items-center justify-center bg-card border border-border text-muted-text hover:text-meme-pink transition-colors"><i class="fas fa-times text-[10px]"></i></button>
+                <button onclick="window.closeAllSidebars()" class="w-6 h-6 flex items-center justify-center bg-card border border-border text-muted-text hover:text-meme-pink transition-colors"><i class="fas fa-times text-[10px]"></i></button>
             </div>
 
             <!-- Total Liquidity Pool -->
@@ -531,7 +531,7 @@ window.renderLPTerminal = async function() {
                 <h5 class="text-[10px] font-black text-meme-cyan uppercase tracking-widest mb-3 italic underline decoration-2 underline-offset-4">Total Liquidity Pool</h5>
                 <div class="space-y-1">
                     <div class="flex justify-between text-base font-display italic"><span class="text-primary-text">${poolPaxi} PAXI</span></div>
-                    <div class="flex justify-between text-base font-display italic"><span class="text-primary-text">${poolToken} ${symbol}</span></div>
+                    <div class="flex justify-between text-base font-display italic"><span class="text-primary-text">${poolToken} <span class="token-symbol-text">${symbol}</span></span></div>
                 </div>
             </div>
 
@@ -540,7 +540,7 @@ window.renderLPTerminal = async function() {
                 <h5 class="text-[10px] font-black text-meme-green uppercase tracking-widest mb-3 italic underline decoration-2 underline-offset-4">My Position</h5>
                 <div class="space-y-1">
                     <div class="flex justify-between text-base font-display italic"><span class="text-primary-text">${myPaxi} PAXI</span></div>
-                    <div class="flex justify-between text-base font-display italic"><span class="text-primary-text">${myToken} ${symbol}</span></div>
+                    <div class="flex justify-between text-base font-display italic"><span class="text-primary-text">${myToken} <span class="token-symbol-text">${symbol}</span></span></div>
                 </div>
             </div>
 
@@ -557,7 +557,7 @@ window.renderLPTerminal = async function() {
 
                 <div class="space-y-1.5 mb-5 p-2 bg-primary/50 border border-card italic">
                     <div class="flex justify-between text-[9px] font-mono"><span class="text-secondary-text">Est. Paxi</span><span id="lpWithdrawPaxiEst" class="text-primary-text">0.00 PAXI</span></div>
-                    <div class="flex justify-between text-[9px] font-mono"><span class="text-secondary-text">Est. ${symbol}</span><span id="lpWithdrawTokenEst" class="text-primary-text">0.00 ${symbol}</span></div>
+                    <div class="flex justify-between text-[9px] font-mono"><span class="text-secondary-text">Est. <span class="token-symbol-text">${symbol}</span></span><span id="lpWithdrawTokenEst" class="text-primary-text">0.00 <span class="token-symbol-text">${symbol}</span></span></div>
                 </div>
 
                 <button onclick="window.executeRemoveLP()" class="w-full py-4 bg-meme-pink text-primary-text font-display text-2xl border-4 border-card shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">Withdraw Now</button>
@@ -576,8 +576,8 @@ window.renderLPTerminal = async function() {
                     </div>
 
                     <div class="bg-bg border border-border p-3">
-                        <div class="flex justify-between text-[8px] text-secondary-text uppercase mb-1 font-bold">${symbol} Amount <span class="opacity-60">Bal: <span id="lpTokenBalance">0.00</span></span></div>
-                        <div id="lpTokenDisplay" class="text-xl font-display text-primary-text italic mb-2">0.00 ${symbol}</div>
+                        <div class="flex justify-between text-[8px] text-secondary-text uppercase mb-1 font-bold"><span class="token-symbol-text">${symbol}</span> Amount <span class="opacity-60">Bal: <span id="lpTokenBalance">0.00</span></span></div>
+                        <div id="lpTokenDisplay" class="text-xl font-display text-primary-text italic mb-2">0.00 <span class="token-symbol-text">${symbol}</span></div>
                         <input type="hidden" id="lpTokenAmount" value="0">
                         <input type="range" id="lpTokenSlider" min="0" max="100" step="1" value="0" class="w-full h-1.5 bg-surface rounded-none appearance-none cursor-pointer accent-meme-cyan" oninput="window.updateLPFromSlider('token', this.value)">
                     </div>
@@ -588,7 +588,7 @@ window.renderLPTerminal = async function() {
                 </div>
             </div>
 
-            <button onclick="window.setSidebarTab('wallet')" class="w-full py-3 bg-surface border-2 border-card text-muted-text font-display text-lg uppercase italic hover:text-primary-text transition-all">Cancel & Back</button>
+            <button onclick="window.closeAllSidebars()" class="w-full py-3 bg-surface border-2 border-card text-muted-text font-display text-lg uppercase italic hover:text-primary-text transition-all">Cancel & Close</button>
         </div>`;
 
     if (window.updateLPBalances) window.updateLPBalances();

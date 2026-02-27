@@ -220,6 +220,11 @@ window.updateDashboard = function(detail) {
     window.setText('resTokenLabel', detail.symbol + ' STOCK');
     window.setText('holderCount', detail.holders.toLocaleString());
 
+    // Reactive Symbol update for other components (like LP terminal)
+    document.querySelectorAll('.token-symbol-text').forEach(el => {
+        if (el.textContent !== detail.symbol) window.setText(el, detail.symbol);
+    });
+
     window.setText('caAddr', address);
 
     // Total Supply
