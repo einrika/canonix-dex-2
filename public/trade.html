@@ -536,6 +536,22 @@
                     <div class="w-10 h-10 bg-accent border border-secondary flex items-center justify-center text-black group-hover:rotate-6 transition-transform text-base"><i class="fas fa-calendar-check"></i></div>
                     <span class="font-display text-base text-primary-text group-hover:text-accent transition-colors uppercase">Daily</span>
                 </a>
+                <button onclick="window.setSidebarTab('send'); toggleMoreMenu();" class="flex flex-col items-center gap-2 p-4 bg-secondary border border-secondary shadow-brutal hover:shadow-none transition-all group text-center">
+                    <div class="w-10 h-10 bg-soft-info border border-secondary flex items-center justify-center text-black group-hover:rotate-6 transition-transform text-base"><i class="fas fa-paper-plane"></i></div>
+                    <span class="font-display text-base text-primary-text group-hover:text-soft-info transition-colors uppercase">Send</span>
+                </button>
+                <button onclick="window.setSidebarTab('lp'); toggleMoreMenu();" class="flex flex-col items-center gap-2 p-4 bg-secondary border border-secondary shadow-brutal hover:shadow-none transition-all group text-center">
+                    <div class="w-10 h-10 bg-soft-success border border-secondary flex items-center justify-center text-black group-hover:rotate-6 transition-transform text-base"><i class="fas fa-layer-group"></i></div>
+                    <span class="font-display text-base text-primary-text group-hover:text-soft-success transition-colors uppercase">Liquidity</span>
+                </button>
+                <button onclick="window.setSidebarTab('burn'); toggleMoreMenu();" class="flex flex-col items-center gap-2 p-4 bg-secondary border border-secondary shadow-brutal hover:shadow-none transition-all group text-center">
+                    <div class="w-10 h-10 bg-soft-failed border border-secondary flex items-center justify-center text-primary-text group-hover:rotate-6 transition-transform text-base"><i class="fas fa-fire"></i></div>
+                    <span class="font-display text-base text-primary-text group-hover:text-soft-failed transition-colors uppercase">Burn</span>
+                </button>
+                <button onclick="window.setSidebarTab('donate'); toggleMoreMenu();" class="flex flex-col items-center gap-2 p-4 bg-secondary border border-secondary shadow-brutal hover:shadow-none transition-all group text-center">
+                    <div class="w-10 h-10 bg-soft-warning border border-secondary flex items-center justify-center text-black group-hover:rotate-6 transition-transform text-base"><i class="fas fa-heart"></i></div>
+                    <span class="font-display text-base text-primary-text group-hover:text-soft-warning transition-colors uppercase">Donate</span>
+                </button>
             </div>
         </div>
         <div class="mt-6">
@@ -809,6 +825,18 @@
     <div id="sidebarOverlay" class="hidden fixed inset-0 bg-secondary/80 z-[105] lg:hidden" onclick="window.closeAllSidebars()"></div>
     <div id="sheetOverlay" class="hidden fixed inset-0 bg-secondary/60 z-[180] backdrop-blur-sm transition-opacity duration-300" onclick="hideInternalWalletSheet()"></div>
     
+    <!-- Wrong PIN Modal -->
+    <div id="wrongPinModal" class="hidden fixed inset-0 bg-primary/95 z-[100001] flex items-center justify-center p-4">
+        <div class="bg-secondary border border-secondary shadow-minimal w-full max-w-xs p-6 text-center">
+            <div class="w-16 h-16 bg-soft-failed/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-times-circle text-3xl text-soft-failed"></i>
+            </div>
+            <h3 class="text-xl font-display uppercase text-primary-text mb-2">Wrong PIN</h3>
+            <p class="text-xs text-muted-text mb-6">The PIN you entered is incorrect. Please try again.</p>
+            <button onclick="window.retryPin()" class="w-full py-3 bg-accent text-black font-display text-lg shadow-brutal hover:shadow-none transition-all uppercase">Retry</button>
+        </div>
+    </div>
+
     <!-- AI Modal -->
     <div id="aiModal" class="hidden fixed inset-0 bg-primary/95 z-[120] flex items-center justify-center p-4">
         <div class="bg-secondary border border-secondary shadow-minimal w-full max-w-lg max-h-[70vh] overflow-y-auto no-scrollbar relative">
