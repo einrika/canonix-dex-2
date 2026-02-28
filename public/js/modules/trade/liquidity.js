@@ -73,6 +73,7 @@ window.renderLPTerminal = async function() {
             <div class="bg-surface border-4 border-card p-4 shadow-brutal-sm rotate-[0.5deg]">
                 <h5 class="text-[10px] font-black text-meme-green uppercase tracking-widest mb-3 italic underline decoration-2 underline-offset-4">My Position</h5>
                 <div class="space-y-1">
+                    <div class="flex justify-between text-base font-display italic"><span class="text-primary-text">${withdrawLpTotal} LP Amount</span></div>
                     <div class="flex justify-between text-base font-display italic"><span class="text-primary-text">${myPaxi} PAXI</span></div>
                     <div class="flex justify-between text-base font-display italic"><span class="text-primary-text">${myToken} <span class="token-symbol-text">${symbol}</span></span></div>
                 </div>
@@ -123,7 +124,7 @@ window.renderLPTerminal = async function() {
             </div>
 
             <div class="grid grid-cols-2 gap-2">
-                <button onclick="document.getElementById('actionBottomSheet')?.remove(); window.setSidebarTab('wallet')" class="py-3 bg-surface border-2 border-card text-muted-text font-display text-lg uppercase italic hover:text-primary-text transition-all">Back</button>
+                <button onclick="window.cleanupLPTerminal('wallet')" class="py-3 bg-surface border-2 border-card text-muted-text font-display text-lg uppercase italic hover:text-primary-text transition-all">Back</button>
                 <button onclick="window.cleanupLPTerminal()" class="py-3 bg-card border-2 border-card text-meme-pink font-display text-lg uppercase italic transition-all">Close</button>
             </div>
         </div>`;
@@ -142,7 +143,7 @@ window.updateSliderGradient = function(sliderId, percent) {
     if (slider.classList.contains('accent-up')) color = '#00B2D6';
     if (slider.classList.contains('accent-down')) color = '#D60047';
 
-    slider.style.background = `linear-gradient(to_right, ${color} 0%, ${color} ${Math.round(value)}%, #121314 ${Math.round(value)}%, #121314 100%)`;
+    slider.style.background = `linear-gradient(to right, ${color} 0%, ${color} ${Math.round(value)}%, #121314 ${Math.round(value)}%, #121314 100%)`;
 };
 
 // ===== UPDATE LP FROM SLIDER =====
@@ -444,13 +445,8 @@ window.executeBurn = async function() {
 };
 
 // ===== UNIFIED CLEANUP FOR LP TERMINAL =====
-window.cleanupLPTerminal = function() {
+window.cleanupLPTerminal = function(tabToSet = null) {
     document.getElementById('actionBottomSheet')?.remove();
     if (window.closeAllSidebars) window.closeAllSidebars();
-};
-
-// ===== UNIFIED CLEANUP FOR LP TERMINAL =====
-window.cleanupLPTerminal = function() {
-    document.getElementById('actionBottomSheet')?.remove();
-    if (window.closeAllSidebars) window.closeAllSidebars();
+    if (tabToSet && window.setSidebarTab) window.setSidebarTab(tabToSet);
 };
