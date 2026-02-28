@@ -138,10 +138,12 @@ window.updateSliderGradient = function(sliderId, percent) {
     if (!slider) return;
     
     const value = Math.min(100, Math.max(0, percent));
-    let color = '#8b5cf6'; // Default purple
 
-    if (slider.classList.contains('accent-up')) color = '#00B2D6';
-    if (slider.classList.contains('accent-down')) color = '#D60047';
+    // Pick color based on slider accent class or default
+    let color = '#8b5cf6'; // Default purple
+    if (slider.classList.contains('accent-meme-cyan')) color = '#00B2D6';
+    if (slider.classList.contains('accent-meme-pink')) color = '#D60047';
+    if (slider.classList.contains('accent-meme-green')) color = '#00D68B';
 
     slider.style.background = `linear-gradient(to right, ${color} 0%, ${color} ${Math.round(value)}%, #121314 ${Math.round(value)}%, #121314 100%)`;
 };

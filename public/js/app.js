@@ -7,7 +7,33 @@ window.poolData = null;
 
 // ===== INITIALIZE APP =====
 window.addEventListener('load', async () => {
-    // Fetch PAXI price first as single source of truth
+    // 1. Fetch Server Config first (Essential for UI behavior)
+    window.SERVER_CONFIG = {
+        priority_tokens: [],
+        default_token: null,
+        priority_order: ["verified", "priority", "sort"],
+        default_sort: "hot",
+        default_sub_sort: "all",
+        display_limit: 20,
+        filters: { enable_nonpump: true, enable_verified: true }
+    };
+
+    try {
+        const res = await window.fetchDirect('/api/config');
+        if (res && res.success && res.data) {
+            window.SERVER_CONFIG = { ...window.SERVER_CONFIG, ...res.data };
+            console.log('✅ Server config loaded:', window.SERVER_CONFIG);
+        }
+    } catch (e) {
+        console.error('⚠️ Failed to load server config, using fallbacks:', e);
+    }
+
+    // Set initial display limit from config
+    window.displayLimit = window.SERVER_CONFIG.display_limit || 20;
+    window.currentSort = window.SERVER_CONFIG.default_sort || 'hot';
+    window.currentSubSort = window.SERVER_CONFIG.default_sub_sort || 'all';
+
+    // 2. Fetch PAXI price first as single source of truth
     await window.fetchPaxiPrice();
 
     // Initialize chart
@@ -70,8 +96,8 @@ window.addEventListener('load', async () => {
     }
 
     // Select token
-    const tokenToLoad = tokenParam || lastToken || window.APP_CONFIG.DEFAULT_TOKEN;
-    await window.selectPRC20(tokenToLoad);
+    const tokenToLoad = tokenParam || lastToken || window.SERVER_CONFIG.default_token;
+    if (tokenToLoad) await window.selectPRC20(tokenToLoad);
 
     // Set initial trade type
     if (window.setSwapMode) window.setSwapMode('buy');

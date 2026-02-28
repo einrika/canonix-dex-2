@@ -28,8 +28,6 @@ window.APP_CONFIG = {
     
     CACHE_DURATION: 1 * 60 * 60 * 1000, // 1 hour
     BATCH_SIZE: 50,
-    DEFAULT_TOKEN: 'paxi14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9snvcq0u',
-    PRIORITY_TOKENS: ['paxi14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9snvcq0u'],
     
     ITEMS_PER_PAGE: 20,
     UPDATE_INTERVAL: 10000 // 10 seconds

@@ -4,6 +4,7 @@ const router = express.Router();
 // Import controllers
 const adminControl = require('../controllers/admin-control');
 const aiAnalysis = require('../controllers/ai_analysis');
+const config = require('../controllers/config');
 const gasEstimate = require('../controllers/gas-estimate');
 const gasSimulate = require('../controllers/gas-simulate');
 const proxy = require('../controllers/proxy');
@@ -20,6 +21,7 @@ const lpPosition = require('../controllers/prc20/lp-position');
 // Map routes
 router.all('/admin-control', adminControl);
 router.post('/ai_analysis', aiAnalysis);
+router.get('/config', config);
 router.get('/gas-estimate', gasEstimate);
 router.post('/gas-simulate', gasSimulate);
 router.all('/proxy', proxy);
