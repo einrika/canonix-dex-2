@@ -464,7 +464,7 @@ function _paintModal(bodyEl, tx, hash) {
         ${row('Timestamp', _dateFull(tx.timestamp))}
     </div>
     <div class="px-5 pb-5 flex-shrink-0">
-        <a href="https://explorer.paxinet.io/txs/${_esc(hash)}" target="_blank" class="flex items-center justify-center w-full py-3 rounded-xl transition-all text-[12px] font-semibold" style="border:1px solid rgba(255,255,255,0.1);color:#8a9099">View on Explorer</a>
+        <a href="${window.APP_CONFIG.EXPLORER_URL || 'https://explorer.paxinet.io'}/txs/${_esc(hash)}" target="_blank" class="flex items-center justify-center w-full py-3 rounded-xl transition-all text-[12px] font-semibold" style="border:1px solid rgba(255,255,255,0.1);color:#8a9099">View on Explorer</a>
     </div>`;
 }
 

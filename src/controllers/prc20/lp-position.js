@@ -1,5 +1,6 @@
 const fetch = require('node-fetch');
 const { sendResponse, checkRateLimit, isValidPaxiAddress } = require('../../utils/common');
+const { LCD: LCD_URL } = require('../../config/blockchain');
 
 const lpPositionHandler = async (req, res) => {
     if (req.method === 'OPTIONS') return res.sendStatus(200);
@@ -18,7 +19,7 @@ const lpPositionHandler = async (req, res) => {
     }
 
     try {
-        const apiUrl = `https://mainnet-lcd.paxinet.io/paxi/swap/position/${address}/${token}`;
+        const apiUrl = `${LCD_URL}/paxi/swap/position/${address}/${token}`;
         const response = await fetch(apiUrl, { timeout: 10000 });
 
         if (!response.ok) {

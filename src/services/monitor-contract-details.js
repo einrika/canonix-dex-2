@@ -1,5 +1,6 @@
 const fetch = require('node-fetch');
 const { isValidPaxiAddress } = require('../utils/common');
+const { EXPLORER_API } = require('../config/blockchain');
 
 let ioInstance = null;
 let monitorInterval = null;
@@ -15,7 +16,7 @@ const fetchContractDetails = async (address) => {
     }
 
     try {
-        const url = `https://explorer.paxinet.io/api/prc20/contract?address=${address}`;
+        const url = `${EXPLORER_API}/prc20/contract?address=${address}`;
         const response = await fetch(url, { timeout: 6000 });
 
         if (!response.ok) {

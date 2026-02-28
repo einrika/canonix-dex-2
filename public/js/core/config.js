@@ -3,15 +3,18 @@
 // ============================================
 
 window.APP_CONFIG = {
-    // Direct API endpoints (no proxy needed)
-    RPC: 'https://mainnet-rpc.paxinet.io',
-    LCD: 'https://mainnet-lcd.paxinet.io',
-    EXPLORER_API: 'https://explorer.paxinet.io/api',
-    WINSCAN_API: 'https://winscan.winsnip.xyz/api',
+    // SECURITY: Endpoints hidden. Configured via /api/config from backend.
+    RPC: '',
+    LCD: '',
+    EXPLORER_API: '',
+    EXPLORER_URL: '',
+    TESTNET_RPC: '',
+    TESTNET_LCD: '',
+    TESTNET_EXPLORER: '',
+    WINSCAN_API: '',
 
     // Backend API - Pointing to local node server
     BACKEND_API: (window.location.origin.startsWith('http') ? window.location.origin : 'https://stalwart-ganache-32b226.netlify.app'),
-    EXPLORER_API: (window.location.origin.startsWith('http') ? window.location.origin : 'https://stalwart-ganache-32b226.netlify.app') + '/api',
     
     // DEPRECATED: Public proxies removed. Use backend proxy.
     PROXIES: [],

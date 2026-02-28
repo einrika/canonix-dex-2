@@ -71,10 +71,29 @@ window.formatPrice = function(price) {
 
 // ===== SERVERLESS SECURE FETCH =====
 window.fetchDirect = async function(url, options = {}) {
-    const BACKEND_API = window.APP_CONFIG.BACKEND_API;
+    const BACKEND_API = window.APP_CONFIG.BACKEND_API || '';
     
-    // 1. Handle already full backend API URLs
-    if (url.startsWith(BACKEND_API)) {
+    // 1. Handle relative paths (already pointing to our backend)
+    if (url.startsWith('/api')) {
+        try {
+            const res = await fetch(url, {
+                method: options.method || 'GET',
+                headers: { 'Content-Type': 'application/json', ...options.headers },
+                body: options.body
+            });
+            const result = await res.json();
+            if (result.success !== undefined) {
+                 return result.success ? result.data : Promise.reject(new Error(result.error || 'Backend error'));
+            }
+            return result; // Direct proxy response
+        } catch (e) {
+            console.error(`Backend fetch failed: ${url}`, e);
+            throw e;
+        }
+    }
+
+    // 1.1 Handle already full backend API URLs
+    if (BACKEND_API && url.startsWith(BACKEND_API)) {
         try {
             const res = await fetch(url, {
                 method: options.method || 'GET',
@@ -206,31 +225,18 @@ window.fetchWithTimeout = async function(url, timeoutMs = 10000, useProxy = fals
     }
 };
 
-// ===== SMART FETCH (Auto-detect CORS and use proxy if needed) =====
+// ===== SMART FETCH (Unified request logic, all through backend) =====
 window.smartFetch = async function(url, options = {}) {
-    try {
-        // Try direct fetch first
-        const response = await fetch(url, {
-            method: options.method || 'GET',
-            headers: options.headers || {},
-            body: options.body
-        });
+    // SECURITY: Public frontend fetch is restricted.
+    // Always use fetchDirect which is pre-configured to hit our backend proxies.
 
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
-        }
-
-        return await response.json();
-
-    } catch (error) {
-        // If CORS error or network error, try with proxy
-        if (error.message.includes('CORS') || error.message.includes('NetworkError') || error.message.includes('Failed to fetch')) {
-            console.warn('CORS/Network error detected, switching to proxy...');
-            return await window.fetchWithProxy(url, options);
-        }
-        
-        throw error;
+    // If URL is already relative or points to our backend, use fetchDirect
+    if (url.startsWith('/api') || (window.APP_CONFIG.BACKEND_API && url.startsWith(window.APP_CONFIG.BACKEND_API))) {
+        return window.fetchDirect(url, options);
     }
+
+    // Otherwise, route through the generic proxy
+    return window.fetchWithProxy(url, options);
 };
 
 // ===== FORMATTING FUNCTIONS =====
@@ -339,7 +345,7 @@ window.showTxResult = function(data) {
     if (hash) {
         if (hashContainer) hashContainer.classList.remove('hidden');
         if (hashEl) hashEl.textContent = hash;
-        const explorer = activeNet?.explorer || 'https://explorer.paxinet.io';
+        const explorer = activeNet?.explorer || window.APP_CONFIG.EXPLORER_URL || 'https://explorer.paxinet.io';
         const viewBtn = document.getElementById('viewHashBtn');
         if (viewBtn) viewBtn.onclick = () => window.open(`${explorer}/txs/${hash}`, '_blank');
     } else {

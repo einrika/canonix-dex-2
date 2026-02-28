@@ -1,6 +1,7 @@
 const fetch = require('node-fetch');
 const { sendResponse, checkRateLimit, isValidPaxiAddress } = require('../utils/common');
 const { fetchContractPrices, fetchPoolPrice } = require('../services/price-monitor-service');
+const { WINSCAN_API, PUMPFUN_API } = require('../config/blockchain');
 
 const tokenPriceHandler = async (req, res) => {
     if (req.method === 'OPTIONS') return res.sendStatus(200);
@@ -55,11 +56,11 @@ const tokenPriceHandler = async (req, res) => {
         }
 
         // For historical data
-        const apiUrl = `https://paxi-pumpfun.winsnip.xyz/api/prc20-price-history/${address}?timeframe=${tf}`;
+        const apiUrl = `${PUMPFUN_API}/prc20-price-history/${address}?timeframe=${tf}`;
         const response = await fetch(apiUrl, { timeout: 5000 });
 
         if (!response.ok) {
-            const winscanUrl = `https://winscan.winsnip.xyz/api/prc20-price-history/${address}?timeframe=${tf}`;
+            const winscanUrl = `${WINSCAN_API}/prc20-price-history/${address}?timeframe=${tf}`;
             const fallbackRes = await fetch(winscanUrl, { timeout: 5000 });
             if (!fallbackRes.ok) throw new Error(`Upstream returned ${response.status}`);
             const fallbackData = await fallbackRes.json();

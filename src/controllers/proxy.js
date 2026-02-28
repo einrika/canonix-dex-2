@@ -8,7 +8,9 @@ const WHITELISTED_DOMAINS = [
     'mypinata.cloud',
     'paxi.mypinata.cloud',
     'paxi-pumpfun.winsnip.xyz',
-    'arweave.net'
+    'arweave.net',
+    'api.coingecko.com',
+    'mainnet-api.paxinet.io'
 ];
 
 const proxyHandler = async (req, res) => {

@@ -1,5 +1,6 @@
 const fetch = require('node-fetch');
 const { isValidPaxiAddress } = require('../utils/common');
+const { LCD: LCD_URL, PRC20_API } = require('../config/blockchain');
 
 let ioInstance = null;
 let monitorInterval = null;
@@ -20,7 +21,8 @@ const fetchContractPrices = async (address) => {
     }
 
     try {
-        const url = `https://mainnet-api.paxinet.io/prc20/get_contract_prices?address=${address}`;
+        // Source for chart prices
+        const url = `${PRC20_API}/prc20/get_contract_prices?address=${address}`;
         const response = await fetch(url, { timeout: 5000 });
 
         if (!response.ok) {
@@ -45,7 +47,7 @@ const fetchContractPrices = async (address) => {
  */
 const fetchPoolPrice = async (address) => {
     try {
-        const url = `https://mainnet-lcd.paxinet.io/paxi/swap/pool/${address}`;
+        const url = `${LCD_URL}/paxi/swap/pool/${address}`;
         const response = await fetch(url, { timeout: 3000 });
         if (!response.ok) return null;
         const data = await response.json();

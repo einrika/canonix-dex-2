@@ -1,5 +1,6 @@
 const fetch = require('node-fetch');
 const { sendResponse, getCached, setCached, checkRateLimit } = require('../utils/common');
+const { EXPLORER_API, PUMPFUN_API } = require('../config/blockchain');
 
 const tokenListHandler = async (req, res) => {
     // OPTIONS is handled by CORS middleware, but we'll keep the logic if needed
@@ -15,13 +16,13 @@ const tokenListHandler = async (req, res) => {
     let cacheKey;
 
     if (searchQuery) {
-        apiUrl = `https://explorer.paxinet.io/api/prc20/search?name=${encodeURIComponent(searchQuery)}`;
+        apiUrl = `${EXPLORER_API}/prc20/search?name=${encodeURIComponent(searchQuery)}`;
         cacheKey = `search_${searchQuery}`;
     } else if (type === 'nonpump') {
-        apiUrl = `https://paxi-pumpfun.winsnip.xyz/api/prc20-tokens?chain=paxi-mainnet`;
+        apiUrl = `${PUMPFUN_API}/prc20-tokens?chain=paxi-mainnet`;
         cacheKey = `nonpump_tokens`;
     } else {
-        apiUrl = `https://explorer.paxinet.io/api/prc20/contracts?page=${page}`;
+        apiUrl = `${EXPLORER_API}/prc20/contracts?page=${page}`;
         cacheKey = `list_page_${page}`;
     }
 

@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 
 // Import controllers
+const lcdProxy = require('../controllers/lcd-proxy');
+const rpcProxy = require('../controllers/rpc-proxy');
 const adminControl = require('../controllers/admin-control');
 const aiAnalysis = require('../controllers/ai_analysis');
 const config = require('../controllers/config');
@@ -19,6 +21,8 @@ const holders = require('../controllers/prc20/holders');
 const lpPosition = require('../controllers/prc20/lp-position');
 
 // Map routes
+router.all(/^\/lcd\/(.*)/, (req, res, next) => { req.params[0] = req.params[0]; next(); }, lcdProxy);
+router.all(/^\/rpc\/(.*)/, (req, res, next) => { req.params[0] = req.params[0]; next(); }, rpcProxy);
 router.all('/admin-control', adminControl);
 router.post('/ai_analysis', aiAnalysis);
 router.get('/config', config);

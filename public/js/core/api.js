@@ -14,7 +14,7 @@ window.fetchPaxiPrice = async function() {
 
   try {
     const response = await fetch(
-      "https://api.coingecko.com/api/v3/simple/price?ids=paxi-network&vs_currencies=usd"
+      "/api/proxy?url=https%3A%2F%2Fapi.coingecko.com%2Fapi%2Fv3%2Fsimple%2Fprice%3Fids%3Dpaxi-network%26vs_currencies%3Dusd"
     );
     
     if (!response.ok) throw new Error("Failed to fetch price");
@@ -152,7 +152,7 @@ window.fetchGasEstimate = async function(msgCount = 1) {
 window.loadWalletTokens = async function(address) {
   if (!address) return [];
   try {
-    const url = `${window.APP_CONFIG.EXPLORER_API}/prc20/my_contract_accounts?address=${address}&page=0`;
+    const url = `/api/prc20/my_contract_accounts?address=${address}&page=0`;
     const data = await window.fetchDirect(url);
 
     if (data && data.accounts) {
@@ -183,7 +183,7 @@ window.fetchUserLPPositions = async function(userAddress) {
 
     // 2. Fetch user's token list to narrow down potential positions
     const accountsData = await window.smartFetch(
-      `${window.APP_CONFIG.EXPLORER_API}/prc20/my_contract_accounts?address=${userAddress}&page=0`
+      `/api/prc20/my_contract_accounts?address=${userAddress}&page=0`
     );
     const userTokens = (accountsData.accounts || []).map(a => a.contract.contract_address);
 

@@ -5,8 +5,8 @@
 window.SettingsPage = {
     defaults: {
         network: 'mainnet',
-        rpc: 'https://mainnet-rpc.paxinet.io',
-        lcd: 'https://mainnet-lcd.paxinet.io',
+        rpc: '/api/rpc',
+        lcd: '/api/lcd',
         aiEnabled: true,
         aiModel: 'gemini-pro',
         autoLock: 30, // minutes
