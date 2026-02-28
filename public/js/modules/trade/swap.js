@@ -392,22 +392,6 @@ window.executeQuickSwap = async function() {
 };
 
 // ===== EXECUTE SEND (Called from UI) =====
-window.executeSend = async function() {
-    const token = document.getElementById('sendTokenSelect')?.value;
-    const recipient = document.getElementById('sendRecipient')?.value.trim();
-    const amount = parseFloat(document.getElementById('sendAmount')?.value);
-    
-    if (!recipient || amount <= 0) {
-                return;
-    }
-
-    try {
-        await window.executeSendTransaction(token, recipient, amount);
-        window.hideWalletActions();
-    } catch (e) {
-        console.error(e);
-    }
-};
 
 // ===== EXECUTE DONATION (Called from UI) =====
 window.executeDonation = async function() {
