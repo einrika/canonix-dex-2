@@ -11,7 +11,7 @@ window.WalletHistory = {
                 window.historyIsLoading = true;
 
                 // Show loading state in whichever container is active
-                const lastContainer = window._lastHistoryContainer || 'tabContent';
+                const lastContainer = 'wallet-history-section';
                 window.renderTransactionHistory?.(lastContainer);
 
                 try {

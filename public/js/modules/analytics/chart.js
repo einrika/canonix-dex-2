@@ -200,53 +200,53 @@ window.initChart = function() {
     });
 
     // Tooltip
-    const tooltip = document.createElement('div');
-    tooltip.id = 'chartTooltip';
-    tooltip.className = 'hidden absolute z-[100] p-4 bg-surface/95 border border-border rounded-2xl text-[10px] pointer-events-none shadow-2xl backdrop-blur-xl min-w-[180px]';
-    container.appendChild(tooltip);
+    // const tooltip = document.createElement('div');
+    // tooltip.id = 'chartTooltip';
+    // tooltip.className = 'hidden absolute z-[100] p-4 bg-surface/95 border border-border rounded-2xl text-[10px] pointer-events-none shadow-2xl backdrop-blur-xl min-w-[180px]';
+    // container.appendChild(tooltip);
 
-    window.lightweightChart.subscribeClick(param => {
-        if (!param.time || param.point.x < 0 || param.point.x > container.clientWidth || param.point.y < 0 || param.point.y > container.clientHeight) {
-            tooltip.classList.add('hidden');
-            return;
-        }
+    // window.lightweightChart.subscribeClick(param => {
+    //     if (!param.time || param.point.x < 0 || param.point.x > container.clientWidth || param.point.y < 0 || param.point.y > container.clientHeight) {
+    //         tooltip.classList.add('hidden');
+    //         return;
+    //     }
 
-        const dataPoint = window.currentPriceData.find(d => d.time === param.time);
-        if (!dataPoint) return;
+    //     const dataPoint = window.currentPriceData.find(d => d.time === param.time);
+    //     if (!dataPoint) return;
 
-        const ma7 = param.seriesData.get(window.ma7Series);
-        const ma25 = param.seriesData.get(window.ma25Series);
+    //     const ma7 = param.seriesData.get(window.ma7Series);
+    //     const ma25 = param.seriesData.get(window.ma25Series);
 
-        const dateStr = new Date(param.time * 1000).toLocaleString();
-        const priceChange = dataPoint.open !== 0 ? ((dataPoint.close - dataPoint.open) / dataPoint.open * 100).toFixed(2) : '0.00';
-        const colorClass = parseFloat(priceChange) >= 0 ? 'text-up' : 'text-down';
+    //     const dateStr = new Date(param.time * 1000).toLocaleString();
+    //     const priceChange = dataPoint.open !== 0 ? ((dataPoint.close - dataPoint.open) / dataPoint.open * 100).toFixed(2) : '0.00';
+    //     const colorClass = parseFloat(priceChange) >= 0 ? 'text-up' : 'text-down';
 
-        tooltip.innerHTML = `
-            <div class="font-black text-secondary-text mb-2 border-b border-border/50 pb-2 text-[10px] tracking-tight">${dateStr}</div>
-            <div class="space-y-1.5">
-                <div class="flex justify-between items-center"><span class="text-secondary-text uppercase font-bold">Open</span> <span class="font-mono text-primary-text">${dataPoint.open.toFixed(8)}</span></div>
-                <div class="flex justify-between items-center"><span class="text-secondary-text uppercase font-bold text-up">High</span> <span class="font-mono text-up">${dataPoint.high.toFixed(8)}</span></div>
-                <div class="flex justify-between items-center"><span class="text-secondary-text uppercase font-bold text-down">Low</span> <span class="font-mono text-down">${dataPoint.low.toFixed(8)}</span></div>
-                <div class="flex justify-between items-center"><span class="text-secondary-text uppercase font-bold">Close</span> <span class="font-mono text-primary-text font-black">${dataPoint.close.toFixed(8)}</span></div>
-                <div class="flex justify-between items-center border-t border-border/30 pt-1.5"><span class="text-secondary-text uppercase font-bold">Change</span> <span class="font-mono ${colorClass} font-black">${priceChange}%</span></div>
-                <div class="flex justify-between items-center"><span class="text-secondary-text uppercase font-bold">Volume</span> <span class="font-mono text-gray-300">${(dataPoint.volume || 0).toLocaleString()}</span></div>
-                <div class="flex justify-between items-center border-t border-border/30 pt-1.5"><span class="text-[#ffeb3b] uppercase font-bold">MA7</span> <span class="font-mono text-[#ffeb3b]">${ma7 ? ma7.value.toFixed(8) : '-'}</span></div>
-                <div class="flex justify-between items-center"><span class="text-[#9c27b0] uppercase font-bold">MA25</span> <span class="font-mono text-[#9c27b0]">${ma25 ? ma25.value.toFixed(8) : '-'}</span></div>
-            </div>
-        `;
-        tooltip.classList.remove('hidden');
-        const x = Math.min(param.point.x + 15, container.clientWidth - 190);
-        const y = Math.min(param.point.y + 15, container.clientHeight - 180);
+    //     tooltip.innerHTML = `
+    //         <div class="font-black text-secondary-text mb-2 border-b border-border/50 pb-2 text-[10px] tracking-tight">${dateStr}</div>
+    //         <div class="space-y-1.5">
+    //             <div class="flex justify-between items-center"><span class="text-secondary-text uppercase font-bold">Open</span> <span class="font-mono text-primary-text">${dataPoint.open.toFixed(8)}</span></div>
+    //             <div class="flex justify-between items-center"><span class="text-secondary-text uppercase font-bold text-up">High</span> <span class="font-mono text-up">${dataPoint.high.toFixed(8)}</span></div>
+    //             <div class="flex justify-between items-center"><span class="text-secondary-text uppercase font-bold text-down">Low</span> <span class="font-mono text-down">${dataPoint.low.toFixed(8)}</span></div>
+    //             <div class="flex justify-between items-center"><span class="text-secondary-text uppercase font-bold">Close</span> <span class="font-mono text-primary-text font-black">${dataPoint.close.toFixed(8)}</span></div>
+    //             <div class="flex justify-between items-center border-t border-border/30 pt-1.5"><span class="text-secondary-text uppercase font-bold">Change</span> <span class="font-mono ${colorClass} font-black">${priceChange}%</span></div>
+    //             <div class="flex justify-between items-center"><span class="text-secondary-text uppercase font-bold">Volume</span> <span class="font-mono text-gray-300">${(dataPoint.volume || 0).toLocaleString()}</span></div>
+    //             <div class="flex justify-between items-center border-t border-border/30 pt-1.5"><span class="text-[#ffeb3b] uppercase font-bold">MA7</span> <span class="font-mono text-[#ffeb3b]">${ma7 ? ma7.value.toFixed(8) : '-'}</span></div>
+    //             <div class="flex justify-between items-center"><span class="text-[#9c27b0] uppercase font-bold">MA25</span> <span class="font-mono text-[#9c27b0]">${ma25 ? ma25.value.toFixed(8) : '-'}</span></div>
+    //         </div>
+    //     `;
+    //     tooltip.classList.remove('hidden');
+    //     const x = Math.min(param.point.x + 15, container.clientWidth - 190);
+    //     const y = Math.min(param.point.y + 15, container.clientHeight - 180);
 
-        // Remove existing positional classes
-        tooltip.classList.forEach(cls => {
-            if (cls.startsWith('left-[') || cls.startsWith('top-[')) {
-                tooltip.classList.remove(cls);
-            }
-        });
-        tooltip.classList.add(`left-[${x}px]`);
-        tooltip.classList.add(`top-[${y}px]`);
-    });
+    //     // Remove existing positional classes
+    //     tooltip.classList.forEach(cls => {
+    //         if (cls.startsWith('left-[') || cls.startsWith('top-[')) {
+    //             tooltip.classList.remove(cls);
+    //         }
+    //     });
+    //     tooltip.classList.add(`left-[${x}px]`);
+    //     tooltip.classList.add(`top-[${y}px]`);
+    // });
 
     window.addEventListener('resize', () => {
         const wrapper = document.getElementById('chartWrapper');

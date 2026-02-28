@@ -11,7 +11,7 @@ Object.assign(window.WalletUI, {
         // Don't auto render - lazy load when tab is opened
         console.log('WalletUI initialized (lazy load mode)');
     },
-
+    
     setupListeners: function() {
         window.addEventListener('paxi_wallets_updated', () => {
             if (window.currentSidebarTab === 'wallet') this.renderDashboard();
@@ -29,15 +29,15 @@ Object.assign(window.WalletUI, {
             if (window.currentSidebarTab === 'wallet') this.renderDashboard();
         });
     },
-
+    
     renderDashboard: function() {
         console.log("🎨 Rendering Wallet Dashboard", { tab: window.currentSidebarTab });
         const container = document.getElementById('sidebarContent');
         if (!container || window.currentSidebarTab !== 'wallet') return;
-
+        
         const connectedWallet = window.wallet;
         const managedWallet = window.WalletManager.getActiveWallet();
-
+        
         // Prioritize connected wallet
         let walletToRender = null;
         if (connectedWallet) {
@@ -49,7 +49,7 @@ Object.assign(window.WalletUI, {
         } else {
             walletToRender = managedWallet;
         }
-
+        
         if (!walletToRender) {
             container.innerHTML = `
                 <div class="flex flex-col gap-4 animate-fade-in p-2">
@@ -108,10 +108,10 @@ Object.assign(window.WalletUI, {
             `;
             return;
         }
-
+        
         // Check if managed wallet is locked
         const isLocked = walletToRender.encryptedData && !window.WalletSecurity.getSessionPin();
-
+        
         if (isLocked && !walletToRender.isWatchOnly) {
             container.innerHTML = `
                 <div class="flex flex-col items-center justify-center py-16 px-6 text-center animate-fade-in">
@@ -125,17 +125,17 @@ Object.assign(window.WalletUI, {
             `;
             return;
         }
-
+        
         this.renderActiveWalletView(container, walletToRender);
     },
-
+    
     setWalletSubTab: function(tab) {
         // Update tab buttons
         const assetsBtn = document.getElementById('wallet-tab-assets');
         const historyBtn = document.getElementById('wallet-tab-history');
         const assetsSection = document.getElementById('wallet-assets-section');
         const historySection = document.getElementById('wallet-history-section');
-
+        
         if (tab === 'assets') {
             assetsBtn.classList.add('bg-card', 'text-primary-text');
             assetsBtn.classList.remove('text-secondary-text');
@@ -150,7 +150,7 @@ Object.assign(window.WalletUI, {
             assetsBtn.classList.add('text-secondary-text');
             historySection.classList.remove('hidden');
             assetsSection.classList.add('hidden');
-
+            
             // Load history when tab is opened
             if (window.WalletHistory) {
                 window.WalletHistory.loadHistory();
@@ -159,13 +159,13 @@ Object.assign(window.WalletUI, {
             }
         }
     },
-
+    
     setAssetTab: function(tab) {
         const tokensBtn = document.getElementById('tab-tokens');
         const lpBtn = document.getElementById('tab-lp');
         const tokensSec = document.getElementById('tokens-section');
         const lpSec = document.getElementById('lp-section');
-
+        
         if (tab === 'tokens') {
             tokensBtn.classList.add('bg-card', 'text-primary-text');
             tokensBtn.classList.remove('text-secondary-text');
@@ -183,23 +183,23 @@ Object.assign(window.WalletUI, {
             this.renderLPAssets();
         }
     },
-
+    
     renderLPAssets: async function() {
         const container = document.getElementById('lp-list-container');
         if (!container) return;
-
+        
         const activeWallet = window.WalletManager.getActiveWallet();
         if (!activeWallet) return;
-
+        
         container.innerHTML = '<div class="text-center py-4"><div class="w-8 h-8 border-4 border-meme-green border-t-transparent rounded-full animate-spin mx-auto"></div></div>';
-
+        
         const lps = await window.fetchUserLPPositions(activeWallet.address);
-
+        
         if (lps.length === 0) {
             container.innerHTML = '<div class="text-center py-8 text-[10px] text-muted-text uppercase font-black tracking-widest">No LP Positions found</div>';
             return;
         }
-
+        
         container.innerHTML = lps.map(lp => `
             <div class="p-4 bg-card/30 border border-border rounded-2xl hover:border-border/60 transition-all group">
                 <div class="flex justify-between items-start mb-3">
@@ -231,10 +231,10 @@ Object.assign(window.WalletUI, {
             </div>
         `).join('');
     },
-
+    
     renderActiveWalletView: function(container, wallet) {
         const net = window.NetworkManager.getActiveNetwork();
-
+        
         container.innerHTML = `
             <div class="space-y-8 animate-fade-in p-1">
                 <!-- Wallet Card - Brutal Style -->
@@ -301,7 +301,6 @@ Object.assign(window.WalletUI, {
                     <div id="wallet-assets-section" class="space-y-6">
                         <div class="flex justify-between items-center px-2">
                             <h4 class="text-sm font-display uppercase tracking-tighter text-primary-text italic underline decoration-meme-green decoration-2 underline-offset-4">MY ASSETS</h4>
-                            <button onclick="window.WalletUI.showImportTokenModal()" class="w-8 h-8 bg-meme-yellow border-2 border-card shadow-brutal-sm flex items-center justify-center text-black hover:shadow-none"><i class="fas fa-plus text-xs"></i></button>
                         </div>
 
                         <!-- Asset Filters -->
@@ -332,7 +331,7 @@ Object.assign(window.WalletUI, {
                 </div>
             </div>
         `;
-
+        
         this.renderAssets();
         
         // Set window.wallet for backward compatibility with old code
@@ -354,25 +353,23 @@ Object.assign(window.WalletUI, {
             const refreshBtn = document.getElementById('wallet-refresh-btn');
             if (refreshBtn) {
                 refreshBtn.addEventListener('click', () => {
-                    console.log('🔄 Refreshing wallet data...');
                     refreshBtn.querySelector('i').classList.add('fa-spin');
-
+                    
                     // Re-fetch fresh data
                     window.AssetManager.fetchUserAssets(wallet.address).then(() => {
                         this.updateAssetBalances();
                         if (window.updateBalances) window.updateBalances();
-                                                setTimeout(() => {
+                        setTimeout(() => {
                             refreshBtn.querySelector('i').classList.remove('fa-spin');
                         }, 500);
                     });
                 });
             }
-
+            
             // Settings button
             const settingsBtn = document.getElementById('wallet-settings-btn');
             if (settingsBtn) {
                 settingsBtn.addEventListener('click', () => {
-                    console.log('⚙️ Settings button clicked');
                     this.showWalletSettings();
                 });
             }
@@ -385,34 +382,34 @@ Object.assign(window.WalletUI, {
             }
         }, 100);
     },
-
+    
     setAssetSort: function(sort) {
         window.AssetManager.saveSettings({ assetSort: sort });
         this.renderAssets();
     },
-
+    
     toggleHideZero: function(enabled) {
         window.AssetManager.saveSettings({ hideZeroBalance: enabled });
         this.renderAssets();
     },
-
+    
     renderAssets: async function() {
         const container = document.getElementById('asset-list-container');
         if (!container) return;
-
+        
         const activeWallet = window.WalletManager.getActiveWallet();
         if (activeWallet && (!window.AssetManager.apiTokens || window.AssetManager.apiTokens.length === 0)) {
             container.innerHTML = '<div class="text-center py-12 animate-pulse"><div class="w-12 h-12 border-4 border-meme-cyan border-t-transparent rounded-full animate-spin mx-auto mb-4"></div><p class="text-[10px] text-muted-text font-black uppercase tracking-widest">Scanning Chain...</p></div>';
             await window.AssetManager.fetchUserAssets(activeWallet.address);
         }
-
+        
         let tokens = window.AssetManager.getTokens();
         const settings = window.AssetManager.settings;
-
+        
         if (settings.hideZeroBalance) {
             tokens = tokens.filter(token => (token.balance || 0) > 0);
         }
-
+        
         tokens.sort((a, b) => {
             const balA = (a.balance || 0) / Math.pow(10, a.decimals || 6);
             const balB = (b.balance || 0) / Math.pow(10, b.decimals || 6);
@@ -420,21 +417,25 @@ Object.assign(window.WalletUI, {
             const metaB = window.AssetManager.getAssetMeta(b.address);
             const valA = balA * (a.address === 'PAXI' ? 1 : (metaA.price || 0));
             const valB = balB * (b.address === 'PAXI' ? 1 : (metaB.price || 0));
-
+            
             switch (settings.assetSort) {
-                case 'most': return valB - valA;
-                case 'least': return valA - valB;
-                case 'name': return a.name.localeCompare(b.name);
-                default: return valB - valA;
+                case 'most':
+                    return valB - valA;
+                case 'least':
+                    return valA - valB;
+                case 'name':
+                    return a.name.localeCompare(b.name);
+                default:
+                    return valB - valA;
             }
         });
-
+        
         container.innerHTML = tokens.map(token => {
             if (!window.AssetManager.isTokenVisible(token.address)) return '';
             const meta = window.AssetManager.getAssetMeta(token.address);
             const logoUrl = window.normalizeLogoUrl(token.logo);
             const canHide = token.address !== 'PAXI';
-
+            
             return `
                 <div class="p-4 bg-surface border-4 border-card shadow-brutal-sm hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all group cursor-pointer relative"
                      id="asset-item-${token.address}" onclick="window.WalletUI.showAssetActions('${token.address}')">
@@ -474,15 +475,15 @@ Object.assign(window.WalletUI, {
                 </div>
             `;
         }).join('');
-
+        
         this.updateAssetBalances();
     },
-
-
+    
+    
     confirmHideToken: function(address) {
         const token = window.AssetManager.getTokens().find(t => t.address === address);
         if (!token) return;
-
+        
         const modalHtml = `
             <div id="hideTokenModal" class="fixed inset-0 bg-surface/90 backdrop-blur-sm z-[650] flex items-center justify-center p-4" onclick="if(event.target === this) this.remove()">
                 <div class="bg-card border border-border w-full max-w-sm rounded-[2.5rem] p-8 animate-slide-up" onclick="event.stopPropagation()">
@@ -510,11 +511,11 @@ Object.assign(window.WalletUI, {
         `;
         document.body.insertAdjacentHTML('beforeend', modalHtml);
     },
-
+    
     showAssetActions: function(address) {
         const token = window.AssetManager.getTokens().find(t => t.address === address);
         if (!token) return;
-
+        
         const resolveImageUrl = (url) => {
             if (!url) return '';
             if (url.startsWith('ipfs://')) return `https://ipfs.io/ipfs/${url.replace('ipfs://', '')}`;
@@ -525,7 +526,7 @@ Object.assign(window.WalletUI, {
             if (url.match(/^[a-zA-Z0-9]{46,}$/)) return `https://ipfs.io/ipfs/${url}`;
             return url;
         };
-
+        
         const formatNumber = (num) => {
             if (!num) return '0';
             return parseFloat(num).toLocaleString(undefined, {
@@ -533,7 +534,7 @@ Object.assign(window.WalletUI, {
                 maximumFractionDigits: 6
             });
         };
-
+        
         const formatUSD = (num) => {
             if (!num) return '$0.00';
             return '$' + parseFloat(num).toLocaleString(undefined, {
@@ -541,14 +542,14 @@ Object.assign(window.WalletUI, {
                 maximumFractionDigits: 2
             });
         };
-
+        
         const logoUrl = resolveImageUrl(token.logo);
         const meta = window.AssetManager.getAssetMeta(address);
         const c = token.contractData || {};
         const balance = (token.balance || 0) / Math.pow(10, token.decimals || 6);
         const paxiValue = address === 'PAXI' ? balance : (balance * meta.price);
         const usdValue = balance * (meta.priceUSD || 0);
-
+        
         const modalHtml = `
             <div id="assetActionModal" class="fixed inset-0 bg-surface/80 backdrop-blur-sm z-[630] flex items-end" onclick="if(event.target === this) this.remove()">
                 <div class="bg-card border-t border-border w-full rounded-t-[2.5rem] p-6 animate-slide-up max-h-[90vh] overflow-y-auto no-scrollbar" onclick="event.stopPropagation()">
@@ -652,11 +653,11 @@ Object.assign(window.WalletUI, {
         `;
         document.body.insertAdjacentHTML('beforeend', modalHtml);
     },
-
+    
     handleBottomSheetAction: function(address, action) {
         // Close asset action modal first
         document.getElementById('assetActionModal')?.remove();
-
+        
         if (action === 'swap') {
             if (address !== 'PAXI' && window.selectPRC20) {
                 window.selectPRC20(address);
@@ -664,12 +665,12 @@ Object.assign(window.WalletUI, {
             window.setSidebarTab('swap');
             return;
         }
-
+        
         // Set token if not PAXI
         if (address !== 'PAXI' && window.selectPRC20) {
             window.selectPRC20(address);
         }
-
+        
         // For send, use custom enhanced UI
         if (action === 'send') {
             this.showSendBottomSheet(address);
@@ -678,11 +679,11 @@ Object.assign(window.WalletUI, {
             this.showActionBottomSheet(action);
         }
     },
-
+    
     showSendBottomSheet: function(selectedAddress) {
         const activeWallet = window.WalletManager.getActiveWallet();
         if (!activeWallet) return;
-
+        
         const tokens = window.AssetManager.getTokens();
         const selectedToken = selectedAddress ? tokens.find(t => t.address === selectedAddress) : tokens[0];
         
@@ -696,7 +697,7 @@ Object.assign(window.WalletUI, {
             if (url.match(/^[a-zA-Z0-9]{46,}$/)) return `https://ipfs.io/ipfs/${url}`;
             return url;
         };
-
+        
         const modalHtml = `
             <div id="sendBottomSheet" class="fixed inset-0 bg-surface/80 backdrop-blur-sm z-[640] flex items-end" onclick="if(event.target === this) this.remove()">
                 <div class="bg-surface border-t border-border w-full rounded-t-[2.5rem] max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
@@ -815,36 +816,36 @@ Object.assign(window.WalletUI, {
         `;
         
         document.body.insertAdjacentHTML('beforeend', modalHtml);
-
+        
         // Setup token selector dropdown
         const selectorBtn = document.getElementById('token-selector-btn');
         const dropdown = document.getElementById('token-dropdown');
-
+        
         if (selectorBtn && dropdown) {
             selectorBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 dropdown.classList.toggle('hidden');
             });
-
+            
             document.addEventListener('click', () => {
                 dropdown.classList.add('hidden');
             });
         }
-
+        
         // Set initial selected token
         if (selectedToken) {
             this.selectSendToken(selectedToken.address);
         }
-
+        
         // Update all token balances in dropdown
         this.updateSendTokenBalances();
     },
-
+    
     selectSendToken: function(address) {
         window.selectedSendToken = address;
         const token = window.AssetManager.getTokens().find(t => t.address === address);
         if (!token) return;
-
+        
         const resolveImageUrl = (url) => {
             if (!url) return '';
             if (url.startsWith('ipfs://')) return `https://ipfs.io/ipfs/${url.replace('ipfs://', '')}`;
@@ -852,7 +853,7 @@ Object.assign(window.WalletUI, {
             if (url.startsWith('ar://')) return `https://arweave.net/${url.replace('ar://', '')}`;
             return url;
         };
-
+        
         // Update display
         const display = document.getElementById('selected-token-display');
         if (display) {
@@ -867,107 +868,107 @@ Object.assign(window.WalletUI, {
                 </div>
             `;
         }
-
+        
         // Close dropdown
         document.getElementById('token-dropdown')?.classList.add('hidden');
-
+        
         // Update balance
         this.updateSelectedTokenBalance();
     },
-
+    
     updateSendTokenBalances: async function() {
         const tokens = window.AssetManager.getTokens();
         const activeWallet = window.WalletManager.getActiveWallet();
         if (!activeWallet) return;
-
+        
         for (const token of tokens) {
             const balEl = document.getElementById(`balance-${token.address}`);
             if (!balEl) continue;
-
+            
             let balance = 0;
             if (token.balance !== undefined) {
                 balance = token.balance / Math.pow(10, token.decimals || 6);
             }
             balEl.textContent = balance.toFixed(4);
         }
-
+        
         this.updateSelectedTokenBalance();
     },
-
+    
     updateSelectedTokenBalance: async function() {
         if (!window.selectedSendToken) return;
-
+        
         const token = window.AssetManager.getTokens().find(t => t.address === window.selectedSendToken);
         if (!token) return;
-
+        
         let balance = 0;
         if (token.balance !== undefined) {
             balance = token.balance / Math.pow(10, token.decimals || 6);
         }
-
+        
         const balEl = document.getElementById('selected-token-balance');
         if (balEl) balEl.textContent = balance.toFixed(4);
-
+        
         window.currentSendTokenBalance = balance;
     },
-
+    
     setMaxAmount: function() {
         const amountInput = document.getElementById('send-amount');
         if (amountInput && window.currentSendTokenBalance) {
             amountInput.value = window.currentSendTokenBalance;
         }
     },
-
+    
     reviewSend: function(event) {
         const token = window.AssetManager.getTokens().find(t => t.address === window.selectedSendToken);
         const recipient = document.getElementById('send-recipient')?.value;
         const amount = document.getElementById('send-amount')?.value;
-
+        
         if (!token || !recipient || !amount) {
-                        return;
+            return;
         }
-
+        
         // Show confirmation details
         document.getElementById('send-confirmation')?.classList.remove('hidden');
         document.getElementById('confirm-send-btn')?.classList.remove('hidden');
-
+        
         // Hide review button
         if (event && event.target) {
             event.target.closest('button')?.classList.add('hidden');
         }
-
+        
         // Fill confirmation
         document.getElementById('confirm-token').textContent = token.symbol;
         document.getElementById('confirm-amount').textContent = `${amount} ${token.symbol}`;
         document.getElementById('confirm-address').textContent = window.shortenAddress(recipient, 10);
         document.getElementById('confirm-balance').textContent = `${window.currentSendTokenBalance || 0} ${token.symbol}`;
-
+        
         // Scroll to confirmation
         document.getElementById('send-confirmation')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     },
-
+    
     confirmSend: async function() {
         const tokenAddress = window.selectedSendToken;
         const recipient = document.getElementById('send-recipient')?.value;
         const amount = parseFloat(document.getElementById('send-amount')?.value);
         const memo = document.getElementById('send-memo')?.value || "Send from Canonix";
-
+        
         if (!tokenAddress || !recipient || isNaN(amount) || amount <= 0) {
-                        return;
+            return;
         }
-
+        
         const btn = document.getElementById('confirm-send-btn');
         if (btn) {
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Sending...';
         }
-
+        
         try {
             await window.executeSendTransaction(tokenAddress, recipient, amount, memo);
-
+            
             // Close sheet on success
             document.getElementById('sendBottomSheet')?.remove();
-
+            
             // Refresh balances
             setTimeout(async () => {
                 if (window.AssetManager) {
@@ -977,7 +978,7 @@ Object.assign(window.WalletUI, {
                 if (window.updateBalances) await window.updateBalances();
                 this.renderAssets();
             }, 3000);
-
+            
         } catch (e) {
             console.error('Send failed:', e);
             // Error notif handled by buildAndSendTx
@@ -988,7 +989,7 @@ Object.assign(window.WalletUI, {
             }
         }
     },
-
+    
     showActionBottomSheet: function(action) {
         // Create bottom sheet container
         const modalHtml = `
@@ -1002,23 +1003,23 @@ Object.assign(window.WalletUI, {
             </div>
         `;
         document.body.insertAdjacentHTML('beforeend', modalHtml);
-
+        
         // Hijack sidebarContent temporarily
         const bottomSheetContent = document.getElementById('bottomSheetContent');
         const originalSidebarContent = document.getElementById('sidebarContent');
-
+        
         if (bottomSheetContent && window.renderSidebarContent) {
             // Temporarily rename original sidebarContent
             if (originalSidebarContent) {
                 originalSidebarContent.id = 'sidebarContent-original';
             }
-
+            
             // Set bottomSheetContent as sidebarContent
             bottomSheetContent.id = 'sidebarContent';
-
+            
             // Render content (akan masuk ke bottomSheetContent karena id-nya sidebarContent)
             window.renderSidebarContent(action);
-
+            
             // Restore IDs
             bottomSheetContent.id = 'bottomSheetContent';
             if (originalSidebarContent) {
@@ -1026,12 +1027,12 @@ Object.assign(window.WalletUI, {
             }
         }
     },
-
+    
     updateAssetBalances: async function() {
         const tokens = window.AssetManager.getTokens();
         const activeWallet = window.WalletManager.getActiveWallet();
         if (!activeWallet) return;
-
+        
         // Always fetch fresh PAXI balance (no cache to avoid stale data)
         let paxiBalance = 0;
         try {
@@ -1042,15 +1043,15 @@ Object.assign(window.WalletUI, {
         } catch (e) {
             console.error("❌ Error fetching PAXI balance:", e);
         }
-
+        
         let totalPAXIValue = 0;
         let totalUSD = 0;
         const currentPaxiPrice = window.paxiPriceUSD || 0.05;
-
+        
         for (const token of tokens) {
             try {
                 let amount = 0;
-
+                
                 // Check if balance already available from API response
                 if (token.balance !== undefined) {
                     // Balance from my_contract_accounts API
@@ -1063,16 +1064,16 @@ Object.assign(window.WalletUI, {
                     // Skip updating balance for now to avoid too many requests
                     continue;
                 }
-
+                
                 const balEl = document.getElementById(`bal-${token.address}`);
                 if (balEl) window.setText(balEl, amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 }));
-
+                
                 const meta = window.AssetManager.getAssetMeta(token.address);
-
+                
                 // Calculate values
                 let tokenPaxiValue = 0;
                 let tokenUsdValue = 0;
-
+                
                 if (token.address === 'PAXI') {
                     tokenPaxiValue = amount;
                     tokenUsdValue = amount * currentPaxiPrice;
@@ -1080,22 +1081,22 @@ Object.assign(window.WalletUI, {
                     tokenPaxiValue = amount * meta.price;
                     tokenUsdValue = tokenPaxiValue * currentPaxiPrice;
                 }
-
+                
                 totalPAXIValue += tokenPaxiValue;
                 totalUSD += tokenUsdValue;
-
+                
                 // Update Value Display in PAXI (Per Item Holding Value, not Price)
                 const priceEl = document.getElementById(`price-${token.address}`);
                 if (priceEl) {
                     window.setText(priceEl, `${tokenPaxiValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })} PAXI`);
                 }
-
+                
                 // Update USD value display
                 const valEl = document.getElementById(`val-${token.address}`);
                 if (valEl) {
                     window.setText(valEl, `$${tokenUsdValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD`);
                 }
-
+                
                 // Auto hide zero balance if setting enabled
                 if (window.AssetManager.settings.hideZeroBalance && amount === 0) {
                     document.getElementById(`asset-item-${token.address}`)?.classList.add('hidden');
@@ -1104,25 +1105,12 @@ Object.assign(window.WalletUI, {
                 console.error(`❌ Error updating balance for ${token.symbol}:`, e);
             }
         }
-
-        // Update total portfolio in PAXI (Main display)
-        const sidebarPaxiBal = document.getElementById('sidebar-paxi-bal');
-        if (sidebarPaxiBal) {
-            window.setText(sidebarPaxiBal, totalPAXIValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-        }
-
-        // Update total portfolio USD
-        const portfolioUSD = document.getElementById('portfolio-usd');
-        if (portfolioUSD) {
-            window.setText(portfolioUSD, `$${totalUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD`);
-        }
     },
-
-
+    
     showReceiveModal: function() {
         const wallet = window.WalletManager.getActiveWallet();
         if (!wallet) return;
-
+        
         const modalHtml = `
             <div id="qrModal" class="fixed inset-0 bg-surface/90 z-[600] flex items-center justify-center p-4 animate-fade-in">
                 <div class="bg-card border border-border w-full max-w-sm rounded-[2.5rem] p-8 flex flex-col items-center">
@@ -1140,7 +1128,7 @@ Object.assign(window.WalletUI, {
         `;
         document.body.insertAdjacentHTML('beforeend', modalHtml);
     },
-
+    
     unlockActiveWallet: function() {
         window.showPinSheet('Enter PIN to Unlock', async (pin) => {
             try {
@@ -1158,7 +1146,7 @@ Object.assign(window.WalletUI, {
             }
         });
     },
-
+    
     handleAssetAction: function(address, action) {
         if (address !== 'PAXI' && window.selectPRC20) {
             window.selectPRC20(address);
@@ -1166,40 +1154,21 @@ Object.assign(window.WalletUI, {
         if (action === 'send') this.showSendBottomSheet(address);
         else this.showActionBottomSheet(action);
     },
-
-    showImportTokenModal: function() {
-        const modalHtml = `
-            <div id="importTokenModal" class="fixed inset-0 bg-surface/90 backdrop-blur-sm z-[650] flex items-center justify-center p-4" onclick="if(event.target === this) this.remove()">
-                <div class="bg-surface border-4 border-card w-full max-w-sm rounded-none p-8 shadow-brutal animate-fade-in" onclick="event.stopPropagation()">
-                    <h3 class="text-3xl font-display italic uppercase mb-6 text-primary-text drop-shadow-[2px_2px_0_rgba(0,0,0,1)]">Track Asset</h3>
-                    <div class="space-y-4">
-                        <input type="text" id="tokenAddressInput" placeholder="paxi1..." class="w-full bg-surface border-4 border-card p-4 text-xs font-mono text-primary-text outline-none focus:border-meme-cyan transition-all italic uppercase">
-                        <button onclick="window.AssetManager.addToken(document.getElementById('tokenAddressInput').value); document.getElementById('importTokenModal').remove(); window.WalletUI.renderAssets();" class="w-full py-4 bg-meme-cyan text-black font-display text-2xl border-4 border-card shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase italic">INJECT ASSET</button>
-                    </div>
-                </div>
-            </div>
-        `;
-        document.body.insertAdjacentHTML('beforeend', modalHtml);
-    },
-
+    
     showWalletSettings: function(id) {
-        console.log('🔧 Opening wallet settings, id:', id);
-
         if (!window.WalletManager) {
-            console.error('❌ WalletManager not found!');
-                        return;
+            console.error('WalletManager not found!');
+            return;
         }
-
+        
         const walletId = id || window.WalletManager.activeId;
         const wallet = window.WalletManager.getWallets().find(w => w.id === walletId);
-
+        
         if (!wallet) {
-            console.error('❌ Wallet not found, id:', walletId);
-                        return;
+            console.error('Wallet not found, id:', walletId);
+            return;
         }
-
-        console.log('✅ Opening settings for wallet:', wallet.name);
-
+        
         const modalHtml = `
             <div id="settingsModal" class="fixed inset-0 bg-surface/90 backdrop-blur-sm z-[610] flex items-center justify-center p-4" onclick="if(event.target === this) this.remove()">
                 <div class="bg-card border border-border w-full max-w-sm rounded-[2.5rem] p-8" onclick="event.stopPropagation()">
@@ -1245,28 +1214,28 @@ Object.assign(window.WalletUI, {
         `;
         document.body.insertAdjacentHTML('beforeend', modalHtml);
     },
-
+    
     processRename: function(id) {
         const newName = document.getElementById('renameInput').value.trim();
         if (newName && window.WalletManager.renameWallet(id, newName)) {
-                        document.getElementById('settingsModal').remove();
+            document.getElementById('settingsModal').remove();
             this.renderDashboard();
         }
     },
-
+    
     processDelete: function(id) {
         if (confirm("Are you sure you want to delete this wallet? This action cannot be undone. Make sure you have backed up your secrets!")) {
             if (window.WalletManager.deleteWallet(id)) {
-                                document.getElementById('settingsModal').remove();
+                document.getElementById('settingsModal').remove();
                 this.renderDashboard();
             }
         }
     },
-
+    
     showHiddenTokens: function() {
         const allTokens = window.AssetManager.getTokens();
         const hiddenTokens = allTokens.filter(t => !window.AssetManager.isTokenVisible(t.address));
-
+        
         const modalHtml = `
             <div id="hiddenTokensModal" class="fixed inset-0 bg-surface/90 backdrop-blur-sm z-[620] flex items-center justify-center p-4" onclick="if(event.target === this) this.remove()">
                 <div class="bg-card border border-border w-full max-w-md rounded-[2.5rem] max-h-[80vh] overflow-hidden flex flex-col" onclick="event.stopPropagation()">
@@ -1314,18 +1283,18 @@ Object.assign(window.WalletUI, {
                 </div>
             </div>
         `;
-
+        
         document.body.insertAdjacentHTML('beforeend', modalHtml);
     },
-
+    
     exportSecrets: function(id, type) {
         const wallet = window.WalletManager.getWallets().find(w => w.id === id);
         if (!wallet) return;
-
+        
         window.showPinSheet('Enter PIN to Reveal', async (pin) => {
             try {
                 const decrypted = await window.WalletSecurity.decrypt(wallet.encryptedData, pin);
-
+                
                 const secretModalHtml = `
                     <div id="secretRevealModal" class="fixed inset-0 bg-surface/95 z-[620] flex items-center justify-center p-4">
                         <div class="bg-card border border-border w-full max-w-sm rounded-[2.5rem] p-8 text-center">
@@ -1356,15 +1325,15 @@ Object.assign(window.WalletUI, {
             }
         });
     },
-
+    
     showWalletSwitcher() {
         const modal = document.getElementById('walletSwitcherModal');
         const container = document.getElementById('walletListContainer');
         if (!modal || !container) return;
-
+        
         const wallets = window.WalletManager.getWallets();
         const activeWallet = window.WalletManager.getActiveWallet();
-
+        
         container.innerHTML = wallets.map(w => `
             <button onclick="window.WalletUI.handleSwitchWallet('${w.id}')" class="w-full flex items-center justify-between p-4 ${w.id === activeWallet?.id ? 'bg-meme-green text-black' : 'bg-surface text-primary-text'} border-2 border-card shadow-brutal-sm hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all group text-left">
                 <div class="flex items-center gap-3">
@@ -1379,23 +1348,23 @@ Object.assign(window.WalletUI, {
                 ${w.id === activeWallet?.id ? '<i class="fas fa-check-circle shrink-0"></i>' : '<i class="fas fa-chevron-right text-muted-text shrink-0"></i>'}
             </button>
         `).join('');
-
+        
         modal.classList.remove('hidden');
     },
-
+    
     hideWalletSwitcher() {
         const modal = document.getElementById('walletSwitcherModal');
         if (modal) modal.classList.add('hidden');
     },
-
+    
     async handleSwitchWallet(id) {
         this.hideWalletSwitcher();
         window.WalletManager.setActiveWallet(id);
-
+        
         // If we have a session PIN, try to fully connect the wallet
         const wallet = window.WalletManager.getWallet(id);
         const pin = window.WalletSecurity.getSessionPin();
-
+        
         if (pin && wallet && !wallet.isWatchOnly) {
             try {
                 await window.connectInternalWallet(id, pin);
@@ -1403,12 +1372,12 @@ Object.assign(window.WalletUI, {
                 console.error("Failed to re-init signer on switch", e);
             }
         }
-
+        
         // Trigger UI refresh
         if (window.refreshAllUI) window.refreshAllUI();
         this.renderDashboard();
     },
-
+    
     showImportModal: function() {
         const modalHtml = `
             <div id="importModal" class="fixed inset-0 bg-surface/90 z-[600] flex items-center justify-center p-4">
@@ -1445,12 +1414,12 @@ Object.assign(window.WalletUI, {
         `;
         document.body.insertAdjacentHTML('beforeend', modalHtml);
     },
-
+    
     updateImportFields: function() {
         const type = document.getElementById('importType').value;
         const label = document.querySelector('#importValueContainer label');
         const textarea = document.getElementById('importValue');
-
+        
         if (type === 'mnemonic') {
             window.setText(label, 'Seed Phrase');
             textarea.placeholder = 'word1 word2 ...';
@@ -1462,51 +1431,49 @@ Object.assign(window.WalletUI, {
             textarea.placeholder = 'paxi1...';
         }
     },
-
+    
     processImport: async function() {
         try {
-            console.log("📥 Processing Import...");
             const type = document.getElementById('importType').value;
             const name = document.getElementById('importName').value || 'Imported Wallet';
             const value = document.getElementById('importValue').value.trim();
-
+            
             if (!value) return
             if (type === 'watchonly') {
-                console.log("👀 Adding watch-only", { name, value });
                 await window.WalletManager.addWatchOnly(name, value);
                 const modal = document.getElementById('importModal');
                 if (modal) modal.remove();
-                                this.renderDashboard();
+                this.renderDashboard();
                 return;
             }
-
+            
             window.showPinSheet('Set 6-Digit PIN', async (pin) => {
-            try {
-                                if (type === 'mnemonic') {
-                    await window.WalletManager.importMnemonic(name, value, pin);
-                } else {
-                    await window.WalletManager.importPrivateKey(name, value, pin);
+                try {
+                    if (type === 'mnemonic') {
+                        await window.WalletManager.importMnemonic(name, value, pin);
+                    } else {
+                        await window.WalletManager.importPrivateKey(name, value, pin);
+                    }
+                    
+                    window.WalletSecurity.setSessionPin(pin);
+                    document.getElementById('importModal').remove();
+                    
+                    // Trigger auto-connect for the new wallet
+                    const active = window.WalletManager.getActiveWallet();
+                    if (active) await window.connectInternalWallet(active.id, pin);
+                    
+                    this.renderDashboard();
+                } catch (e) {
+                    console.error("Import failed", e);
+                    const errorModal = document.getElementById('pinErrorModal');
+                    if (errorModal) errorModal.classList.remove('hidden');
                 }
-
-                window.WalletSecurity.setSessionPin(pin);
-                document.getElementById('importModal').remove();
-
-                // Trigger auto-connect for the new wallet
-                const active = window.WalletManager.getActiveWallet();
-                if (active) await window.connectInternalWallet(active.id, pin);
-
-                this.renderDashboard();
-            } catch (e) {
-                console.error("Import failed", e);
-                const errorModal = document.getElementById('pinErrorModal');
-                if (errorModal) errorModal.classList.remove('hidden');
-            }
             });
         } catch (e) {
             console.error("❌ processImport error:", e);
         }
     },
-
+    
     showCreateModal: function() {
         window.setupNewWallet();
     }
@@ -1531,7 +1498,7 @@ class SettingsManager {
         };
         this.config = this.load();
     }
-
+    
     load() {
         try {
             const data = localStorage.getItem(this.storageKey);
@@ -1540,13 +1507,13 @@ class SettingsManager {
             return this.defaults;
         }
     }
-
+    
     save(newConfig) {
         this.config = { ...this.config, ...newConfig };
         localStorage.setItem(this.storageKey, JSON.stringify(this.config));
         window.dispatchEvent(new CustomEvent('paxi_settings_updated', { detail: this.config }));
     }
-
+    
     get(key) {
         return this.config[key];
     }
@@ -1557,7 +1524,7 @@ window.SettingsManager = new SettingsManager();
 // UI Methods for Settings
 window.WalletUI.showSettingsPanel = function() {
     const cfg = window.SettingsManager.config;
-
+    
     const modalHtml = `
         <div id="settingsPanelModal" class="fixed inset-0 bg-surface/90 z-[700] flex items-center justify-center p-4">
             <div class="bg-card border border-border w-full max-w-md rounded-[2.5rem] flex flex-col max-h-[90vh]">
@@ -1649,7 +1616,7 @@ window.connectInternalWallet = async function(id, pin) {
     try {
         const walletData = window.WalletManager.getWallet(id);
         if (!walletData) throw new Error("Wallet not found");
-
+        
         if (walletData.isWatchOnly) {
             window.wallet = {
                 address: walletData.address,
@@ -1663,7 +1630,7 @@ window.connectInternalWallet = async function(id, pin) {
         } else {
             const mnemonic = await window.WalletSecurity.decrypt(walletData.encryptedData, pin);
             await window.connectWithMnemonic(mnemonic);
-
+            
             // Ensure window.wallet has ID and watch-only status
             if (window.wallet) {
                 window.wallet.id = walletData.id;
@@ -1671,23 +1638,22 @@ window.connectInternalWallet = async function(id, pin) {
                 window.wallet.name = walletData.name;
             }
         }
-
-                if (window.WalletUI) window.WalletUI.renderDashboard();
+        
+        if (window.WalletUI) window.WalletUI.renderDashboard();
         if (window.renderSwapTerminal) window.renderSwapTerminal();
-    } catch (e) {
-            }
+    } catch (e) {}
 };
 
 window.connectWallet = async function(type) {
     const btn = document.getElementById('connectBtn');
     window.hideConnectModal();
-
+    
     if (type === 'internal') {
         window.setSidebarTab('wallet');
         if (window.toggleUnifiedSidebar) window.toggleUnifiedSidebar();
         return;
     }
-
+    
     btn.innerHTML = '<div class="loading"></div>';
     try {
         if (type === 'keplr') {
@@ -1710,8 +1676,8 @@ window.connectWallet = async function(type) {
             // PaxiHub
             if (typeof window.paxihub === 'undefined') {
                 if (/Mobi/.test(navigator.userAgent)) {
-                     window.location.href = `paxi://hub/explorer?url=${encodeURIComponent(window.location.href)}`;
-                     throw new Error('Redirecting to PaxiHub...');
+                    window.location.href = `paxi://hub/explorer?url=${encodeURIComponent(window.location.href)}`;
+                    throw new Error('Redirecting to PaxiHub...');
                 }
                 throw new Error('PaxiHub not installed');
             }
@@ -1723,20 +1689,20 @@ window.connectWallet = async function(type) {
             };
             window.walletType = 'paxihub';
         }
-
+        
         btn.innerHTML = `<i class="fas fa-check-circle mr-2"></i>${window.shortenAddress(window.wallet.address)}`;
         btn.className = 'btn-trade px-3 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-bold shadow-lg flex items-center gap-2 bg-green-600';
-
+        
         await window.updateBalances();
         await window.updateMyTokens();
         if (window.renderSwapTerminal) window.renderSwapTerminal();
-
+        
         window.addClass('connectBtn', 'hidden');
         window.addClass('mobileConnectBtn', 'hidden');
-
-                if (window.closeAllSidebars) window.closeAllSidebars();
+        
+        if (window.closeAllSidebars) window.closeAllSidebars();
     } catch (e) {
-                btn.innerHTML = '<i class="fas fa-plug"></i><span class="hidden xs:inline">Connect</span>';
+        btn.innerHTML = '<i class="fas fa-plug"></i><span class="hidden xs:inline">Connect</span>';
         btn.className = 'btn-trade px-3 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-bold shadow-lg flex items-center gap-2';
     }
 };
@@ -1744,10 +1710,10 @@ window.connectWallet = async function(type) {
 window.updateBalances = async function() {
     const activeWallet = window.WalletManager?.getActiveWallet();
     if (!activeWallet && !window.wallet) return;
-
+    
     const walletAddress = activeWallet?.address || window.wallet?.address;
     if (!walletAddress) return;
-
+    
     try {
         // Always fetch fresh PAXI balance (no cache)
         const response = await window.smartFetch(
@@ -1757,10 +1723,10 @@ window.updateBalances = async function() {
         const paxiBalance = balances.find(b => b.denom === 'upaxi');
         const paxiRaw = paxiBalance ? paxiBalance.amount : '0';
         const paxiAmount = parseInt(paxiRaw) / 1e6;
-
+        
         const payBalEl = document.getElementById('payBalance');
         const recvBalEl = document.getElementById('recvBalance');
-
+        
         let prc20Amount = 0;
         let prc20Raw = '0';
         if (window.currentPRC20) {
@@ -1769,49 +1735,53 @@ window.updateBalances = async function() {
             prc20Raw = bal.toString();
             prc20Amount = bal / Math.pow(10, tokenDecimals);
         }
-
+        
         if (window.tradeType === 'buy') {
-            if (payBalEl) { window.setText(payBalEl, paxiAmount.toFixed(4)); payBalEl.setAttribute('data-raw', paxiRaw); }
-            if (recvBalEl) { window.setText(recvBalEl, prc20Amount.toFixed(4)); recvBalEl.setAttribute('data-raw', prc20Raw); }
+            if (payBalEl) { window.setText(payBalEl, paxiAmount.toFixed(4));
+                payBalEl.setAttribute('data-raw', paxiRaw); }
+            if (recvBalEl) { window.setText(recvBalEl, prc20Amount.toFixed(4));
+                recvBalEl.setAttribute('data-raw', prc20Raw); }
         } else {
-            if (payBalEl) { window.setText(payBalEl, prc20Amount.toFixed(4)); payBalEl.setAttribute('data-raw', prc20Raw); }
-            if (recvBalEl) { window.setText(recvBalEl, paxiAmount.toFixed(4)); recvBalEl.setAttribute('data-raw', paxiRaw); }
+            if (payBalEl) { window.setText(payBalEl, prc20Amount.toFixed(4));
+                payBalEl.setAttribute('data-raw', prc20Raw); }
+            if (recvBalEl) { window.setText(recvBalEl, paxiAmount.toFixed(4));
+                recvBalEl.setAttribute('data-raw', paxiRaw); }
         }
-
-        window.setText('walletBalance', paxiAmount.toFixed(2) + ' PAXI');
+        
+        window.setText('walletBalance', paxiAmount.toFixed(4) + ' PAXI');
         if (window.wallet?.address) {
             window.setText('walletAddrShort', window.shortenAddress(window.wallet.address));
         }
         window.removeClass('walletInfo', 'hidden');
-
-        window.setText('mobileWalletBalance', paxiAmount.toFixed(2) + ' PAXI');
+        
+        window.setText('mobileWalletBalance', paxiAmount.toFixed(6) + ' PAXI');
         window.removeClass('mobileWalletInfo', 'hidden');
         window.addClass('mobileConnectBtn', 'hidden');
-
+        
         // Update sidebar PAXI balance
         const sidebarPaxi = document.getElementById('sidebar-paxi-bal');
-        if (sidebarPaxi) window.setText(sidebarPaxi, paxiAmount.toFixed(2));
-
+        if (sidebarPaxi) window.setText(sidebarPaxi, paxiAmount.toFixed(6));
+        
         // Update portfolio USD
         const portfolioUSD = document.getElementById('portfolio-usd');
         if (portfolioUSD) {
             const usdValue = paxiAmount * (window.paxiPriceUSD || 0.05);
             window.setText(portfolioUSD, `$${usdValue.toFixed(2)} USD`);
         }
-
+        
     } catch (e) {
-        console.error('❌ Balance update failed:', e);
+        console.error('Balance update failed:', e);
     }
 };
 
 window.updateLPBalances = async function() {
     if (!window.currentPRC20) return;
-
+    
     // Ensure lpBalances object exists
     if (!window.lpBalances) {
         window.lpBalances = { paxi: 0, token: 0, lpTokens: 0 };
     }
-
+    
     try {
         // 1. Handle Wallet Balances if connected
         if (window.wallet) {
@@ -1823,12 +1793,12 @@ window.updateLPBalances = async function() {
             const paxiRaw = paxiBalance ? paxiBalance.amount : '0';
             window.lpBalances.paxi = parseInt(paxiRaw) / 1000000;
             window.lpBalances.paxiRaw = paxiRaw;
-
+            
             const tokenDecimals = window.currentTokenInfo?.decimals || 6;
             const tokenBalance = await window.getPRC20Balance(window.wallet.address, window.currentPRC20);
             window.lpBalances.token = tokenBalance / Math.pow(10, tokenDecimals);
             window.lpBalances.tokenRaw = tokenBalance.toString();
-
+            
             try {
                 const posData = await window.smartFetch(
                     `${window.APP_CONFIG.LCD}/paxi/swap/position/${window.wallet.address}/${window.currentPRC20}`
@@ -1841,7 +1811,7 @@ window.updateLPBalances = async function() {
                 window.lpBalances.lpRaw = '0';
             }
         }
-
+        
         const paxiEl = document.getElementById('lpPaxiBalance');
         if (paxiEl) {
             window.setText(paxiEl, (window.lpBalances.paxi || 0).toFixed(6));
@@ -1862,28 +1832,27 @@ window.updateLPBalances = async function() {
             window.setText(maxLP, (window.lpBalances.lpTokens || 0).toFixed(6));
             maxLP.setAttribute('data-raw', window.lpBalances.lpRaw || '0');
         }
-
+        
         // 3. Handle Pool Data & Ratio (Always update if currentPRC20 exists)
         if (!window.poolData) {
             await window.fetchPoolData();
         }
-
+        
         if (window.poolData) {
             const reservePaxi = parseFloat(window.poolData.reserve_paxi || 0) / 1000000;
             const reserveToken = parseFloat(window.poolData.reserve_prc20 || 0) / Math.pow(10, window.currentTokenInfo?.decimals || 6);
             const ratio = reservePaxi > 0 ? (reserveToken / reservePaxi).toFixed(6) : '0';
-
+            
             if (document.getElementById('poolRatioDisplay')) {
                 window.setText('poolRatioDisplay', `1 PAXI = ${ratio} ${window.currentTokenInfo?.symbol || 'TOKEN'}`);
             }
-
+            
         }
-
+        
     } catch (e) {
         console.error('Failed to update LP balances:', e);
     }
 };
-
 
 window.disconnectWallet = function() {
     window.wallet = null;
@@ -1893,7 +1862,7 @@ window.disconnectWallet = function() {
     window.removeClass('mobileConnectBtn', 'hidden');
     window.addClass('walletInfo', 'hidden');
     window.addClass('mobileWalletInfo', 'hidden');
-
+    
     if (window.renderSwapTerminal) window.renderSwapTerminal();
     if (window.WalletUI) window.WalletUI.renderDashboard();
 };
@@ -1902,7 +1871,7 @@ window.disconnectWallet = function() {
 window.showInternalWalletSheet = function() {
     const sheet = document.getElementById('internalWalletSheet');
     if (!sheet) return;
-
+    
     if (!sheet.querySelector('.close-sheet')) {
         const closeBtn = document.createElement('button');
         closeBtn.className = 'close-sheet absolute top-4 right-4 text-secondary-text hover:text-primary-text z-10';
@@ -1930,7 +1899,7 @@ window.showPinSheet = function(title, callback) {
         sheet.classList.add('z-[100000]');
     }
     window.updatePinDots();
-
+    
     if (localStorage.getItem('paxi_biometric_enabled') === 'true') {
         window.removeClass('biometricBtn', 'hidden');
     } else {
@@ -1961,7 +1930,7 @@ window.pressPin = function(n) {
     if (window.internalWalletState.currentPin.length < 6) {
         window.internalWalletState.currentPin += n;
         window.updatePinDots();
-
+        
         if (window.internalWalletState.currentPin.length === 6) {
             const pin = window.internalWalletState.currentPin;
             setTimeout(() => {
@@ -1996,10 +1965,10 @@ window.setupNewWallet = async function() {
             </div>
         `;
     }
-
+    
     try {
         const paxi = await window.waitForLibrary('PaxiCosmJS');
-
+        
         if (!window.DirectSecp256k1HdWallet && !paxi.DirectSecp256k1HdWallet) {
             await new Promise(r => {
                 const check = setInterval(() => {
@@ -2008,20 +1977,21 @@ window.setupNewWallet = async function() {
                         r();
                     }
                 }, 100);
-                setTimeout(() => { clearInterval(check); r(); }, 5000);
+                setTimeout(() => { clearInterval(check);
+                    r(); }, 5000);
             });
         }
-
+        
         const HDWallet = paxi.DirectSecp256k1HdWallet || window.DirectSecp256k1HdWallet;
         if (!HDWallet) {
-             throw new Error('DirectSecp256k1HdWallet missing');
+            throw new Error('DirectSecp256k1HdWallet missing');
         }
-
+        
         const wallet = await HDWallet.generate(12, { prefix: "paxi" });
         const mnemonic = wallet.mnemonic;
-
+        
         window.internalWalletState.tempMnemonic = mnemonic;
-
+        
         content.innerHTML = `
             <div class="p-4 bg-surface border-4 border-card shadow-brutal rotate-1">
                 <h3 class="text-xl font-black italic uppercase tracking-tighter mb-4 text-primary-text">Backup Seed Phrase</h3>
@@ -2062,10 +2032,10 @@ window.confirmBackup = function() {
             await window.WalletManager.importMnemonic("Internal Wallet", window.internalWalletState.tempMnemonic, pin);
             window.WalletSecurity.setSessionPin(pin);
             window.internalWalletState.tempMnemonic = '';
-
+            
             const active = window.WalletManager.getActiveWallet();
             if (active) await window.connectInternalWallet(active.id, pin);
-
+            
             window.hideInternalWalletSheet();
             if (window.WalletUI) window.WalletUI.renderDashboard();
         } catch (e) {
@@ -2098,15 +2068,15 @@ window.setupImportWallet = function() {
 window.processImportLegacy = async function() {
     const mnemonic = document.getElementById('importMnemonic').value.trim();
     if (!mnemonic) return;
-
+    
     window.showPinSheet('Set 6-Digit PIN', async (pin) => {
         try {
             await window.WalletManager.importMnemonic("Internal Wallet", mnemonic, pin);
             window.WalletSecurity.setSessionPin(pin);
-
+            
             const active = window.WalletManager.getActiveWallet();
             if (active) await window.connectInternalWallet(active.id, pin);
-
+            
             window.hideInternalWalletSheet();
             if (window.WalletUI) window.WalletUI.renderDashboard();
         } catch (e) {
@@ -2126,7 +2096,7 @@ window.retryPin = function() {
 
 
 window.connectWithMnemonic = async function(mnemonic) {
-        try {
+    try {
         const paxi = await window.waitForLibrary('PaxiCosmJS');
         if (!window.DirectSecp256k1HdWallet && !paxi.DirectSecp256k1HdWallet) {
             await new Promise(r => {
@@ -2136,16 +2106,17 @@ window.connectWithMnemonic = async function(mnemonic) {
                         r();
                     }
                 }, 100);
-                setTimeout(() => { clearInterval(check); r(); }, 5000);
+                setTimeout(() => { clearInterval(check);
+                    r(); }, 5000);
             });
         }
-
+        
         const HDWallet = paxi.DirectSecp256k1HdWallet || window.DirectSecp256k1HdWallet;
         if (!HDWallet) throw new Error('DirectSecp256k1HdWallet component missing in PaxiCosmJS bundle');
-
-                const wallet = await HDWallet.fromMnemonic(mnemonic, { prefix: "paxi" });
+        
+        const wallet = await HDWallet.fromMnemonic(mnemonic, { prefix: "paxi" });
         const accounts = await wallet.getAccounts();
-
+        
         window.wallet = {
             address: accounts[0].address,
             public_key: accounts[0].pubkey,
@@ -2153,23 +2124,22 @@ window.connectWithMnemonic = async function(mnemonic) {
             type: 'internal'
         };
         window.walletType = 'internal';
-
+        
         const btn = document.getElementById('connectBtn');
-        btn.innerHTML = `<i class="fas fa-check-circle mr-2"></i>${window.shortenAddress(window.wallet.address)}`;
-        btn.className = 'btn-trade px-3 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-bold shadow-lg flex items-center gap-2 bg-green-600';
-
+        btn.className = 'hidden';
+        
         await window.updateBalances();
         await window.updateMyTokens();
-                if (window.closeAllSidebars) window.closeAllSidebars();
-
-    } catch (e) {
-            }
+        if (window.closeAllSidebars) window.closeAllSidebars();
+        
+    } catch (e) {}
 };
 
 window.confirmRemoveWallet = function() {
     if (confirm('Are you sure you want to remove this wallet? Make sure you have your seed phrase backed up!')) {
         localStorage.removeItem('paxi_internal_wallet');
         window.renderWalletOptions();
+        window.location.reload();
     }
 };
 
@@ -2187,8 +2157,6 @@ window.authenticateBiometric = async function() {
             }
         };
         const credential = await navigator.credentials.get(options);
-        if (credential) {
-                    }
-    } catch (e) {
-            }
+        if (credential) {}
+    } catch (e) {}
 };

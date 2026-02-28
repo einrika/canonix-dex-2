@@ -15,8 +15,5 @@
     "express": "^5.2.1",
     "node-fetch": "^2.6.7",
     "socket.io": "^4.8.3"
-  },
-  "devDependencies": {
-    "netlify-cli": "^17.0.0"
   }
 }

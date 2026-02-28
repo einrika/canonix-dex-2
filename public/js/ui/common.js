@@ -324,16 +324,13 @@ window.updateTradeBalances = async function() {
         }
 
         window.setText('walletAddrShort', window.shortenAddress(walletAddress));
-        window.setText('walletBalance', paxiAmount.toFixed(2) + ' PAXI');
-        window.removeClass('walletInfo', 'hidden');
-        window.setText('mobileWalletBalance', paxiAmount.toFixed(2) + ' PAXI');
-        window.removeClass('mobileWalletInfo', 'hidden'); window.addClass('mobileConnectBtn', 'hidden');
+        window.addClass('mobileConnectBtn', 'hidden');
 
         const sidebarPaxi = document.getElementById('sidebar-paxi-bal');
-        if (sidebarPaxi) window.setText(sidebarPaxi, paxiAmount.toFixed(2));
+        if (sidebarPaxi) window.setText(sidebarPaxi, paxiAmount.toFixed(6));
         const portfolioUSD = document.getElementById('portfolio-usd');
         if (portfolioUSD) { const usdValue = paxiAmount * (window.paxiPriceUSD || 0.05); window.setText(portfolioUSD, `$${usdValue.toFixed(2)} USD`); }
-    } catch (e) { console.error('❌ Balance update failed:', e); }
+    } catch (e) { console.error('Balance update failed:', e); }
 };
 
 window.copyAddrText = function() {
@@ -367,12 +364,6 @@ window.setTab = function(name) {
     // Force render into tabContent for main page tabs
     if (name === 'holders') {
         window.loadTokenHolders();
-    } else if (name === 'history') {
-        window.renderTransactionHistory('tabContent');
-        // Explicitly trigger history load to ensure data is fetched
-        if (window.WalletHistory && window.WalletHistory.loadHistory) {
-            window.WalletHistory.loadHistory();
-        }
     }
 };
 
