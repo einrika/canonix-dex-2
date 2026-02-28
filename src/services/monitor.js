@@ -1,5 +1,5 @@
 const fetch = require('node-fetch');
-const { EXPLORER_API } = require('../config/blockchain');
+const { EXPLORER_API, COINGECKO_API } = require('../config/blockchain');
 
 let ioInstance = null;
 let monitorInterval = null;
@@ -8,8 +8,6 @@ const cache = {
     tokenList: null,
     paxiPrice: null
 };
-
-const { EXPLORER_API, COINGECKO_API } = require('../config/blockchain');
 
 const API_ENDPOINTS = {
     TOKEN_LIST: `${EXPLORER_API}/prc20/contracts?page=0`,

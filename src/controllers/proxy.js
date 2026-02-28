@@ -38,20 +38,32 @@ const proxyHandler = async (req, res) => {
     try {
         const fetchOptions = {
             method: req.method,
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: {},
             timeout: 10000
         };
+
+        if (req.headers['content-type']) {
+            fetchOptions.headers['Content-Type'] = req.headers['content-type'];
+        }
 
         if (req.method !== 'GET' && req.method !== 'HEAD' && req.body) {
             fetchOptions.body = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
         }
 
         const response = await fetch(url, fetchOptions);
-        const data = await response.json();
+        const contentType = response.headers.get('content-type');
 
-        return sendResponse(res, true, data);
+        if (contentType) {
+            res.setHeader('Content-Type', contentType);
+        }
+
+        if (contentType && contentType.includes('application/json')) {
+            const data = await response.json();
+            return sendResponse(res, true, data);
+        } else {
+            const buffer = await response.arrayBuffer();
+            return res.send(Buffer.from(buffer));
+        }
     } catch (error) {
         console.error('Proxy error:', error);
         return sendResponse(res, false, null, 'Proxy request failed', 500);
