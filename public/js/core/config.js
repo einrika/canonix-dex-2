@@ -13,17 +13,13 @@ window.APP_CONFIG = {
     BACKEND_API: (window.location.origin.startsWith('http') ? window.location.origin : 'https://stalwart-ganache-32b226.netlify.app'),
     EXPLORER_API: (window.location.origin.startsWith('http') ? window.location.origin : 'https://stalwart-ganache-32b226.netlify.app') + '/api',
     
-    // Proxy servers for CORS bypass (when needed)
-    PROXIES: [
-        'https://api.codetabs.com/v1/proxy?quest=',
-        'https://api.allorigins.win/raw?url=',
-        'https://thingproxy.freeboard.io/fetch/',
-        'https://corsproxy.io/?'
-    ],
+    // DEPRECATED: Public proxies removed. Use backend proxy.
+    PROXIES: [],
     
+    // Defaults (populated via /api/config)
     DENOM: 'upaxi',
-    SWAP_MODULE: 'paxi1mfru9azs5nua2wxcd4sq64g5nt7nn4n80r745t',
-    TARGET_WALLET: 'paxi1ktdl4hmruyn9vjpf72fxku0jx4lz4q4xknd6ya',
+    SWAP_MODULE: '',
+    TARGET_WALLET: '',
     SWAP_FEE_AMOUNT: 0.0,
     
     CACHE_DURATION: 1 * 60 * 60 * 1000, // 1 hour

@@ -1,5 +1,6 @@
 const fetch = require('node-fetch');
 const { sendResponse, checkRateLimit } = require('../utils/common');
+const { LCD: blockchainLcd } = require('../config/blockchain');
 
 const txStatusHandler = async (req, res) => {
     const ip = req.headers['client-ip'] || req.headers['x-forwarded-for'] || req.ip || 'unknown';
@@ -11,8 +12,8 @@ const txStatusHandler = async (req, res) => {
     // Clean hash (remove 0x prefix if present and convert to uppercase)
     const cleanHash = hash.startsWith('0x') ? hash.slice(2).toUpperCase() : hash.toUpperCase();
     
-    // Use LCD endpoint format
-    const lcdUrl = process.env.LCD_URL || 'https://mainnet-lcd.paxinet.io';
+    // Use LCD endpoint format from config
+    const lcdUrl = blockchainLcd || 'https://mainnet-lcd.paxinet.io';
     const url = `${lcdUrl}/cosmos/tx/v1beta1/txs/${cleanHash}`;
 
     let attempts = 0;

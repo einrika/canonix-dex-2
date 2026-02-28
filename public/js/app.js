@@ -22,6 +22,12 @@ window.addEventListener('load', async () => {
         const res = await window.fetchDirect('/api/config');
         if (res && res.success && res.data) {
             window.SERVER_CONFIG = { ...window.SERVER_CONFIG, ...res.data };
+
+            // Sync Blockchain Config to APP_CONFIG
+            if (res.data.blockchain) {
+                window.APP_CONFIG = { ...window.APP_CONFIG, ...res.data.blockchain };
+            }
+
             console.log('✅ Server config loaded:', window.SERVER_CONFIG);
         }
     } catch (e) {
