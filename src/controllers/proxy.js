@@ -8,9 +8,7 @@ const WHITELISTED_DOMAINS = [
     'mypinata.cloud',
     'paxi.mypinata.cloud',
     'paxi-pumpfun.winsnip.xyz',
-    'arweave.net',
-    'api.coingecko.com',
-    'mainnet-api.paxinet.io'
+    'arweave.net'
 ];
 
 const proxyHandler = async (req, res) => {
@@ -38,32 +36,20 @@ const proxyHandler = async (req, res) => {
     try {
         const fetchOptions = {
             method: req.method,
-            headers: {},
+            headers: {
+                'Content-Type': 'application/json'
+            },
             timeout: 10000
         };
-
-        if (req.headers['content-type']) {
-            fetchOptions.headers['Content-Type'] = req.headers['content-type'];
-        }
 
         if (req.method !== 'GET' && req.method !== 'HEAD' && req.body) {
             fetchOptions.body = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
         }
 
         const response = await fetch(url, fetchOptions);
-        const contentType = response.headers.get('content-type');
+        const data = await response.json();
 
-        if (contentType) {
-            res.setHeader('Content-Type', contentType);
-        }
-
-        if (contentType && contentType.includes('application/json')) {
-            const data = await response.json();
-            return sendResponse(res, true, data);
-        } else {
-            const buffer = await response.arrayBuffer();
-            return res.send(Buffer.from(buffer));
-        }
+        return sendResponse(res, true, data);
     } catch (error) {
         console.error('Proxy error:', error);
         return sendResponse(res, false, null, 'Proxy request failed', 500);

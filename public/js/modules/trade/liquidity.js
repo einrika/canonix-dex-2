@@ -40,7 +40,7 @@ window.renderLPTerminal = async function() {
     if (address && prc20) {
         try {
             const res = await window.fetchDirect(`/api/prc20/lp-position?address=${address}&token=${prc20}`);
-            if (res) posData = res;
+            if (res && res.success) posData = res.data;
         } catch (e) { console.error("Failed to fetch LP position:", e); }
     }
     window.currentUserPosition = posData; // Store for slider calculations
@@ -51,9 +51,7 @@ window.renderLPTerminal = async function() {
     const myPaxi = window.formatAmount(parseFloat(posData.expected_paxi || 0) / 1e6, 2);
     const myToken = window.formatAmount(parseFloat(posData.expected_prc20 || 0) / Math.pow(10, window.currentTokenInfo?.decimals || 6), 2);
 
-    const lpRaw = parseFloat(posData.position?.lp_amount || 0);
-    const withdrawLpTotal = window.formatAmount(lpRaw / 1e6, 6);
-    window.lpBalances.lpTokens = lpRaw / 1e6; // Sync for removal slider
+    const withdrawLpTotal = window.formatAmount(parseFloat(posData.position?.lp_amount || 0) / 1e6, 6);
 
     container.innerHTML = `
         <div class="space-y-4 animate-fade-in pb-8">
@@ -132,37 +130,6 @@ window.renderLPTerminal = async function() {
         </div>`;
 
     if (window.updateLPBalances) await window.updateLPBalances();
-};
-
-// ===== UPDATE LP BALANCES =====
-window.updateLPBalances = async function() {
-    const activeWallet = window.WalletManager?.getActiveWallet();
-    const walletAddress = activeWallet?.address || window.wallet?.address;
-    if (!walletAddress) return;
-
-    try {
-        const balData = await window.smartFetch(`${window.APP_CONFIG.LCD}/cosmos/bank/v1beta1/balances/${walletAddress}`);
-        const balances = balData.balances || [];
-        const paxiBalance = balances.find(b => b.denom === 'upaxi');
-        const paxiAmount = parseInt(paxiBalance ? paxiBalance.amount : '0') / 1e6;
-
-        let prc20Amount = 0;
-        if (window.currentPRC20) {
-            const tokenDecimals = window.currentTokenInfo?.decimals || 6;
-            const bal = await window.getPRC20Balance(walletAddress, window.currentPRC20);
-            prc20Amount = bal / Math.pow(10, tokenDecimals);
-        }
-
-        window.lpBalances.paxi = paxiAmount;
-        window.lpBalances.token = prc20Amount;
-
-        // Update UI displays if they exist
-        const paxiBalEl = document.getElementById('lpPaxiBalance');
-        const tokenBalEl = document.getElementById('lpTokenBalance');
-        if (paxiBalEl) window.setText(paxiBalEl, paxiAmount.toFixed(2));
-        if (tokenBalEl) window.setText(tokenBalEl, prc20Amount.toFixed(2));
-
-    } catch (e) { console.error('LP Balance update failed:', e); }
 };
 
 // ===== UPDATE SLIDER GRADIENT =====

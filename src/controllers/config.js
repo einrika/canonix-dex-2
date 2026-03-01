@@ -4,8 +4,6 @@ const { sendResponse } = require('../utils/common');
 
 const configHandler = async (req, res) => {
     try {
-        // As per user request: send actual endpoints, don't hide them.
-        // They are stored on server and fetched when needed.
         const combinedConfig = {
             ...sidebarConfig,
             blockchain: blockchainConfig

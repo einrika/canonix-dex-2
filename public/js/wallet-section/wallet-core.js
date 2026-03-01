@@ -61,36 +61,27 @@ class NetworkManager {
         this.storageKey = 'paxi_networks_custom';
         this.activeIdKey = 'paxi_active_network_id';
 
-        this.updateDefaultNetworks();
-
-        this.customNetworks = this.loadCustomNetworks();
-        this.activeId = localStorage.getItem(this.activeIdKey) || 'mainnet';
-
-        // Listen for remote config updates to refresh endpoints
-        window.addEventListener('paxi_config_loaded', () => {
-            this.updateDefaultNetworks();
-        });
-    }
-
-    updateDefaultNetworks() {
         this.defaultNetworks = [
             {
                 id: 'mainnet',
                 name: 'Paxi Mainnet',
-                rpc: window.APP_CONFIG.RPC || '/api/rpc',
-                lcd: window.APP_CONFIG.LCD || '/api/lcd',
-                explorer: window.APP_CONFIG.EXPLORER_URL || 'https://explorer.paxinet.io',
+                rpc: 'https://mainnet-rpc.paxinet.io',
+                lcd: 'https://mainnet-lcd.paxinet.io',
+                explorer: 'https://explorer.paxinet.io',
                 chainId: 'paxi-mainnet'
             },
             {
                 id: 'testnet',
                 name: 'Paxi Testnet',
-                rpc: window.APP_CONFIG.TESTNET_RPC || '/api/rpc-testnet',
-                lcd: window.APP_CONFIG.TESTNET_LCD || '/api/lcd-testnet',
-                explorer: window.APP_CONFIG.TESTNET_EXPLORER || 'https://testnet-explorer.paxinet.io',
+                rpc: 'https://testnet-rpc.paxinet.io',
+                lcd: 'https://testnet-lcd.paxinet.io',
+                explorer: 'https://testnet-explorer.paxinet.io',
                 chainId: 'paxi-testnet'
             }
         ];
+
+        this.customNetworks = this.loadCustomNetworks();
+        this.activeId = localStorage.getItem(this.activeIdKey) || 'mainnet';
     }
 
     loadCustomNetworks() {
@@ -428,7 +419,7 @@ class AssetManager {
         try {
             // Use smartFetch - will auto-fallback to proxy if CORS error
             const [data, paxiRes] = await Promise.all([
-                window.smartFetch(`/api/prc20/my_contract_accounts?address=${address}`),
+                window.smartFetch(`https://explorer.paxinet.io/api/prc20/my_contract_accounts?address=${address}`),
                 window.smartFetch(`${window.APP_CONFIG.LCD}/cosmos/bank/v1beta1/balances/${address}`).catch(() => null)
             ]);
             
@@ -492,7 +483,7 @@ class AssetManager {
             // 2. Fetch user's token accounts from explorer
             const [poolData, userData] = await Promise.all([
                 window.smartFetch(`${window.APP_CONFIG.LCD}/paxi/swap/all_pools`).catch(() => null),
-                window.smartFetch(`/api/prc20/my_contract_accounts?address=${userAddress}`).catch(() => null)
+                window.smartFetch(`https://explorer.paxinet.io/api/prc20/my_contract_accounts?address=${userAddress}`).catch(() => null)
             ]);
 
             if (!poolData || !poolData.pools || !userData || !userData.accounts) {

@@ -148,7 +148,7 @@ window.filterMarket = function() {
             // Show loading state
             grid.innerHTML = '<div class="col-span-full text-center py-20 text-muted-text font-bold uppercase tracking-widest"><i class="fas fa-circle-notch fa-spin mr-2"></i> Searching...</div>';
 
-            const url = `/api/prc20/search?name=${encodeURIComponent(query)}`;
+            const url = `https://explorer.paxinet.io/api/prc20/search?name=${encodeURIComponent(query)}`;
             const data = await window.smartFetch(url);
 
             if (data && data.contracts) {

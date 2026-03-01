@@ -3,18 +3,15 @@
 // ============================================
 
 window.APP_CONFIG = {
-    // Blockchain Endpoints - Populated via /api/config from backend
-    RPC: '',
-    LCD: '',
-    EXPLORER_API: '',
-    EXPLORER_URL: '',
-    TESTNET_RPC: '',
-    TESTNET_LCD: '',
-    TESTNET_EXPLORER: '',
-    WINSCAN_API: '',
+    // Direct API endpoints (no proxy needed)
+    RPC: 'https://mainnet-rpc.paxinet.io',
+    LCD: 'https://mainnet-lcd.paxinet.io',
+    EXPLORER_API: 'https://explorer.paxinet.io/api',
+    WINSCAN_API: 'https://winscan.winsnip.xyz/api',
 
     // Backend API - Pointing to local node server
     BACKEND_API: (window.location.origin.startsWith('http') ? window.location.origin : 'https://stalwart-ganache-32b226.netlify.app'),
+    EXPLORER_API: (window.location.origin.startsWith('http') ? window.location.origin : 'https://stalwart-ganache-32b226.netlify.app') + '/api',
     
     // DEPRECATED: Public proxies removed. Use backend proxy.
     PROXIES: [],
@@ -30,28 +27,6 @@ window.APP_CONFIG = {
     
     ITEMS_PER_PAGE: 20,
     UPDATE_INTERVAL: 10000 // 10 seconds
-};
-
-// Remote Config Loader
-window.loadRemoteConfig = async function() {
-    try {
-        const res = await window.fetchDirect('/api/config');
-        if (res && res.success && res.data) {
-            window.SERVER_CONFIG = res.data;
-
-            // Sync Blockchain Config to APP_CONFIG
-            if (res.data.blockchain) {
-                window.APP_CONFIG = { ...window.APP_CONFIG, ...res.data.blockchain };
-            }
-
-            console.log('✅ Remote config synced to APP_CONFIG');
-            window.dispatchEvent(new CustomEvent('paxi_config_loaded', { detail: window.APP_CONFIG }));
-            return true;
-        }
-    } catch (e) {
-        console.error('⚠️ Failed to load remote config:', e);
-    }
-    return false;
 };
 
 // Notification messages config

@@ -1,6 +1,5 @@
 const fetch = require('node-fetch');
 const { sendResponse, checkRateLimit } = require('../utils/common');
-const { LCD: LCD_URL } = require('../config/blockchain');
 
 const gasSimulateHandler = async (req, res) => {
     if (req.method === 'OPTIONS') return res.sendStatus(200);
@@ -47,7 +46,7 @@ const gasSimulateHandler = async (req, res) => {
         }
         
         const lcdUrl =
-            `${LCD_URL}/cosmos/tx/v1beta1/simulate`;
+            'https://mainnet-lcd.paxinet.io/cosmos/tx/v1beta1/simulate';
         
         const response = await fetch(lcdUrl, {
             method: 'POST',

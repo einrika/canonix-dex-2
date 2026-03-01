@@ -7,7 +7,7 @@ window.poolData = null;
 
 // ===== INITIALIZE APP =====
 window.addEventListener('load', async () => {
-    // 1. Fetch Server Config first (Essential for UI behavior and Blockchain Connection)
+    // 1. Fetch Server Config first (Essential for UI behavior)
     window.SERVER_CONFIG = {
         priority_tokens: [],
         default_token: null,
@@ -18,8 +18,20 @@ window.addEventListener('load', async () => {
         filters: { enable_nonpump: true, enable_verified: true }
     };
 
-    if (window.loadRemoteConfig) {
-        await window.loadRemoteConfig();
+    try {
+        const res = await window.fetchDirect('/api/config');
+        if (res && res.success && res.data) {
+            window.SERVER_CONFIG = { ...window.SERVER_CONFIG, ...res.data };
+
+            // Sync Blockchain Config to APP_CONFIG
+            if (res.data.blockchain) {
+                window.APP_CONFIG = { ...window.APP_CONFIG, ...res.data.blockchain };
+            }
+
+            console.log('✅ Server config loaded:', window.SERVER_CONFIG);
+        }
+    } catch (e) {
+        console.error('⚠️ Failed to load server config, using fallbacks:', e);
     }
 
     // Set initial display limit from config

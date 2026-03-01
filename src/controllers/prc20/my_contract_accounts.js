@@ -1,6 +1,5 @@
 const fetch = require('node-fetch');
 const { sendResponse, getCached, setCached, checkRateLimit, isValidPaxiAddress } = require('../../utils/common');
-const { EXPLORER_API } = require('../../config/blockchain');
 
 const myContractAccountsHandler = async (req, res) => {
     if (req.method === 'OPTIONS') return res.sendStatus(200);
@@ -19,7 +18,7 @@ const myContractAccountsHandler = async (req, res) => {
     if (cachedData) return sendResponse(res, true, cachedData);
 
     try {
-        const apiUrl = `${EXPLORER_API}/prc20/my_contract_accounts?address=${address}`;
+        const apiUrl = `https://explorer.paxinet.io/api/prc20/my_contract_accounts?address=${address}`;
         const response = await fetch(apiUrl, { timeout: 10000 });
 
         if (!response.ok) {

@@ -1,6 +1,5 @@
 const fetch = require('node-fetch');
 const { sendResponse, checkRateLimit, isValidPaxiAddress } = require('../utils/common');
-const { EXPLORER_API, PRC20_API } = require('../config/blockchain');
 
 const tokenValidateHandler = async (req, res) => {
     if (req.method === 'OPTIONS') return res.sendStatus(200);
@@ -14,7 +13,7 @@ const tokenValidateHandler = async (req, res) => {
     }
 
     try {
-        const explorerUrl = `${EXPLORER_API}/prc20/contract?address=${address}`;
+        const explorerUrl = `https://explorer.paxinet.io/api/prc20/contract?address=${address}`;
         const response = await fetch(explorerUrl, { timeout: 10000 });
 
         if (!response.ok) {
@@ -30,7 +29,7 @@ const tokenValidateHandler = async (req, res) => {
         const hasSupply = contract.total_supply && parseFloat(contract.total_supply) > 0;
         const hasLiquidity = contract.reserve_paxi && parseFloat(contract.reserve_paxi) > 0;
 
-        const priceUrl = `${PRC20_API}/prc20/get_contract_prices?address=${address}`;
+        const priceUrl = `https://mainnet-api.paxinet.io/prc20/get_contract_prices?address=${address}`;
         const priceRes = await fetch(priceUrl, { timeout: 5000 });
         const hasPriceApi = priceRes.ok;
 

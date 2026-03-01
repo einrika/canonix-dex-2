@@ -1,5 +1,4 @@
 const fetch = require('node-fetch');
-const { EXPLORER_API, COINGECKO_API } = require('../config/blockchain');
 
 let ioInstance = null;
 let monitorInterval = null;
@@ -10,8 +9,8 @@ const cache = {
 };
 
 const API_ENDPOINTS = {
-    TOKEN_LIST: `${EXPLORER_API}/prc20/contracts?page=0`,
-    COINGECKO_PAXI: `${COINGECKO_API}/simple/price?ids=paxi-network&vs_currencies=usd`
+    TOKEN_LIST: 'https://explorer.paxinet.io/api/prc20/contracts?page=0',
+    COINGECKO_PAXI: 'https://api.coingecko.com/api/v3/simple/price?ids=paxi-network&vs_currencies=usd'
 };
 
 const init = (io) => {

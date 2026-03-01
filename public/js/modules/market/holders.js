@@ -54,7 +54,7 @@ window.fetchTokenHolders = async function(page) {
         window.isFetchingHolders = false; return;
     }
     try {
-        const url = `/api/prc20/holders?contract_address=${window.currentPRC20}&page=${page - 1}`;
+        const url = `${window.APP_CONFIG.EXPLORER_API}/prc20/holders?contract_address=${window.currentPRC20}&page=${page - 1}`;
         const data = await window.fetchDirect(url);
         let list = [];
         if (data && data.accounts) {
