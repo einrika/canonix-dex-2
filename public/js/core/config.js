@@ -3,7 +3,7 @@
 // ============================================
 
 window.APP_CONFIG = {
-    // SECURITY: Endpoints hidden. Configured via /api/config from backend.
+    // Blockchain Endpoints - Populated via /api/config from backend
     RPC: '',
     LCD: '',
     EXPLORER_API: '',
@@ -30,6 +30,28 @@ window.APP_CONFIG = {
     
     ITEMS_PER_PAGE: 20,
     UPDATE_INTERVAL: 10000 // 10 seconds
+};
+
+// Remote Config Loader
+window.loadRemoteConfig = async function() {
+    try {
+        const res = await window.fetchDirect('/api/config');
+        if (res && res.success && res.data) {
+            window.SERVER_CONFIG = res.data;
+
+            // Sync Blockchain Config to APP_CONFIG
+            if (res.data.blockchain) {
+                window.APP_CONFIG = { ...window.APP_CONFIG, ...res.data.blockchain };
+            }
+
+            console.log('✅ Remote config synced to APP_CONFIG');
+            window.dispatchEvent(new CustomEvent('paxi_config_loaded', { detail: window.APP_CONFIG }));
+            return true;
+        }
+    } catch (e) {
+        console.error('⚠️ Failed to load remote config:', e);
+    }
+    return false;
 };
 
 // Notification messages config

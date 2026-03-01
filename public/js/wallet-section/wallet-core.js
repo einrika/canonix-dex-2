@@ -61,6 +61,18 @@ class NetworkManager {
         this.storageKey = 'paxi_networks_custom';
         this.activeIdKey = 'paxi_active_network_id';
 
+        this.updateDefaultNetworks();
+
+        this.customNetworks = this.loadCustomNetworks();
+        this.activeId = localStorage.getItem(this.activeIdKey) || 'mainnet';
+
+        // Listen for remote config updates to refresh endpoints
+        window.addEventListener('paxi_config_loaded', () => {
+            this.updateDefaultNetworks();
+        });
+    }
+
+    updateDefaultNetworks() {
         this.defaultNetworks = [
             {
                 id: 'mainnet',
@@ -79,9 +91,6 @@ class NetworkManager {
                 chainId: 'paxi-testnet'
             }
         ];
-
-        this.customNetworks = this.loadCustomNetworks();
-        this.activeId = localStorage.getItem(this.activeIdKey) || 'mainnet';
     }
 
     loadCustomNetworks() {
