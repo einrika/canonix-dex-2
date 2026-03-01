@@ -28,6 +28,12 @@ Object.assign(window.WalletUI, {
         window.addEventListener('paxi_wallet_locked', () => {
             if (window.currentSidebarTab === 'wallet') this.renderDashboard();
         });
+        window.addEventListener('paxi_wallet_connected', () => {
+            if (window.currentSidebarTab === 'wallet') this.renderDashboard();
+        });
+        window.addEventListener('paxi_wallet_disconnected', () => {
+            if (window.currentSidebarTab === 'wallet') this.renderDashboard();
+        });
     },
     
     renderDashboard: function() {
@@ -235,6 +241,20 @@ Object.assign(window.WalletUI, {
     renderActiveWalletView: function(container, wallet) {
         const net = window.NetworkManager.getActiveNetwork();
         
+        // Safety: If this is an external wallet and we are already connected,
+        // don't overwrite window.wallet which has the real signer.
+        if (!window.wallet || (window.wallet.address !== wallet.address)) {
+            window.wallet = {
+                address: wallet.address,
+                name: wallet.name || (wallet.type === 'keplr' ? 'Keplr' : (wallet.type === 'paxihub' ? 'PaxiHub' : 'Internal Wallet')),
+                type: wallet.type || 'internal',
+                id: wallet.id,
+                isWatchOnly: !!wallet.isWatchOnly,
+                signer: wallet.signer || null
+            };
+            window.walletType = wallet.type || 'internal';
+        }
+
         container.innerHTML = `
             <div class="space-y-8 animate-fade-in p-1">
                 <!-- Wallet Card - Brutal Style -->
@@ -333,19 +353,6 @@ Object.assign(window.WalletUI, {
         `;
         
         this.renderAssets();
-        
-        // Set window.wallet for backward compatibility with old code
-        if (!window.wallet || window.wallet.address !== wallet.address) {
-            window.wallet = {
-                address: wallet.address,
-                name: wallet.name,
-                type: 'internal',
-                id: wallet.id,
-                isWatchOnly: !!wallet.isWatchOnly,
-                signer: null
-            };
-            window.walletType = 'internal';
-        }
         
         // Setup button event listeners
         setTimeout(() => {
@@ -1690,15 +1697,17 @@ window.connectWallet = async function(type) {
             window.walletType = 'paxihub';
         }
         
-        btn.innerHTML = `<i class="fas fa-check-circle mr-2"></i>${window.shortenAddress(window.wallet.address)}`;
-        btn.className = 'btn-trade px-3 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-bold shadow-lg flex items-center gap-2 bg-green-600';
-        
+        window.dispatchEvent(new CustomEvent('paxi_wallet_connected', { detail: { wallet: window.wallet } }));
+
         await window.updateBalances();
         await window.updateMyTokens();
-        if (window.renderSwapTerminal) window.renderSwapTerminal();
         
-        window.addClass('connectBtn', 'hidden');
-        window.addClass('mobileConnectBtn', 'hidden');
+        if (window.AssetManager) {
+            window.AssetManager.fetchUserAssets(window.wallet.address);
+        }
+
+        if (window.renderSwapTerminal) window.renderSwapTerminal();
+        if (window.WalletUI) window.WalletUI.renderDashboard();
         
         if (window.closeAllSidebars) window.closeAllSidebars();
     } catch (e) {
@@ -1708,10 +1717,8 @@ window.connectWallet = async function(type) {
 };
 
 window.updateBalances = async function() {
-    const activeWallet = window.WalletManager?.getActiveWallet();
-    if (!activeWallet && !window.wallet) return;
-    
-    const walletAddress = activeWallet?.address || window.wallet?.address;
+    // Prioritize connected wallet over managed wallet
+    const walletAddress = window.wallet?.address || window.WalletManager?.getActiveWallet()?.address;
     if (!walletAddress) return;
     
     try {
@@ -1749,10 +1756,10 @@ window.updateBalances = async function() {
         }
         
         window.setText('walletBalance', paxiAmount.toFixed(4) + ' PAXI');
-        if (window.wallet?.address) {
-            window.setText('walletAddrShort', window.shortenAddress(window.wallet.address));
-        }
+        window.setText('walletAddrShort', window.shortenAddress(walletAddress));
+
         window.removeClass('walletInfo', 'hidden');
+        window.addClass('connectBtn', 'hidden');
         
         window.setText('mobileWalletBalance', paxiAmount.toFixed(6) + ' PAXI');
         window.removeClass('mobileWalletInfo', 'hidden');
@@ -1777,6 +1784,9 @@ window.updateBalances = async function() {
 window.updateLPBalances = async function() {
     if (!window.currentPRC20) return;
     
+    // Prioritize connected wallet over managed wallet
+    const walletAddress = window.wallet?.address || window.WalletManager?.getActiveWallet()?.address;
+
     // Ensure lpBalances object exists
     if (!window.lpBalances) {
         window.lpBalances = { paxi: 0, token: 0, lpTokens: 0 };
@@ -1784,9 +1794,9 @@ window.updateLPBalances = async function() {
     
     try {
         // 1. Handle Wallet Balances if connected
-        if (window.wallet) {
+        if (walletAddress) {
             const response = await window.smartFetch(
-                `${window.APP_CONFIG.LCD}/cosmos/bank/v1beta1/balances/${window.wallet.address}`
+                `${window.APP_CONFIG.LCD}/cosmos/bank/v1beta1/balances/${walletAddress}`
             );
             const balances = response.balances || [];
             const paxiBalance = balances.find(b => b.denom === 'upaxi');
@@ -1795,13 +1805,13 @@ window.updateLPBalances = async function() {
             window.lpBalances.paxiRaw = paxiRaw;
             
             const tokenDecimals = window.currentTokenInfo?.decimals || 6;
-            const tokenBalance = await window.getPRC20Balance(window.wallet.address, window.currentPRC20);
+            const tokenBalance = await window.getPRC20Balance(walletAddress, window.currentPRC20);
             window.lpBalances.token = tokenBalance / Math.pow(10, tokenDecimals);
             window.lpBalances.tokenRaw = tokenBalance.toString();
             
             try {
                 const posData = await window.smartFetch(
-                    `${window.APP_CONFIG.LCD}/paxi/swap/position/${window.wallet.address}/${window.currentPRC20}`
+                    `${window.APP_CONFIG.LCD}/paxi/swap/position/${walletAddress}/${window.currentPRC20}`
                 );
                 const lpAmount = posData.position?.lp_amount || '0';
                 window.lpBalances.lpTokens = parseFloat(lpAmount) / 1000000;
@@ -1858,11 +1868,21 @@ window.disconnectWallet = function() {
     window.wallet = null;
     window.walletType = null;
     localStorage.removeItem('paxi_wallet_type');
+
+    // Dispatch event for other components
+    window.dispatchEvent(new CustomEvent('paxi_wallet_disconnected'));
+
+    // Update Header UI
     window.removeClass('connectBtn', 'hidden');
     window.removeClass('mobileConnectBtn', 'hidden');
     window.addClass('walletInfo', 'hidden');
     window.addClass('mobileWalletInfo', 'hidden');
     
+    const btn = document.getElementById('connectBtn');
+    if (btn) {
+        btn.innerHTML = '<i class="fas fa-plug text-[8px]"></i><span class="hidden sm:inline">Connect</span>';
+    }
+
     if (window.renderSwapTerminal) window.renderSwapTerminal();
     if (window.WalletUI) window.WalletUI.renderDashboard();
 };
