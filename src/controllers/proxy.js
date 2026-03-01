@@ -7,7 +7,8 @@ const WHITELISTED_DOMAINS = [
     'ipfs.io',
     'mypinata.cloud',
     'paxi.mypinata.cloud',
-    'paxi-pumpfun.winsnip.xyz'
+    'paxi-pumpfun.winsnip.xyz',
+    'arweave.net'
 ];
 
 const proxyHandler = async (req, res) => {

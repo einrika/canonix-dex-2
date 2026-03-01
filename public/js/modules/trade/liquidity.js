@@ -57,7 +57,7 @@ window.renderLPTerminal = async function() {
         <div class="space-y-4 animate-fade-in pb-8">
             <div class="flex items-center justify-between border-b border-card pb-2 mb-2">
                 <h4 class="text-[10px] font-black text-secondary-text uppercase tracking-widest italic">Liquidity Provision</h4>
-                <button onclick="window.closeAllSidebars()" class="w-6 h-6 flex items-center justify-center bg-card border border-border text-muted-text hover:text-meme-pink transition-colors"><i class="fas fa-times text-[10px]"></i></button>
+                <button onclick="window.cleanupLPTerminal()" class="w-6 h-6 flex items-center justify-center bg-card border border-border text-muted-text hover:text-meme-pink transition-colors"><i class="fas fa-times text-[10px]"></i></button>
             </div>
 
             <!-- Total Liquidity Pool -->
@@ -73,6 +73,7 @@ window.renderLPTerminal = async function() {
             <div class="bg-surface border-4 border-card p-4 shadow-brutal-sm rotate-[0.5deg]">
                 <h5 class="text-[10px] font-black text-meme-green uppercase tracking-widest mb-3 italic underline decoration-2 underline-offset-4">My Position</h5>
                 <div class="space-y-1">
+                    <div class="flex justify-between text-base font-display italic"><span class="text-primary-text">${withdrawLpTotal} LP Amount</span></div>
                     <div class="flex justify-between text-base font-display italic"><span class="text-primary-text">${myPaxi} PAXI</span></div>
                     <div class="flex justify-between text-base font-display italic"><span class="text-primary-text">${myToken} <span class="token-symbol-text">${symbol}</span></span></div>
                 </div>
@@ -123,12 +124,12 @@ window.renderLPTerminal = async function() {
             </div>
 
             <div class="grid grid-cols-2 gap-2">
-                <button onclick="window.setSidebarTab('wallet')" class="py-3 bg-surface border-2 border-card text-muted-text font-display text-lg uppercase italic hover:text-primary-text transition-all">Back</button>
-                <button onclick="window.closeAllSidebars()" class="py-3 bg-card border-2 border-card text-meme-pink font-display text-lg uppercase italic transition-all">Close</button>
+                <button onclick="window.cleanupLPTerminal('wallet')" class="py-3 bg-surface border-2 border-card text-muted-text font-display text-lg uppercase italic hover:text-primary-text transition-all">Back</button>
+                <button onclick="window.cleanupLPTerminal()" class="py-3 bg-card border-2 border-card text-meme-pink font-display text-lg uppercase italic transition-all">Close</button>
             </div>
         </div>`;
 
-    if (window.updateLPBalances) window.updateLPBalances();
+    if (window.updateLPBalances) await window.updateLPBalances();
 };
 
 // ===== UPDATE SLIDER GRADIENT =====
@@ -137,12 +138,14 @@ window.updateSliderGradient = function(sliderId, percent) {
     if (!slider) return;
     
     const value = Math.min(100, Math.max(0, percent));
+
+    // Pick color based on slider accent class or default
     let color = '#8b5cf6'; // Default purple
+    if (slider.classList.contains('accent-meme-cyan')) color = '#00B2D6';
+    if (slider.classList.contains('accent-meme-pink')) color = '#D60047';
+    if (slider.classList.contains('accent-meme-green')) color = '#00D68B';
 
-    if (slider.classList.contains('accent-up')) color = '#00B2D6';
-    if (slider.classList.contains('accent-down')) color = '#D60047';
-
-    slider.className = `w-full h-3 bg-[linear-gradient(to_right,${color}_0%,${color}_${Math.round(value)}%,#121314_${Math.round(value)}%,#121314_100%)] rounded-none appearance-none cursor-pointer border-2 border-card shadow-brutal-sm`;
+    slider.style.background = `linear-gradient(to right, ${color} 0%, ${color} ${Math.round(value)}%, #121314 ${Math.round(value)}%, #121314 100%)`;
 };
 
 // ===== UPDATE LP FROM SLIDER =====
@@ -162,7 +165,14 @@ window.updateLPFromSlider = function(type, percent) {
 
     // UI Feedback for amount
     const displayEl = document.getElementById(type === 'paxi' ? 'lpPaxiDisplay' : 'lpTokenDisplay');
-    if (displayEl) window.setText(displayEl, `${amount} ${type === 'paxi' ? 'PAXI' : (window.currentTokenInfo?.symbol || 'TOKEN')}`);
+    if (displayEl) {
+        if (type === 'paxi') {
+            window.setText(displayEl, `${amount} PAXI`);
+        } else {
+            const symbol = window.currentTokenInfo?.symbol || 'TOKEN';
+            window.setHtml(displayEl, `${amount} <span class="token-symbol-text">${symbol}</span>`);
+        }
+    }
 
     window.calculateEstimatedLP();
 };
@@ -200,6 +210,13 @@ window.updateLPFromInput = function(type) {
             Math.min(100, (parseFloat(tokenAmount) / window.lpBalances.token * 100)) : 0;
         tokenSlider.value = tokenPercent;
         window.updateSliderGradient('lpTokenSlider', tokenPercent);
+
+        // UI Feedback for the calculated asset
+        const displayEl = document.getElementById('lpTokenDisplay');
+        if (displayEl) {
+            const symbol = window.currentTokenInfo?.symbol || 'TOKEN';
+            window.setHtml(displayEl, `${tokenAmount} <span class="token-symbol-text">${symbol}</span>`);
+        }
         
     } else {
         const tokenAmount = parseFloat(tokenInput.value) || 0;
@@ -215,6 +232,12 @@ window.updateLPFromInput = function(type) {
             Math.min(100, (parseFloat(paxiAmount) / window.lpBalances.paxi * 100)) : 0;
         paxiSlider.value = paxiPercent;
         window.updateSliderGradient('lpPaxiSlider', paxiPercent);
+
+        // UI Feedback for the calculated asset
+        const displayEl = document.getElementById('lpPaxiDisplay');
+        if (displayEl) {
+            window.setText(displayEl, `${paxiAmount} PAXI`);
+        }
     }
     
     window.calculateEstimatedLP();
@@ -275,7 +298,10 @@ window.updateRemoveLPFromSlider = function(percent) {
         const tokenEl = document.getElementById('lpWithdrawTokenEst');
 
         if (paxiEl) window.setText(paxiEl, `${paxiEst.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 6})} PAXI`);
-        if (tokenEl) window.setText(tokenEl, `${tokenEst.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 6})} ${window.currentTokenInfo?.symbol || 'TOKEN'}`);
+        if (tokenEl) {
+            const symbol = window.currentTokenInfo?.symbol || 'TOKEN';
+            window.setHtml(tokenEl, `${tokenEst.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 6})} <span class="token-symbol-text">${symbol}</span>`);
+        }
     }
 };
 
@@ -418,4 +444,11 @@ window.executeBurn = async function() {
     } catch (e) {
         console.error("Burn failed:", e);
     }
+};
+
+// ===== UNIFIED CLEANUP FOR LP TERMINAL =====
+window.cleanupLPTerminal = function(tabToSet = null) {
+    document.getElementById('actionBottomSheet')?.remove();
+    if (window.closeAllSidebars) window.closeAllSidebars();
+    if (tabToSet && window.setSidebarTab) window.setSidebarTab(tabToSet);
 };

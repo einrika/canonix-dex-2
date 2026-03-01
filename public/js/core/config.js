@@ -13,23 +13,17 @@ window.APP_CONFIG = {
     BACKEND_API: (window.location.origin.startsWith('http') ? window.location.origin : 'https://stalwart-ganache-32b226.netlify.app'),
     EXPLORER_API: (window.location.origin.startsWith('http') ? window.location.origin : 'https://stalwart-ganache-32b226.netlify.app') + '/api',
     
-    // Proxy servers for CORS bypass (when needed)
-    PROXIES: [
-        'https://api.codetabs.com/v1/proxy?quest=',
-        'https://api.allorigins.win/raw?url=',
-        'https://thingproxy.freeboard.io/fetch/',
-        'https://corsproxy.io/?'
-    ],
+    // DEPRECATED: Public proxies removed. Use backend proxy.
+    PROXIES: [],
     
+    // Defaults (populated via /api/config)
     DENOM: 'upaxi',
-    SWAP_MODULE: 'paxi1mfru9azs5nua2wxcd4sq64g5nt7nn4n80r745t',
-    TARGET_WALLET: 'paxi1ktdl4hmruyn9vjpf72fxku0jx4lz4q4xknd6ya',
+    SWAP_MODULE: '',
+    TARGET_WALLET: '',
     SWAP_FEE_AMOUNT: 0.0,
     
     CACHE_DURATION: 1 * 60 * 60 * 1000, // 1 hour
     BATCH_SIZE: 50,
-    DEFAULT_TOKEN: 'paxi14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9snvcq0u',
-    PRIORITY_TOKENS: ['paxi14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9snvcq0u'],
     
     ITEMS_PER_PAGE: 20,
     UPDATE_INTERVAL: 10000 // 10 seconds

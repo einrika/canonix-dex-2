@@ -1,8 +1,6 @@
 const fetch = require('node-fetch');
 const { sendResponse, checkRateLimit, isValidPaxiAddress } = require('../utils/common');
-
-const RPC_BASE = 'https://mainnet-rpc.paxinet.io';
-const LCD_BASE = 'https://mainnet-lcd.paxinet.io';
+const { RPC: RPC_BASE, LCD: LCD_BASE, EXPLORER_API } = require('../config/blockchain');
 
 const _tokenCache = new Map();
 const TOKEN_CACHE_TTL = 10 * 60 * 1000;
@@ -14,7 +12,7 @@ const getTokenInfo = async (contractAddress) => {
     if (cached && Date.now() - cached.ts < TOKEN_CACHE_TTL) return cached;
     
     try {
-        const url = `https://explorer.paxinet.io/api/prc20/contract?address=${contractAddress}`;
+        const url = `${EXPLORER_API}/prc20/contract?address=${contractAddress}`;
         const r = await fetch(url, { timeout: 6000 });
         if (!r.ok) return null;
         

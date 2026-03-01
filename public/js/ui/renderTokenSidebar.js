@@ -47,7 +47,7 @@ window.renderTokenSidebar = function(filter = '', isAppend = false) {
     });
   }
   
-  // Sort Logic
+  // Sort Logic (Config-Driven Priority Order)
   filtered.sort((a, b) => {
     const aDetail = window.tokenDetails.get(a);
     const bDetail = window.tokenDetails.get(b);
@@ -55,10 +55,7 @@ window.renderTokenSidebar = function(filter = '', isAppend = false) {
     if (!aDetail) return 1;
     if (!bDetail) return -1;
 
-    const aVer = aDetail.verified ? 1 : 0;
-    const bVer = bDetail.verified ? 1 : 0;
-    if (aVer !== bVer) return bVer - aVer;
-
+    // 1. First Priority: If filter matches symbol exactly (Always #1)
     if (filter) {
         const lowerFilter = filter.toLowerCase();
         const aSym = aDetail.symbol?.toLowerCase() || '';
@@ -67,25 +64,46 @@ window.renderTokenSidebar = function(filter = '', isAppend = false) {
         if (bSym === lowerFilter && aSym !== lowerFilter) return 1;
     }
 
-    const aIsPriority = window.APP_CONFIG.PRIORITY_TOKENS.includes(a);
-    const bIsPriority = window.APP_CONFIG.PRIORITY_TOKENS.includes(b);
-    if (aIsPriority && !bIsPriority) return -1;
-    if (!aIsPriority && bIsPriority) return 1;
+    // 2. Dynamic Priority Rules from SERVER_CONFIG
+    const priorityOrder = window.SERVER_CONFIG?.priority_order || ["verified", "priority", "sort"];
     
-    const sortType = (window.currentSort === 'nonpump' && window.currentSubSort !== 'all') ? window.currentSubSort : window.currentSort;
-    switch (sortType) {
+    for (const rule of priorityOrder) {
+        if (rule === 'verified') {
+            const aVer = aDetail.official_verified || aDetail.verified ? 1 : 0;
+            const bVer = bDetail.official_verified || bDetail.verified ? 1 : 0;
+            if (aVer !== bVer) return bVer - aVer;
+        }
+        else if (rule === 'priority') {
+            const priorityTokens = window.SERVER_CONFIG?.priority_tokens || [];
+            const aIsPriority = priorityTokens.includes(a);
+            const bIsPriority = priorityTokens.includes(b);
+            if (aIsPriority !== bIsPriority) return aIsPriority ? -1 : 1;
+        }
+        else if (rule === 'sort') {
+            const sortType = (window.currentSort === 'nonpump' && window.currentSubSort !== 'all') ? window.currentSubSort : window.currentSort;
+            const res = applySortRule(aDetail, bDetail, sortType);
+            if (res !== 0) return res;
+        }
+    }
+
+    return 0;
+  });
+
+  // Re-define sort logic into a standalone function for clarity
+  function applySortRule(a, b, type) {
+    switch (type) {
       case 'new':
-        if (aDetail.id && bDetail.id) return bDetail.id - aDetail.id;
-        return new Date(bDetail.created_at) - new Date(aDetail.created_at);
+        if (a.id && b.id) return b.id - a.id;
+        return new Date(b.created_at) - new Date(a.created_at);
       case 'marketcap':
-        return window.numtokenlist(bDetail.market_cap) - window.numtokenlist(aDetail.market_cap);
+        return window.numtokenlist(b.market_cap) - window.numtokenlist(a.market_cap);
       case 'gainer':
-        return window.numtokenlist(bDetail.price_change_24h) - window.numtokenlist(aDetail.price_change_24h);
+        return window.numtokenlist(b.price_change_24h) - window.numtokenlist(a.price_change_24h);
       case 'hot':
       default:
-        return window.numtokenlist(bDetail.volume_24h) - window.numtokenlist(aDetail.volume_24h);
+        return window.numtokenlist(b.volume_24h) - window.numtokenlist(a.volume_24h);
     }
-  });
+  }
 
   // Handle Sub-Tabs for Non-Pump
   let subTabs = document.getElementById('tokenSubTabs');

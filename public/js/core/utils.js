@@ -147,136 +147,31 @@ window.fetchDirect = async function(url, options = {}) {
     }
 };
 
-// ===== PROXY FETCH WITH FALLBACK =====
+// ===== PROXY FETCH (Redirects through local backend) =====
 window.fetchWithProxy = async function(url, options = {}) {
-    const PROXIES = window.APP_CONFIG.PROXIES || [];
-    if (PROXIES.length === 0) {
-        // No proxies configured, try direct fetch
-        const response = await fetch(url, {
-            method: options.method || 'GET',
-            headers: options.headers || {},
-            body: options.body
-        });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        return await response.json();
-    }
-
-    let lastError = null;
-
-    // Try each proxy in order
-    for (let i = 0; i < PROXIES.length; i++) {
-        try {
-            const proxyUrl = PROXIES[i] + encodeURIComponent(url);
-            console.log(`Trying proxy ${i + 1}/${PROXIES.length}: ${PROXIES[i]}`);
-            
-            const response = await fetch(proxyUrl, {
-                method: options.method || 'GET',
-                headers: options.headers || {},
-                body: options.body,
-                signal: options.signal
-            });
-
-            if (!response.ok) {
-                throw new Error(`Proxy returned status ${response.status}`);
-            }
-
-            const data = await response.json();
-            console.log(`proxy ${i + 1} succeeded`);
-            return data;
-
-        } catch (error) {
-            console.warn(`Proxy ${i + 1} failed:`, error.message);
-            lastError = error;
-            
-            // If this is not the last proxy, continue to next one
-            if (i < PROXIES.length - 1) {
-                console.log(`Trying next proxy...`);
-                continue;
-            }
-        }
-    }
-
-    // If all proxies failed, try direct fetch as last resort
+    // PUBLIC PROXIES REMOVED per security policy.
+    // All external requests now route through our backend proxy.
     try {
-        console.log('All proxies failed, trying direct fetch...');
-        const response = await fetch(url, {
+        const backendUrl = `${window.APP_CONFIG.BACKEND_API}/api/proxy?url=${encodeURIComponent(url)}`;
+        const response = await fetch(backendUrl, {
             method: options.method || 'GET',
             headers: options.headers || {},
             body: options.body,
             signal: options.signal
         });
 
-        if (!response.ok) {
-            throw new Error(`Direct fetch returned status ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log('Direct fetch succeeded');
-        return data;
-
-    } catch (directError) {
-        console.error('Direct fetch also failed:', directError.message);
-        throw new Error(`All proxies and direct fetch failed. Last error: ${lastError?.message || directError.message}`);
-    }
-};
-
-// ===== SIMPLE PROXY FETCH (Single Attempt) =====
-window.fetchViaProxy = async function(url, proxyIndex = 0, options = {}) {
-    const PROXIES = window.APP_CONFIG.PROXIES || [];
-    if (PROXIES.length === 0) throw new Error('No proxies configured');
-    
-    const proxy = PROXIES[proxyIndex] || PROXIES[0];
-    const proxyUrl = proxy + encodeURIComponent(url);
-    
-    try {
-        const response = await fetch(proxyUrl, {
-            method: options.method || 'GET',
-            headers: options.headers || {},
-            body: options.body
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
-        }
-
-        return await response.json();
+        const result = await response.json();
+        if (result.success) return result.data;
+        throw new Error(result.error || 'Backend proxy failed');
     } catch (error) {
-        console.error(`Proxy fetch failed (${proxy}):`, error);
+        console.error(`Backend proxy fetch failed for ${url}:`, error);
         throw error;
     }
 };
 
-// ===== RANDOM PROXY FETCH =====
-window.fetchWithRandomProxy = async function(url, options = {}) {
-    const PROXIES = window.APP_CONFIG.PROXIES || [];
-    if (PROXIES.length === 0) throw new Error('No proxies configured');
-    
-    const randomIndex = Math.floor(Math.random() * PROXIES.length);
-    const proxy = PROXIES[randomIndex];
-    const proxyUrl = proxy + encodeURIComponent(url);
-    
-    console.log(`Using random proxy ${randomIndex + 1}: ${proxy}`);
-    
-    try {
-        const response = await fetch(proxyUrl, {
-            method: options.method || 'GET',
-            headers: options.headers || {},
-            body: options.body
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log(`Random proxy fetch succeeded`);
-        return data;
-
-    } catch (error) {
-        console.error(`Random proxy fetch failed:`, error);
-        throw error;
-    }
-};
+// ===== DEPRECATED: COMPATIBILITY WRAPPERS =====
+window.fetchViaProxy = window.fetchWithProxy;
+window.fetchWithRandomProxy = window.fetchWithProxy;
 
 // ===== FETCH WITH TIMEOUT & PROXY FALLBACK =====
 window.fetchWithTimeout = async function(url, timeoutMs = 10000, useProxy = false) {
