@@ -1037,13 +1037,14 @@ Object.assign(window.WalletUI, {
     
     updateAssetBalances: async function() {
         const tokens = window.AssetManager.getTokens();
-        const activeWallet = window.WalletManager.getActiveWallet();
-        if (!activeWallet) return;
+        // Prioritize connected wallet address for balance fetching
+        const walletAddress = window.wallet?.address || window.WalletManager?.getActiveWallet()?.address;
+        if (!walletAddress) return;
         
         // Always fetch fresh PAXI balance (no cache to avoid stale data)
         let paxiBalance = 0;
         try {
-            const response = await window.smartFetch(`${window.APP_CONFIG.LCD}/cosmos/bank/v1beta1/balances/${activeWallet.address}`);
+            const response = await window.smartFetch(`${window.APP_CONFIG.LCD}/cosmos/bank/v1beta1/balances/${walletAddress}`);
             const balances = response.balances || [];
             const paxiBal = balances.find(b => b.denom === 'upaxi');
             paxiBalance = paxiBal ? parseInt(paxiBal.amount) / 1000000 : 0;

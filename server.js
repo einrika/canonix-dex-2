@@ -28,14 +28,41 @@ app.use((req, res, next) => {
     next();
 });
 
+// Cache Busting: HTML no-cache, Static assets allowed caching
+app.use((req, res, next) => {
+    const isHtml = req.url.includes('.html') || req.url === '/' || !path.extname(req.url.split('?')[0]);
+    if (isHtml) {
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+    } else {
+        // Cache static assets (JS, CSS, images) for 1 day
+        res.setHeader('Cache-Control', 'public, max-age=86400');
+    }
+    next();
+});
+
 // API Routes
 app.use('/api', apiRoutes);
 
 // Serve static files from the 'public' directory
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public'), {
+    maxAge: '1d',
+    setHeaders: (res, filePath) => {
+        const isHtml = filePath.endsWith('.html');
+        if (isHtml) {
+            res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+            res.setHeader('Pragma', 'no-cache');
+            res.setHeader('Expires', '0');
+        } else {
+            res.setHeader('Cache-Control', 'public, max-age=86400');
+        }
+    }
+}));
 
 // Fallback for SPA (Single Page Application)
 app.use((req, res) => {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
